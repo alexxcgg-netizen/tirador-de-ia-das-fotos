@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luz de Obra</title>
+<style>
+  :root { --bg:#f6f5f2; --fg:#1d1d1b; --card:#fff; --accent:#c8641a; --line:#ddd9d0; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161513; --fg:#f0ede6; --card:#211f1c; --accent:#e8843a; --line:#3a3630; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.4 system-ui,sans-serif; }
+  main { max-width:960px; margin:0 auto; padding:16px; }
+  h1 { font-size:1.4rem; margin:8px 0 4px; }
+  p.sub { margin:0 0 16px; opacity:.75; }
+  .grid { display:grid; gap:16px; grid-template-columns:1fr; }
+  @media (min-width:800px) { .grid { grid-template-columns:2fr 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  canvas { width:100%; height:auto; border-radius:8px; display:block; background:#0002; }
+  label { display:block; margin:12px 0 4px; font-size:.9rem; }
+  input[type=range] { width:100%; }
+  select, button, input[type=file] { width:100%; padding:10px; border-radius:8px; border:1px solid var(--line);
+    background:var(--card); color:var(--fg); font:inherit; }
+  button.primary { background:var(--accent); color:#fff; border:0; font-weight:600; margin-top:16px; cursor:pointer; }
+  button.primary:disabled { opacity:.4; cursor:default; }
+  .presets { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .presets button { cursor:pointer; }
+  .note { font-size:.8rem; opacity:.7; margin-top:12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Luz de Obra</h1>
+  <p class="sub">Ajuste a luz das fotos reais das suas obras (tarde, entardecer, dia claro). Tudo roda no seu aparelho.</p>
+  <div class="grid">
+    <div class="card"><canvas id="cv" width="800" height="600"></canvas></div>
+    <div class="card">
+      <input type="file" id="file" accept="image/*">
+      <div class="presets">
+        <button data-p="original">Original</button>
+        <button data-p="tarde">Tarde</button>
+        <button data-p="entardecer">Entardecer</button>
+        <button data-p="claro">Dia claro</button>
+      </div>
+      <label>Calor da luz <span id="v-warm"></span></label>
+      <input type="range" id="warm" min="-50" max="100" value="0">
+      <label>Brilho <span id="v-bright"></span></label>
+      <input type="range" id="bright" min="-40" max="40" value="0">
+      <label>Contraste <span id="v-contrast"></span></label>
+      <input type="range" id="contrast" min="-40" max="60" value="0">
+      <label>Saturação <span id="v-sat"></span></label>
+      <input type="range" id="sat" min="-50" max="80" value="0">
+      <label>Vinheta (bordas escuras) <span id="v-vig"></span></label>
+      <input type="range" id="vig" min="0" max="80" value="0">
+      <label>Formato de saída</label>
+      <select id="fmt">
+        <option value="orig">Tamanho original</option>
+        <option value="1080x1350">Instagram retrato (1080×1350)</option>
+        <option value="1080x1080">Instagram quadrado (1080×1080)</option>
+        <option value="1080x1920">Stories / TikTok (1080×1920)</option>
+      </select>
+      <button class="primary" id="dl" disabled>Baixar foto</button>
+      <p class="note">Use para fotos reais. Se uma imagem foi criada por IA, informe isso na legenda.</p>
+    </div>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+const ids = ['warm','bright','contrast','sat','vig'];
+const PRESETS = {
+  original:   {warm:0,  bright:0,  contrast:0,  sat:0,  vig:0},
+  tarde:      {warm:35, bright:5,  contrast:10, sat:12, vig:15},
+  entardecer: {warm:75, bright:-12,contrast:22, sat:25, vig:40},
+  claro:      {warm:-10,bright:15, contrast:8,  sat:8,  vig:0},
+};
+let img = null;
+
+function setVals(v) { ids.forEach(k => $(k).value = v[k]); draw(); }
+document.querySelectorAll('.presets button').forEach(b =>
+  b.onclick = () => setVals(PRESETS[b.dataset.p]));
+ids.forEach(k => $(k).oninput = draw);
+
+$('file').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const im = new Image();
+  im.onload = () => { img = im; $('dl').disabled = false; setVals(PRESETS.tarde); };
+  im.src = URL.createObjectURL(f);
+};
+
+function render(c, w, h) {
+  const x = c.getContext('2d');
+  c.width = w; c.height = h;
+  const warm = +$('warm').value/100, br = +$('bright').value/100,
+        co = +$('contrast').value/100, sa = +$('sat').value/100, vg = +$('vig').value/100;
+  // cobre a área de saída (recorte central)
+  const s = Math.max(w/img.width, h/img.height);
+  const dw = img.width*s, dh = img.height*s;
+  x.filter = `brightness(${1+br}) contrast(${1+co}) saturate(${1+sa})`;
+  x.drawImage(img, (w-dw)/2, (h-dh)/2, dw, dh);
+  x.filter = 'none';
+  // tom quente: camada laranja suave + leve reforço de sombras azuis removido
+  if (warm > 0) {
+    x.globalCompositeOperation = 'soft-light';
+    x.fillStyle = `rgba(255,150,40,${Math.min(warm,1)*0.55})`;
+    x.fillRect(0,0,w,h);
+    x.globalCompositeOperation = 'multiply';
+    x.fillStyle = `rgba(255,${Math.round(255-warm*40)},${Math.round(255-warm*90)},${Math.min(warm,1)*0.6})`;
+    x.fillRect(0,0,w,h);
+  } else if (warm < 0) {
+    x.globalCompositeOperation = 'soft-light';
+    x.fillStyle = `rgba(90,150,255,${-warm*0.5})`;
+    x.fillRect(0,0,w,h);
+  }
+  x.globalCompositeOperation = 'source-over';
+  if (vg > 0) {
+    const g = x.createRadialGradient(w/2,h/2,Math.min(w,h)*0.35, w/2,h/2,Math.hypot(w,h)/2);
+    g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,`rgba(0,0,0,${vg})`);
+    x.fillStyle = g; x.fillRect(0,0,w,h);
+  }
+}
+
+function draw() {
+  ids.forEach(k => { const el = $('v-'+(k==='vig'?'vig':k)); if (el) el.textContent = $(k).value; });
+  if (!img) return;
+  const w = 800, h = Math.round(800*img.height/img.width);
+  render(cv, w, h);
+}
+
+$('dl').onclick = () => {
+  if (!img) return;
+  let w = img.width, h = img.height;
+  const f = $('fmt').value;
+  if (f !== 'orig') [w,h] = f.split('x').map(Number);
+  const out = document.createElement('canvas');
+  render(out, w, h);
+  out.toBlob(b => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'obra-ajustada.jpg'; a.click();
+  }, 'image/jpeg', 0.92);
+};
+draw();
+</script>
+</body>
+</html>
