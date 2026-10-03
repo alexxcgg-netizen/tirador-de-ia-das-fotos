@@ -1,0 +1,219 @@
+
+## Brazil Presidential Election | vol=163,427,435 liq=26,766,681 24h=1,496,788 start=2025-09-18
+  Flávio Bolsonaro                          59.4% bid=0.593 ask=0.594 vol=13,886,352
+  Luiz Inácio Lula da Silva                 40.5% bid=0.4 ask=0.41 vol=14,336,524
+  soma=1.009
+
+## Brazil Presidential Election First Round Winner | vol=1,039,801 liq=1,438,504 24h=183,114 start=2026-08-31
+  Lula                                      72.5% bid=0.72 ask=0.73 vol=520,266
+  Flavio Bolsonaro                          28.5% bid=0.28 ask=0.29 vol=498,429
+  soma=1.015
+
+## Will any presidential candidate win outright in the first round of the Brazil election? | vol=609,788 liq=111,599 24h=58,965 start=2025-09-18
+  Will any presidential candidate win outr   5.3% bid=0.052 ask=0.054 vol=609,788
+  soma=0.053
+
+## Which candidates will advance to Brazil's presidential runoff? | vol=1,089,988 liq=719,797 24h=77,942 start=2025-09-18
+  Flavio Bolsonaro                          98.8% bid=0.987 ask=0.989 vol=166,817
+  Luiz Inácio Lula da Silva                 98.4% bid=0.983 ask=0.985 vol=631,755
+  soma=1.977
+
+## Brazil Presidential Election First Round: 2nd Place | vol=9,050,911 liq=3,065,808 24h=325,579 start=2026-02-11
+  Flávio Bolsonaro                          71.5% bid=0.71 ask=0.72 vol=1,703,324
+  Luiz Inácio Lula da Silva                 27.6% bid=0.273 ask=0.279 vol=1,409,714
+  soma=0.999
+
+## Brazil Presidential Election First Round: 3rd Place | vol=1,956,856 liq=1,379,107 24h=79,234 start=2026-02-11
+  Renan Santos                              52.5% bid=0.52 ask=0.53 vol=661,906
+  Augusto Cury                              25.1% bid=0.244 ask=0.259 vol=379,730
+  Ronaldo Caiado                            20.5% bid=0.2 ask=0.21 vol=228,092
+  soma=0.994
+
+## Brazil Presidential Election First Round: 4th Place | vol=8,071 liq=233,421 24h=487 start=2026-09-22
+  Augusto Cury                              39.0% bid=0.35 ask=0.43 vol=1,566
+  Ronaldo Caiado                            28.5% bid=0.27 ask=0.3 vol=1,465
+  Renan Santos                              27.5% bid=0.23 ask=0.32 vol=2,501
+  Pablo Marçal                               0.8% bid=0.001 ask=0.014 vol=208
+  Zema                                       0.6% bid=0.002 ask=0.01 vol=276
+  Samara                                     0.6% bid=0.002 ask=0.01 vol=124
+  soma=0.985
+
+## Brazil Presidential Election First Round: Margin of Victory | vol=970,307 liq=711,414 24h=157,005 start=2026-02-11
+  Lula da Silva <5%                         57.5% bid=0.57 ask=0.58 vol=174,428
+  Flávio Bolsonaro <5%                      22.2% bid=0.216 ask=0.228 vol=110,045
+  Lula da Silva 5-10%                       17.0% bid=0.16 ask=0.18 vol=146,410
+  Flávio Bolsonaro 5-10%                     4.4% bid=0.038 ask=0.05 vol=95,897
+  Lula da Silva 10-15%                       0.8% bid=0.007 ask=0.008 vol=84,749
+  soma=1.026
+
+## Brazil Presidential Election First Round: Lula Vote Share? | vol=45,698 liq=242,550 24h=8,124 start=2026-09-16
+  44%+                                      69.5% bid=0.69 ask=0.7 vol=24,418
+  41-44%                                    24.0% bid=0.23 ask=0.25 vol=7,962
+  38-41%                                     5.7% bid=0.049 ask=0.064 vol=6,599
+  35-38%                                     1.8% bid=0.012 ask=0.024 vol=3,252
+  <35%                                       1.0% bid=0.008 ask=0.012 vol=3,468
+  soma=1.019
+
+## Brazil Presidential Election First Round: Lula Vote Share? (Higher Strikes) | vol=1,735 liq=74,534 24h=1,735 start=2026-10-02
+  44-47%                                    53.0% bid=0.51 ask=0.55 vol=136
+  <44%                                      30.5% bid=0.28 ask=0.33 vol=116
+  47-50%                                    16.5% bid=0.12 ask=0.21 vol=22
+  50-53%                                     2.6% bid=0.013 ask=0.04 vol=116
+  53-56%                                     1.6% bid=0.003 ask=0.028 vol=832
+  56%+                                       0.5% bid=0.001 ask=0.01 vol=514
+  soma=1.048
+
+## Brazil Presidential Election First Round: Flávio Bolsonaro Vote Share? | vol=231,785 liq=304,776 24h=53,086 start=2026-09-16
+  39%+                                      91.5% bid=0.9 ask=0.93 vol=134,269
+  36-39%                                     6.8% bid=0.062 ask=0.074 vol=36,609
+  33-36%                                     1.4% bid=0.012 ask=0.016 vol=28,979
+  soma=0.999
+
+## Brazil Presidential Election First Round: Flávio Bolsonaro Vote Share? (Higher Strikes) | vol=16,881 liq=208,424 24h=4,042 start=2026-09-28
+  42-45%                                    39.0% bid=0.38 ask=0.4 vol=5,387
+  39-42%                                    34.0% bid=0.33 ask=0.35 vol=3,594
+  45-48%                                    15.0% bid=0.13 ask=0.17 vol=955
+  <39%                                       8.5% bid=0.07 ask=0.1 vol=5,502
+  51%+                                       3.6% bid=0.01 ask=0.063 vol=766
+  48-51%                                     3.0% bid=0.013 ask=0.048 vol=677
+  soma=1.032
+
+## Brazil Presidential Election First Round: Renan Santos Vote Share? | vol=281,008 liq=295,237 24h=47,064 start=2026-09-16
+  2-4%                                      54.5% bid=0.54 ask=0.55 vol=35,864
+  4-6%                                      26.5% bid=0.25 ask=0.28 vol=21,907
+  <2%                                        8.2% bid=0.078 ask=0.085 vol=16,795
+  6-8%                                       7.8% bid=0.063 ask=0.092 vol=26,230
+  8%+                                        6.7% bid=0.056 ask=0.078 vol=180,212
+  soma=1.036
+
+## Brazil Presidential Election First Round: Augusto Cury Vote Share? | vol=21,653 liq=110,481 24h=1,399 start=2026-09-16
+  2-4%                                      41.5% bid=0.41 ask=0.42 vol=3,654
+  4-6%                                      35.5% bid=0.35 ask=0.36 vol=4,076
+  1-2%                                      10.5% bid=0.083 ask=0.128 vol=1,316
+  6%+                                       10.5% bid=0.1 ask=0.11 vol=12,147
+  <1%                                        5.3% bid=0.036 ask=0.07 vol=459
+  soma=1.034
+
+## Brazil Presidential Election First Round: Turnout | vol=3,770 liq=86,967 24h=1,306 start=2026-09-24
+  78-80%                                    40.0% bid=0.38 ask=0.42 vol=1,085
+  76-78%                                    38.5% bid=0.37 ask=0.4 vol=876
+  <76%                                      15.5% bid=0.13 ask=0.18 vol=628
+  80-82%                                    11.5% bid=0.09 ask=0.14 vol=689
+  82%+                                       2.2% bid=0.011 ask=0.033 vol=492
+  soma=1.077
+
+## Lula or Bolsonaro favored on...? | vol=42,640 liq=30,482 24h=3,970 start=2026-09-24
+  October 5                                 18.5% bid=0.17 ask=0.2 vol=26,807
+  October 3                                  1.9% bid=0.001 ask=0.037 vol=15,833
+  soma=0.204
+
+## Lula flips Bolsonaro for Brazil president by...? | vol=24,461 liq=22,119 24h=873 start=2026-09-24
+  October 15                                35.0% bid=0.34 ask=0.36 vol=5,394
+  soma=0.350
+
+## Brazil Presidential Election First Round: 1st Place in São Paulo | vol=29,228 liq=249,512 24h=2,127 start=2026-08-17
+  Flavio Bolsonaro                          97.0% bid=0.967 ask=0.972 vol=9,856
+  Lula                                       3.9% bid=0.032 ask=0.045 vol=10,333
+  soma=1.014
+
+## Brazil Presidential Election First Round: 1st Place in Minas Gerais | vol=73,936 liq=426,585 24h=9,817 start=2026-08-17
+  Lula                                      72.0% bid=0.69 ask=0.75 vol=35,874
+  Flavio Bolsonaro                          23.3% bid=0.217 ask=0.249 vol=29,513
+  soma=0.958
+
+## Brazil Presidential Election First Round: 1st Place in Rio de Janeiro | vol=26,305 liq=347,082 24h=65 start=2026-08-17
+  Flavio Bolsonaro                          98.3% bid=0.972 ask=0.994 vol=11,955
+  Lula                                       1.8% bid=0.008 ask=0.029 vol=8,113
+  soma=1.007
+
+## Brazil Presidential Election First Round: 1st Place in Bahia | vol=17,920 liq=294,960 24h=0 start=2026-08-17
+  Lula                                      99.1% bid=0.985 ask=0.997 vol=9,249
+  Flavio Bolsonaro                           1.0% bid=0.004 ask=0.016 vol=3,501
+  soma=1.006
+
+## Brazil Presidential Election First Round: 1st Place in Paraná | vol=14,426 liq=303,484 24h=0 start=2026-08-17
+  Flavio Bolsonaro                          99.1% bid=0.985 ask=0.997 vol=4,894
+  Lula                                       1.1% bid=0.001 ask=0.022 vol=678
+  soma=1.024
+
+## Brazil Presidential Election First Round: 1st Place in Rio Grande do Sul | vol=34,676 liq=374,042 24h=223 start=2026-08-17
+  Flavio Bolsonaro                          97.9% bid=0.968 ask=0.99 vol=10,855
+  Lula                                       2.2% bid=0.011 ask=0.034 vol=5,511
+  soma=1.008
+
+## Brazil Presidential Election First Round: 1st Place in Goiás | vol=93,496 liq=384,445 24h=125 start=2026-08-17
+  Flavio Bolsonaro                          94.8% bid=0.934 ask=0.963 vol=42,984
+  Ronaldo Caiado                             4.6% bid=0.034 ask=0.058 vol=24,307
+  soma=1.000
+
+## Brazil Presidential Election First Round: 1st Place in Federal District | vol=51,393 liq=439,041 24h=8,371 start=2026-08-17
+  Flavio Bolsonaro                          97.0% bid=0.964 ask=0.975 vol=26,742
+  Lula                                       3.1% bid=0.024 ask=0.038 vol=17,410
+  soma=1.006
+
+## Brazil Presidential Election First Round: 1st Place in Pernambuco | vol=16,552 liq=381,426 24h=268 start=2026-08-17
+  Lula                                      99.3% bid=0.99 ask=0.996 vol=8,768
+  soma=1.010
+
+## Brazil Presidential Election First Round: 1st Place in Ceará | vol=21,838 liq=373,456 24h=876 start=2026-08-17
+  Lula                                      99.6% bid=0.991 ask=1 vol=11,283
+  soma=1.005
+
+## Brazil Presidential Election First Round: 1st Place in Pará | vol=27,556 liq=365,204 24h=158 start=2026-08-17
+  Lula                                      96.2% bid=0.949 ask=0.976 vol=14,080
+  Flavio Bolsonaro                           3.9% bid=0.026 ask=0.051 vol=4,185
+  soma=1.008
+
+## Brazil Presidential Election First Round: 1st Place in Amazonas | vol=37,990 liq=205,939 24h=176 start=2026-08-17
+  Lula                                      80.5% bid=0.79 ask=0.82 vol=14,481
+  Flavio Bolsonaro                          24.0% bid=0.17 ask=0.31 vol=14,771
+  soma=1.052
+
+## Brazil Presidential Election First Round: 1st Place in Santa Catarina | vol=12,142 liq=375,310 24h=9 start=2026-08-17
+  Flavio Bolsonaro                          98.6% bid=0.974 ask=0.997 vol=2,731
+  Lula                                       0.6% bid=0.001 ask=0.011 vol=874
+  Renan Santos                               0.5% bid=0.003 ask=0.008 vol=810
+  Zema                                       0.5% bid=0.001 ask=0.009 vol=754
+  soma=1.019
+
+## Brazil Presidential Election First Round: 1st Place in Espírito Santo | vol=21,589 liq=329,214 24h=80 start=2026-08-17
+  Flavio Bolsonaro                          97.6% bid=0.961 ask=0.991 vol=9,737
+  Lula                                       2.2% bid=0.007 ask=0.038 vol=902
+  soma=1.017
+
+## Flávio Bolsonaro participates in debate before first round? | vol=71,352 liq=17,775 24h=3,259 start=2026-08-18
+  soma=0.001
+
+## Lula participates in debate before first round? | vol=61,834 liq=15,023 24h=3,409 start=2026-08-18
+  soma=0.001
+
+## Who will Trump endorse for President of Brazil? | vol=34,644 liq=64,099 24h=230 start=2026-08-05
+  Flávio Bolsonaro                          27.5% bid=0.26 ask=0.29 vol=30,822
+  Ronaldo Caiado                             1.7% bid=0.006 ask=0.028 vol=490
+  Lula da Silva                              1.4% bid=0.009 ask=0.019 vol=483
+  Renan Santos                               1.2% bid=0.005 ask=0.02 vol=593
+  Romeu Zema                                 0.8% bid=0.006 ask=0.01 vol=1,815
+  Augusto Cury                               0.6% bid=0.003 ask=0.009 vol=440
+  soma=0.333
+
+## Next Brazil Senate Election: Most Seats Won | vol=316,173 liq=299,769 24h=25 start=2026-02-11
+  PL                                        95.8% bid=0.943 ask=0.972 vol=266,267
+  MDB                                        1.6% bid=0.002 ask=0.03 vol=9,969
+  UNIÃO                                      0.9% bid=0.003 ask=0.015 vol=3,941
+  PT                                         0.7% bid=0.001 ask=0.012 vol=4,390
+  PSB                                        0.6% bid=0.003 ask=0.009 vol=3,805
+  soma=1.017
+
+## Brazil Chamber of Deputies Election Winner | vol=134,781 liq=537,217 24h=2,229 start=2026-04-27
+  PL                                        70.5% bid=0.67 ask=0.74 vol=52,182
+  UPB                                       25.2% bid=0.238 ask=0.267 vol=23,318
+  soma=0.969
+
+## São Paulo Governor Election Winner | vol=331,660 liq=275,792 24h=1,697 start=2026-04-27
+  Tarcísio de Freitas                       99.6% bid=0.995 ask=0.997 vol=162,664
+  soma=1.002
+
+## Rio de Janeiro Governor Election Winner | vol=593,213 liq=826,308 24h=16,862 start=2026-06-10
+  Eduardo Paes                              77.0% bid=0.758 ask=0.783 vol=134,377
+  Douglas Ruas                              22.8% bid=0.223 ask=0.232 vol=81,352
+  soma=1.005
