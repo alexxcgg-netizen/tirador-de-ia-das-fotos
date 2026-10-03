@@ -1,0 +1,1133 @@
+<title>Comparador de propostas 2026</title>
+<style>
+/* Layout: uma coluna de leitura (máx. 1120px) com cartões de área empilhados; dentro de cada área, Lula e Flávio em blocos completos e os demais em grade compacta. Cores neutras; nenhuma cor partidária. */
+:root {
+  --bg: #f2f3f5;
+  --surface: #ffffff;
+  --surface-2: #e8eaee;
+  --ink: #171c26;
+  --muted: #545c6b;
+  --line: #d2d6dd;
+  --accent: #23366e;
+  --accent-soft: #dfe4f1;
+  --on-accent: #ffffff;
+  --warn-bg: #f1ece2;
+  --warn-ink: #4d4231;
+  --c-cury: #1d7d8c;
+  --c-flavio: #2f5fae;
+  --c-lula: #7d4aa8;
+  --c-renan: #4e45a0;
+  --c-zema: #9a4683;
+  --c-caiado: #586070;
+  --font-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --surface: #1a1e26; --surface-2: #232834; --ink: #e6e8ed; --muted: #a2a9b7; --line: #333a48;
+    --accent: #a9bbef; --accent-soft: #263152; --on-accent: #10131a; --warn-bg: #2b2720; --warn-ink: #e3d6bd;
+    --c-cury: #4fb4c2; --c-flavio: #7aa2e6; --c-lula: #b58ae0; --c-renan: #958df0; --c-zema: #d886c3; --c-caiado: #a3abb9;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --surface: #1a1e26; --surface-2: #232834; --ink: #e6e8ed; --muted: #a2a9b7; --line: #333a48;
+  --accent: #a9bbef; --accent-soft: #263152; --on-accent: #10131a; --warn-bg: #2b2720; --warn-ink: #e3d6bd;
+  --c-cury: #4fb4c2; --c-flavio: #7aa2e6; --c-lula: #b58ae0; --c-renan: #958df0; --c-zema: #d886c3; --c-caiado: #a3abb9;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 64px; display: grid; gap: 40px; }
+a { color: var(--accent); text-underline-offset: 2px; }
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; font-weight: 750; }
+h3 { font-size: 1.2rem; font-weight: 700; }
+h4 { font-size: 1rem; font-weight: 700; }
+p { margin: 0; }
+.prose { max-width: 68ch; display: grid; gap: 12px; }
+.eyebrow { font-family: var(--font-data); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+section { min-width: 0; }
+
+/* header */
+.top { display: grid; gap: 16px; }
+.top nav { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.9rem; }
+.isnot { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.isnot > div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 6px; }
+.isnot ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+/* tags */
+.tag { display: inline-block; font-family: var(--font-data); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0 5px; border-radius: 3px; border: 1px solid var(--ink); line-height: 1.5; vertical-align: 1px; margin-right: 3px; white-space: nowrap; }
+.tag-fato { background: var(--ink); color: var(--bg); }
+.tag-proposta { border-color: var(--accent); color: var(--accent); }
+.tag-alegação { border-style: dashed; }
+.tag-opinião { border-style: dotted; border-width: 2px; }
+.tag-calc, .tag-inferência { border-color: var(--muted); color: var(--muted); font-style: italic; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 0.85rem; color: var(--muted); align-items: center; }
+
+/* context */
+.ctx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.stat b { font-family: var(--font-data); font-size: 1.35rem; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.stat p { font-size: 0.9rem; }
+.stat .src { font-size: 0.78rem; color: var(--muted); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 650; background: var(--surface-2); }
+td.num, th.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+
+/* order bar */
+.orderbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+.orderlist { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 260px; min-width: 0; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 2px 8px 2px 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+.btn { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--accent); background: var(--surface); color: var(--accent); cursor: pointer; }
+.btn:hover { background: var(--accent-soft); }
+.btn.solid { background: var(--accent); color: var(--on-accent); }
+.btn.solid:hover { opacity: 0.9; }
+
+/* candidate identity: hue + monogram */
+.mono { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-family: var(--font-data); font-size: 0.7rem; font-weight: 600; color: var(--surface); background: var(--cc); flex: none; }
+.c-cury { --cc: var(--c-cury); } .c-flavio { --cc: var(--c-flavio); } .c-lula { --cc: var(--c-lula); }
+.c-renan { --cc: var(--c-renan); } .c-zema { --cc: var(--c-zema); } .c-caiado { --cc: var(--c-caiado); }
+
+/* areas */
+.areas { display: grid; gap: 20px; }
+.area { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.area-head { padding: 18px 18px 14px; display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); align-items: start; }
+.area-head .ah-text { display: grid; gap: 6px; min-width: 0; }
+.area-ctx { font-size: 0.92rem; color: var(--muted); max-width: 70ch; }
+.weight { display: grid; gap: 4px; }
+.weight label { font-size: 0.85rem; font-weight: 600; }
+.weight .row { display: flex; gap: 10px; align-items: center; }
+.weight input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+output, .val { font-family: var(--font-data); font-variant-numeric: tabular-nums; min-width: 2.2ch; text-align: right; font-weight: 600; }
+.progress { font-size: 0.8rem; color: var(--muted); font-family: var(--font-data); }
+@media (max-width: 720px) { .area-head { grid-template-columns: minmax(0, 1fr); } }
+details.area-body > summary { cursor: pointer; padding: 12px 18px; border-top: 1px solid var(--line); font-weight: 650; color: var(--accent); list-style-position: inside; }
+details.area-body[open] > summary { border-bottom: 1px solid var(--line); }
+.area-inner { padding: 16px 18px 20px; display: grid; gap: 18px; }
+.cands { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.cand { border: 1px solid var(--line); border-top: 4px solid var(--cc); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 12px; align-content: start; min-width: 0; background: var(--surface); }
+.cand.deep { grid-column: 1 / -1; }
+.cand-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cand-h h4 { font-size: 1.05rem; }
+.cand-h small { font-weight: 500; color: var(--muted); }
+.depth { margin-left: auto; font-family: var(--font-data); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+dl.fields { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px 22px; }
+dl.fields > div { min-width: 0; display: grid; gap: 2px; align-content: start; }
+dl.fields > div.wide { grid-column: 1 / -1; }
+dt { font-size: 0.75rem; font-family: var(--font-data); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+dd { margin: 0; font-size: 0.93rem; max-width: 75ch; }
+.srcs { font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.srcs a { overflow-wrap: anywhere; }
+.lensrow { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.78rem; }
+.lchip { border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; background: var(--surface-2); }
+.lchip b { font-weight: 650; }
+.lchip.ov { border-style: dashed; border-color: var(--accent); }
+details.lensd > summary { cursor: pointer; font-size: 0.82rem; color: var(--accent); }
+.lensbox { display: grid; gap: 10px; margin-top: 8px; padding: 10px 12px; background: var(--surface-2); border-radius: var(--radius); }
+.lensbox .lb { display: grid; gap: 4px; font-size: 0.85rem; }
+.lensbox label { font-weight: 600; }
+select { font: inherit; font-size: 0.92rem; padding: 6px 8px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); max-width: 100%; }
+.rate { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.rate label { font-weight: 650; font-size: 0.92rem; }
+.rate select { font-family: var(--font-data); }
+.rate .hint { font-size: 0.78rem; color: var(--muted); flex-basis: 100%; }
+.promessas { display: grid; gap: 10px; }
+.promessas ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.promessas li { display: grid; gap: 2px; padding: 10px 12px; border-left: 3px solid var(--line); background: var(--surface-2); border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.92rem; }
+.promessas .who { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+
+/* result */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 16px; }
+.lenses-ctl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.lens-ctl { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 8px; align-content: start; }
+.lens-ctl .chk { display: flex; gap: 8px; align-items: flex-start; font-weight: 650; }
+.lens-ctl input[type=checkbox] { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent); }
+.lens-ctl .row { display: flex; gap: 10px; align-items: center; }
+.lens-ctl input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+.incl { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.incl label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.92rem; }
+.incl input { width: 18px; height: 18px; accent-color: var(--accent); }
+.notice { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius); padding: 12px 14px; font-size: 0.95rem; display: grid; gap: 6px; }
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: minmax(0, 170px) minmax(0, 1fr) 4.5ch; gap: 10px; align-items: center; }
+.bar .nm { display: flex; gap: 8px; align-items: center; font-weight: 600; font-size: 0.92rem; min-width: 0; }
+.bar .nm span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { height: 14px; background: var(--surface-2); border-radius: 3px; position: relative; overflow: hidden; }
+.track i { position: absolute; inset: 0 auto 0 0; background: var(--cc); border-radius: 3px; transition: width .35s ease; }
+.track .ticks { position: absolute; inset: 0; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: 10% 100%; opacity: .7; }
+.bar .sc { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.scale { display: grid; grid-template-columns: minmax(0, 170px) minmax(0, 1fr) 4.5ch; gap: 10px; font-family: var(--font-data); font-size: 0.72rem; color: var(--muted); }
+.scale div { display: flex; justify-content: space-between; }
+@media (max-width: 520px) {
+  .bar { grid-template-columns: minmax(0, 1fr) 4.5ch; row-gap: 4px; }
+  .bar .nm { grid-column: 1 / -1; }
+  .scale { grid-template-columns: minmax(0, 1fr) 4.5ch; }
+  .scale > span:first-child { display: none; }
+}
+.sens { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 0.93rem; }
+.gaps { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.9rem; }
+.confirm { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* fatos */
+.fatos { display: grid; gap: 12px; }
+.fato { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 10px; }
+.fato .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+.fato .cols > div { display: grid; gap: 2px; align-content: start; font-size: 0.9rem; min-width: 0; }
+.fato .neutral { font-size: 0.92rem; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius); }
+footer { font-size: 0.85rem; color: var(--muted); display: grid; gap: 8px; max-width: 75ch; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+
+<div class="wrap">
+  <header class="top" id="inicio">
+    <p class="eyebrow">Eleição presidencial · 1º turno em 04/10/2026 · dados até 03/10/2026</p>
+    <h1>Comparador de propostas 2026</h1>
+    <div class="prose">
+      <p>Leia o que cada candidato propõe em oito áreas, decida quanto cada área pesa para você e dê a sua própria nota a cada proposta. A página só faz a conta com os números que você escolher.</p>
+    </div>
+    <div class="isnot">
+      <div>
+        <h3>O que esta ferramenta é</h3>
+        <ul>
+          <li>Um resumo do relatório “Propostas e viabilidade dos candidatos”, com as fontes de cada afirmação.</li>
+          <li>Uma calculadora transparente: média ponderada das suas notas pelos seus pesos.</li>
+          <li>Um lugar para ver o que é concreto, o que é vago, quanto custa e do que depende cada proposta.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>O que ela não é</h3>
+        <ul>
+          <li><strong>Não recomenda candidato.</strong> O resultado reflete os seus pesos e as suas avaliações.</li>
+          <li>Não vem com notas preenchidas. Toda nota começa vazia.</li>
+          <li>Não é pesquisa eleitoral nem previsão. Suas respostas ficam só neste navegador.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="legend" aria-label="Legenda das etiquetas">
+      <span><span class="tag tag-fato">fato</span> dado oficial ou verificável</span>
+      <span><span class="tag tag-proposta">proposta</span> o que o candidato promete</span>
+      <span><span class="tag tag-alegação">alegação</span> sem decisão final ou verificação</span>
+      <span><span class="tag tag-opinião">opinião</span> analista, entidade ou campanha</span>
+      <span><span class="tag tag-calc">calc</span> conta feita pelo relatório</span>
+      <span><span class="tag tag-inferência">inferência</span> dedução do autor do relatório</span>
+    </div>
+    <nav aria-label="Seções">
+      <a href="#contexto">Contexto de 2027</a>
+      <a href="#areas">Áreas e suas notas</a>
+      <a href="#resultado">Resultado</a>
+      <a href="#fatos">Fatos verificados e contestados</a>
+    </nav>
+  </header>
+
+  <section id="contexto" aria-labelledby="ctx-h" style="display:grid;gap:16px">
+    <p class="eyebrow">Antes das propostas</p>
+    <h2 id="ctx-h">O contexto que qualquer eleito herda em 2027</h2>
+    <p class="prose">Quem vencer encontra menos dinheiro livre, uma dívida em alta e um Congresso de centro-direita que nenhum dos dois favoritos controla. O STF segue arbitrando os temas mais disputados.</p>
+    <div class="ctx-grid" id="ctx-grid"></div>
+    <details>
+      <summary class="small" style="cursor:pointer;color:var(--accent);font-weight:600">Hiato fiscal estimado por candidato (único estudo comparável)</summary>
+      <div style="display:grid;gap:8px;margin-top:10px">
+        <div class="tablewrap"><table>
+          <caption class="small muted" style="text-align:left;padding:8px 10px">Ranking dos Políticos (think tank), 1.297 propostas testadas contra a linha de base da IFI. Conclusão: nenhum dos seis planos estabiliza a dívida. Ordem alfabética.</caption>
+          <thead><tr><th>Candidato</th><th class="num">Hiato (R$)</th><th class="num">% do PIB</th><th>Ajuste declarado pela campanha</th></tr></thead>
+          <tbody id="hiato-body"></tbody>
+        </table></div>
+        <p class="small muted">Ler com cautela: um único think tank, só 36,9% das propostas puderam ser quantificadas, e itens caros (6x1, tarifa zero, IVA de 20%, presídios, moradia) ficaram fora da conta <span class="tag tag-opinião">opinião sobre a fonte</span>. <a href="https://www.opovo.com.br/noticias/politica/2026/09/18/estudo-de-think-tank-aponta-que-nenhum-plano-de-governo-consegue-estabilizar-divida-publica.html" target="_blank" rel="noopener">O Povo/Estadão Conteúdo</a></p>
+      </div>
+    </details>
+  </section>
+
+  <section id="areas" aria-labelledby="areas-h" style="display:grid;gap:16px">
+    <p class="eyebrow">Passo 1 e 2</p>
+    <h2 id="areas-h">Áreas: pese, leia e dê a sua nota</h2>
+    <div class="prose small muted">
+      <p>Para cada área, ajuste o peso (0 = não importa, 10 = importa muito). Abra a área, leia e escolha de 0 a 10 quanto cada proposta te convence. Lula e Flávio Bolsonaro têm análise completa; Caiado, Zema, Cury e Renan Santos aparecem resumidos, como no relatório.</p>
+    </div>
+    <div class="orderbar">
+      <div style="display:grid;gap:6px;flex:1 1 260px;min-width:0">
+        <span class="small" id="order-label"><strong>Ordem de exibição:</strong> alfabética</span>
+        <div class="orderlist" id="orderlist" aria-live="polite"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" type="button" id="btn-shuffle">Embaralhar ordem</button>
+        <button class="btn" type="button" id="btn-alpha">Voltar à ordem alfabética</button>
+      </div>
+    </div>
+    <div class="areas" id="area-list"></div>
+  </section>
+
+  <section id="resultado" aria-labelledby="res-h" style="display:grid;gap:16px">
+    <p class="eyebrow">Passo 3</p>
+    <h2 id="res-h">Resultado com os seus números</h2>
+    <div class="panel">
+      <div style="display:grid;gap:8px">
+        <h3>Critérios objetivos opcionais</h3>
+        <p class="small muted prose">Cada critério vira mais uma linha da conta, com o peso que você der. Os rótulos vêm do relatório; a base de cada um aparece em cada área, em “Ver base e ajustar”, onde você pode trocá-lo. Onde o relatório não dá base, o rótulo fica “sem base” e não entra na conta daquele candidato.</p>
+      </div>
+      <div class="lenses-ctl" id="lenses-ctl"></div>
+      <div style="display:grid;gap:8px">
+        <h3>Quem entra na comparação</h3>
+        <div class="incl" id="incl"></div>
+        <p class="small muted">Uma área só entra na conta quando tem peso maior que 0 e todos os candidatos marcados têm nota nela. Assim todos são comparados nas mesmas áreas.</p>
+      </div>
+    </div>
+    <div id="result-out" class="panel" aria-live="polite"></div>
+    <div class="panel">
+      <h3>Incertezas e lacunas que valem para qualquer resultado</h3>
+      <ul class="gaps" id="gaps"></ul>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <button class="btn" type="button" id="btn-reset">Apagar minhas respostas</button>
+        <span class="confirm" id="reset-confirm" hidden>
+          <span class="small">Apagar pesos, notas e ajustes deste navegador?</span>
+          <button class="btn solid" type="button" id="btn-reset-yes">Sim, apagar</button>
+          <button class="btn" type="button" id="btn-reset-no">Cancelar</button>
+        </span>
+        <span class="small muted" id="save-status" role="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="fatos" aria-labelledby="fatos-h" style="display:grid;gap:16px">
+    <p class="eyebrow">Registro histórico</p>
+    <h2 id="fatos-h">Fatos verificados e contestados</h2>
+    <p class="prose">O registro verificado não sustenta inteiramente a narrativa de nenhum dos campos. Para cada tema: o que está confirmado em fonte, a leitura de cada lado e uma formulação neutra.</p>
+    <div class="fatos" id="fatos-list"></div>
+  </section>
+
+  <footer>
+    <p>Fonte: relatório “Propostas e viabilidade dos candidatos” (03/10/2026) e notas de pesquisa associadas. Grande parte do conteúdo dos planos vem de reportagens que leram os documentos registrados no <a href="https://www.tse.jus.br/eleicoes/eleicoes-2026-content/propostas-de-governo-dos-candidatos-ao-cargo-de-presidente-da-republica-eleicoes-2026" target="_blank" rel="noopener">TSE</a>, e não da leitura direta de todos os PDFs. Fontes com alinhamento declarado vêm sinalizadas no texto.</p>
+    <p>Suas notas e pesos ficam salvos apenas neste navegador, se ele permitir. Nada é enviado.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+"use strict";
+
+/* ---------- DADOS (do relatório; ordem alfabética fixa) ---------- */
+var CANDS = [
+  { id: "cury",   nome: "Augusto Cury",     partido: "Avante",  sigla: "AC", deep: false },
+  { id: "flavio", nome: "Flávio Bolsonaro", partido: "PL",      sigla: "FB", deep: true },
+  { id: "lula",   nome: "Lula",             partido: "PT",      sigla: "LU", deep: true },
+  { id: "renan",  nome: "Renan Santos",     partido: "Missão",  sigla: "RS", deep: false },
+  { id: "zema",   nome: "Romeu Zema",       partido: "Novo",    sigla: "RZ", deep: false },
+  { id: "caiado", nome: "Ronaldo Caiado",   partido: "PSD",     sigla: "RC", deep: false }
+];
+var ALPHA = CANDS.map(function (c) { return c.id; });
+var CBY = {}; CANDS.forEach(function (c) { CBY[c.id] = c; });
+
+var CTX = [
+  ["82,9% do PIB", "Dívida bruta em agosto de 2026 (R$ 11,1 tri), maior nível em cinco anos. Juros nominais em 12 meses: R$ 1,18 tri (8,86% do PIB).", "fato", "CNN Brasil", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/bc-divida-bruta-do-governo-geral-avanca-para-829-do-pib-em-agosto/"],
+  ["R$ 65,7 bi", "O que sobra para custeio e investimento de todo o Executivo em 2027, depois que R$ 124,3 bi de precatórios voltam ao limite e descontadas as emendas. Discricionárias caem de R$ 208,3 bi para R$ 122,3 bi.", "fato", "Jornal de Brasília", "https://jornaldebrasilia.com.br/noticias/economia/governo-tera-r-86-bi-a-menos-para-custeio-e-investimentos-em-2027-com-precatorios-no-arcabouco/"],
+  ["~2,5 p.p. do PIB/ano", "Esforço que a IFI estima necessário para estabilizar a dívida (~R$ 342 bi). O Citi fala em 3% a 3,5%. Lula promete ~1,7 p.p. até 2030; Flávio, ~1,5 p.p. em 18 meses.", "opinião institucional", "Agência Senado (IFI)", "https://www12.senado.leg.br/noticias/materias/2026/06/25/ifi-proximo-presidente-da-republica-tera-de-enfrentar-decisoes-fiscais-dificeis"],
+  ["R$ 10,9 bi", "Quanto o próprio governo admite que faltaria para cumprir os pisos de Saúde e Educação em 2027.", "fato", "SBT News", "https://sbtnews.sbt.com.br/noticia/economia/governo-aponta-falta-de-verba-para-pisos-da-saude-e-educacao-no-orcamento-de-2027"],
+  ["308 e 49", "Deputados e senadores necessários para aprovar uma PEC. O Centrão pode chegar a 282 cadeiras; nenhum vencedor aprova PEC sem União-PP, PSD, MDB e Republicanos.", "fato – projeções", "Brasil no Centro/Diap", "https://brasilnocentro.com.br/centrao-pode-ampliar-maioria-na-camara-com-avanco-de-uniao-brasil-e-pp-projeta-diap/"],
+  ["54 senadores", "Exigidos para o impeachment de ministro do STF. As projeções dão ao PL 20–21 senadores e ao PT 11–12.", "fato – projeções", "Estado de Minas/Estadão", "https://www.em.com.br/politica/2026/09/7505839-projecao-para-o-senado-pt-e-pl-crescem-enquanto-o-centrao-encolhe.html"],
+  ["48%", "Desconfiança no STF, recorde desde 2012, em meio ao caso Master. A Corte arbitra armas, marco temporal, licenciamento e plataformas.", "fato", "Correio Braziliense/Datafolha", "https://www.correiobraziliense.com.br/politica/2026/09/7504121-desconfianca-no-stf-bate-recorde-e-chega-a-48-diz-datafolha.html"],
+  ["5,3% e 1,5%", "Desemprego no trimestre até agosto (menor desde 2012; informalidade de 37,5%) e PIB projetado pelo Focus para 2027. Selic hoje em 13,75%.", "fato", "ADVFN/IBGE", "https://br.advfn.com/jornal/2026/09/pnad-continua-desocupacao-fica-em-5-3-no-brasil-no-trimestre-ate-agosto-diz-ibge"],
+  ["até 37,5%", "Tarifas dos EUA desde julho de 2026, sobre 19% das exportações. A lei antidesmatamento europeia (EUDR) vale para grandes operadores em 30/12/2026.", "fato", "Agência Brasil", "https://agenciabrasil.ebc.com.br/internacional/noticia/2026-09/entenda-relacao-entre-brasil-e-estados-unidos"]
+];
+
+var HIATO = {
+  cury:   ["R$ 393 bi", "2,9%", "Déficit “próximo de zero”"],
+  flavio: ["R$ 496 bi", "3,6%", "R$ 190 bi (~1,5% do PIB) em 18 meses"],
+  lula:   ["R$ 452 bi", "3,3%", "~1,7 p.p. do PIB até 2030"],
+  renan:  ["R$ 478 bi", "3,5%", "R$ 1,1 tri até 2031 (cálculo da campanha)"],
+  zema:   ["R$ 392 bi", "2,9%", "“Choque fiscal” sem número consolidado"],
+  caiado: ["R$ 411 bi", "3,0%", "“PEC fiscal emergencial” de 2–3 anos"]
+};
+
+var AREAS = [
+  { id: "economia", nome: "Economia e fiscal", ctx: "A IFI projeta dívida de 86,4% do PIB em 2027 e acima de 100% em 2032. O arcabouço “perde efetividade” depois de 2028. A diferença real entre os favoritos está em quem paga o ajuste." },
+  { id: "seguranca", nome: "Segurança pública", ctx: "Mortes violentas caíram para 40.775 em 2025, menor nível desde 2012, mas mortes por causa indeterminada subiram 88,6% (2023–24). Polícias civis e militares são estaduais (art. 144)." },
+  { id: "saude", nome: "Saúde", ctx: "O piso federal da saúde (15% da receita corrente líquida) cresce com a receita, enquanto o arcabouço limita a despesa. O governo projeta falta de verba para os pisos em 2027." },
+  { id: "educacao", nome: "Educação", ctx: "Alfabetização na idade certa passou de 55,9% (2023) para 66% (2025). Anos finais e ensino médio seguem abaixo das metas do IDEB. Creches e escolas são de municípios e estados." },
+  { id: "social", nome: "Social, Previdência e trabalho", ctx: "Bolsa Família: R$ 158,6 bi em 2026. RGPS com déficit de R$ 317 bi em 2025. Cada R$ 1 de reajuste do mínimo custa ~R$ 455 mi em INSS e BPC [calc]. A PEC da 6x1 aguarda o Senado." },
+  { id: "instituicoes", nome: "Instituições e corrupção", ctx: "O caso Master atinge políticos de vários campos e escritórios ligados a ministros do STF. O Brasil tem 35 pontos no índice de percepção da corrupção (2025)." },
+  { id: "externa", nome: "Política externa", ctx: "Acordo Mercosul–UE em vigor provisório desde 01/05/2026. Tarifas dos EUA de até 37,5% desde julho. Os EUA designaram PCC e CV como terroristas em maio de 2026." },
+  { id: "ambiente", nome: "Meio ambiente, agro, energia e infraestrutura", ctx: "PRODES 2025: 5.731 km² (−12%). A EUDR barra produtos de áreas desmatadas, legal ou ilegalmente, depois de 2020. Equalização do Plano Safra: R$ 18,1 bi." }
+];
+
+var DEEP_FIELDS = [
+  ["proposta", "Proposta principal", true],
+  ["concreto", "O que é concreto"],
+  ["vago", "O que é vago"],
+  ["custo", "Custo e fonte do dinheiro"],
+  ["exige", "O que exige (Congresso, STF, estados)"],
+  ["evidencia", "Evidência"],
+  ["historico", "Histórico e avaliações"],
+  ["ganha", "Quem ganha"],
+  ["perde", "Quem perde"],
+  ["riscos", "Riscos"]
+];
+
+var S = { /* fontes recorrentes */
+  abEnx: ["Agência Brasil", "https://agenciabrasil.ebc.com.br/politica/noticia/2026-09/flavio-bolsonaro-propoe-enxugar-estado-e-endurecer-acoes-de-seguranca"],
+  p360: ["Poder360", "https://www.poder360.com.br/poder-eleicoes-2026/saiba-quais-sao-as-propostas-de-lula-e-flavio-para-as-contas-publicas/"],
+  tsEst: ["Tribuna do Sertão", "https://www.tribunadosertao.com.br/financas/2026/09/21/982853-petrobras-correios-e-bb-a-visao-dos-presidenciaveis-sobre-as-estatais"],
+  abEUA: ["Agência Brasil", "https://agenciabrasil.ebc.com.br/internacional/noticia/2026-09/entenda-relacao-entre-brasil-e-estados-unidos"],
+  ppi: ["Política Por Inteiro", "https://politicaporinteiro.org/2026/08/21/a-agenda-climatica-nos-planos-de-governo-dos-presidenciaveis/"],
+  coop: ["MundoCoop", "https://mundocoop.com.br/agronegocio/eleicoes-2026-o-que-dizem-os-planos-de-governo-dos-candidatos-para-o-agronegocio/"],
+  sbtEd: ["SBT News", "https://sbtnews.sbt.com.br/noticia/eleicoes/educacao-veja-propostas-de-presidenciaveis-em-2026"],
+  renda: ["planodegoverno2026 (renda)", "https://planodegoverno2026.com.br/temas/presidente/renda/"],
+  caiadoPdf: ["Plano de Caiado (PDF)", "https://static.poder360.com.br/uploads/2026/08/Plano-de-Governo-Ronaldo-Caiado-Presidente.pdf"],
+  caiadoCF: ["Congresso em Foco", "https://www.congressoemfoco.com.br/noticia/121321/plano-de-caiado-mira-faccoes-ajuste-fiscal-e-fim-da-reeleicao"],
+  renanCF: ["Congresso em Foco", "https://www.congressoemfoco.com.br/noticia/121275/plano-de-renan-tem-desfavelizacao--superpresidios-e-fim-de-cotas"],
+  renanAB: ["Agência Brasil", "https://agenciabrasil.ebc.com.br/politica/noticia/2026-09/renan-propoe-cortes-na-previdencia-e-alterar-pisos-da-saude-e-educacao"],
+  curyEM: ["Estado de Minas", "https://www.em.com.br/politica/2026/08/7489077-augusto-cury-conheca-as-propostas-do-candidato-a-presidencia-pelo-avante.html"],
+  curyTerra: ["Terra", "https://www.terra.com.br/noticias/eleicoes/eleicoes-2026-plano-de-augusto-cury-preve-semipresidencialismo-gestao-da-emocao-e-telemedicina,275f8d4dd7b40fb5b714d19aeb7b0f1c9tfiftut.html"],
+  imirante: ["Imirante", "https://imirante.com/noticias/brasil/2026/09/19/ipolitica-eleicoes-2026-propostas-dos-presidenciaveis-ao-salario"],
+  folhas: ["Brasil em Folhas", "https://www.brasilemfolhas.com.br/2026/09/caiado-cury-e-zema-debatem-crise-no-stf-e-seguranca/"],
+  tnSeg: ["Tribuna do Norte", "https://tribunadonorte.com.br/tn-nas-eleicoes-2026/zema-caiado-e-renan-santos-miram-em-seguranca-para-alavancar-candidaturas/"],
+  ranking: ["O Povo/Estadão (Ranking dos Políticos)", "https://www.opovo.com.br/noticias/politica/2026/09/18/estudo-de-think-tank-aponta-que-nenhum-plano-de-governo-consegue-estabilizar-divida-publica.html"]
+};
+
+var CONTENT = {
+economia: {
+  lula: {
+    proposta: "[proposta] Manter o arcabouço fiscal (despesa real crescendo 0,6%–2,5% ao ano), o ganho real do salário mínimo e a isenção do IR até R$ 5 mil, e levar a dívida para menos de 80% do PIB até 2030. Ajuste declarado: ~1,7 p.p. do PIB até 2030.",
+    concreto: "Arcabouço, regra do mínimo, isenção do IR compensada pela tributação de altas rendas, fundos exclusivos e offshores, cronograma do IBS/CBS.",
+    vago: "Aprofundar a Nova Indústria Brasil, “reduzir o custo do crédito” e criticar o modelo de emendas sem propor alternativa. A tarifa zero no transporte é meta declarada fora do programa oficial.",
+    custo: "Mínimo de R$ 1.741 em 2027: +R$ 54,6 bi só em INSS e BPC, ou 83% dos R$ 65,7 bi de discricionárias livres [calc]. Tarifa zero: R$ 100–110 bi por ano, sem fonte. O plano não diz como fecha a conta de 2027.",
+    exige: "Pouco: a maior parte já é lei ou exige só manutenção. A meta de dívida abaixo de 80% exigiria medidas que o plano não descreve [inferência]. Crédito mais barato depende da Selic, decidida pelo BC autônomo.",
+    evidencia: "[opinião institucional] IFI: dívida de 86,4% em 2027 e acima de 100% em 2032 no cenário-base, que é na prática o de continuidade. Hiato estimado de 3,3% do PIB (Ranking dos Políticos). [fato] Desemprego no menor nível da série.",
+    historico: "[fato] Dívida de 71,4% para ~82% do PIB desde jan/2023. Críticos citam 2011–14 e a recessão de 2015–16; defensores lembram causas externas e políticas. [opinião] Schwartsman vê “orçamento frouxo”; Mansueto diz que o próximo governo terá de rever a regra do mínimo. A defesa aponta o PLOA 2027 com superávit sem novas receitas.",
+    ganha: "Aposentados e beneficiários do BPC no piso, trabalhadores de baixa renda e quem ganha até R$ 5 mil [inferência].",
+    perde: "Rendas muito altas e dividendos; investimento público e custeio discricionário, comprimidos. Se a compensação tributária render menos, perde a trajetória da dívida [inferência].",
+    riscos: "Prêmio de risco e juros altos por mais tempo; depois de 2028, ter de escolher entre mudar o arcabouço e mudar os pisos e a indexação.",
+    fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/plano-de-governo-lula-economia/"], ["Money Times", "https://moneytimes.com.br/a-conta-que-o-proximo-presidente-tera-de-enfrentar-o-que-os-cinco-principais-candidatos-propoem-para-o-fiscal"], ["SpaceMoney", "https://www.spacemoney.com.br/economia/macroeconomia/salario-minimo-1741-impacto-inss-bpc-2027/"], ["Rádio Senado (IFI)", "https://www12.senado.leg.br/radio/1/noticia/2026/05/22/ifi-elabora-relatorio-que-diverge-das-previsoes-do-governo-para-2027"], ["ND Mais (tarifa zero)", "https://ndmais.com.br/politica/tarifa-zero-aposta-de-lula-para-2026-pode-custar-r-100-bilhoes/"], S.p360, ["CNN Brasil (Mansueto)", "https://www.cnnbrasil.com.br/economia/macroeconomia/quem-governar-em-2027-precisara-cortar-despesa-obrigatoria-diz-mansueto/"]]
+  },
+  flavio: {
+    proposta: "[proposta] “Tesouraço”: corte de ~R$ 190 bi (~1,5% do PIB) em 18 meses, extinção de ao menos 10 ministérios, privatização de mais de 20 estatais (Correios, BB e “provavelmente” a Petrobras ou partes dela), IVA de ~20% e meta de crescer 4% ao ano.",
+    concreto: "Valores declarados: R$ 190 bi de corte, 10 ministérios, IVA de 20%, R$ 900 bi em infraestrutura em quatro anos, PEC 12/2026 de contrato por hora, revogação de mais de 1.000 normas.",
+    vago: "Uma “nova regra fiscal” (fontes divergem sobre manter ou substituir o arcabouço) e a posição sobre o salário mínimo. Vários números vêm de reportagens sobre a equipe e podem não constar do texto registrado no TSE.",
+    custo: "O plano não diz quanto economiza cada item. IVA de 28% para 20% significa perder ~29% da arrecadação do IBS/CBS [calc], sem compensação descrita. Infraestrutura e moradias sem custo estimado.",
+    exige: "Um corte de 1,5% do PIB só é crível mexendo em despesas obrigatórias, o que exige PEC, e o candidato promete não tocar nos aposentados [inferência]. IVA exige lei complementar e acordo com estados e municípios; privatizações exigem lei.",
+    evidencia: "Hiato estimado de 3,6% do PIB, o maior dos seis (Ranking dos Políticos). Crescer 4% é mais que o dobro do Focus para 2027 (1,5%) e acima do potencial do FMI (~2,5%) [inferência]. O mercado reage melhor por expectativa de ajuste, não por números do plano.",
+    historico: "[fato] Reforma da Previdência de 2019 (R$ 630–800 bi em dez anos), autonomia do BC (2021), Eletrobras privatizada (2022); gestão Bolsonaro cumpriu 33% das promessas (G1). [opinião] Schwartsman chama os cortes de “um grande vazio”; o Congresso em Foco vê falta de meta numérica, mas diagnóstico alinhado a economistas liberais; a OPEB (viés crítico) compara a Milei.",
+    ganha: "Consumidores em geral (se o IVA cair), empresas (menos normas, trabalho flexível) e investidores (expectativa de câmbio e juros menores) [inferência].",
+    perde: "Setores com alíquota reduzida no IVA, estados e municípios (receita do IBS), comissionados e, conforme as rubricas cortadas, quem depende de políticas discricionárias [inferência].",
+    riscos: "Cortes de impostos virem antes dos cortes de gastos e o resultado primário piorar antes de melhorar, como nas desonerações sem compensação.",
+    fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/plano-de-governo-flavio-bolsonaro-economia/"], S.abEnx, ["reformatributaria.com", "https://www.reformatributaria.com/reforma-tributaria-nas-eleicoes/proposta-de-flavio-bolsonaro-para-iva-de-20-pode-encarecer-produtos-essenciais-dizem-especialistas/"], ["Congresso em Foco", "https://www.congressoemfoco.com.br/artigo/122714/a-equipe-economica-de-flavio-bolsonaro"], ["OPEB (viés crítico)", "https://opeb.org/2026/09/25/entre-a-teoria-e-a-pratica-o-plano-flavio-bolsonaro-sob-a-sombra-da-argentina-de-milei/"], S.p360, S.tsEst]
+  },
+  caiado: { resumo: "[proposta] “PEC fiscal emergencial” de 2 a 3 anos que suspende indexações, contenção das despesas obrigatórias, revisão de benefícios tributários e investimento de 17% para 25% do PIB. Mantém a regra do mínimo e não propõe reforma da Previdência.", obstaculo: "Tensão interna: suspender indexações sem tocar no mínimo, que é a principal indexação [inferência]. Custo não quantificado; hiato estimado de 3,0% do PIB.", fontes: [S.caiadoCF, S.imirante] },
+  zema: { resumo: "[proposta] Privatizar todas as estatais (Petrobras fatiada em produção, refino e transporte), reforma da Previdência com idade mínima automática incluindo militares, mínimo só pela inflação e “choque fiscal” sem número consolidado.", obstaculo: "Uma MP não privatiza a Petrobras: é preciso lei, e a perda de dividendos piora o primário [inferência]. Hiato estimado de 2,9%, o menor junto com Cury.", fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/plano-de-governo-zema-economia/"], ["A Crítica", "https://acritica.net/eleicoes-2026/zema-planeja-privatizar-petrobras-no-inicio-de-eventual-governo-diz-coordenador/"]] },
+  cury: { resumo: "[proposta] Déficit “próximo de zero”, corte de ministérios e impostos, mínimo com inflação mais 1% ao ano, crédito a 5–6% ao ano para pequenos negócios e cinco zonas francas tecnológicas.", obstaculo: "Com a Selic entre 12% e 14%, crédito a 5–6% exige subsídio de equalização do Tesouro, como no PSI/BNDES de 2009–2014 [inferência]. Hiato estimado de 2,9%.", fontes: [S.curyEM] },
+  renan: { resumo: "[proposta] Desindexar aposentadorias e BPC do mínimo (só IPCA), desvincular os pisos de saúde e educação, transição para a capitalização e fusão de municípios (de 5.570 para ~1.656). A campanha estima economia de R$ 1,1 tri até 2031.", obstaculo: "A desindexação é o que mais se aproxima do que a IFI aponta como necessário, mas o BPC de um mínimo está na Constituição e a capitalização tem alto custo de transição. Hiato estimado ainda de 3,5%, por causa não verificada.", fontes: [S.renanAB, S.renanCF] }
+},
+seguranca: {
+  lula: {
+    proposta: "[proposta] Ministério da Segurança Pública condicionado à PEC da Segurança; ampliar PF e Sinesp; presídios federais e Plano Pena Justa; Forças Armadas na fronteira amazônica; manter o Brasil Contra o Crime Organizado (R$ 10 bi); mais controle de armas e “cerco” a CACs.",
+    concreto: "[fato] Lei Antifacção já sancionada (24/03/2026): penas de até 40 anos para líderes e asfixia financeira. Programa de R$ 10 bi em curso. Decretos de armas validados pelo STF.",
+    vago: "O plano não traz proposta sobre drogas nem orçamento detalhado. O ministério fica à espera de uma PEC cujas emendas ficaram para depois da eleição.",
+    custo: "Não detalhado, além do programa de R$ 10 bi que já existe.",
+    exige: "PEC da Segurança: 487 a 15 na Câmara, texto-base aprovado na CCJ do Senado. O ministério poderia ser criado por MP ou lei, como em 2018; condicioná-lo à PEC foi escolha política [inferência]. O governo federal coordena, mas as polícias são estaduais.",
+    evidencia: "[fato] 40.775 mortes violentas em 2025 (19,1/100 mil), menor nível desde 2012; feminicídios +4%; 6.602 mortes por intervenção policial. Com os homicídios “ocultos”, a queda real de 2024 seria de 0,4%. A queda vem de 2018 e atravessa governos.",
+    historico: "Recriar o ministério era promessa de 2022 e consta como não cumprida (levantamento do G1). Lula vetou na Lei Antifacção o enquadramento de pessoas sem vínculo comprovado com facções. Especialistas atribuem a queda dos homicídios mais a fatores estaduais e demográficos do que federais.",
+    ganha: "PF, municípios com polícias municipais e estados com mais recursos [inferência].",
+    perde: "CACs e clubes de tiro [inferência].",
+    riscos: "Entregar pouco no curto prazo num tema em que a sensação de insegurança cresce mesmo com os números melhorando.",
+    fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/lula-propostas-plano-de-governo-seguranca-publica/"], ["CartaCapital", "https://www.cartacapital.com.br/sociedade/seguranca-publica-de-lula-mira-arsenal-pesado-de-cacs-e-pode-cassar-licencas-de-clubes-de-tiro/"], ["Congresso em Foco (Lei Antifacção)", "https://www.congressoemfoco.com.br/noticia/117528/nova-lei-antifaccao-entra-em-vigor-veja-a-integra-e-o-que-muda"], ["Rádio Senado (PEC)", "https://www12.senado.leg.br/radio/1/noticia/2026/09/02/pec-da-seguranca-publica-e-aprovada"], ["FBSP/Fonte Segura", "https://fontesegura.forumseguranca.org.br/mortes-violentas-intencionais-no-brasil-em-2025-entre-avancos-historicos-e-desafios-persistentes/"], ["Correio Braziliense (Atlas)", "https://www.correiobraziliense.com.br/brasil/2026/05/7428630-atlas-da-violencia-homicidios-recuam-mas-podem-estar-subnotificados.html"], ["Bahia Econômica/G1", "https://bahiaeconomica.com.br/wp/2026/07/22/governo-lula-cumpriu-26-das-promessas-de-campanha-mostra-levantamento/"]]
+  },
+  flavio: {
+    proposta: "[proposta] Doze eixos: PCC, CV e milícias como “narcoterroristas”; maioridade penal de 16 anos (14 em crimes graves); cinco presídios “no modelo salvadorenho”; fim da progressão para hediondos; castração química; penas quadruplicadas para roubo de celulares; revogar o Estatuto do Desarmamento.",
+    concreto: "Medidas nomeadas, como a “Muralha Brasileira” de reconhecimento facial, tropas em portos e aeroportos e auxílio-reclusão redirecionado às vítimas. As fontes divergem sobre a idade (16 ou 14).",
+    vago: "“Dobrar” o investimento federal em segurança sem valor; ocupação “permanente” por tropas sem enquadramento legal definido.",
+    custo: "Nenhuma medida tem custo estimado pela campanha.",
+    exige: "Maioridade: PEC (art. 228), com debate sobre cláusula pétrea. Fim da progressão: esbarra no HC 82.959 (STF, 2006). Terrorismo: mudar a Lei 13.260 (maioria simples). Castração: vedação a penas cruéis, salvo voluntária. Armas: decreto no 1º dia, mas o Estatuto só cai por lei.",
+    evidencia: "[fato] Registros de novas armas caíram 79% em 2023. Pela linha de Cerqueira (Ipea), +1% de armas eleva homicídios em ~1,1%, estimativa contestada pelo campo pró-armas. Não há estudo sobre o “modelo Bukele” no Brasil. [opinião] Encarcerar em massa fortalece facções que recrutam nas prisões.",
+    historico: "Flávio teve 57 projetos de lei e 92 PECs no Senado; 1 ou 2 viraram lei, nenhum de segurança. Relatou o fim das “saidinhas”. Em 2019–22 as mortes violentas ficaram estáveis, com pico em 2020, e os registros de armas subiram.",
+    ganha: "CACs, clubes de tiro e indústria de armas, as polícias e os eleitores com medo do crime [inferência].",
+    perde: "Ficam mais expostos os jovens negros da periferia (82% dos mortos pela polícia), adolescentes de 14 a 17 anos e um sistema prisional já superlotado [inferência].",
+    riscos: "Medidas derrubadas no STF; designação terrorista com efeitos financeiros e de soberania sobre contas e fornecedores. Há convergência: penas maiores para líderes e asfixia financeira já estão na Lei Antifacção.",
+    fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/propostas-flavio-bolsonaro-plano-de-governo-seguranca-publica/"], ["Gazeta do Povo (armas)", "https://www.gazetadopovo.com.br/eleicoes/2026/flavio-planeja-nova-legislacao-sobre-armas-com-fim-do-estatuto-do-desarmamento/"], ["Jus.com.br (HC 82.959)", "https://jus.com.br/artigos/8056/comentarios-a-decisao-do-stf-no-hc-82-959-7"], ["CNN Brasil (terrorismo)", "https://www.cnnbrasil.com.br/nacional/brasil/pcc-e-cv-sao-terroristas-veja-o-que-dizem-autoridades-e-especialistas/"], ["CNN Brasil (armas)", "https://www.cnnbrasil.com.br/politica/apos-decretos-de-lula-registro-de-armas-cai-79-em-2023/"], ["CartaCapital (Cerqueira)", "https://www.cartacapital.com.br/politica/bolsonaro-queda-homicidios-para-defender-politica-pro-armas-especialistas-discordam/"], ["Jornal de Brasília/Folhapress", "https://jornaldebrasilia.com.br/noticias/politica-e-poder/flavio-bolsonaro-mirou-seguranca-mas-nao-teve-projetos-proprios-transformados-em-lei/"]]
+  },
+  caiado: { resumo: "[proposta] Facções como “terroristas domésticos”, pena mínima de 45 anos para integrar ou recrutar, maioridade penal de 16 anos para crimes graves, Ministério da Segurança e polícia integrada com os dez vizinhos sul-americanos.", obstaculo: "Maioridade exige PEC. Em Goiás, homicídios −52% em seis anos (fonte do governo estadual citando o FBSP), seguindo a tendência nacional; letalidade policial de ~4,9 por 100 mil, contra 3,1 no país [calc].", fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/de-terrorismo-domestico-a-policia-sul-americana-veja-as-propostas-de-caiado-para-a-seguranca/"], ["Governo de Goiás", "https://goias.gov.br/seguranca/homicidios-em-goias-caem-521-nos-ultimos-seis-anos/"]] },
+  zema: { resumo: "[proposta] “Plano Implacável”, com referência a Bukele: facções como terroristas, penas mais duras, redução da maioridade, superpresídio na Amazônia, fim de visitas íntimas e “saidinhas”.", obstaculo: "Maioridade exige PEC; não há estudo do modelo Bukele no Brasil. Custos não estimados.", fontes: [["Estado de Minas", "https://www.em.com.br/politica/2026/08/7475589-plano-implacavel-veja-as-propostas-de-zema-na-disputa-pela-presidencia.html"], S.tnSeg] },
+  cury: { resumo: "[proposta] Recriar o Ministério da Segurança, programa FATO de integração das polícias com inteligência única, força municipal FOCO, asfixia financeira via Receita e COAF e reforma prisional.", obstaculo: "O ministério pode ser criado por MP ou lei. Custos não estimados.", fontes: [["Band", "https://www.band.com.br/eleicoes/noticias/cury-sobre-seguranca-publica-202608232127"]] },
+  renan: { resumo: "[proposta] “Direito Penal do Inimigo”, Estado de Defesa e GLO em áreas do tráfico, megapresídios com 300 a 500 mil vagas e federalização de casos de facções.", obstaculo: "O Estado de Defesa (art. 136) exige “grave e iminente instabilidade institucional”: enquadramento duvidoso [inferência]. As vagas custariam dezenas de bilhões, sem estimativa.", fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/renan-santos-plano-de-governo-seguranca/"], S.tnSeg] }
+},
+saude: {
+  lula: {
+    proposta: "[proposta] Incluir exames no Farmácia Popular gratuito; ampliar o Agora Tem Especialistas (terceiro turno, carretas, compra de serviços privados com créditos tributários); fixar médicos do Mais Médicos; IA na regulação de filas; vacinas contra dengue e VSR.",
+    concreto: "Programas que já existem, com ampliação nomeada. [fato] Farmácia Popular 100% gratuito desde fev/2025, com 24,7 milhões de usuários em 2024.",
+    vago: "Como cumprir ao mesmo tempo os pisos constitucionais e o arcabouço em 2027.",
+    custo: "Expansão sem custo estimado. Farmácia Popular: R$ 4,2 bi previstos para 2025. O governo admite falta de ~R$ 10,9 bi para os pisos de Saúde e Educação em 2027 e não diz como resolverá.",
+    exige: "Orçamento e execução: a fila depende de estados e municípios.",
+    evidencia: "[fato] Tríplice viral de ~80% (2022) para mais de 95% (2024) e 92,9% (2025). [alegação de campanha] 15 milhões de cirurgias em 2025 e filas zeradas em 52 municípios, dados autodeclarados sem verificação independente.",
+    historico: "Mais Médicos criado em 2013; retomada de programas depois de 2023. A compra de capacidade privada é ponto de convergência com Flávio.",
+    ganha: "Doentes crônicos, farmácias e laboratórios conveniados [inferência].",
+    perde: "Outras despesas que disputam o mesmo orçamento comprimido [inferência].",
+    riscos: "Expansão num orçamento sem folga; execução das filas depende de estados e municípios.",
+    fontes: [["Programa de Lula (PDF)", "https://static.poder360.com.br/uploads/2026/08/Programa-Governo-LULA-2026.pdf"], ["Ministério da Saúde", "https://www.gov.br/saude/pt-br/assuntos/noticias/2025/fevereiro/ministerio-da-saude-anuncia-100-de-gratuidade-no-farmacia-popular-e-abre-credenciamento-a-todos-os-municipios-do-pais"], ["CFM", "https://portal.cfm.org.br/noticias/vacinacao-precisa-avancar-para-seja-alcancada-a-meta-urgente-de-cobertura-vacinal-acima-de-95/"], ["SBT News (pisos)", "https://sbtnews.sbt.com.br/noticia/economia/governo-aponta-falta-de-verba-para-pisos-da-saude-e-educacao-no-orcamento-de-2027"]]
+  },
+  flavio: {
+    proposta: "[proposta] Corrigir a tabela SUS para santas casas e filantrópicos; ampliar a Estratégia Saúde da Família; contratar capacidade ociosa da rede privada; IA no agendamento; prontuário único ligado ao CPF e compartilhado com hospitais privados; telessaúde.",
+    concreto: "Tabela SUS, compra de capacidade privada, prontuário único e telessaúde.",
+    vago: "“Manter a imunização” sem meta. Nenhuma posição encontrada sobre o Mais Médicos.",
+    custo: "Corrigir a tabela SUS é caro e não tem custo estimado, e disputa espaço com o corte de R$ 190 bi.",
+    exige: "O compartilhamento de dados pessoais com hospitais privados levanta questões de LGPD [inferência]. A execução depende de estados e municípios.",
+    evidencia: "Sem avaliação independente localizada para as propostas. A compra de capacidade privada converge com o que o governo Lula já faz com créditos tributários.",
+    historico: "A pandemia é o passivo mais citado: a CPI acusou o governo de “deliberado atraso” na compra de vacinas. A defesa aponta o auxílio emergencial, as vacinas com transferência de tecnologia e as cláusulas da Pfizer (ver Fatos).",
+    ganha: "Santas casas, filantrópicos e prestadores privados contratados [inferência].",
+    perde: "Pacientes, se o compartilhamento de dados não tiver salvaguardas; outras despesas, pelo custo não estimado [inferência].",
+    riscos: "Custo omitido num orçamento comprimido e contestação pela LGPD.",
+    fontes: [S.abEnx, ["Estado de Minas", "https://www.em.com.br/politica/2026/08/7490602-flavio-bolsonaro-2026-conheca-as-principais-propostas-do-plano-de-governo.html"], ["Senado Notícias (Pfizer)", "https://www12.senado.leg.br/noticias/materias/2021/05/13/representante-da-pfizer-confirma-governo-nao-respondeu-ofertas-feitas-em-agosto-de-2020"], ["CNN Brasil (Pazuello)", "https://www.cnnbrasil.com.br/politica/2021/05/19/a-epoca-clausulas-da-pfizer-eram-assustadoras-diz-pazuello-a-cpi"]]
+  },
+  caiado: { resumo: "[proposta] Reduzir em ao menos 50% o tempo de espera até 2030, com sistema nacional de acesso, programa de doenças crônicas e telessaúde com prontuário interoperável.", obstaculo: "Meta quantificada, sem custo estimado.", fontes: [S.caiadoPdf, S.caiadoCF] },
+  zema: { resumo: "[proposta] PPPs e Organizações Sociais, compra de capacidade privada ociosa, IA nas filas e planos de saúde com coparticipação.", obstaculo: "Sem custo estimado; a execução depende das centrais de regulação estaduais e municipais.", fontes: [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/plano-de-governo-zema-economia/"]] },
+  cury: { resumo: "[proposta] “Tele Saúde Brasil” com triagem por IA, unidades móveis para detecção precoce de câncer e apoio emocional.", obstaculo: "Sem custo estimado.", fontes: [S.curyTerra] },
+  renan: { resumo: "[proposta] “SUS Fila Zero” com prioridade por risco clínico, meta de 80% de resolutividade na atenção básica, prontuário nacional público-privado e desvinculação do piso da saúde.", obstaculo: "Desvincular o piso exige PEC; perdem estados, municípios e prestadores que dependem de transferências [inferência].", fontes: [S.renanAB, S.renanCF] }
+},
+educacao: {
+  lula: {
+    proposta: "[proposta] Elevar a alfabetização na idade certa de 66% para 80%, conectar 100% das escolas, abrir 111 novos IFs, manter o Pé-de-Meia, ampliar o tempo integral e cumprir o PNE 2026–2036.",
+    concreto: "Metas mensuráveis: 80% de alfabetização, 111 IFs, 100% de escolas conectadas.",
+    vago: "Como financiar os IFs e a expansão do tempo integral.",
+    custo: "Pé-de-Meia: ~R$ 12,5 bi por ano. Os 111 IFs e a expansão integral não têm custo estimado.",
+    exige: "Execução por Fundeb e redes estaduais e municipais. O TCU deu prazo para pôr o Pé-de-Meia dentro do orçamento.",
+    evidencia: "[fato] Alfabetização de 55,9% (2023) para 66% (2025). IDEB dos anos iniciais de 6,0 para 6,3; anos finais (5,3) e ensino médio (4,5) abaixo das metas. Estudo do Insper estima queda da evasão de vulneráveis de 26,4% para 19,9% com o Pé-de-Meia.",
+    historico: "[fato] O TCU bloqueou R$ 6 bi pagos fora do orçamento e apontou beneficiários irregulares. [opinião] Editorial da Gazeta do Povo fala em “burla ao orçamento”. [opinião] Professoras da UnB criticam todos os planos por falta de metas e de financiamento.",
+    ganha: "Estudantes de baixa renda no ensino médio e crianças em alfabetização [inferência].",
+    perde: "Outras despesas, pelo custo não estimado dos IFs e do integral [inferência].",
+    riscos: "Custo dos IFs e da expansão integral não estimado; execução depende de estados e municípios.",
+    fontes: [S.sbtEd, ["Todos Pela Educação (PDF)", "https://todospelaeducacao.org.br/wordpress/wp-content/uploads/2026/03/nota-tecnica-indicador-crianca-alfabetizada-2025-todos-pela-educacao.pdf"], ["Jeduca", "https://jeduca.org.br/noticia/ideb-e-saeb-2025-confira-os-principais-resultados-e-pontos-de-atencao-para-cobertura"], ["Tribuna do Planalto (Insper)", "https://tribunadoplanalto.com.br/pe-de-meia-retorno-economico-insper-2026/"], ["TCU", "https://portal.tcu.gov.br/imprensa/noticias/tcu-da-prazo-de-120-dias-para-governo-federal-adequar-programa-pe-de-meia-ao-orcamento"], ["Gazeta do Povo (editorial)", "https://www.gazetadopovo.com.br/opiniao/editoriais/pe-de-meia-e-a-burla-do-governo-ao-orcamento/"]]
+  },
+  flavio: {
+    proposta: "[proposta] Alfabetização pelo método fônico; vouchers para creches privadas quando faltar vaga pública; Programa Acolher (alunos pagos para dar reforço a colegas); mais escolas cívico-militares; ensino técnico com o setor produtivo; ensino superior do MEC para o MCTI.",
+    concreto: "Programas nomeados: fônico, vouchers, Acolher, cívico-militares, superior no MCTI.",
+    vago: "[fato] O plano não tem proposta para o ensino médio. Não há metas numéricas.",
+    custo: "Nenhuma das propostas tem custo estimado.",
+    exige: "Vouchers federais exigem lei e mexem nas regras do Fundeb; a rede de creches é municipal; levar o superior ao MCTI exige MP ou lei.",
+    evidencia: "Cívico-militares têm evidência mista. Cedeplar/UFMG não achou efeito no fundamental e achou efeito negativo de 6,3% no ensino médio. Um artigo sobre os colégios militares de Goiás achou ganhos, mas eles selecionam alunos e têm mais recursos [inferência].",
+    historico: "O PECIM foi criado em 2019 e extinto em 2023. [opinião] Professoras da UnB criticam todos os planos por falta de metas e de financiamento e citam resultados ruins de cívico-militares no DF.",
+    ganha: "Famílias sem vaga em creche pública e redes que aderirem ao modelo cívico-militar [inferência].",
+    perde: "O ensino médio, sem proposta; o Fundeb, se os vouchers dividirem recursos [inferência].",
+    riscos: "Custo não estimado; execução depende de municípios e estados.",
+    fontes: [S.abEnx, S.sbtEd, ["Cedeplar/UFMG (PDF)", "https://diamantina.cedeplar.ufmg.br/portal/download/diamantina-2024/D20_463.pdf"], ["Gazeta do Povo (Goiás)", "https://www.gazetadopovo.com.br/vida-e-cidadania/melhor-desempenho-menos-violencia-revista-internacional-aponta-resultado-de-escolas-civico-militares/"], ["O Tempo (UnB)", "https://www.otempo.com.br/eleicoes/2026/presidentes/2026/9/27/candidatos-a-presidente-nao-mostram-metas-nem-formas-de-financiamentos-para-projetos-educacionais"], ["Estado de Minas", "https://www.em.com.br/politica/2026/08/7490602-flavio-bolsonaro-2026-conheca-as-principais-propostas-do-plano-de-governo.html"]]
+  },
+  caiado: { resumo: "[proposta] Alfabetização e matemática básica até o fim do 2º ano em aliança com estados e municípios, recomposição da aprendizagem com tutoria e ensino técnico integrando IFs, redes estaduais, empresas e Sistema S.", obstaculo: "Sem custo estimado.", fontes: [S.sbtEd] },
+  zema: { resumo: "[proposta] MEC focado na educação básica e na formação docente, ensino superior passado ao MCTI, revisão da BNCC e regulamentação do homeschooling.", obstaculo: "Exige MP ou lei; sem metas nem custo.", fontes: [S.sbtEd] },
+  cury: { resumo: "[proposta] “Gestão das emoções” nas escolas, ensino técnico e alfabetização na idade certa.", obstaculo: "Sem metas nem custo.", fontes: [S.sbtEd, S.curyTerra] },
+  renan: { resumo: "[proposta] Método fônico inspirado no Ceará, Código Nacional de Conduta do Estudante, fim das cotas (trocadas por bolsas de mérito) e desvinculação do piso da educação.", obstaculo: "As cotas estão na Lei 12.711, renovada em 2023, e foram validadas pelo STF (ADPF 186). Desvincular o piso exige PEC.", fontes: [S.sbtEd, S.renanCF] }
+},
+social: {
+  lula: {
+    proposta: "[proposta] Manter e ampliar o Bolsa Família, com adicionais para crianças; BPC na Política Nacional de Cuidados; Gás do Povo, Luz do Povo e Desenrola; MCMV em todas as faixas; jornada de 40h sem redução salarial (fim da 6x1); trabalho por aplicativo com cobertura previdenciária.",
+    concreto: "Programas existentes ampliados; PEC da 6x1 aprovada na Câmara por 472 a 22. Descarta desvincular benefícios do mínimo.",
+    vago: "Nenhuma proposta de contenção para o BPC e a Previdência.",
+    custo: "[fato] Bolsa Família: R$ 158,6 bi em 2026; o reajuste de 2026 custa ~R$ 22 bi em 2027; BPC para pessoas com deficiência +25% no PLOA 2027. A 6x1 não tem custo fiscal direto; para empregadores, de 7,84% do custo do trabalho (Ipea) a até R$ 267 bi/ano no cenário extremo da CNI.",
+    exige: "A 6x1 depende de 49 senadores; o governo conta 53 ou 54, e a oposição obstruiu a votação em 02/09.",
+    evidencia: "[fato] Pobreza e extrema pobreza no menor nível desde 2012 em 2024 (extrema de 3,5%); o IBGE atribui a queda à ocupação e aos benefícios. RGPS com déficit de R$ 317 bi em 2025. Concessões judiciais do BPC de 48 mil (2021) para 207 mil (2025).",
+    historico: "Bolsa Família desde 2003. A fila do INSS caiu de 3,1 milhões para 1,3 milhão, com alta das negativas e mais judicialização. Os descontos indevidos no INSS saltaram a partir de 2023 (ver Instituições).",
+    ganha: "Famílias pobres, idosos e pessoas com deficiência de baixa renda, celetistas em escalas longas [inferência].",
+    perde: "Empregadores intensivos em mão de obra (6x1) e, fiscalmente, o espaço para outras políticas [inferência].",
+    riscos: "BPC e Previdência crescerem sem contenção. A 6x1 só atinge celetistas, enquanto o emprego novo cresce na informalidade [inferência].",
+    fontes: [["planodegoverno2026 (Lula)", "https://planodegoverno2026.com.br/candidatos/presidente/lula/"], ["Diário do Comércio", "https://diariodocomercio.com.br/legislacao/projecoes-ibge-reforcam-nova-reforma-previdencia/"], ["ACS/Câmara", "https://www.acs.org.br/noticias/economia/bolsa-familia-tera-orcamento-de-r-158-bilhoes-em-2026"], ["Poder360 (BPC)", "https://www.poder360.com.br/poder-economia/judicializacao-renova-recorde-e-bpc-caminha-para-estourar-orcamento/"], ["Agência Brasil (6x1)", "https://agenciabrasil.ebc.com.br/politica/noticia/2026-09/senado-oposicao-obstrui-e-fim-da-escala-6x1-nao-vai-plenario"], ["Poder360 (Ipea)", "https://www.poder360.com.br/poder-economia/fim-da-escala-6-x-1-elevaria-custo-do-trabalho-em-784-diz-ipea/"], ["Diário do Comércio (CNI)", "https://diariodocomercio.com.br/economia/fim-escala-6x1-teria-maior-impacto-sul-seguido-sudeste-nordeste-diz-cni/"], ["Secom/IBGE", "https://www.gov.br/secom/pt-br/assuntos/noticias/2025/12/no-brasil-8-6-milhoes-de-pessoas-sairam-da-pobreza-entre-2023-e-2024"], ["Correio Braziliense (INSS)", "https://www.correiobraziliense.com.br/economia/2026/08/7476247-fila-do-inss-cai-mas-numero-de-negativas-dispara-em-2026.html"]]
+  },
+  flavio: {
+    proposta: "[proposta] Bolsa Família como “ponte”: quem conseguir CLT ou abrir MEI mantém apoio por até 2 anos e volta automaticamente depois do seguro-desemprego; cashback, microcrédito, cursos, combate a fraudes e proibição de uso em bets. No trabalho: “negociado sobre o legislado”, contratos para 18–24 e 50+ anos e PEC de remuneração por hora.",
+    concreto: "Porta de saída de até 2 anos; PEC 12/2026 (contrato por hora) como alternativa à 6x1; digitalização e antifraude na Previdência.",
+    vago: "A posição sobre o salário mínimo e o BPC não está clara; diz ser contra cortes que atinjam aposentados.",
+    custo: "Sem custo nem fonte. Com cashback e microcrédito, o efeito de curto prazo tende a ser de aumento de gasto [inferência]. As 2,5 milhões de moradias não têm custo estimado.",
+    exige: "A PEC 12/2026 exige 3/5 nas duas Casas. [fato] Flávio participou da obstrução da 6x1 no Senado.",
+    evidencia: "A porta de saída se parece com a Regra de Proteção criada em 2023, também de até 2 anos e reduzida para 12 meses em 2025. Não há avaliação independente localizada das novidades (cashback, retorno automático).",
+    historico: "[fato] O auxílio emergencial de 2020 (~R$ 322 bi) levou a extrema pobreza a 2,3%; a pobreza voltou a subir em 2021 com a pausa. O TCU apontou divisão artificial de famílias no cadastro do Auxílio Brasil.",
+    ganha: "Empregadores (flexibilidade) e beneficiários que conseguem emprego formal (transição) [inferência].",
+    perde: "Pela leitura sindical, trabalhadores sujeitos a acordos individuais; celetistas em 6x1 não teriam a redução da jornada [inferência].",
+    riscos: "[opinião] A TVT, ligada a sindicatos, vê “redução da proteção social” num país com informalidade alta. A campanha nega e promete manter o Bolsa Família.",
+    fontes: [["CNN Brasil", "https://www.cnnbrasil.com.br/eleicoes/flavio-foca-em-porta-de-saida-do-bolsa-familia/"], ["Poder360", "https://www.poder360.com.br/poder-eleicoes-2026/flavio-afirma-que-nenhum-candidato-vai-cortar-o-bolsa-familia/"], ["Metrópoles", "https://www.metropoles.com/brasil/flavio-evita-indicar-posicao-sobre-6x1-e-volta-a-defender-pec-alternativa"], ["CartaCapital (obstrução)", "https://www.cartacapital.com.br/politica/flavio-bolsonaro-interrompe-campanha-presidencial-para-tentar-barrar-pec-da-6x1/"], ["Agência Gov (Regra de Proteção)", "https://agenciagov.ebc.com.br/noticias/202505/portaria-do-mds-atualiza-regra-de-protecao-do-bolsa-familia"], ["TVT (ligada a sindicatos)", "https://tvtnews.com.br/plano-de-flavio-bolsonaro-preve-bolsa-familia-temporario-e-reducao-da-protecao-social/"], ["Gazeta do Povo (auxílio)", "https://www.gazetadopovo.com.br/economia/como-o-brasil-derrubou-a-extrema-pobreza-a-minima-historica-em-2020-e-o-que-houve-depois/"], ["Correio Braziliense (Auxílio Brasil)", "https://www.correiobraziliense.com.br/politica/2022/11/5055005-pt-vai-fazer-pente-fino-no-cadastro-de-beneficiarios-do-auxilio-brasil.html"], S.imirante]
+  },
+  caiado: { resumo: "[proposta] Preservar as transferências, atualizar cadastros e combater fraudes; saída gradual para quem consegue emprego formal, com creche e intermediação de mão de obra. Mantém a regra do mínimo e não propõe reforma da Previdência.", obstaculo: "Sem custo estimado.", fontes: [S.renda, S.caiadoPdf] },
+  zema: { resumo: "[proposta] Bolsa Família condicionado à busca de emprego ou qualificação, bônus de R$ 5 mil para a família que sair do programa, R$ 1 mil por recém-nascido em fundo, reforma ampla da Previdência e mínimo só pela inflação.", obstaculo: "A reforma da Previdência exige PEC; o bônus não tem custo estimado.", fontes: [S.renda] },
+  cury: { resumo: "[proposta] Manter o benefício por um período para quem assinar carteira ou abrir microempresa, mínimo com inflação mais 1% e regularização de 5 milhões de moradias.", obstaculo: "Sem custo estimado.", fontes: [S.renda, S.curyEM] },
+  renan: { resumo: "[proposta] Extinguir o Bolsa Família e substituí-lo por “Frentes Cidadãs” de trabalho remunerado, corrigir benefícios só pela inflação, capitalização e “desfavelização” em 10 anos.", obstaculo: "O BPC de um mínimo está na Constituição; as Frentes Cidadãs exigem gerir trabalho público para milhões de adultos [inferência].", fontes: [S.renanAB, ["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/renan-santos-propoe-desfavelizacao-superpresidios-e-fim-do-bolsa-familia/"]] }
+},
+instituicoes: {
+  lula: {
+    proposta: "[proposta] Regular as plataformas digitais “garantindo liberdade de expressão”, criar um Conselho Nacional pela Soberania Digital e fazer da soberania um eixo do plano.",
+    concreto: "Conselho Nacional pela Soberania Digital; regulação de plataformas como objetivo declarado.",
+    vago: "O conteúdo da regulação e como ela se encaixa na decisão do STF que redefiniu a responsabilidade das plataformas; crítica ao modelo de emendas sem alternativa.",
+    custo: "Não informado (propostas institucionais, sem custo direto relevante descrito).",
+    exige: "Lei aprovada no Congresso, que engavetou o PL 2630 em 2024. Por isso o caminho regulatório tem passado pelo STF.",
+    evidencia: "[fato] Índice de percepção da corrupção: 35 pontos em 2025 (107º lugar), contra 38 em 2022. É um índice de percepção, com variação pequena.",
+    historico: "[fato] Indicou Gonet à PGR fora da lista tríplice, como Bolsonaro fez com Aras. [fato e alegação] Cerca de 62,5% dos descontos indevidos do INSS de 2019–24 ocorreram no governo Lula, que também interrompeu o esquema e ressarciu mais de 4 milhões de aposentados; a CPMI terminou sem relatório. No caso Master, Jaques Wagner foi alvo de operação; pagamentos ligados a Lewandowski e Mantega aparecem em fontes secundárias, e todos negam [alegação].",
+    ganha: "[opinião] Para os defensores, o combate à desinformação.",
+    perde: "[opinião] Para os críticos, a liberdade de expressão fica em risco.",
+    riscos: "Relação cooperativa com um STF sob desconfiança recorde; passivos do INSS e do Master atingindo aliados.",
+    fontes: [["O Tempo", "https://www.otempo.com.br/eleicoes/2026/presidentes/2026/8/25/plano-de-governo-de-lula-a-reeleicao-tem-soberania-como-eixo-controle-fiscal-e-propostas-amplas"], ["Brasil de Fato (à esquerda)", "https://www.brasildefato.com.br/2024/04/10/lira-anuncia-grupo-para-propor-nova-versao-do-pl-das-fake-news/"], ["CNN Brasil (Gonet)", "https://www.cnnbrasil.com.br/politica/lula-repete-bolsonaro-e-ignora-lista-de-associacao-ao-indicar-gonet-para-chefiar-a-pgr/"], ["Metrópoles/CGU", "https://www.metropoles.com/brasil/cgu-apontou-alta-de-142-em-2-anos-nos-descontos-indevidos-do-inss"], ["Agência Brasil (CPMI)", "https://agenciabrasil.ebc.com.br/politica/noticia/2026-03/cpmi-do-inss-termina-sem-relatorio-final"], ["Wikipedia EN (Master)", "https://en.wikipedia.org/wiki/Banco_Master_scandal"], ["TI Brasil", "https://transparenciainternacional.org.br/posts/brasil-repete-pior-posicao-e-segunda-pior-nota-no-indice-de-percepcao-da-corrupcao/"]]
+  },
+  flavio: {
+    proposta: "[proposta] Anistia “ampla, geral e irrestrita” aos condenados do 8 de Janeiro ou, se o Congresso não aprovar, indulto; indicar ao STF ministros “contra o aborto, contra as drogas”; fim da reeleição, com mandato único para si; impeachment de Moraes.",
+    concreto: "Anistia ou indulto, perfil das indicações ao STF e mandato único.",
+    vago: "Como “reequilibrar os Poderes” além da anistia.",
+    custo: "Não informado (propostas institucionais, sem custo direto relevante descrito).",
+    exige: "Anistia: Congresso, onde a derrubada do veto da Dosimetria (49 a 24 no Senado) mostra maioria para reduzir penas, não necessariamente para anistiar. Indulto: tende a ser anulado, como a graça a Daniel Silveira em 2023 [fato de base não reverificado]. Impeachment de ministro: 54 senadores.",
+    evidencia: "[fato] Desconfiança no STF em 48%, recorde desde 2012. [fato – declaração de 2025] Flávio disse que o candidato da direita teria de indultar Jair Bolsonaro e “garantir que o STF não o derrube”.",
+    historico: "[alegação] Investigado pela PF no STF no caso “Dark Horse”: mensagens indicam negociação de até US$ 24 milhões com Vorcaro, do Master, para um filme, com ao menos US$ 10,6 milhões transferidos. Defesa: “patrocínio privado para um filme privado”, sem contrapartidas. Não há denúncia. Rachadinhas: provas anuladas pelo STJ, sem julgamento de mérito.",
+    ganha: "Condenados do 8 de Janeiro; [opinião] para a campanha, o equilíbrio entre os Poderes.",
+    perde: "[opinião] Para os críticos, o Estado de Direito; um colunista da Gazeta do Povo (centro-direita) pergunta se ele “só quer a anistia”.",
+    riscos: "Embate com o STF que julgará as próprias medidas; investigação do Master em curso.",
+    fontes: [["Gazeta do Povo (STF)", "https://www.gazetadopovo.com.br/eleicoes/2026/flavio-aposta-em-mudancas-no-stf-para-recuperar-credibilidade-da-corte/"], ["Gazeta do Povo (mandato único)", "https://www.gazetadopovo.com.br/eleicoes/2026/flavio-bolsonaro-promete-mandato-unico-para-destravar-apoios-e-a-sucessao-de-2030/"], ["O Tempo (2025)", "https://www.otempo.com.br/politica/congresso/2025/6/15/candidato-da-direita-em-2026-tera-que-sustentar-indulto-a-bolsonaro-no-stf-diz-flavio"], ["Bloomberg Línea", "https://bloomberglinea.com.br/brasil/flavio-leva-a-reta-final-da-campanha-ao-embate-com-o-stf-e-ao-impeachment-de-moraes"], ["Gazeta do Povo (coluna)", "https://www.gazetadopovo.com.br/vozes/renan-ramalho/flavio-pretende-restaurar-o-equilibrio-entre-os-poderes-ou-so-quer-a-anistia/"], ["CNN Brasil (Dark Horse)", "https://www.cnnbrasil.com.br/politica/pf-mostra-conversas-de-flavio-com-vorcaro-sobre-recursos-para-dark-horse/"], ["CartaCapital (veículo crítico)", "https://www.cartacapital.com.br/politica/flavio-se-enrola-e-nao-explica-escandalo-dark-horse/"]]
+  },
+  caiado: { resumo: "[proposta] STF com idade mínima de 60 anos e mandato de 12; fim da reeleição, inclusive para o mandato iniciado em 2027; voto distrital misto.", obstaculo: "Exige PECs (3/5 em dois turnos nas duas Casas).", fontes: [S.caiadoCF] },
+  zema: { resumo: "[proposta] Permitir o impeachment de ministros do STF pelo Senado, com tom duro contra a Corte (“os intocáveis”).", obstaculo: "Impeachment exige 54 senadores e depende do presidente do Senado.", fontes: [S.folhas] },
+  cury: { resumo: "[proposta] Semipresidencialismo, mandato de 8 anos no STF e reforma do Judiciário.", obstaculo: "Mudar o sistema de governo exige PEC.", fontes: [S.curyTerra, S.folhas] },
+  renan: { resumo: "[proposta] STF restrito ao controle abstrato, mandato de 8 anos, limites a decisões monocráticas e afastamento de Moraes e Toffoli.", obstaculo: "Exige PEC; depende do Congresso e da reação do próprio STF.", fontes: [["Correio Braziliense", "https://www.correiobraziliense.com.br/politica/2026/09/7501450-precisamos-afastar-o-ministro-do-stf-diz-renan-santos.html"]] }
+},
+externa: {
+  lula: {
+    proposta: "[proposta] Soberania e diversificação: manter o BRICS, implementar o acordo Mercosul–UE e negociar com os EUA.",
+    concreto: "[fato] Acordo Mercosul–UE em vigor provisório desde 01/05/2026. O governo negociou a retirada de Moraes da lista Magnitsky.",
+    vago: "Estratégia para reverter as tarifas americanas.",
+    custo: "Não informado.",
+    exige: "Sobretudo o Executivo; as tarifas dependem de Washington.",
+    evidencia: "[fato] Tarifas de até 37,5% desde julho de 2026, sobre 19% das exportações, com nova justificativa. [inferência] A diversificação reduz a dependência dos EUA, mas não impediu as tarifas.",
+    historico: "Lula condenou a captura de Maduro pelos EUA. [opinião] Críticos citam a relação com Caracas como custo de imagem; defensores citam o acordo com a UE como o maior ganho comercial em décadas.",
+    ganha: "Exportadores para a União Europeia, com o acordo [inferência].",
+    perde: "Exportadores atingidos pelas tarifas americanas, enquanto durar o atrito [inferência].",
+    riscos: "Tarifas dos EUA mantidas e atrito com Washington.",
+    fontes: [["Senado Notícias", "https://www12.senado.leg.br/noticias/materias/2026/03/17/congresso-promulga-acordo-mercosul-uniao-europeia"], ["Agência Brasil (Maduro)", "https://agenciabrasil.ebc.com.br/internacional/noticia/2026-01/lula-condena-ataque-dos-eua-venezuela-e-cobra-resposta-da-onu"], S.abEUA, ["O Tempo", "https://www.otempo.com.br/eleicoes/2026/presidentes/2026/8/25/plano-de-governo-de-lula-a-reeleicao-tem-soberania-como-eixo-controle-fiscal-e-propostas-amplas"]]
+  },
+  flavio: {
+    proposta: "[proposta] Entrar na OCDE; aproximar-se de EUA, Argentina e Israel, com embaixada em Jerusalém; relação “pragmática” com a China; questionar o BRICS; “libertar das amarras do Mercosul” (campanha).",
+    concreto: "Entrada na OCDE e embaixada em Jerusalém.",
+    vago: "O plano não menciona BRICS nem Mercosul.",
+    custo: "Não informado.",
+    exige: "A embaixada depende só do Executivo [inferência]. Sair do BRICS não tem precedente.",
+    evidencia: "A tese de que o alinhamento com Trump traria alívio tarifário não está demonstrada: as tarifas de 2025 citaram o processo contra Jair Bolsonaro, e as de 2026 citam “práticas desleais”.",
+    historico: "Flávio celebrou a captura de Maduro. Eduardo Bolsonaro, acusado de instigar as sanções, foi condenado pelo STF.",
+    ganha: "Relações com EUA, Israel e Argentina [inferência].",
+    perde: "Possível atrito com a China, principal parceiro comercial, e com compradores árabes de proteína animal [inferência].",
+    riscos: "Alívio tarifário não garantido; atrito com a China e o mundo árabe.",
+    fontes: [["ND Mais", "https://ndmais.com.br/mundo/o-programa-de-flavio-bolsonaro-nao-menciona-brics-nem-mercosul-o-que-o-candidato-do-pl-propoe-para-o-brasil-no-mundo/"], ["CNN Brasil (China)", "https://www.cnnbrasil.com.br/eleicoes/relacao-com-a-china-vai-ser-sempre-pragmatica-economicamente-diz-flavio/"], ["Estado de Minas (Maduro)", "https://www.em.com.br/politica/2026/01/7325264-flavio-bolsonaro-diz-que-lula-sera-delatado-apos-captura-de-maduro.html"], S.abEUA]
+  },
+  caiado: { resumo: "Posição sobre política externa não encontrada na pesquisa.", obstaculo: "Lacuna registrada no relatório.", fontes: [] },
+  zema: { resumo: "[proposta] Sair do BRICS (“clube ideológico”, pela presença do Irã) e abertura comercial gradual.", obstaculo: "Sair do BRICS não tem precedente.", fontes: [["O Povo", "https://www.opovo.com.br/noticias/politica/2026/09/20/zema-propoe-saida-do-brics-e-reducao-de-supersalarios-e-de-impostos.html"], S.folhas] },
+  cury: { resumo: "Posição sobre política externa não encontrada na pesquisa.", obstaculo: "Lacuna registrada no relatório.", fontes: [] },
+  renan: { resumo: "Posição sobre política externa não encontrada na pesquisa.", obstaculo: "Lacuna registrada no relatório.", fontes: [] }
+},
+ambiente: {
+  lula: {
+    proposta: "[proposta] Desmatamento zero (líquido) até 2030, nova NDC, recuperação de pastagens e demarcação de terras indígenas; ao mesmo tempo, exploração da Margem Equatorial como “parte da transição”. Não pretende vender os Correios.",
+    concreto: "Meta com prazo (2030); Plano Safra 2026/27 de R$ 610,3 bi; Novo PAC; Correios estatais.",
+    vago: "Como conciliar a meta climática com a expansão do petróleo.",
+    custo: "Equalização do Safra: R$ 18,1 bi (+35% pela Selic); aporte de US$ 1 bi ao TFFF. Correios: prejuízo de R$ 8,5 bi em 2025 e R$ 12 bi emprestados com garantia da União.",
+    exige: "O Congresso derrubou 52 de 63 vetos à Lei do Licenciamento e a PEC 48 do marco temporal avança. A agenda depende mais do STF e da fiscalização do que do Legislativo [inferência].",
+    evidencia: "[fato] PRODES 2025: 5.731 km² (−12%). Alertas do DETER −36,9%, menor nível desde 2016, mas +32,5% em Roraima e Cerrado só −7,8%. Queda de ~51% desde 2022 [calc]. A atribuição causal não foi quantificada.",
+    historico: "Fundo Amazônia, paralisado em 2019–22, voltou a bater recordes. O Novo PAC reporta R$ 944,8 bi executados, número do próprio governo sem auditoria independente localizada.",
+    ganha: "Exportadores para mercados exigentes e comunidades indígenas com demarcação [inferência].",
+    perde: "O Tesouro, com os Correios como dreno fiscal; produtores do Cerrado expostos à EUDR, que atinge também o desmatamento legal [inferência].",
+    riscos: "Contradição não resolvida entre meta climática e petróleo; Correios; EUDR.",
+    fontes: [S.ppi, ["INPE (PDF)", "https://data.inpe.br/wp-content/uploads/sites/3/2026/03/A-taxa-consolidada-de-desmatamento-para-os-nove-estados-da-Amazonia-Legal-para-2025-e-de-5.731-km2.pdf"], ["Agência Brasil (DETER)", "https://agenciabrasil.ebc.com.br/meio-ambiente/noticia/2026-08/desmatamento-na-amazonia-cai-3687-no-ultimo-ano"], ["Canal Rural (Safra)", "https://www.canalrural.com.br/agricultura/agronegocio/governo-confirma-r-181-bilhoes-para-equalizacao-de-juros-do-plano-safra"], ["Agência Gov (PAC)", "https://agenciagov.ebc.com.br/noticias/202605/novo-pac-ja-executou-89-5-dos-recursos-previstos-ate-2026-afirma-miriam-belchior"], ["IstoÉ Dinheiro (Correios)", "https://istoedinheiro.com.br/correios-prejuizo-2025"]]
+  },
+  flavio: {
+    proposta: "[proposta] Zerar o desmatamento ilegal até 2029, com foco em grilagem e garimpo; acabar com sobreposições entre Ibama, Funai e ICMBio; flexibilizar o licenciamento; “autonomia” indígena para explorar terras; petróleo e gás com fracking; seguro rural e securitização de dívidas.",
+    concreto: "Meta com prazo (2029); CAR com pagamento por serviços ambientais; fracking; privatização dos Correios, agora com “reestruturação prévia”.",
+    vago: "Pagamento por serviços ambientais e seguro rural sem desenho. [opinião] O plano não cita a mudança do clima nem metas do Acordo de Paris ou o Fundo Amazônia.",
+    custo: "Seguro rural e securitização de dívidas sem custo estimado; a equalização do Safra já soma R$ 18,1 bi.",
+    exige: "Licenciamento e terras indígenas são arbitrados pelo STF; a EUDR é externa e não depende do governo.",
+    evidencia: "“Ilegal zero” permite a conversão legal no Cerrado, enquanto a EUDR barra produtos de áreas desmatadas legal ou ilegalmente depois de 2020 [inferência].",
+    historico: "[fato] PRODES de 10.129 km² em 2019 e maior nível desde 2006 em 2021. Fundo Amazônia paralisado em 2019–22 após Noruega e Alemanha congelarem repasses. Eletrobras privatizada.",
+    ganha: "Produtores médios e grandes, setor de óleo e gás e setores que dependem de licenciamento [inferência].",
+    perde: "Comunidades indígenas, se a “autonomia” virar exploração sem consulta; exportadores para a UE, se a rastreabilidade não avançar [inferência].",
+    riscos: "Doadores do Fundo Amazônia e do TFFF condicionam recursos a resultados [inferência]; EUDR.",
+    fontes: [["planodegoverno2026 (Flávio)", "https://planodegoverno2026.com.br/candidatos/presidente/flavio-bolsonaro/"], S.coop, S.ppi, ["OPEB (viés crítico)", "https://opeb.org/2026/09/27/peb-nas-urnas-2026-flavio-bolsonaro-pl/"], ["InfoAmazonia", "https://infoamazonia.org/en/2022/02/15/prodes-and-deter-systems-against-deforestation-amazon/"], S.tsEst]
+  },
+  caiado: { resumo: "[proposta] Eixo amazônico focado em adaptação, Plano Safra quinquenal, rastreabilidade nacional, seguro rural público-privado; contra privatizar toda a Petrobras.", obstaculo: "Sem compromisso de fim do desmatamento ilegal; Safra plurianual sem custo. A rastreabilidade é a proposta mais aderente à EUDR.", fontes: [S.ppi, S.coop] },
+  zema: { resumo: "[proposta] Desmatamento ilegal zero sem prazo, Petrobras fatiada e privatizada, licenciamento simplificado e posse e porte de armas em toda a propriedade rural.", obstaculo: "A EUDR veta também o desmatamento legal depois de 2020.", fontes: [S.ppi, S.tsEst] },
+  cury: { resumo: "[proposta] 10 mil agroindústrias e polos de proteína no Nordeste e no Matopiba; Petrobras continua estatal.", obstaculo: "Sem custo estimado.", fontes: [S.coop, S.tsEst] },
+  renan: { resumo: "[proposta] Mineração em terras indígenas, repressão a invasões, nuclear e hidrogênio na matriz. Não trata o desmatamento como problema.", obstaculo: "Mineração em terra indígena exige lei complementar (art. 231).", fontes: [S.ppi, S.coop] }
+}
+};
+
+var PROMESSAS = {
+  economia: [
+    { q: ["lula"], p: "Manter o arcabouço, o ganho real do mínimo e os pisos sem cortar nada", r: "O mínimo de 2027 consome +R$ 54,6 bi, 83% das discricionárias livres [calc]; o governo admite falta de R$ 10,9 bi para os pisos; a IFI diz que o arcabouço perde efetividade depois de 2028." },
+    { q: ["lula"], p: "Dívida abaixo de 80% do PIB em 2030", r: "Está em 82,9% e a IFI projeta 86,4% em 2027; o plano não descreve medidas desse tamanho." },
+    { q: ["lula"], p: "Tarifa zero no transporte (meta fora do programa)", r: "R$ 100–110 bi por ano, mais que todas as discricionárias livres de 2027 (R$ 65,7 bi) [calc]." },
+    { q: ["lula"], p: "Isenção do IR até R$ 5 mil sem custo para a dívida", r: "Depende de a tributação da alta renda render o previsto; se render menos, perde a trajetória da dívida [inferência]." },
+    { q: ["lula", "flavio"], p: "“Crédito mais barato”", r: "A Selic é do BC autônomo; o prêmio de risco depende de uma âncora fiscal que nenhum dos dois quantifica." },
+    { q: ["flavio"], p: "Corte de R$ 190 bi cortando ministérios e cargos", r: "A estrutura administrativa é pequena perto de Previdência, pessoal e BPC; sem tocar nos aposentados, as rubricas não aparecem." },
+    { q: ["flavio"], p: "IVA de 20%", r: "Perda de ~29% do IBS/CBS [calc], ou fim de exceções que o Congresso criou; o IBS é de estados e municípios." },
+    { q: ["flavio"], p: "Crescer 4% ao ano", r: "O Focus projeta 1,5% para 2027 e o FMI estima potencial de ~2,5%." },
+    { q: ["flavio"], p: "Cortar impostos e gastos ao mesmo tempo", r: "Se os cortes de tributos vierem antes, o primário piora, como nas desonerações sem compensação." },
+    { q: ["zema"], p: "Privatizar a Petrobras “no primeiro dia” por MP", r: "Exige lei; tira do Tesouro dividendos que sustentaram o resultado de 2026." },
+    { q: ["cury"], p: "Crédito a 5–6% e déficit zero", r: "O subsídio de equalização é despesa do Tesouro com a Selic entre 12% e 14%." },
+    { q: ["caiado"], p: "Suspender indexações sem mexer no mínimo", r: "O mínimo é a principal indexação das despesas obrigatórias." },
+    { q: ["renan"], p: "Fusão de municípios e capitalização", r: "Custo de transição da capitalização; as fusões exigem plebiscitos e lei." }
+  ],
+  seguranca: [
+    { q: ["lula"], p: "Ministério da Segurança", r: "Prometido em 2022 e não criado; condicionado a uma PEC parada no Senado." },
+    { q: ["lula"], p: "Coordenação federal que reduz o crime", r: "As polícias são estaduais; especialistas atribuem a queda dos homicídios a fatores estaduais, facções e demografia, mais que a políticas federais." },
+    { q: ["flavio", "caiado", "zema"], p: "Maioridade de 16 anos e fim da progressão para hediondos", r: "PEC (art. 228) e possível cláusula pétrea; o HC 82.959 já derrubou o regime integralmente fechado." },
+    { q: ["flavio", "caiado", "zema", "renan"], p: "Facções como terroristas “resolvem” o crime organizado", r: "Exige mudar a Lei 13.260; os EUA já designaram PCC e CV; os efeitos práticos são financeiros e diplomáticos, não operacionais." },
+    { q: ["renan"], p: "300 a 500 mil vagas prisionais", r: "Dezenas de bilhões sem estimativa." }
+  ],
+  saude: [
+    { q: ["lula"], p: "Ampliar Farmácia Popular e especialistas mantendo pisos e arcabouço", r: "O próprio governo projeta que faltará dinheiro para os pisos em 2027 e não diz como resolverá." },
+    { q: ["flavio"], p: "Corrigir a tabela SUS junto com um corte de 1,5% do PIB", r: "A correção não tem custo estimado e disputa o mesmo orçamento comprimido." }
+  ],
+  educacao: [
+    { q: ["lula"], p: "111 novos IFs e tempo integral", r: "Sem custo estimado; a execução cabe a estados e municípios." },
+    { q: ["flavio"], p: "Vouchers federais para creche privada", r: "Exigem lei, mexem nas regras do Fundeb e dependem da rede municipal; sem custo estimado." }
+  ],
+  social: [
+    { q: ["lula"], p: "Fim da 6x1 “sem prejuízo”", r: "Custo para empregadores de 7,84% (Ipea) a R$ 267 bi/ano (CNI, cenário extremo); alcança só celetistas; depende de 49 senadores." },
+    { q: ["lula"], p: "Ampliar Bolsa Família e preservar o BPC sem proposta de contenção", r: "O BPC para pessoas com deficiência sobe ~25% no PLOA 2027, puxado pela judicialização; o RGPS teve déficit de R$ 317 bi em 2025." },
+    { q: ["flavio"], p: "Porta de saída com cashback e microcrédito dentro de um plano de corte", r: "É parecida com a Regra de Proteção já existente; cashback e microcrédito tendem a aumentar o gasto no curto prazo [inferência]." },
+    { q: ["flavio"], p: "2,5 milhões de moradias junto com corte de 1,5% do PIB", r: "Sem custo estimado; disputa o mesmo orçamento comprimido." }
+  ],
+  instituicoes: [
+    { q: ["lula"], p: "Regular as plataformas digitais", r: "O Congresso engavetou o PL 2630 em 2024; o caminho tem passado pelo STF, e críticos veem risco à liberdade de expressão." },
+    { q: ["flavio"], p: "Anistia ou indulto ao 8 de Janeiro", r: "O Congresso aprovou redução de penas, não anistia; um indulto desse tipo já foi anulado pelo STF (caso Silveira)." }
+  ],
+  externa: [
+    { q: ["lula"], p: "Soberania e diversificação bastam diante das tarifas dos EUA", r: "A diversificação reduz a dependência, mas não impediu as tarifas de até 37,5% em vigor desde julho [inferência]." },
+    { q: ["flavio"], p: "Alinhamento com Trump acaba com as tarifas", r: "As tarifas de 2025 citaram o processo de Jair Bolsonaro; as de 2026 citam “práticas desleais”; nada garante o alívio." }
+  ],
+  ambiente: [
+    { q: ["lula"], p: "Desmatamento zero e mais petróleo", r: "A contradição entre a meta climática e a Margem Equatorial não está resolvida no plano." },
+    { q: ["flavio", "zema"], p: "Desmatamento ilegal zero atende ao mercado europeu", r: "A EUDR veta também o desmatamento legal depois de 2020." }
+  ]
+};
+
+/* Critérios objetivos. Valor null = relatório não dá base. Evidência segue a coluna “Evidência” das tabelas-síntese. */
+var LENS_DEF = {
+  custo: { nome: "Proposta tem custo e fonte explicitados", curto: "Custo e fonte",
+    opts: [["sim", "sim", 10], ["parcial", "parcial", 5], ["nao", "não", 0]] },
+  pec: { nome: "Não depende de PEC ou maioria qualificada", curto: "PEC/maioria qualificada",
+    opts: [["nao", "não depende", 10], ["parcial", "depende em parte", 5], ["sim", "depende", 0]] },
+  evid: { nome: "Evidência empírica disponível", curto: "Evidência",
+    opts: [["favor", "a favor", 10], ["mista", "mista", 5], ["contra", "contra", 0]] }
+};
+var LENS_KEYS = ["custo", "pec", "evid"];
+function L(c, p, e) { return { custo: c || [null, "O relatório não traz informação sobre custo nesta área."], pec: p || [null, "O relatório não indica a exigência legislativa nesta área."], evid: e || [null, "O relatório não aponta evidência empírica sobre esta proposta."] }; }
+var RANK = "Ranking dos Políticos: nenhum dos seis planos estabiliza a dívida";
+var LENS = {
+  economia: {
+    lula: L(["parcial", "Custo do mínimo (+R$ 54,6 bi) estimado e fonte da isenção do IR declarada (alta renda); sem fonte para fechar 2027 nem para a tarifa zero."], ["nao", "A maior parte do programa já é lei ou exige só manutenção."], ["contra", RANK + "; hiato de 3,3% do PIB; IFI projeta dívida acima de 100% em 2032."]),
+    flavio: L(["parcial", "Total do corte declarado (R$ 190 bi), mas sem rubricas; IVA de 20% sem compensação descrita."], ["parcial", "Corte crível exige PEC sobre obrigatórias [inferência]; IVA exige lei complementar; privatizações, lei."], ["contra", RANK + "; hiato de 3,6% do PIB; meta de 4% acima do potencial estimado pelo FMI."]),
+    caiado: L(["nao", "Custo não quantificado."], ["sim", "Propõe uma “PEC fiscal emergencial”."], ["contra", RANK + "; hiato de 3,0% do PIB."]),
+    zema: L(["nao", "Custo não quantificado; “choque fiscal” sem número."], ["sim", "Reforma da Previdência exige PEC; privatizações, lei."], ["contra", RANK + "; hiato de 2,9% do PIB."]),
+    cury: L(["nao", "Custo não quantificado; subsídio ao crédito sem estimativa."], null, ["contra", RANK + "; hiato de 2,9% do PIB."]),
+    renan: L(["parcial", "Campanha estima R$ 1,1 tri de economia, sem validação independente; outras propostas sem custo."], ["sim", "Desindexar o BPC e desvincular pisos exige PEC; o BPC de um mínimo está na Constituição."], ["contra", RANK + "; hiato de 3,5% do PIB."])
+  },
+  seguranca: {
+    lula: L(["nao", "Orçamento não detalhado; só o programa de R$ 10 bi que já existe."], ["parcial", "O ministério foi condicionado à PEC da Segurança; o resto já é lei."], ["mista", "Mortes violentas em mínima histórica, mas com mortes “ocultas”; queda iniciada em 2018; letalidade policial alta."]),
+    flavio: L(["nao", "Nenhuma medida tem custo estimado pela campanha."], ["parcial", "Maioridade exige PEC; terrorismo, maioria simples; armas, decreto e lei."], ["contra", "Evidência sobre armas e homicídios majoritariamente contrária, mas contestada; sem estudo do modelo Bukele no Brasil."]),
+    caiado: L(null, ["sim", "Maioridade penal de 16 anos exige PEC (art. 228)."], ["mista", "Goiás: homicídios −52% (fonte estadual), seguindo a tendência nacional; letalidade policial acima da média."]),
+    zema: L(["nao", "Custos não estimados."], ["sim", "Redução da maioridade exige PEC."], null),
+    cury: L(["nao", "Custos não estimados."], ["nao", "O ministério pode ser criado por MP ou lei."], null),
+    renan: L(["nao", "300–500 mil vagas: dezenas de bilhões sem estimativa."], null, null)
+  },
+  saude: {
+    lula: L(["nao", "Expansão sem custo estimado; pisos sem espaço em 2027."], ["nao", "Programas existentes; não exige PEC."], ["mista", "Vacinação recuperada; produção de cirurgias alegada sem auditoria."]),
+    flavio: L(["nao", "Tabela SUS sem custo estimado."], ["nao", "Não exige PEC; questão de LGPD."], null),
+    caiado: L(["nao", "Nenhum plano oposicionista detalha custo em saúde."], null, null),
+    zema: L(["nao", "Nenhum plano oposicionista detalha custo em saúde."], null, null),
+    cury: L(["nao", "Nenhum plano oposicionista detalha custo em saúde."], null, null),
+    renan: L(["nao", "Nenhum plano oposicionista detalha custo em saúde."], ["sim", "Desvincular o piso da saúde exige PEC."], null)
+  },
+  educacao: {
+    lula: L(["parcial", "Pé-de-Meia ~R$ 12,5 bi/ano; 111 IFs e integral sem custo."], ["nao", "Não exige PEC."], ["mista", "Alfabetização de 56% para 66% e estudo do Insper favorável ao Pé-de-Meia; anos finais e ensino médio abaixo da meta."]),
+    flavio: L(["nao", "Nenhuma proposta tem custo estimado."], ["nao", "Vouchers e mudança para o MCTI exigem lei ou MP, não PEC."], ["mista", "Cívico-militares: Cedeplar/UFMG sem efeito ou negativo; estudo de Goiás com ganhos, mas com seleção de alunos."]),
+    caiado: L(["nao", "Sem custo estimado."], null, null),
+    zema: L(["nao", "Sem custo estimado."], null, null),
+    cury: L(["nao", "Sem custo estimado."], null, null),
+    renan: L(["nao", "Sem custo estimado."], ["sim", "Desvincular o piso da educação exige PEC."], null)
+  },
+  social: {
+    lula: L(["parcial", "Custo do Bolsa Família (R$ 158,6 bi) e do reajuste (+R$ 22 bi) conhecidos; sem fonte para a ampliação nem contenção do BPC."], ["parcial", "A 6x1 é PEC e depende de 49 senadores; os demais programas já existem."], ["favor", "Pobreza em mínima histórica em 2024; o IBGE atribui à ocupação e aos benefícios, sem decomposição."]),
+    flavio: L(["nao", "Sem custo nem fonte; tende a aumentar gasto no curto prazo."], ["parcial", "A PEC 12/2026 do contrato por hora exige 3/5; o resto, não."], null),
+    caiado: L(null, null, null),
+    zema: L(["nao", "Bônus de R$ 5 mil sem custo estimado."], ["sim", "Reforma da Previdência exige PEC."], null),
+    cury: L(null, null, null),
+    renan: L(["parcial", "Campanha estima R$ 1,1 tri de economia, sem validação; Frentes Cidadãs sem custo."], ["sim", "Desindexar benefícios e mexer no BPC exige PEC."], null)
+  },
+  instituicoes: {
+    lula: L(null, ["nao", "Regulação de plataformas exige lei ordinária, não PEC."], null),
+    flavio: L(null, ["parcial", "Anistia por lei; fim da reeleição por PEC; impeachment de ministro exige 54 senadores."], null),
+    caiado: L(null, ["sim", "Mandato no STF e fim da reeleição exigem PEC."], null),
+    zema: L(null, ["sim", "Impeachment de ministro exige 54 senadores (2/3)."], null),
+    cury: L(null, ["sim", "Semipresidencialismo e mandato no STF exigem PEC."], null),
+    renan: L(null, ["sim", "Restringir o STF exige PEC."], null)
+  },
+  externa: {
+    lula: L(null, ["nao", "Política externa é conduzida pelo Executivo."], null),
+    flavio: L(null, ["nao", "OCDE e embaixada dependem do Executivo [inferência]."], null),
+    caiado: L(null, null, null), zema: L(null, null, null), cury: L(null, null, null), renan: L(null, null, null)
+  },
+  ambiente: {
+    lula: L(["parcial", "Safra (R$ 18,1 bi) e TFFF (US$ 1 bi) com valor; fiscalização e Correios sem plano de custo."], ["nao", "Não exige PEC; depende de fiscalização e do STF."], ["favor", "Desmatamento −51% de 2022 a 2025 [calc]; atribuição causal não quantificada."]),
+    flavio: L(["nao", "Seguro rural e securitização sem custo estimado."], ["nao", "Não exige PEC; licenciamento e terras indígenas arbitrados pelo STF."], ["contra", "Histórico do campo: desmatamento alto em 2019–22 (coluna “Evidência” do relatório)."]),
+    caiado: L(["nao", "Safra plurianual sem custo estimado."], null, null),
+    zema: L(null, null, null), cury: L(null, null, null),
+    renan: L(null, ["nao", "Mineração em TI exige lei complementar, não PEC."], null)
+  }
+};
+
+var FATOS = [
+  { t: "Condenações de Lula (Lava Jato)", f: "O STF declarou Curitiba incompetente por 8 a 3 (abr/2021) e reconheceu a suspeição de Moro; os processos reiniciados no DF terminaram por prescrição e rejeição de denúncia.", a: "PT: “Lula inocente”; a suspeição contamina a produção das provas.", b: "Críticos: “não foi inocentado”; as condenações foram confirmadas no TRF-4 e no STJ antes da mudança de entendimento.", n: "Anulação por vícios processuais, sem novo julgamento de mérito; não há condenação vigente.", s: [["STF", "https://portal.stf.jus.br/noticias/verNoticiaDetalhe.asp?idConteudo=464261&ori=1"], ["Conjur", "https://conjur.com.br/2022-jan-28/justica-df-declara-prescricao-arquiva-acao-triplex-guaruja/"], ["PT", "https://pt.org.br/lula-inocente-stf-anula-condenacoes-e-julga-moro-incompetente/"], ["CNN Brasil", "https://www.cnnbrasil.com.br/politica/fatos-primeiro-livre-para-disputar-a-eleicao-lula-nao-foi-inocentado-de-todas-as-acusacoes/"]] },
+  { t: "Rachadinhas (Flávio)", f: "O STJ anulou as quebras de sigilo (fev/2021) e todas as decisões do juiz por foro (nov/2021, 4 a 1); o MPRJ pediu a anulação da denúncia.", a: "Defesa: nulidades reconhecidas e perseguição; ele sempre negou.", b: "Críticos: arquivamento por competência, não por inocência.", n: "Nem condenado nem absolvido; provas anuladas; paralelo estrutural com o caso Lula.", s: [["Conjur", "https://conjur.com.br/2021-nov-09/stj-anula-atos-juiz-flavio-bolsonaro-rachadinhas/"]] },
+  { t: "Mensalão (AP 470)", f: "24 condenados; em 2014, 8 foram absolvidos de quadrilha por 6 a 5, mantidas as condenações por corrupção.", a: "Defesa: absolvição parcial nos infringentes.", b: "Críticos: núcleo do PT condenado por corrupção.", n: "Esquema reconhecido pelo STF; Lula não foi réu (não verificado em fonte nesta pesquisa).", s: [["TV Câmara", "https://www.camara.leg.br/tv/427795-stf-absolve-oito-condenados-do-mensalao-do-crime-de-formacao-de-quadrilha/"]] },
+  { t: "Orçamento secreto e emendas", f: "RP9 declarado inconstitucional em 19/12/2022, por 6 a 5; desde 2024 Dino impõe rastreabilidade às emendas Pix.", a: "Governistas: herança do governo Bolsonaro e de Lira.", b: "Oposição e Congresso: o volume de emendas continuou alto sob Lula; o STF interfere na prerrogativa orçamentária.", n: "Falta de transparência nos dois períodos.", s: [["Conjur", "https://www.conjur.com.br/2022-dez-19/maioria-stf-declara-inconstitucionalidade-orcamento-secreto/"], ["Agência Brasil", "https://agenciabrasil.ebc.com.br/justica/noticia/2024-08/por-unanimidade-stf-mantem-decisao-de-dino-que-suspendeu-emendas"]] },
+  { t: "Sigilos de 100 anos", f: "A CGU apontou “interpretação distorcida” da LAI no governo Bolsonaro; o governo Lula negou 1.339 pedidos por dados pessoais em 2023, contra 1.332 no último ano de Bolsonaro.", a: "Governo Lula: revisou abusos; a CGU contestou o Estadão.", b: "Oposição: Lula manteve a prática.", n: "Ambos usam o art. 31 da LAI; a disputa é sobre proporção e casos emblemáticos.", s: [["O Tempo", "https://www.otempo.com.br/politica/governo/governo-lula-impoe-sigilo-de-100-anos-a-1-339-pedidos-de-acesso-a-informacao-1.3352612"], ["CartaCapital", "https://www.cartacapital.com.br/politica/cgu-rebate-reportagem-do-estadao-que-aponta-imposicao-de-sigilo-de-100-anos-a-informacoes/"]] },
+  { t: "PGR fora da lista tríplice", f: "Aras (2019) e Gonet (2023) foram escolhidos fora da lista, que não tem previsão constitucional.", a: "—", b: "—", n: "Prática dos dois campos.", s: [["CNN Brasil", "https://www.cnnbrasil.com.br/politica/lula-repete-bolsonaro-e-ignora-lista-de-associacao-ao-indicar-gonet-para-chefiar-a-pgr/"]] },
+  { t: "Autonomia do BC", f: "A LC 179/2021 foi sancionada por Bolsonaro e julgada constitucional por 8 a 2 (ADI do PT e do PSOL).", a: "Direita: conquista institucional.", b: "Lula criticou o BC, mas indicou Galípolo dentro da lei.", n: "A lei está em vigor; nenhum dos dois planos propõe revogá-la, pelas fontes.", s: [["Conjur", "https://conjur.com.br/2021-ago-26/stf-maioria-considerar-constitucional-autonomia-bc/"]] },
+  { t: "Índice de percepção da corrupção", f: "35 (2018), 38 (2020–22), 36 (2023), 34 (2024), 35 (2025).", a: "Oposição: queda sob Lula.", b: "Governistas criticam a metodologia da Transparência Internacional.", n: "Variação pequena; é um índice de percepção; não sustenta nenhuma narrativa.", s: [["Agência Brasil", "https://agenciabrasil.ebc.com.br/geral/noticia/2024-01/com-36-pontos-brasil-cai-10-posicoes-em-ranking-que-mede-corrupcao"], ["TI Brasil", "https://transparenciainternacional.org.br/posts/brasil-repete-pior-posicao-e-segunda-pior-nota-no-indice-de-percepcao-da-corrupcao/"]] },
+  { t: "Fraude do INSS", f: "Descontos de R$ 706 mi (2022) para R$ 3,3 bi (2024); 59 inserções em massa de 2016 a 2024; CPMI sem relatório.", a: "Governo: o esquema começou antes, e ele interrompeu e ressarciu.", b: "Oposição: explodiu sob Lula; pediu indiciamento de Lulinha em relatório rejeitado.", n: "O salto foi em 2023–24; a porta foi aberta antes; não há prova pública contra Lulinha além do relatório rejeitado.", s: [["Exame", "https://exame.com/economia/inss-auditoria-identifica-59-insercoes-em-massa-de-descontos-entre-2016-e-2024/"]] },
+  { t: "Caso Master", f: "Liquidação e prisão de Vorcaro em 18/11/2025; pagamentos documentados a políticos de vários campos e a escritórios ligados a ministros do STF.", a: "Esquerda: “bancada do Master é de direita”.", b: "Direita: atinge Wagner, Mantega, Lewandowski e ministros do STF.", n: "Atinge todos os campos; não há crime provado contra os candidatos.", s: [["Wikipedia PT", "https://pt.wikipedia.org/wiki/Esc%C3%A2ndalo_do_Banco_Master"], ["Agência Pública", "https://apublica.org/2026/01/a-bancada-do-master-e-de-direita/"], ["Estado de Minas", "https://www.em.com.br/politica/2026/03/7371879-relacao-de-vorcaro-com-politicos-arrasta-nomes-de-direita-e-esquerda-para-escandalo-do-banco-master.html"]] },
+  { t: "Pandemia", f: "A Pfizer ofereceu vacinas em 14/08/2020 sem resposta e o contrato saiu em mar/2021; a CPI pediu indiciamentos; o auxílio emergencial levou a extrema pobreza a 2,3%.", a: "Defesa: cláusulas “assustadoras” da Pfizer, prioridade à transferência de tecnologia, o STF (ADI 6341) deu competência a estados e municípios.", b: "Crítica: cláusula semelhante aceita com a AstraZeneca; a ADI 6341 não impediu a União de agir; a CoronaVac foi desautorizada.", n: "Excesso de mortalidade: Brasil 186,9/100 mil, entre o Chile (108) e o México (325); estimativas de “mortes evitáveis” dependem do modelo.", s: [["Senado Notícias", "https://www12.senado.leg.br/noticias/materias/2021/05/13/representante-da-pfizer-confirma-governo-nao-respondeu-ofertas-feitas-em-agosto-de-2020"], ["CNN Brasil", "https://www.cnnbrasil.com.br/politica/2021/05/19/a-epoca-clausulas-da-pfizer-eram-assustadoras-diz-pazuello-a-cpi"], ["The Lancet (via resumo)", "https://www.thelancet.com/article/S0140-6736(21)02796-3/fulltext"]] },
+  { t: "Homicídios e armas", f: "Mortes violentas: 47.742 (2019), 50.033 (2020), 40.775 (2025); queda iniciada em 2018.", a: "Bolsonaristas: a queda ocorreu com mais armas.", b: "Governistas: controle de armas e ações contra facções.", n: "Queda de ~15% de 2019 a 2025 [calc] atravessa governos; a causalidade federal é fraca; as mortes “ocultas” relativizam 2023–24.", s: [["InfoMoney", "https://www.infomoney.com.br/brasil/mortes-violentas-no-brasil-caem-ao-menor-nivel-da-serie-historica-mostra-anuario/"]] },
+  { t: "Desmatamento", f: "10.129 km² (2019), maior desde 2006 em 2021, 5.731 km² (2025).", a: "Governo Lula: fiscalização e embargos.", b: "Críticos: o Cerrado cai pouco; outros fatores (preços, clima) não foram quantificados.", n: "A queda é real; a atribuição causal não foi quantificada.", s: [["INPE (PDF)", "https://data.inpe.br/wp-content/uploads/sites/3/2026/03/A-taxa-consolidada-de-desmatamento-para-os-nove-estados-da-Amazonia-Legal-para-2025-e-de-5.731-km2.pdf"], ["InfoAmazonia", "https://infoamazonia.org/en/2022/02/15/prodes-and-deter-systems-against-deforestation-amazon/"]] },
+  { t: "Pobreza", f: "Extrema pobreza: 9% (2021, a conferir), 3,5% (2024).", a: "Governo: Bolsa Família e emprego.", b: "Oposição: o mínimo de 2020 veio do auxílio emergencial.", n: "O IBGE atribui a queda à ocupação e aos benefícios; não há decomposição.", s: [["Secom/IBGE", "https://www.gov.br/secom/pt-br/assuntos/noticias/2025/12/no-brasil-8-6-milhoes-de-pessoas-sairam-da-pobreza-entre-2023-e-2024"]] },
+  { t: "Recessão de 2015–16", f: "PIB de −3,5% e −3,3%.", a: "Ortodoxos: Nova Matriz (desonerações, BNDES, preços controlados).", b: "Heterodoxos: ajuste de 2015, commodities, crise política.", n: "Causas disputadas na literatura.", s: [["IBGE", "https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/22966-revisao-do-pib-de-2016-mostra-queda-de-3-3-em-relacao-ao-ano-anterior"]] },
+  { t: "Reforma da Previdência de 2019", f: "Economia de R$ 800 bi (governo) ou R$ 630 bi (IFI) em dez anos.", a: "Direita: reforma necessária e aprovada.", b: "Esquerda: pesou sobre os mais pobres (opinião não coletada nesta pesquisa).", n: "O efeito fiscal é consensual; o distributivo é disputado.", s: [["IFI (PDF)", "https://www2.senado.leg.br/bdsf/bitstream/handle/id/563696/CI_03.pdf"]] },
+  { t: "Ensino (PISA 2022)", f: "379 em matemática, 410 em leitura, 403 em ciências; estável desde 2009.", a: "—", b: "—", n: "Estagnação que atravessa governos.", s: [["INEP", "https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/acoes-internacionais/divulgados-os-resultados-do-pisa-2022"]] }
+];
+
+var GAPS = [
+  "Rubricas do corte de R$ 190 bi e desenho da “nova regra fiscal” de Flávio: não divulgados.",
+  "Como Lula fecha a conta dos pisos e dos precatórios em 2027: não descrito no plano.",
+  "Posição de Flávio sobre o salário mínimo e a autonomia do BC: vaga ou não encontrada.",
+  "Custos de presídios, maioridade, “dobrar” a segurança, 2,5 mi de moradias, tabela SUS e vouchers (Flávio): nenhuma estimativa.",
+  "Custos de 111 IFs, Farmácia Popular com exames e tarifa zero desenhada (Lula): só a tarifa zero tem estimativa, do setor privado.",
+  "Avaliação independente do Novo PAC e dos números de segurança de Goiás: não localizada.",
+  "Estudo causal sobre a queda de homicídios e de desmatamento: não localizado, o que limita atribuir mérito a governos.",
+  "Equipes econômicas de Caiado, Zema, Cury e Renan e a política externa de Caiado, Cury e Renan: não levantadas.",
+  "PDFs integrais dos planos no TSE: grande parte do conteúdo vem da imprensa.",
+  "O único estudo fiscal comparável é de um único think tank e deixou fora itens caros."
+];
+
+/* ---------- ESTADO ---------- */
+var KEY = "comparador-propostas-2026:v1";
+function defaults() {
+  var s = { w: {}, r: {}, ov: {}, lensOn: { custo: false, pec: false, evid: false }, lensW: { custo: 3, pec: 3, evid: 3 }, incl: {}, order: ALPHA.slice(), shuffled: false };
+  AREAS.forEach(function (a) { s.w[a.id] = 5; s.r[a.id] = {}; s.ov[a.id] = {}; });
+  CANDS.forEach(function (c) { s.incl[c.id] = true; });
+  return s;
+}
+var state = defaults();
+function load() {
+  var raw = null;
+  try { raw = window.localStorage.getItem(KEY); } catch (e) { raw = null; }
+  if (!raw) return;
+  try {
+    var o = JSON.parse(raw), d = defaults();
+    AREAS.forEach(function (a) {
+      var w = o.w && o.w[a.id]; if (typeof w === "number" && w >= 0 && w <= 10) d.w[a.id] = Math.round(w);
+      CANDS.forEach(function (c) {
+        var r = o.r && o.r[a.id] && o.r[a.id][c.id]; if (typeof r === "number" && r >= 0 && r <= 10) d.r[a.id][c.id] = Math.round(r);
+        var ov = o.ov && o.ov[a.id] && o.ov[a.id][c.id];
+        if (ov && typeof ov === "object") { LENS_KEYS.forEach(function (k) { if (typeof ov[k] === "string" && validOpt(k, ov[k])) { d.ov[a.id][c.id] = d.ov[a.id][c.id] || {}; d.ov[a.id][c.id][k] = ov[k]; } }); }
+      });
+    });
+    LENS_KEYS.forEach(function (k) {
+      if (o.lensOn && typeof o.lensOn[k] === "boolean") d.lensOn[k] = o.lensOn[k];
+      if (o.lensW && typeof o.lensW[k] === "number" && o.lensW[k] >= 0 && o.lensW[k] <= 10) d.lensW[k] = Math.round(o.lensW[k]);
+    });
+    CANDS.forEach(function (c) { if (o.incl && typeof o.incl[c.id] === "boolean") d.incl[c.id] = o.incl[c.id]; });
+    if (Array.isArray(o.order) && o.order.length === ALPHA.length && ALPHA.every(function (id) { return o.order.indexOf(id) >= 0; })) { d.order = o.order.slice(); d.shuffled = !!o.shuffled; }
+    state = d;
+  } catch (e) { /* dados inválidos: ignora */ }
+}
+function validOpt(k, v) { return v === "none" || LENS_DEF[k].opts.some(function (o) { return o[0] === v; }); }
+var saveTimer = null;
+function save() {
+  var st = document.getElementById("save-status");
+  try { window.localStorage.setItem(KEY, JSON.stringify(state)); if (st) st.textContent = "Respostas salvas neste navegador."; }
+  catch (e) { if (st) st.textContent = "Este navegador não permite salvar; suas respostas valem só nesta visita."; }
+  clearTimeout(saveTimer); saveTimer = setTimeout(function () { if (st) st.textContent = ""; }, 2500);
+}
+
+/* ---------- UTIL ---------- */
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function rich(s) {
+  return esc(s).replace(/\[(fato[^\]]*|proposta[^\]]*|alegação[^\]]*|opinião[^\]]*|calc|inferência[^\]]*)\]/g, function (m, inner) {
+    var k = inner.split(/[\s–-]/)[0];
+    return '<span class="tag tag-' + k + '">' + inner + "</span>";
+  });
+}
+function links(arr) {
+  if (!arr || !arr.length) return "";
+  return '<p class="srcs"><span>Fontes:</span>' + arr.map(function (s) { return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + "</a>"; }).join("") + "</p>";
+}
+function fmt(n) { return n.toFixed(1).replace(".", ","); }
+function optLabel(k, v) { if (v == null || v === "none") return "sem base"; var o = LENS_DEF[k].opts.filter(function (x) { return x[0] === v; })[0]; return o ? o[1] : "sem base"; }
+function optVal(k, v) { var o = LENS_DEF[k].opts.filter(function (x) { return x[0] === v; })[0]; return o ? o[2] : null; }
+function lensEff(a, c, k) {
+  var ov = state.ov[a] && state.ov[a][c] && state.ov[a][c][k];
+  if (ov !== undefined) return ov === "none" ? null : ov;
+  return LENS[a][c][k][0];
+}
+function isOv(a, c, k) { return !!(state.ov[a] && state.ov[a][c] && state.ov[a][c][k] !== undefined); }
+function monogram(c) { return '<span class="mono c-' + c.id + '" aria-hidden="true">' + c.sigla + "</span>"; }
+
+/* ---------- RENDER ---------- */
+function renderStatic() {
+  document.getElementById("ctx-grid").innerHTML = CTX.map(function (x) {
+    return '<div class="stat"><b>' + esc(x[0]) + "</b><p>" + rich(x[1]) + '</p><p class="src"><span class="tag tag-' + x[2].split(/[\s–]/)[0] + '">' + esc(x[2]) + '</span> <a href="' + esc(x[4]) + '" target="_blank" rel="noopener">' + esc(x[3]) + "</a></p></div>";
+  }).join("");
+  document.getElementById("hiato-body").innerHTML = ALPHA.map(function (id) {
+    var h = HIATO[id], c = CBY[id];
+    return '<tr><td><span style="display:inline-flex;gap:8px;align-items:center">' + monogram(c) + esc(c.nome) + '</span></td><td class="num">' + h[0] + '</td><td class="num">' + h[1] + "</td><td>" + esc(h[2]) + "</td></tr>";
+  }).join("");
+  document.getElementById("fatos-list").innerHTML = FATOS.map(function (f) {
+    return '<article class="fato"><h3>' + esc(f.t) + '</h3><div class="cols">' +
+      '<div><span class="eyebrow">Verificado <span class="tag tag-fato">fato</span></span><p>' + rich(f.f) + "</p></div>" +
+      '<div><span class="eyebrow">Uma leitura</span><p>' + rich(f.a) + "</p></div>" +
+      '<div><span class="eyebrow">Outra leitura</span><p>' + rich(f.b) + "</p></div></div>" +
+      '<p class="neutral"><strong>Formulação neutra:</strong> ' + rich(f.n) + "</p>" + links(f.s) + "</article>";
+  }).join("");
+  document.getElementById("gaps").innerHTML = GAPS.map(function (g) { return "<li>" + rich(g) + "</li>"; }).join("");
+  document.getElementById("lenses-ctl").innerHTML = LENS_KEYS.map(function (k) {
+    var d = LENS_DEF[k];
+    return '<div class="lens-ctl"><label class="chk" for="lens-on-' + k + '"><input type="checkbox" id="lens-on-' + k + '" data-lens-on="' + k + '"> <span>' + esc(d.nome) + "</span></label>" +
+      '<p class="small muted">Conversão: ' + d.opts.map(function (o) { return esc(o[1]) + " = " + o[2]; }).join(", ") + "; sem base = fora da conta.</p>" +
+      '<div class="row"><label class="small" for="lens-w-' + k + '">Peso</label><input type="range" min="0" max="10" step="1" id="lens-w-' + k + '" data-lens-w="' + k + '"><output class="val" id="lens-wo-' + k + '" for="lens-w-' + k + '"></output></div></div>';
+  }).join("");
+  document.getElementById("incl").innerHTML = ALPHA.map(function (id) {
+    var c = CBY[id];
+    return '<label for="incl-' + id + '"><input type="checkbox" id="incl-' + id + '" data-incl="' + id + '"> ' + monogram(c) + esc(c.nome) + "</label>";
+  }).join("");
+  syncControls();
+}
+
+function syncControls() {
+  LENS_KEYS.forEach(function (k) {
+    document.getElementById("lens-on-" + k).checked = state.lensOn[k];
+    document.getElementById("lens-w-" + k).value = state.lensW[k];
+    document.getElementById("lens-wo-" + k).textContent = state.lensW[k];
+  });
+  CANDS.forEach(function (c) { document.getElementById("incl-" + c.id).checked = state.incl[c.id]; });
+}
+
+function lensChips(a, c) {
+  return LENS_KEYS.map(function (k) {
+    var v = lensEff(a, c, k);
+    return '<span class="lchip' + (isOv(a, c, k) ? " ov" : "") + '">' + esc(LENS_DEF[k].curto) + ": <b>" + esc(optLabel(k, v)) + "</b>" + (isOv(a, c, k) ? " (ajustado por você)" : "") + "</span>";
+  }).join("");
+}
+function lensBox(a, c) {
+  return LENS_KEYS.map(function (k) {
+    var base = LENS[a][c][k], id = "ov-" + a + "-" + c + "-" + k, cur = state.ov[a][c] && state.ov[a][c][k];
+    var opts = '<option value="">Rótulo do relatório (' + esc(optLabel(k, base[0])) + ")</option>" +
+      LENS_DEF[k].opts.map(function (o) { return '<option value="' + o[0] + '"' + (cur === o[0] ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join("") +
+      '<option value="none"' + (cur === "none" ? " selected" : "") + ">sem base</option>";
+    return '<div class="lb"><label for="' + id + '">' + esc(LENS_DEF[k].nome) + '</label><span class="muted">Base: ' + rich(base[1]) + '</span><select id="' + id + '" data-ov="' + a + "|" + c + "|" + k + '">' + opts + "</select></div>";
+  }).join("");
+}
+
+function candBlock(a, c) {
+  var data = CONTENT[a][c.id], id = "r-" + a + "-" + c.id, cur = state.r[a][c.id];
+  var body;
+  if (c.deep) {
+    body = '<dl class="fields">' + DEEP_FIELDS.map(function (f) {
+      return '<div class="' + (f[2] ? "wide" : "") + '"><dt>' + f[1] + "</dt><dd>" + rich(data[f[0]]) + "</dd></div>";
+    }).join("") + "</dl>";
+  } else {
+    body = '<dl class="fields"><div class="wide"><dt>Resumo</dt><dd>' + rich(data.resumo) + '</dd></div><div class="wide"><dt>Obstáculo principal</dt><dd>' + rich(data.obstaculo) + "</dd></div></dl>";
+  }
+  var sel = '<option value="">— sem nota</option>';
+  for (var i = 0; i <= 10; i++) sel += '<option value="' + i + '"' + (cur === i ? " selected" : "") + ">" + i + "</option>";
+  var areaName = AREAS.filter(function (x) { return x.id === a; })[0].nome;
+  return '<section class="cand c-' + c.id + (c.deep ? " deep" : "") + '" aria-label="' + esc(c.nome + " – " + areaName) + '">' +
+    '<div class="cand-h">' + monogram(c) + "<h4>" + esc(c.nome) + " <small>" + esc(c.partido) + '</small></h4><span class="depth">' + (c.deep ? "análise completa" : "resumo") + "</span></div>" +
+    body + links(data.fontes) +
+    '<div style="display:grid;gap:6px"><div class="lensrow" id="lc-' + a + "-" + c.id + '">' + lensChips(a, c.id) + "</div>" +
+    '<details class="lensd"><summary>Ver base dos critérios objetivos e ajustar</summary><div class="lensbox">' + lensBox(a, c.id) + "</div></details></div>" +
+    '<div class="rate"><label for="' + id + '">Quanto essa proposta te convence? (0–10)</label><select id="' + id + '" data-rate="' + a + "|" + c.id + '">' + sel + '</select><span class="hint">Sua avaliação. Fica vazia até você escolher.</span></div></section>';
+}
+
+function promessasBlock(a) {
+  var list = PROMESSAS[a] || [];
+  var ord = state.order;
+  var sorted = list.slice().sort(function (x, y) { return ord.indexOf(x.q[0]) - ord.indexOf(y.q[0]); });
+  return '<section class="promessas"><h4>Promessas que soam fáceis mas não são</h4><p class="small muted">Mesmo critério para todos: o valor ou efeito anunciado esbarra em uma conta, uma regra constitucional ou uma variável externa não explicitada <span class="tag tag-inferência">inferência</span></p><ul>' +
+    sorted.map(function (p) {
+      return '<li><span class="who">' + p.q.map(function (id) { return '<span style="display:inline-flex;gap:5px;align-items:center">' + monogram(CBY[id]) + esc(CBY[id].nome) + "</span>"; }).join("") + "</span><strong>" + rich(p.p) + "</strong><span>" + rich(p.r) + "</span></li>";
+    }).join("") + "</ul></section>";
+}
+
+function renderAreas() {
+  var openSet = {};
+  document.querySelectorAll("details.area-body").forEach(function (d) { openSet[d.dataset.area] = d.open; });
+  var first = !Object.keys(openSet).length;
+  var html = AREAS.map(function (a, i) {
+    var open = first ? i === 0 : openSet[a.id];
+    return '<article class="area" id="area-' + a.id + '">' +
+      '<div class="area-head"><div class="ah-text"><h3>' + esc(a.nome) + '</h3><p class="area-ctx">' + rich(a.ctx) + '</p><p class="progress" id="prog-' + a.id + '"></p></div>' +
+      '<div class="weight"><label for="w-' + a.id + '">Quanto esta área importa para você</label><div class="row"><span class="small muted">0</span><input type="range" min="0" max="10" step="1" id="w-' + a.id + '" data-weight="' + a.id + '" value="' + state.w[a.id] + '"><span class="small muted">10</span><output class="val" id="wo-' + a.id + '" for="w-' + a.id + '">' + state.w[a.id] + "</output></div></div></div>" +
+      '<details class="area-body" data-area="' + a.id + '"' + (open ? " open" : "") + "><summary>Ler propostas e dar suas notas</summary>" +
+      '<div class="area-inner"><div class="cands">' + state.order.map(function (cid) { return candBlock(a.id, CBY[cid]); }).join("") + "</div>" + promessasBlock(a.id) + "</div></details></article>";
+  }).join("");
+  document.getElementById("area-list").innerHTML = html;
+  AREAS.forEach(function (a) { updateProgress(a.id); });
+  document.getElementById("orderlist").innerHTML = state.order.map(function (id) { return '<span class="pill">' + monogram(CBY[id]) + esc(CBY[id].nome) + "</span>"; }).join("");
+  document.getElementById("order-label").innerHTML = "<strong>Ordem de exibição:</strong> " + (state.shuffled ? "embaralhada" : "alfabética");
+}
+
+function updateProgress(a) {
+  var n = CANDS.filter(function (c) { return state.r[a][c.id] != null; }).length;
+  document.getElementById("prog-" + a).textContent = "Peso " + state.w[a] + " · " + n + " de " + CANDS.length + " candidatos avaliados";
+}
+
+/* ---------- CÁLCULO ---------- */
+function compute(weights) {
+  var inc = state.order.filter(function (c) { return state.incl[c]; });
+  var counted = AREAS.filter(function (a) { return weights[a.id] > 0 && inc.every(function (c) { return state.r[a.id][c] != null; }); }).map(function (a) { return a.id; });
+  var lensOn = LENS_KEYS.filter(function (k) { return state.lensOn[k] && state.lensW[k] > 0; });
+  var res = {};
+  inc.forEach(function (c) {
+    var num = 0, den = 0, rows = {};
+    counted.forEach(function (a) { var p = weights[a] * state.r[a][c]; rows[a] = { w: weights[a], r: state.r[a][c], p: p }; num += p; den += weights[a]; });
+    var lens = {};
+    lensOn.forEach(function (k) {
+      var s = 0, d = 0, cov = 0;
+      AREAS.forEach(function (a) { if (weights[a.id] <= 0) return; var v = optVal(k, lensEff(a.id, c, k)); if (v == null) return; s += weights[a.id] * v; d += weights[a.id]; cov++; });
+      if (d > 0) { var Lv = s / d; lens[k] = { v: Lv, w: state.lensW[k], p: state.lensW[k] * Lv, cov: cov }; num += state.lensW[k] * Lv; den += state.lensW[k]; }
+      else lens[k] = null;
+    });
+    res[c] = { score: den > 0 ? num / den : null, num: num, den: den, rows: rows, lens: lens };
+  });
+  return { inc: inc, counted: counted, lensOn: lensOn, res: res };
+}
+function leaders(r) {
+  var best = -1, ids = [];
+  r.inc.forEach(function (c) { var s = r.res[c].score; if (s == null) return; if (s > best + 1e-9) { best = s; ids = [c]; } else if (Math.abs(s - best) <= 1e-9) ids.push(c); });
+  return ids;
+}
+function names(ids) { return ids.map(function (i) { return CBY[i].nome; }).join(" e "); }
+
+function renderResult() {
+  var out = document.getElementById("result-out");
+  var r = compute(state.w);
+  var minAreas = 2;
+  if (r.inc.length < 2) { out.innerHTML = '<div class="notice"><strong>Marque pelo menos dois candidatos</strong><span>A comparação precisa de dois ou mais candidatos incluídos.</span></div>'; return; }
+  if (r.counted.length < minAreas) {
+    var pend = AREAS.filter(function (a) { return state.w[a.id] > 0 && r.counted.indexOf(a.id) < 0; }).map(function (a) {
+      var miss = r.inc.filter(function (c) { return state.r[a.id][c] == null; }).length; return esc(a.nome) + " (faltam " + miss + ")";
+    });
+    out.innerHTML = '<div class="notice"><strong>Você ainda não avaliou áreas suficientes</strong><span>Para mostrar um resultado, avalie todos os candidatos incluídos em pelo menos ' + minAreas + " áreas com peso maior que 0. Áreas completas até agora: " + r.counted.length + ".</span>" + (pend.length ? "<span>Faltam notas em: " + pend.join("; ") + ".</span>" : "") + '<span class="small">Dica: se quiser comparar só alguns candidatos, desmarque os outros acima.</span></div>';
+    return;
+  }
+  var lead = leaders(r);
+  var scores = r.inc.map(function (c) { return r.res[c].score; }).slice().sort(function (x, y) { return y - x; });
+  var margin = scores.length > 1 ? scores[0] - scores[1] : 0;
+
+  var bars = '<div class="bars" role="list">' + r.inc.map(function (c) {
+    var s = r.res[c].score, pct = Math.max(0, Math.min(100, s * 10));
+    return '<div class="bar c-' + c + '" role="listitem"><span class="nm">' + monogram(CBY[c]) + "<span>" + esc(CBY[c].nome) + '</span></span><div class="track" aria-hidden="true"><i style="width:' + pct + '%"></i><span class="ticks"></span></div><span class="sc" aria-label="' + esc(CBY[c].nome) + " " + fmt(s) + ' de 10">' + fmt(s) + "</span></div>";
+  }).join("") + '</div><div class="scale" aria-hidden="true"><span></span><div><span>0</span><span>5</span><span>10</span></div><span></span></div>';
+
+  var headCols = r.inc.map(function (c) { return '<th class="num"><span style="display:inline-flex;gap:6px;align-items:center">' + monogram(CBY[c]) + esc(CBY[c].nome) + "</span></th>"; }).join("");
+  var rows = r.counted.map(function (a) {
+    var an = AREAS.filter(function (x) { return x.id === a; })[0].nome;
+    return "<tr><td>" + esc(an) + '</td><td class="num">' + state.w[a] + "</td>" + r.inc.map(function (c) {
+      var row = r.res[c].rows[a], share = r.res[c].num > 0 ? Math.round(100 * row.p / r.res[c].num) : 0;
+      return '<td class="num">' + row.r + " × " + row.w + " = " + row.p + ' <span class="muted">(' + share + "%)</span></td>";
+    }).join("") + "</tr>";
+  }).join("");
+  rows += r.lensOn.map(function (k) {
+    return "<tr><td>Critério: " + esc(LENS_DEF[k].nome) + '</td><td class="num">' + state.lensW[k] + "</td>" + r.inc.map(function (c) {
+      var l = r.res[c].lens[k];
+      if (!l) return '<td class="num muted">sem base</td>';
+      var share = r.res[c].num > 0 ? Math.round(100 * l.p / r.res[c].num) : 0;
+      return '<td class="num">' + fmt(l.v) + " × " + l.w + " = " + fmt(l.p) + ' <span class="muted">(' + share + "%, " + l.cov + " áreas)</span></td>";
+    }).join("") + "</tr>";
+  }).join("");
+  rows += '<tr><td><strong>Resultado</strong></td><td class="num">Σ pesos</td>' + r.inc.map(function (c) {
+    var x = r.res[c]; return '<td class="num"><strong>' + fmt(x.num) + " ÷ " + x.den + " = " + fmt(x.score) + "</strong></td>";
+  }).join("") + "</tr>";
+  var table = '<div class="tablewrap"><table><caption class="small muted" style="text-align:left;padding:8px 10px">Cada linha: sua nota × seu peso = pontos (parte do total do candidato). O resultado é a soma dos pontos dividida pela soma dos pesos.</caption><thead><tr><th>Área ou critério</th><th class="num">Peso</th>' + headCols + "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+
+  /* sensibilidade */
+  var sens = [];
+  var leadTxt = lead.length > 1 ? "empate entre " + names(lead) : names(lead);
+  r.counted.forEach(function (a) {
+    var an = AREAS.filter(function (x) { return x.id === a; })[0].nome;
+    var changes = [];
+    [0, 10].forEach(function (nw) {
+      if (nw === state.w[a]) return;
+      var w2 = Object.assign({}, state.w); w2[a] = nw;
+      var r2 = compute(w2); if (r2.counted.length < 1) return;
+      var l2 = leaders(r2);
+      if (l2.join() !== lead.join()) changes.push("com peso " + nw + ", a maior pontuação passaria a ser de " + (l2.length > 1 ? "empate entre " + names(l2) : names(l2)));
+    });
+    sens.push("<li><strong>" + esc(an) + "</strong> (peso " + state.w[a] + "): " + (changes.length ? changes.join("; ") + "." : "mudar o peso entre 0 e 10 não altera quem tem a maior pontuação.") + "</li>");
+  });
+  r.lensOn.forEach(function (k) {
+    var saved = state.lensOn[k]; state.lensOn[k] = false; var r2 = compute(state.w); state.lensOn[k] = saved;
+    var l2 = leaders(r2);
+    sens.push("<li><strong>Critério “" + esc(LENS_DEF[k].nome) + "”</strong>: " + (l2.join() !== lead.join() ? "se você desligá-lo, a maior pontuação passaria a ser de " + names(l2) + "." : "desligá-lo não altera quem tem a maior pontuação.") + "</li>");
+  });
+  var uneven = r.lensOn.filter(function (k) { var covs = r.inc.map(function (c) { var l = r.res[c].lens[k]; return l ? l.cov : 0; }); return Math.max.apply(null, covs) !== Math.min.apply(null, covs); });
+
+  var head = '<div style="display:grid;gap:6px"><h3>Pontuação ponderada (0 a 10)</h3><p class="small muted">Calculada só com as suas notas e pesos, em ' + r.counted.length + " de " + AREAS.length + " áreas" + (r.lensOn.length ? " e " + r.lensOn.length + " critério(s) objetivo(s)" : "") + ". Exibida na ordem atual dos candidatos.</p></div>";
+  var summary = '<p>Com os seus números, a maior pontuação é de <strong>' + esc(leadTxt) + "</strong>" + (lead.length === 1 && scores.length > 1 ? ", " + fmt(margin) + " ponto(s) à frente do segundo." : ".") + " Isso descreve as suas escolhas; não é uma recomendação.</p>";
+  var notes = [];
+  if (lead.length === 1 && margin < 0.5) notes.push("A diferença entre os dois primeiros é menor que meio ponto. Um ponto a mais ou a menos em uma única nota pode inverter a ordem.");
+  if (r.counted.length < AREAS.length) notes.push("Áreas fora da conta (peso 0 ou sem todas as notas): " + AREAS.filter(function (a) { return r.counted.indexOf(a.id) < 0; }).map(function (a) { return a.nome; }).join(", ") + ".");
+  if (uneven.length) notes.push("Nos critérios objetivos, a quantidade de áreas com rótulo varia entre candidatos (veja a coluna “áreas”). Onde o relatório não dá base, o candidato é avaliado com menos informação.");
+  out.innerHTML = head + bars + summary + table +
+    '<div style="display:grid;gap:8px"><h3>Se você mudar o peso de uma área, o resultado muda?</h3><ul class="sens">' + sens.join("") + "</ul></div>" +
+    (notes.length ? '<div class="notice">' + notes.map(function (n) { return "<span>" + esc(n) + "</span>"; }).join("") + "</div>" : "");
+}
+
+/* ---------- EVENTOS ---------- */
+function shuffle() {
+  var a = ALPHA.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  if (a.join() === state.order.join()) return shuffle();
+  state.order = a; state.shuffled = a.join() !== ALPHA.join();
+}
+
+document.addEventListener("input", function (e) {
+  var t = e.target;
+  if (t.dataset.weight) { var a = t.dataset.weight; state.w[a] = +t.value; document.getElementById("wo-" + a).textContent = t.value; updateProgress(a); renderResult(); save(); }
+  else if (t.dataset.lensW) { var k = t.dataset.lensW; state.lensW[k] = +t.value; document.getElementById("lens-wo-" + k).textContent = t.value; renderResult(); save(); }
+});
+document.addEventListener("change", function (e) {
+  var t = e.target;
+  if (t.dataset.rate) { var p = t.dataset.rate.split("|"); if (t.value === "") delete state.r[p[0]][p[1]]; else state.r[p[0]][p[1]] = +t.value; updateProgress(p[0]); renderResult(); save(); }
+  else if (t.dataset.ov) {
+    var q = t.dataset.ov.split("|"); state.ov[q[0]][q[1]] = state.ov[q[0]][q[1]] || {};
+    if (t.value === "") delete state.ov[q[0]][q[1]][q[2]]; else state.ov[q[0]][q[1]][q[2]] = t.value;
+    document.getElementById("lc-" + q[0] + "-" + q[1]).innerHTML = lensChips(q[0], q[1]); renderResult(); save();
+  }
+  else if (t.dataset.lensOn) { state.lensOn[t.dataset.lensOn] = t.checked; renderResult(); save(); }
+  else if (t.dataset.incl) { state.incl[t.dataset.incl] = t.checked; renderResult(); save(); }
+});
+document.getElementById("btn-shuffle").addEventListener("click", function () { shuffle(); renderAreas(); renderResult(); save(); });
+document.getElementById("btn-alpha").addEventListener("click", function () { state.order = ALPHA.slice(); state.shuffled = false; renderAreas(); renderResult(); save(); });
+document.getElementById("btn-reset").addEventListener("click", function () { document.getElementById("reset-confirm").hidden = false; document.getElementById("btn-reset-no").focus(); });
+document.getElementById("btn-reset-no").addEventListener("click", function () { document.getElementById("reset-confirm").hidden = true; document.getElementById("btn-reset").focus(); });
+document.getElementById("btn-reset-yes").addEventListener("click", function () {
+  state = defaults();
+  try { window.localStorage.removeItem(KEY); } catch (e) { /* sem armazenamento */ }
+  document.getElementById("reset-confirm").hidden = true;
+  syncControls(); renderAreas(); renderResult();
+  document.getElementById("save-status").textContent = "Respostas apagadas.";
+  document.getElementById("btn-reset").focus();
+});
+
+load();
+renderStatic();
+renderAreas();
+renderResult();
+})();
+</script>
