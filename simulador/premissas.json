@@ -1,0 +1,85 @@
+{
+  "_descricao": "Todos os parametros do simulador. 'origem' = 'fonte' (numero publicado), 'calculo' (calculo proprio a partir de fonte) ou 'inferencia' (escolha do modelador). Os valores em p.p. referem-se a votos validos. Altere aqui e rode rodar.py de novo.",
+  "data_referencia": {"valor": "2026-10-03", "origem": "fonte", "nota": "Vespera do 1o turno (4/10/2026); 2o turno em 25/10/2026."},
+  "candidatos": {"valor": ["Lula", "Flavio", "Caiado", "Cury", "Zema", "Renan", "Outros"], "origem": "fonte", "nota": "13 chapas registradas; os 7 nanicos estao agregados em 'Outros'.", "fonte_url": "https://en.wikipedia.org/wiki/2026_Brazilian_general_election"},
+
+  "agregacao": {
+    "janela_dias": {"valor": 14, "origem": "inferencia", "nota": "So entram na media final pesquisas com campo encerrado nos 14 dias anteriores a data de referencia; usa-se apenas a mais recente de cada instituto (evita contar duas vezes institutos semanais). Pindograma usa janela de 3 semanas."},
+    "tau_recencia_dias": {"valor": 7, "origem": "inferencia", "nota": "Peso exp(-dias/tau), tau 7-10 sugerido nas notas de premissas."},
+    "n_teto": {"valor": 3000, "origem": "inferencia", "nota": "Peso sqrt(min(n, teto)); o erro dominante nao e amostral."},
+    "house_effect_inicio": {"valor": "2026-08-20", "origem": "inferencia", "nota": "House effects estimados com as pesquisas da campanha (campo a partir desta data)."},
+    "house_effect_prior_sd_pp": {"valor": 1.5, "origem": "inferencia", "nota": "Encolhimento (ridge) do efeito de cada instituto em direcao a zero; restricao soma(h)=0 entre institutos (o efeito e relativo ao consenso). Institutos com 1 pesquisa ficam perto de zero."}
+  },
+
+  "terceira_via": {
+    "contracao_media": {"valor": 0.30, "origem": "inferencia", "nota": "Fracao do voto dos candidatos menores nas pesquisas que migra para os dois primeiros (voto util). 2022: 'outros' 11,6 na Quaest vs 8,0 no TSE; 2018: Alckmin 8 -> 4,8, Marina 3 -> 1,0.", "fonte_url": "https://doi.org/10.1590/1807-019120243011"},
+    "contracao_dp": {"valor": 0.07, "origem": "inferencia", "nota": "Beta com media 0,30 e dp 0,07 (cobre ~20-40%)."},
+    "divisao": {"valor": "matriz de transferencia Quaest", "origem": "fonte", "nota": "O voto migrado de cada menor e dividido entre Lula e Flavio na proporcao Lula/(Lula+Flavio) da matriz de 2o turno abaixo."}
+  },
+
+  "matriz_transferencia_2t": {
+    "_nota": "Quaest 24-27/09/2026 (BR-06520/2026), 2o turno Lula x Flavio por voto no 1o turno. Linhas: [Lula, Flavio, branco/nulo/abstencao]. Incerteza: Dirichlet com concentracao alfa (subamostras de 20-100 entrevistas). 'Outros' (nanicos de esquerda e de direita) e inferencia neutra.",
+    "fonte_url": "https://brasil.perfil.com/politica/quaest-flavio-bolsonaro-votos-zema-caiado-renan.phtml",
+    "Caiado": {"valor": [0.30, 0.42, 0.28], "origem": "fonte"},
+    "Cury": {"valor": [0.28, 0.35, 0.37], "origem": "fonte"},
+    "Zema": {"valor": [0.10, 0.80, 0.10], "origem": "fonte"},
+    "Renan": {"valor": [0.25, 0.50, 0.25], "origem": "fonte"},
+    "Outros": {"valor": [0.30, 0.30, 0.40], "origem": "inferencia"},
+    "alfa_dirichlet": {"valor": 30, "origem": "inferencia", "nota": "alfa 20-50 sugerido no briefing; 30 da dp de ~8 p.p. por celula."}
+  },
+
+  "erro_nacional_1t": {
+    "dp_p2_pp": {"valor": 3.5, "origem": "inferencia", "nota": "Erro sistematico nacional na fatia de Lula entre os dois primeiros (Lula/(Lula+Flavio)), em p.p. (convertido para logito). Equivale a ~3,1 p.p. por candidato em validos e ~6 p.p. na margem; briefing: 3-4 p.p. por candidato (Pindograma: MAE 2,5-3,2; 2022: margem errou ~9 nos tradicionais)."},
+    "gl_t": {"valor": 5, "origem": "inferencia", "nota": "t de Student com 5 graus de liberdade (caudas pesadas)."},
+    "dp_log_menores": {"valor": 0.25, "origem": "inferencia", "nota": "Erro nacional multiplicativo (log) em cada candidato menor, independente."}
+  },
+
+  "vies_historico": {
+    "_nota": "Usado SO no cenario 'Viés histórico'. No cenario 'Neutro' o vies e zero. Os dois cenarios sao sempre exibidos lado a lado.",
+    "vies_1t_flavio_media_pp": {"valor": 3.0, "origem": "inferencia", "nota": "Pesquisas de vespera subestimaram o candidato anti-PT mais competitivo em 5-8 p.p. de validos em 2014, 2018 e 2022 (N=3). Briefing (tab. 5.1, Cenario B): +2 a +4 p.p. Usa-se o ponto medio, 3,0, menor que o erro bruto porque a contracao da terceira via ja captura parte do mecanismo (voto util).", "fonte_url": "https://doi.org/10.1590/1807-019120243011"},
+    "vies_1t_flavio_dp_pp": {"valor": 1.0, "origem": "inferencia", "nota": "Normal truncada em 0."},
+    "vies_1t_fracao_de_lula": {"valor": 0.333, "origem": "inferencia", "nota": "Do ganho de Flavio, 1/3 sai de Lula e 2/3 dos menores (2022: Lula errou +1 a +2; Bolsonaro -6,6 a -7,7)."},
+    "vies_2t_lula_media_pp": {"valor": 0.8, "origem": "calculo", "nota": "Erro medio pro-PT das pesquisas finais de 2o turno: 2010 ~+0,5; 2018 ~+0,5; 2022 agregador +1,1 (fatia de Lula). Media ~0,7; arredondado 0,8 (margem ~1,6, igual ao ajuste 'historico' F+1,6 calculado no briefing)."},
+    "vies_2t_lula_dp_pp": {"valor": 0.6, "origem": "inferencia", "nota": "Normal."}
+  },
+
+  "erro_2t": {
+    "dp_q_pp": {"valor": 2.0, "origem": "inferencia", "nota": "Erro nacional na fatia de Lula no 2o turno (via pesquisas): erro de pesquisa de 2o turno (margem 2-3 p.p., ~1,25 na fatia) combinado com 3 semanas de campanha entre os turnos. Margem ~4 p.p. (como na ilustracao 5.3 do briefing)."},
+    "gl_t": {"valor": 5, "origem": "inferencia"},
+    "rho_com_1t": {"valor": 0.4, "origem": "inferencia", "nota": "Correlacao entre erro nacional do 1o e do 2o turno (0,3-0,5 no briefing)."},
+    "peso_pesquisas_vs_transferencia": {"valor": 0.7, "origem": "inferencia", "nota": "2o turno final = 0,7 x (pesquisas de 2o turno + erro) + 0,3 x (1o turno simulado + matriz de transferencia), em logito. Pesquisas de 2o turno erraram pouco historicamente; a matriz vem de subamostras pequenas e nao capta a migracao de indecisos."},
+    "rho_uf_1t_2t": {"valor": 0.6, "origem": "inferencia", "nota": "Correlacao entre erros regionais/estaduais do 1o e do 2o turno."}
+  },
+
+  "estados": {
+    "fator_lean": {"valor": 0.85, "origem": "calculo", "nota": "Prior da UF = nacional + 0,85 x lean de 2022 (em logito). Inclinacao 2018->2022 = 0,84 (estabilidade_lean.csv).", "fonte_url": "https://dadosabertos.tse.jus.br"},
+    "dp_prior_pp": {"valor": 4.0, "origem": "calculo", "nota": "Erro do prior por UF: RMSE do lean 2018->2022 = 3,5 p.p.; notas sugerem 3,5-5."},
+    "dp_pesquisa_piso_pp": {"valor": 3.0, "origem": "inferencia", "nota": "Erro nao amostral minimo de uma pesquisa estadual (Pindograma, presidente em pesquisas estaduais: MAE 2,25-4,34)."},
+    "efeito_desenho": {"valor": 1.5, "origem": "inferencia", "nota": "Multiplica a variancia amostral p(1-p)/n."},
+    "tau_recencia_uf_dias": {"valor": 14, "origem": "inferencia", "nota": "Variancia da pesquisa estadual multiplicada por (1 + dias/tau)."},
+    "dp_prior_menores_pp": {"valor": 5.0, "origem": "inferencia", "nota": "Prior dos menores por UF = composicao nacional, com dp larga (ex.: Caiado tem 23% em GO)."},
+    "dp_pesquisa_menores_piso_pp": {"valor": 1.5, "origem": "inferencia"},
+    "n_padrao_sem_amostra": {"valor": 600, "origem": "inferencia", "nota": "Usado quando a amostra nao foi publicada (AP)."},
+    "dp_eixo_pp": {"valor": 1.5, "origem": "inferencia", "nota": "Fator 'NE/N vs S/CO' (eixo lulismo/antilulismo) por simulacao. Cargas abaixo, centradas pelo peso do eleitorado."},
+    "cargas_eixo": {"valor": {"NE": 1.0, "N": 0.5, "SE": 0.0, "CO": -0.5, "S": -1.0, "EXT": 0.0}, "origem": "calculo", "nota": "Sinais das correlacoes medias de swing por bloco (TSE 2002-2022): NE-N +0,39; NE-S -0,72; CO-S +0,57; NE-CO -0,55; SE heterogeneo (0,14).", "fonte_url": "https://dadosabertos.tse.jus.br"},
+    "dp_regional_pp": {"valor": 1.5, "origem": "inferencia", "nota": "Fator regional independente por regiao (briefing: 1,5-2)."},
+    "dp_uf_minimo_pp": {"valor": 2.5, "origem": "inferencia", "nota": "Erro idiossincratico da UF = max(dp posterior da UF, este minimo), t com 5 gl. Briefing: 3-4 p.p. na margem (=1,5-2 na fatia) somado a incerteza do prior/pesquisa."},
+    "dp_log_menores_uf": {"valor": 0.2, "origem": "inferencia"},
+    "centrar_erros_subnacionais": {"valor": true, "origem": "inferencia", "nota": "Os componentes eixo+regional+UF tem media ponderada zero em cada simulacao, de modo que o agregado nacional segue o erro nacional sorteado (consistencia)."}
+  },
+
+  "comparecimento": {
+    "base": {"valor": "abstencao e brancos+nulos por UF em 2022 (TSE)", "origem": "fonte", "fonte_url": "https://dadosabertos.tse.jus.br"},
+    "dp_abst_nacional_pp": {"valor": 1.0, "origem": "inferencia", "nota": "Abstencao nacional 2018-2022: 20,3-21,3%."},
+    "dp_abst_uf_pp": {"valor": 1.5, "origem": "inferencia", "nota": "Briefing: +-2 p.p. por UF; Norte varia mais entre turnos."},
+    "dp_bn_nacional_pp": {"valor": 0.8, "origem": "inferencia", "nota": "Brancos+nulos 2022: 4,4% (1T) / 4,6% (2T); 2018: 8,8 / 9,6."},
+    "dp_bn_uf_pp": {"valor": 0.5, "origem": "inferencia"}
+  },
+
+  "simulacao": {
+    "n_simulacoes": {"valor": 500000, "origem": "inferencia"},
+    "lote": {"valor": 100000, "origem": "inferencia"},
+    "semente": {"valor": 20261004, "origem": "inferencia"},
+    "segundo_turno_fora_lula_flavio": {"valor": "vence o 1o colocado do 1o turno", "origem": "inferencia", "nota": "Simplificacao para pares diferentes de Lula x Flavio (frequencia reportada nos resultados; ~0)."}
+  }
+}

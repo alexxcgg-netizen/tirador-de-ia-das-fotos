@@ -1,0 +1,17 @@
+plataforma,mercado,resultado,probabilidade,normalizado,coleta_utc,fonte_url,obs
+Polymarket,Vencedor da eleicao,Flavio Bolsonaro,0.5935,0.588,2026-10-03T19:14Z,https://gamma-api.polymarket.com/events?slug=brazil-presidential-election,US$ 163 mi negociados
+Polymarket,Vencedor da eleicao,Lula,0.405,0.401,2026-10-03T19:14Z,https://gamma-api.polymarket.com/events?slug=brazil-presidential-election,
+Polymarket,Alguem vence no 1o turno,Sim,0.053,0.053,2026-10-03T19:14Z,https://gamma-api.polymarket.com/events?slug=will-any-presidential-candidate-win-outright-in-the-first-round-of-the-brazil-election,
+Polymarket,1o colocado no 1o turno,Lula,0.725,0.714,2026-10-03T19:14Z,https://gamma-api.polymarket.com/events?slug=brazil-presidential-election-first-round-winner,
+Polymarket,Vai ao 2o turno,Flavio Bolsonaro,0.988,,2026-10-03T19:14Z,https://gamma-api.polymarket.com/events?slug=which-candidates-will-advance-to-brazils-presidential-runoff,
+Polymarket,Vai ao 2o turno,Lula,0.984,,2026-10-03T19:14Z,https://gamma-api.polymarket.com/events?slug=which-candidates-will-advance-to-brazils-presidential-runoff,
+Kalshi,Vencedor da eleicao,Flavio Bolsonaro,0.605,0.60,2026-10-03T19:15Z,https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXBRPRES&status=open,meio do intervalo
+Kalshi,Vencedor da eleicao,Lula,0.395,0.39,2026-10-03T19:15Z,https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXBRPRES&status=open,meio do intervalo
+Kalshi,Alguem vence no 1o turno,Sim,0.046,0.046,2026-10-03T19:15Z,https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXBRPRES&status=open,
+Kalshi,1o colocado no 1o turno,Lula,0.745,0.72,2026-10-03T19:15Z,https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXBRPRES&status=open,
+PredictIt,Vencedor da eleicao,Flavio Bolsonaro,0.62,0.585,2026-10-03T15:15Z,https://www.predictit.org/api/marketdata/all/,ultimo negocio
+PredictIt,Vencedor da eleicao,Lula,0.43,0.406,2026-10-03T15:15Z,https://www.predictit.org/api/marketdata/all/,ultimo negocio
+Casas de apostas (Reino Unido),Vencedor da eleicao,Flavio Bolsonaro,0.599,0.563,2026-10-03,https://www.oddschecker.com/politics/world-politics/brazil-presidential-election/winner,normalizado = ponto medio da faixa 55.7-56.9
+Casas de apostas (Reino Unido),Vencedor da eleicao,Lula,0.476,0.437,2026-10-03,https://www.oddschecker.com/politics/world-politics/brazil-presidential-election/winner,normalizado = ponto medio da faixa 43.1-44.3
+Manifold (dinheiro ficticio),Vencedor da eleicao,Flavio Bolsonaro,0.57,0.57,2026-10-03,https://api.manifold.markets/v0/slug/2026-brazil-presidential-election-w,58 apostadores
+Manifold (dinheiro ficticio),Vencedor da eleicao,Lula,0.424,0.424,2026-10-03,https://api.manifold.markets/v0/slug/2026-brazil-presidential-election-w,58 apostadores
