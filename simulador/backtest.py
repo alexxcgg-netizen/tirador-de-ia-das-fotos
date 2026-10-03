@@ -88,6 +88,21 @@ def candidatos(ano: int) -> tuple[list, dict]:
     return nomes, slots
 
 
+def adversario_vespera(ano: int, prem: dict) -> dict:
+    """Confere que o 'adversário' do arquivo é o 2º colocado na média de véspera (regra do agregador:
+    última pesquisa de cada instituto em 14 dias, peso sqrt(n) x recência), e não escolhido pelo resultado."""
+    nomes, _ = candidatos(ano)
+    st = _padronizar_nac(ano)
+    ref = pd.Timestamp(DATAS[ano][0]) - pd.Timedelta(days=1)
+    st = st[(st.campo_fim <= ref) & st.c1.notna()].copy()
+    st["peso_extra"] = 1.0
+    x = M._selecionar_recentes(st, "c1", ref, prem)
+    med = {nomes[k]: float(np.sum(x.peso * x[f"c{k}"]) / np.sum(x.peso)) for k in range(1, len(nomes) - 1)}
+    seg = max(med, key=med.get)
+    return {"ano": ano, "medias_totais": med, "segundo_na_media": seg, "adversario_arquivo": nomes[1],
+            "confere": seg == nomes[1]}
+
+
 def _padronizar_nac(ano: int) -> pd.DataFrame:
     nac = dados()[0]
     nomes, slots = candidatos(ano)
@@ -123,13 +138,34 @@ def _padronizar_nac(ano: int) -> pd.DataFrame:
     return st.reset_index(drop=True)
 
 
+def _lean(hist, ano, turno):
+    a = hist[(hist.ano == ano) & (hist.turno == turno)].set_index("uf")
+    col = "pt_2p_pct" if turno == 1 else "pt_pct_validos"
+    return M.logit(a[col] / 100) - M.logit(a.loc["BR", col] / 100), a.loc["BR", col] / 100
+
+
+def prior_estadual_hist(ano: int, turno: int) -> tuple[float, float]:
+    """Inclinação do lean e dp do prior por UF para o ano, usando SÓ eleições anteriores:
+    regressão (sem intercepto, 27 UFs) do lean de ano-4 no lean de ano-8 e RMSE dessa previsão
+    fora do tempo, em p.p. no nível nacional de ano-4. Evita usar 0,85 e 7,0/4,5 p.p., que vêm de 2018->2022."""
+    hist = dados()[3]
+    la, _ = _lean(hist, ano - 8, turno)
+    lb, nb = _lean(hist, ano - 4, turno)
+    ufs = [u for u in la.index if u in lb.index and u not in ("BR", "ZZ", "VT")]
+    x, y = la.loc[ufs].values, lb.loc[ufs].values
+    f = float(np.sum(x * y) / np.sum(x * x))
+    rmse_logit = float(np.sqrt(np.mean((f * x - y) ** 2)))
+    return f, rmse_logit * 100 * nb * (1 - nb)
+
+
 def _ufs_hist(ano: int, prem: dict) -> pd.DataFrame:
     _, _, res, hist = dados()
     r1 = res[(res.ano == ano) & (res.turno == 1) & (res.uf != "BR")].set_index("uf")
     ant = hist[hist.ano == ano - 4]
     a1 = ant[ant.turno == 1].set_index("uf")
     a2 = ant[ant.turno == 2].set_index("uf")
-    f = prem["estados.fator_lean"]
+    f1, sd1 = prior_estadual_hist(ano, 1)
+    f2, sd2 = prior_estadual_hist(ano, 2)
     l1 = M.logit(a1["pt_2p_pct"] / 100) - M.logit(a1.loc["BR", "pt_2p_pct"] / 100)
     l2 = M.logit(a2["pt_pct_validos"] / 100) - M.logit(a2.loc["BR", "pt_pct_validos"] / 100)
     ufs = list(r1.index)
@@ -140,9 +176,9 @@ def _ufs_hist(ano: int, prem: dict) -> pd.DataFrame:
         "bn1": (a1.loc[ufs, "branco_pct_comp"] + a1.loc[ufs, "nulo_pct_comp"]).values,
         "abst2": a2.loc[ufs, "abstencao_pct"].values,
         "bn2": (a2.loc[ufs, "branco_pct_comp"] + a2.loc[ufs, "nulo_pct_comp"]).values,
-        "prior1": f * l1.loc[ufs].values, "prior2": f * l2.loc[ufs].values,
-        "sdprior1": [prem["estados.dp_prior_exterior_pp"] if u == "ZZ" else prem["estados.dp_prior_1t_pp"] for u in ufs],
-        "sdprior2": [prem["estados.dp_prior_exterior_pp"] if u == "ZZ" else prem["estados.dp_prior_2t_pp"] for u in ufs],
+        "prior1": f1 * l1.loc[ufs].values, "prior2": f2 * l2.loc[ufs].values,
+        "sdprior1": [prem["estados.dp_prior_exterior_pp"] if u == "ZZ" else sd1 for u in ufs],
+        "sdprior2": [prem["estados.dp_prior_exterior_pp"] if u == "ZZ" else sd2 for u in ufs],
     })
 
 
@@ -308,7 +344,10 @@ def priors_vies(err: dict, anos_prior, prem: dict, visao: str, correcao_comp=Non
     t1 = math.inf if visao == "pleno" else prem["vies.tau0_p2_pp"]
     tq = math.inf if visao == "pleno" else prem["vies.tau0_q_pp"]
     out["b1"] = M.eb_vies(res_p2, prem["vies.dp_ano_p2_pp"], t1)
-    out["b2"] = M.eb_vies(resq, prem["vies.dp_ano_q_pp"], tq)
+    # viés do 2º turno = erro das pesquisas de 2º turno quando medem o mesmo que a urna (véspera do 2º turno);
+    # a deriva entre a véspera do 1º turno e o 2º turno (+3,5/+4,7 em 2018/2022) é tratada como erro aleatório
+    # simétrico (erro_2t.dp_q_pp_vespera_1t), não como viés persistente (2 casos só).
+    out["b2"] = M.eb_vies(resq2, prem["vies.dp_ano_q_v2_pp"], tq)
     out["b2_v2"] = M.eb_vies(resq2, prem["vies.dp_ano_q_v2_pp"], tq)
     out["residuos"] = {"p2_pp": dict(zip(anos_prior, np.round(res_p2, 2))),
                        "q_v1_pp": {a: round(err[a]["res_q_v1_pp"] - c["q"], 2) for a in anos_prior
@@ -363,10 +402,11 @@ def avaliar_rodada(b: M.Base, r: dict, horizonte: str) -> tuple[list, list]:
         prob.append(_prob(float(np.mean(r["primeiro"] == 0)), rr["pt1"]["BR"] > rr["opp1"]["BR"],
                           "PT 1º no 1º turno", "nacional", ano, "1T"))
         for i, u in enumerate(ufs):
-            cont.append(_resumo_var(r["uf_L"][:, i], rr["pt1"][u], "pt1", "uf", ano, "1T", u))
-            cont.append(_resumo_var(r["uf_F"][:, i], rr["opp1"][u], "opp1", "uf", ano, "1T", u))
+            nv = "exterior" if u == "ZZ" else "uf"
+            cont.append(_resumo_var(r["uf_L"][:, i], rr["pt1"][u], "pt1", nv, ano, "1T", u))
+            cont.append(_resumo_var(r["uf_F"][:, i], rr["opp1"][u], "opp1", nv, ano, "1T", u))
             prob.append(_prob(float(np.mean(r["uf_top"][:, i] == 0)), rr["pt_1o_uf"][u], "PT 1º na UF (1T)",
-                              "uf", ano, "1T", u))
+                              nv, ano, "1T", u))
     if b.tem_2t:
         alvo = "2T (véspera do 1T)" if horizonte == "v1" else "2T (véspera do 2T)"
         cont.append(_resumo_var(r["Q"], rr["q"]["BR"], "q", "nacional", ano, alvo))
@@ -377,9 +417,10 @@ def avaliar_rodada(b: M.Base, r: dict, horizonte: str) -> tuple[list, list]:
             prob.append(_prob(float(np.mean(r["Q"] > 0.5)), rr["q"]["BR"] > 0.5, "PT vence o 2º turno",
                               "nacional", ano, alvo))
         for i, u in enumerate(ufs):
-            cont.append(_resumo_var(r["uf_q"][:, i], rr["q"][u], "q", "uf", ano, alvo, u))
+            nv = "exterior" if u == "ZZ" else "uf"
+            cont.append(_resumo_var(r["uf_q"][:, i], rr["q"][u], "q", nv, ano, alvo, u))
             prob.append(_prob(float(np.mean(r["uf_q"][:, i] > 0.5)), rr["pt_vence_2t_uf"][u], "PT vence a UF (2T)",
-                              "uf", ano, alvo, u))
+                              nv, ano, alvo, u))
     return cont, prob
 
 
@@ -454,13 +495,16 @@ def score(cont: pd.DataFrame, prob: pd.DataFrame | None = None) -> dict:
 
 
 # ---------------------------------------------------------------- calibração
-GRADE_NAC1 = {"erro_nacional_1t.dp_p2_pp": [2.0, 3.0, 4.0, 5.0], "erro_nacional_1t.gl_t": [3, 5, 10],
+GRADE_NAC1 = {"erro_nacional_1t.dp_p2_pp": [2.0, 3.0, 4.0, 5.0, 6.0], "erro_nacional_1t.gl_t": [3, 5, 10],
               "terceira_via.dp_log": [0.10, 0.20], "vies.tau0_p2_pp": [0.0, 1.0, 2.0, 4.0, math.inf]}
-GRADE_NAC2 = {"erro_2t.dp_q_pp_vespera_1t": [2.0, 3.0, 4.5, 6.0], "erro_2t.peso_pesquisas_vespera_1t": [0.3, 0.5, 0.7, 1.0],
+GRADE_NAC2 = {"erro_2t.dp_q_pp_vespera_1t": [2.0, 3.0, 4.5, 6.0, 8.0],
+              "erro_2t.peso_pesquisas_vespera_1t": [0.1, 0.3, 0.5, 0.7],
               "vies.tau0_q_pp": [0.0, 1.0, 2.0, 4.0, math.inf]}
-GRADE_NAC3 = {"erro_2t.dp_q_pp_vespera_2t": [1.0, 1.5, 2.5, 3.5]}
-GRADE_UF = {"estados.dp_uf_minimo_pp": [3.0, 4.5, 6.0, 8.0], "estados.dp_pesquisa_piso_1t_pp": [3.0, 5.0, 7.0],
-            "estados.dp_pesquisa_piso_2t_pp": [2.0, 3.0, 4.5], "estados.dp_regional_pp": [1.5, 3.0, 4.5]}
+GRADE_NAC3 = {"erro_2t.dp_q_pp_vespera_2t": [0.5, 1.0, 1.5, 2.5, 3.5]}
+# limites inferiores pelo conhecimento prévio: erro de pesquisa estadual de presidente com MAE 2,25-4,34 p.p.
+# (Pindograma) -> piso >= 2 p.p.; erro idiossincrático da UF >= 3 p.p. (briefing)
+GRADE_UF = {"estados.dp_uf_minimo_pp": [3.0, 4.5, 6.0], "estados.dp_pesquisa_piso_1t_pp": [2.0, 3.0, 5.0, 7.0],
+            "estados.dp_pesquisa_piso_2t_pp": [2.0, 3.0, 4.5], "estados.dp_regional_pp": [1.5, 3.0, 4.5, 6.0]}
 
 
 def _grade(P, grade, filtro, n, err, nivel, horizontes=("v1",), alvo_contem=None):
@@ -480,9 +524,10 @@ def _grade(P, grade, filtro, n, err, nivel, horizontes=("v1",), alvo_contem=None
     return pd.DataFrame(linhas), chaves
 
 
-# Encolhimento do viés: fixado por princípio (premissas.json), não otimizado. Com 2-3 eleições do mesmo
+# Fixados por princípio (premissas.json), não otimizados: o encolhimento do viés e o peso das pesquisas de
+# 2º turno (só 2 eleições informam esse peso; 0,5 = sem preferência entre as duas vias). Com 2-3 eleições do mesmo
 # sinal, o CRPS sempre "prefere" menos encolhimento; a grade só mostra a sensibilidade (BACKTEST.md).
-FIXOS = ("vies.tau0_p2_pp", "vies.tau0_q_pp")
+FIXOS = ("vies.tau0_p2_pp", "vies.tau0_q_pp", "erro_2t.peso_pesquisas_vespera_1t")
 COB_MIN = (0.75, 0.90)
 
 
@@ -604,10 +649,25 @@ def pit_hist(cont, bins=10):
     return h.tolist()
 
 
-def avaliar_final(P: dict, n=40000, log=print) -> dict:
-    """Avaliação final com os parâmetros escolhidos: 3 visões, LOEO e temporal."""
+def avaliar_final(P: dict, n=40000, log=print, rel=None) -> dict:
+    """Avaliação final com os parâmetros escolhidos: 3 visões, LOEO e temporal.
+    Com rel (saída da grade), também a validação totalmente aninhada: para cada ano, os parâmetros de
+    cada bloco são os escolhidos SEM aquele ano (e o prior de viés também sem ele)."""
     err = erros_brutos(P)
     saida = {"visoes": {}}
+    if rel:
+        cs, ps = [], []
+        for ano in ANOS:
+            Py = dict(P)
+            for bloco in rel.values():
+                esc = bloco["loeo"].get(int(ano))
+                if esc:
+                    Py.update({k: (math.inf if v is None else v) for k, v in esc["escolha"].items()})
+            c, p, _ = rodar(Py, "calibrado", anos=(ano,), n=n, err=erros_brutos(Py))
+            cs.append(c); ps.append(p)
+        c, p = pd.concat(cs, ignore_index=True), pd.concat(ps, ignore_index=True)
+        saida["aninhado"] = {"cont": c, "prob": p, "score": score(c, p)}
+        log(f"[final aninhado] {saida['aninhado']['score']}")
     for visao in M.VISOES:
         cont, prob, pri = rodar(P, visao, n=n, err=err)
         saida["visoes"][visao] = {"cont": cont, "prob": prob, "priors": pri, "score": score(cont, prob)}
@@ -616,6 +676,7 @@ def avaliar_final(P: dict, n=40000, log=print) -> dict:
     saida["temporal"] = {"cont": cont, "prob": prob, "priors": pri, "score": score(cont, prob)}
     saida["erros"] = {a: {k: v for k, v in d.items() if not k.startswith("base")} for a, d in err.items()}
     saida["indecisos"] = validar_indecisos(P)
+    saida["adversarios"] = [adversario_vespera(a, P) for a in ANOS]
     return saida
 
 
@@ -624,9 +685,9 @@ def escrever(P: dict, rel: dict | None, fin: dict, tempo: float):
     cont, prob = vc["cont"], vc["prob"]
     L = []
     L.append("# Backtest do simulador: 2014, 2018 e 2022 (véspera)\n")
-    L.append(f"Gerado por `backtest.py` em {pd.Timestamp.now(tz='UTC'):%Y-%m-%d %H:%M} UTC; "
-             f"{P['simulacao.n_backtest'] if rel else 40000:,} simulações por alvo na grade e 40.000 na avaliação final; "
-             f"tempo total {tempo:.0f} s.\n".replace(",", "."))
+    L.append((f"Gerado por `backtest.py` em {pd.Timestamp.now(tz='UTC'):%Y-%m-%d %H:%M} UTC; "
+              + (f"{P['simulacao.n_backtest']:,} simulações por alvo na grade e " if rel else "sem grade (--rapido); ")
+              + f"40.000 na avaliação final; tempo total {tempo:.0f} s.\n").replace(",", "."))
     L.append("""## O que foi testado
 
 O motor de `modelo.py` rodou como se fosse a véspera de cada turno, só com as pesquisas daquele momento
@@ -646,6 +707,18 @@ O motor de `modelo.py` rodou como se fosse a véspera de cada turno, só com as 
   vazamento); a via de transferência usa a matriz implícita das pesquisas, não a matriz Quaest por candidato.
 """)
     # erros históricos
+    L.append("**Adversário de cada ano (conferido pela média de véspera, sem usar o resultado):** "
+             + "; ".join(f"{d['ano']}: {d['adversario_arquivo']} "
+                         + ("= não-PT mais votado na média" if d["confere"] else "≠ não-PT mais votado (" + d["segundo_na_media"] + ")")
+                         + " (" + ", ".join(f"{k} {v:.1f}" for k, v in d['medias_totais'].items()) + ")"
+                         for d in fin["adversarios"])
+             + ". Em 2014 Aécio passou Marina só nos últimos dias; na média simples da última semana Marina ainda "
+               "aparecia à frente, então a escolha do adversário numa disputa a três é frágil.\n")
+    L.append("**Prior estadual sem dados futuros:** inclinação do lean e dp do prior de cada ano estimados só com "
+             "eleições anteriores (" + "; ".join(f"{a}: {prior_estadual_hist(a, 1)[0]:.2f}/{prior_estadual_hist(a, 1)[1]:.1f} p.p. "
+                                                   f"(1T), {prior_estadual_hist(a, 2)[0]:.2f}/{prior_estadual_hist(a, 2)[1]:.1f} p.p. (2T)"
+                                                   for a in ANOS)
+             + "). Só os sinais das cargas do eixo NE/N x S/CO vêm de correlações 2002–2022 (parcialmente dentro da amostra).\n")
     L.append("## Erros das médias de véspera (insumo do prior de viés)\n")
     er = []
     for a, d in fin["erros"].items():
@@ -662,7 +735,12 @@ O motor de `modelo.py` rodou como se fosse a véspera de cada turno, só com as 
              + json.dumps(priors_vies(fin["_err_obj"], list(ANOS), P, "calibrado")["residuos"], ensure_ascii=False)
              .replace("NaN", "–") + "\n")
     # resumo por visão
-    L.append("## Calibração (LOEO): cobertura, erros e escores por visão\n")
+    L.append("## Calibração: cobertura, erros e escores por visão\n")
+    L.append("Nas três primeiras linhas, o prior de viés de cada ano exclui o próprio ano (LOEO), mas os demais "
+             "parâmetros (dp, gl, pisos, pesos) foram escolhidos na grade com os três anos: é uma avaliação "
+             "parcialmente dentro da amostra. A linha 'LOEO aninhado' refaz a escolha de todos os parâmetros sem o "
+             "ano avaliado e é a medida honesta de desempenho fora da amostra. O exterior (ZZ) fica fora das "
+             "métricas por UF (o voto no exterior mudou 20–40 p.p. entre eleições).\n")
     rows = []
     for v in M.VISOES:
         s = fin["visoes"][v]["score"]
@@ -674,6 +752,15 @@ O motor de `modelo.py` rodou como se fosse a véspera de cada turno, só com as 
                      "CRPS nac": s.get("crps_nacional"), "CRPS UF": s.get("crps_uf"),
                      "Brier nac": s.get("brier_nacional"), "Brier UF": s.get("brier_uf"),
                      "Log-loss UF": s.get("logloss_uf")})
+    if "aninhado" in fin:
+        sa = fin["aninhado"]["score"]
+        rows.append({"Visão": "Calibrado, LOEO aninhado (parâmetros e prior sem o ano)",
+                     "Cob. 50% nac": sa.get("cob50_nacional"), "Cob. 80% nac": sa.get("cob80_nacional"),
+                     "Cob. 95% nac": sa.get("cob95_nacional"), "Cob. 50% UF": sa.get("cob50_uf"),
+                     "Cob. 80% UF": sa.get("cob80_uf"), "Cob. 95% UF": sa.get("cob95_uf"),
+                     "CRPS nac": sa.get("crps_nacional"), "CRPS UF": sa.get("crps_uf"),
+                     "Brier nac": sa.get("brier_nacional"), "Brier UF": sa.get("brier_uf"),
+                     "Log-loss UF": sa.get("logloss_uf")})
     st = fin["temporal"]["score"]
     rows.append({"Visão": "Calibrado, prior temporal", "Cob. 50% nac": st.get("cob50_nacional"),
                  "Cob. 80% nac": st.get("cob80_nacional"), "Cob. 95% nac": st.get("cob95_nacional"),
@@ -740,7 +827,7 @@ O motor de `modelo.py` rodou como se fosse a véspera de cada turno, só com as 
     # LOEO da grade
     if rel:
         L.append("## Escolha dos parâmetros (grade + leave-one-election-out)\n")
-        L.append("Escolha por blocos: entre as combinações cuja cobertura média é de pelo menos 75% no intervalo de 80% e 90% no de 95% (evita intervalos estreitos demais), a de menor CRPS médio; cada bloco usa os parâmetros já escolhidos dos "
+        L.append("Peso das pesquisas de 2º turno (0,5) e encolhimento do viés (tau0 = 2 p.p.) fixos por princípio: só 2–3 eleições os informam. Limites inferiores dos pisos estaduais pelo conhecimento prévio (Pindograma: MAE de 2,25–4,34 p.p.). Escolha por blocos: entre as combinações cuja cobertura média é de pelo menos 75% no intervalo de 80% e 90% no de 95% (evita intervalos estreitos demais), a de menor CRPS médio; cada bloco usa os parâmetros já escolhidos dos "
                  "anteriores. 'Fora da amostra' = CRPS do ano deixado de fora com os parâmetros escolhidos nos "
                  "outros anos; 'na amostra' = com os parâmetros escolhidos em todos os anos.\n")
         for nome, d in rel.items():
@@ -795,7 +882,8 @@ def exportar_json(P, rel, fin, caminho=DADOS / "backtest_saida.json"):
         "gerado_em": pd.Timestamp.now(tz="UTC").isoformat(timespec="seconds"),
         "parametros": {k: _py(P[k]) for k in sorted(set().union(*[set(g) for g in (GRADE_NAC1, GRADE_NAC2, GRADE_NAC3,
                                                                                      GRADE_UF)]))},
-        "scores": {v: fin["visoes"][v]["score"] for v in M.VISOES} | {"calibrado_temporal": fin["temporal"]["score"]},
+        "scores": {v: fin["visoes"][v]["score"] for v in M.VISOES} | {"calibrado_temporal": fin["temporal"]["score"]}
+        | ({"calibrado_aninhado": fin["aninhado"]["score"]} if "aninhado" in fin else {}),
         "nacional": cont[cont.nivel == "nacional"].round(3).to_dict(orient="records"),
         "prob_nacional": vc["prob"][vc["prob"].nivel == "nacional"].round(4).to_dict(orient="records"),
         "uf_resumo": cont[cont.nivel == "uf"].groupby(["ano", "alvo", "var"]).agg(
@@ -830,7 +918,7 @@ def main():
         mud = {k: (P[k], Pc[k]) for k in Pc if not k.startswith("_") and Pc[k] != P[k]}
         print("parâmetros escolhidos (premissas -> backtest):", mud)
         P = Pc
-    fin = avaliar_final(P, n=40000)
+    fin = avaliar_final(P, n=40000, rel=rel)
     fin["_err_obj"] = erros_brutos(P)
     tempo = time.perf_counter() - t0
     (AQUI / "BACKTEST.md").write_text(escrever(P, rel, fin, tempo), encoding="utf-8")

@@ -122,7 +122,8 @@ def executar(n: int, seed: int, lote: int, visoes=M.VISOES, base=None, vieses=No
             "segundo_turno_outro_par": _p((~A["venceu_1t"] & ~A["par_lf"]).mean(), n),
             "lula_1o_no_1t": _p((A["primeiro"] == 0).mean(), n),
             "flavio_1o_no_1t": _p((A["primeiro"] == 1).mean(), n),
-            "lula_vence_2t_se_houver": _p((A["Q"] > 0.5).mean(), n),
+            "lula_vence_2t_se_houver": _p(((A["Q"] > 0.5) & ~A["venceu_1t"] & A["par_lf"]).sum()
+                                          / max((~A["venceu_1t"] & A["par_lf"]).sum(), 1), n),
         }
         res["prob_top2"] = {c: _p(((A["primeiro"] == k) | (A["segundo"] == k)).mean(), n) for k, c in enumerate(M.CANDS)}
         res["prob_1o_lugar"] = {c: _p((A["primeiro"] == k).mean(), n) for k, c in enumerate(M.CANDS)}

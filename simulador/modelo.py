@@ -489,6 +489,9 @@ def simular_lote(base: Base, vies: dict, B: int, rng: np.random.Generator, P: di
     load = np.array([cargas.get(r, 0.0) for r in ufs.regiao], dtype=f32)
     w_ele = ufs.eleitores.values.astype(f32)
     load = load - np.sum(w_ele * load) / np.sum(w_ele)
+    # pesos de votos válidos esperados (centram os erros subnacionais no agregado nacional)
+    w_val1 = (w_ele * (1 - ufs.abst1.values / 100) * (1 - ufs.bn1.values / 100)).astype(f32)
+    w_val2 = (w_ele * (1 - ufs.abst2.values / 100) * (1 - ufs.bn2.values / 100)).astype(f32)
     df_n = P["erro_nacional_1t.gl_t"]
     df_uf = P["estados.gl_t_uf"]
     sd_ax = P["estados.dp_eixo_pp"]
@@ -530,7 +533,7 @@ def simular_lote(base: Base, vies: dict, B: int, rng: np.random.Generator, P: di
         if ajuste:
             a1 = e.ajuste_comp["a1"][None, :] + rng.normal(0, 1, (B, 1)) * pp_para_logito(e.ajuste_comp["dp1"], base.p2_nat)
             lp = lp + a1.astype(f32)
-        sub1 = sub_erros(p_c, base.sd_p2_uf, w_ele * (1 - base.m_uf.sum(1)))
+        sub1 = sub_erros(p_c, base.sd_p2_uf, w_val1 * (1 - base.m_uf.sum(1)))
         p2 = expit(lp + sub1).astype(f32)
 
         # terceira via: erro combinado (log) + resíduo por candidato
@@ -547,8 +550,10 @@ def simular_lote(base: Base, vies: dict, B: int, rng: np.random.Generator, P: di
         r_l = TM[:, :, 0] / (TM[:, :, 0] + TM[:, :, 1])          # (B, M)
         top0 = 1 - m0.sum(2)
         mov = m0 - m1                                             # votos que saem (ou entram, se < 0) dos menores
-        L = top0 * p2 + (mov * r_l[:, None, :]).sum(2)
-        F = top0 * (1 - p2) + (mov * (1 - r_l[:, None, :])).sum(2)
+        # saem: divididos pela matriz de transferência; entram: tirados de Lula/Flávio na proporção de cada um
+        r_ef = np.where(mov >= 0, r_l[:, None, :], p2[:, :, None])
+        L = top0 * p2 + (mov * r_ef).sum(2)
+        F = top0 * (1 - p2) + (mov * (1 - r_ef)).sum(2)
         L = np.maximum(L, 0.002); F = np.maximum(F, 0.002)
         s_ = L + F + m1.sum(2)
         L, F, m1 = L / s_, F / s_, m1 / s_[:, :, None]
@@ -583,7 +588,7 @@ def simular_lote(base: Base, vies: dict, B: int, rng: np.random.Generator, P: di
     eq_pp = t2 * f32(sdq) + rng.standard_normal(B).astype(f32) * f32(sd_cons2) - b2
     e_q = pp_para_logito(eq_pp, base.q_nat).astype(f32)
     ru = P["erro_2t.rho_uf_1t_2t"] if e.primeiro_turno_fixo is None else 0.0
-    ind2 = sub_erros(q_u, base.sd_q_uf, w_ele)
+    ind2 = sub_erros(q_u, base.sd_q_uf, w_val2)
     sub2 = f32(ru) * sub1 + f32(math.sqrt(1 - ru ** 2)) * ind2
     lq = logit(q_u)[None, :].astype(f32) + e_q[:, None] + sub2
     if ajuste:

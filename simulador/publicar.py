@@ -37,6 +37,10 @@ def main():
     html = (ORIG / "index.html").read_text(encoding="utf-8")
     (DEST / "index.html").write_text(converter(html), encoding="utf-8")
     shutil.copyfile(ORIG / "resultados.json", DEST / "resultados.json")
+    alt = AQUI.parent / "modelo_alternativo" / "resultados_alt.json"
+    if alt.exists():                      # comparação com o modelo alternativo (lida relativamente pelo painel)
+        shutil.copyfile(alt, ORIG / "resultados_alt.json")
+        shutil.copyfile(alt, DEST / "resultados_alt.json")
     print("gravado:", DEST)
 
 

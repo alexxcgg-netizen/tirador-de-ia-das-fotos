@@ -16,9 +16,9 @@
   --text-2: #52514e;
   --text-3: #75736d;
   --lula: #4a3aa7;
-  --flavio: #138a61;
+  --flavio: #b4531a;
   --lula-soft: rgba(74, 58, 167, .16);
-  --flavio-soft: rgba(19, 138, 97, .16);
+  --flavio-soft: rgba(180, 83, 26, .16);
   --mid: #f0efec;
   --grid: #e6e4de;
   --accent: #2b2a27;
@@ -36,9 +36,9 @@
     --text-2: #c3c2b7;
     --text-3: #9a998f;
     --lula: #9085e9;
-    --flavio: #199e70;
+    --flavio: #c86a2e;
     --lula-soft: rgba(144, 133, 233, .22);
-    --flavio-soft: rgba(25, 158, 112, .22);
+    --flavio-soft: rgba(200, 106, 46, .22);
     --mid: #383835;
     --grid: #2c2c29;
     --accent: #e9e8e2;
@@ -56,9 +56,9 @@
   --text-2: #c3c2b7;
   --text-3: #9a998f;
   --lula: #9085e9;
-  --flavio: #199e70;
+  --flavio: #c86a2e;
   --lula-soft: rgba(144, 133, 233, .22);
-  --flavio-soft: rgba(25, 158, 112, .22);
+  --flavio-soft: rgba(200, 106, 46, .22);
   --mid: #383835;
   --grid: #2c2c29;
   --accent: #e9e8e2;
@@ -127,9 +127,9 @@ tr.destaque td { font-weight: 650; background: var(--surface-2); }
 .uf-detail { font-size: 13px; color: var(--text-2); min-height: 110px; }
 .uf-detail b { color: var(--text); }
 .pill { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-2); }
-.pill.fonte { border-color: var(--flavio); }
+.pill.fonte { border-color: var(--text-2); }
 .pill.inferencia { border-style: dashed; }
-.pill.backtest { border-color: var(--lula); }
+.pill.backtest { border-style: double; border-width: 3px; }
 .note { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
 .events { font-size: 12px; color: var(--text-2); columns: 2; column-gap: 24px; margin: 10px 0 0; padding-left: 20px; }
 @media (max-width: 700px) { .events { columns: 1; } }
@@ -251,9 +251,19 @@ code { font-size: 12px; }
     <p class="sub" id="seg-comp" style="margin-top:10px"></p>
   </section>
 
+  <section id="sec-alt">
+    <h2>Comparação com o modelo alternativo</h2>
+    <p class="sub">Um segundo modelo, construído de forma independente (<code>modelo_alternativo/</code>), usa outra metodologia: média das pesquisas por filtro de Kalman com efeitos de instituto, erro do dia da eleição sorteado dos erros reais de 2014/2018/2022 (bootstrap) e mapa por swing uniforme com desvios históricos das UFs, sem pesquisas estaduais. Quando os dois concordam, o resultado não depende das escolhas de um deles; quando discordam, a diferença aponta a premissa que decide.</p>
+    <div class="card tbl-wrap"><table id="tbl-alt"></table></div>
+    <div class="sub" id="alt-txt" style="margin-top:10px"></div>
+    <details><summary>P(Lula vence o 2º turno) por UF nos dois modelos</summary>
+      <div class="card tbl-wrap"><table id="tbl-alt-uf"></table></div>
+    </details>
+  </section>
+
   <section>
     <h2>Pesquisas ao longo do tempo</h2>
-    <p class="sub">Pontos = pesquisas publicadas (votos totais, como divulgados; 1º turno estimulado). Linha = média móvel ponderada (última pesquisa de cada instituto em 21 dias, peso √n e recência). O Datafolha de 3/10, divulgado só em votos válidos, fica fora do gráfico do 1º turno (está no modelo). Linhas verticais numeradas = eventos listados abaixo, só como contexto: os eventos não entram no modelo.</p>
+    <p class="sub">Pontos = pesquisas publicadas (votos totais, como divulgados; 1º turno estimulado). Linha = média móvel ponderada (última pesquisa de cada instituto em 21 dias, peso √n e recência). Linhas verticais numeradas = eventos listados abaixo, só como contexto: os eventos não entram no modelo.</p>
     <div class="grid g2">
       <div class="card">
         <div class="legend"><span><i class="dot l"></i>Lula</span><span><i class="dot f"></i>Flávio</span><span class="muted">1º turno (% votos totais)</span></div>
@@ -299,10 +309,10 @@ code { font-size: 12px; }
     <h2>Premissas e limitações</h2>
     <div class="note" style="margin-bottom:12px"><b>Mais simulações não reduzem a incerteza das premissas.</b> Com 500 mil simulações o erro de Monte Carlo de uma probabilidade é inferior a 0,1 ponto percentual. A incerteza real está nas premissas — viés das pesquisas, contração da terceira via, correlação entre estados, transferência de votos — e a tabela de sensibilidade mostra quanto elas pesam.</div>
     <ul class="lim sub">
-      <li><b>Neutralidade.</b> O modelo usa apenas pesquisas registradas, resultados oficiais do TSE e parâmetros documentados com origem. O prior de viés vem de uma regra aplicada igualmente a qualquer erro histórico: se os erros tivessem o sinal oposto, a correção iria para o outro lado. As três visões aparecem sempre. As cores são neutras e não correspondem às partidárias.</li>
+      <li><b>Neutralidade.</b> O modelo usa apenas pesquisas registradas, resultados oficiais do TSE e parâmetros documentados com origem. O prior de viés vem de uma regra aplicada igualmente a qualquer erro histórico: se os erros tivessem o sinal oposto, a correção iria para o outro lado. As três visões aparecem sempre. As cores (violeta e laranja-queimado) foram escolhidas para não coincidir com as cores dos partidos ou das campanhas e passam no teste de daltonismo e contraste.</li>
       <li><b>Poucas eleições.</b> O backtest tem 3 eleições (2 para o 2º turno projetado na véspera do 1º); cobertura e prior de viés são estimativas grosseiras. O erro de 2022 no 1º turno, medido pela média ampla de institutos, foi menor que em 2014 e 2018.</li>
-      <li><b>Pesquisas de véspera.</b> Quaest (2–3/10), AtlasIntel final, Futura e Veritá de véspera não tinham números publicados localizáveis no momento da rodada. O Datafolha de 3/10 entra em votos válidos; a Gerp final entra com metade do peso (linha corrigida em 3/10).</li>
-      <li><b>Pesquisas estaduais</b> vêm quase todas de uma rodada (Quaest, 18–28/9); AP só tem Lula x Flávio do 1º turno; GO e AP não têm 2º turno (prior demográfico misto nessas UFs).</li>
+      <li><b>Pesquisas de véspera</b> incluídas: Datafolha (3/10), Quaest e Futura (2–3/10), Palver, PoderData, MDA, Vox, IFP, Gerp e Veritá consolidada (20–25/9), além de 11 estaduais de véspera. AtlasIntel final, Veritá 26/9–2/10 e Gerp 1–3/10 não estavam publicadas na coleta. A Gerp 30/9–2/10 entra com metade do peso (linha corrigida em 3/10).</li>
+      <li><b>Pesquisas estaduais</b>: poucas rodadas por UF (sobretudo Quaest 18–28/9, Datafolha, AtlasIntel e Veritá na véspera); o prior de 2022 e o demográfico pesam nas UFs com pouca pesquisa.</li>
       <li><b>Indecisos</b> alocados proporcionalmente: a divisão pelo "espaço" de cada candidato (100 − rejeição − intenção), na linha de Pereira &amp; Nunes (2024), piorou a média de véspera de 2018 no backtest, e nenhuma pesquisa de 2026 perguntou 2ª opção no 1º turno. A rejeição (Datafolha 45/45) entra como teto suave no 2º turno. A matriz de transferência vem de subamostras pequenas de uma única pesquisa (Quaest).</li>
       <li><b>Segundo turno</b> é projetado hoje, três semanas antes; fatos novos entre os turnos não estão no modelo.</li>
     </ul>
@@ -326,7 +336,7 @@ code { font-size: 12px; }
 <script>
 (function () {
   "use strict";
-  var D = null, vis = "calibrado", met = "2t", selUF = null, charts = {};
+  var D = null, ALT = null, vis = "calibrado", met = "2t", selUF = null, charts = {};
   var VNOME = { calibrado: "Modelo calibrado", neutro: "Neutro (viés 0)", pleno: "Viés histórico pleno" };
   var fmtPct = function (p, d) { return (p * 100).toLocaleString("pt-BR", { minimumFractionDigits: d == null ? 1 : d, maximumFractionDigits: d == null ? 1 : d }) + "%"; };
   var fmtN = function (x, d) { return x == null ? "–" : Number(x).toLocaleString("pt-BR", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
@@ -372,7 +382,11 @@ code { font-size: 12px; }
   // ---------- carga (relativa)
   fetch("resultados.json", { cache: "no-store" }).then(function (r) {
     if (!r.ok) throw new Error("HTTP " + r.status); return r.json();
-  }).then(function (d) { D = d; renderTudo(); }).catch(function (e) {
+  }).then(function (d) { D = d; renderTudo();
+    fetch("resultados_alt.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (a) { ALT = a; safe(renderAlt); })
+      .catch(function () { var el = document.getElementById("sec-alt"); if (el) el.style.display = "none"; });
+  }).catch(function (e) {
     document.getElementById("meta").textContent = "Erro ao carregar resultados.json: " + e.message + " (abra via servidor estático, ex.: python -m http.server)";
   });
 
@@ -383,7 +397,7 @@ code { font-size: 12px; }
     var m = D.meta;
     document.getElementById("meta").textContent = "Dados até " + dmy(m.data_referencia) + " · " + fmtN(m.n_simulacoes_por_visao) + " simulações por visão";
     document.getElementById("vis-desc").innerHTML = "<b>Visão: " + esc(R().descricao) + ".</b> " + (vis === "calibrado" ? "" : "Visão de sensibilidade; o resultado principal é o Modelo calibrado. ") + "1º turno em 4/10/2026; eventual 2º turno em 25/10/2026.";
-    [renderCards, renderSens, renderHist, renderMapa, renderTabelaUF, renderValidacao, renderSegmentos, renderPesquisas, renderInst, renderMercados, renderEntradas, renderPremissas].forEach(safe);
+    [renderCards, renderSens, renderHist, renderMapa, renderTabelaUF, renderValidacao, renderSegmentos, renderAlt, renderPesquisas, renderInst, renderMercados, renderEntradas, renderPremissas].forEach(safe);
     document.getElementById("rodape").innerHTML = "Gerado em " + esc(m.gerado_em) + " · " + fmtN(m.n_simulacoes_por_visao) + " simulações × 3 visões em " + fmtN(m.tempo_simulacao_s, 1) + " s · semente " + esc(m.semente) + " · Python " + esc(m.python) + " / NumPy " + esc(m.numpy) + ". Código, dados e fontes: pasta <code>simulador/</code> (README.md, BACKTEST.md).";
   }
   window.__renderTudo = renderTudo;
@@ -572,9 +586,9 @@ code { font-size: 12px; }
     if (!V) { document.getElementById("val-kpis").innerHTML = "<p class='sub'>Backtest não disponível (rode backtest.py).</p>"; return; }
     var S = V.scores;
     var kp = function (lab, val, det) { return "<div class='card'><div class='sub' style='margin:0'>" + lab + "</div><div class='kpi-mini'>" + val + "</div><div class='sub' style='margin:0'>" + det + "</div></div>"; };
-    var c = S.calibrado;
+    var c = S.calibrado_aninhado || S.calibrado;
     document.getElementById("val-kpis").innerHTML =
-      kp("Resultados nacionais dentro do intervalo de 80% / 95%", fmtPct(c.cob80_nacional, 0) + " / " + fmtPct(c.cob95_nacional, 0), "modelo calibrado, prior leave-one-out (ideal 80% / 95%)") +
+      kp("Resultados nacionais dentro do intervalo de 80% / 95%", fmtPct(c.cob80_nacional, 0) + " / " + fmtPct(c.cob95_nacional, 0), "modelo calibrado, fora da amostra (parâmetros e prior escolhidos sem o ano avaliado); ideal 80% / 95%") +
       kp("Resultados por UF dentro do intervalo de 80% / 95%", fmtPct(c.cob80_uf, 0) + " / " + fmtPct(c.cob95_uf, 0), "neutro: " + fmtPct(S.neutro.cob80_uf, 0) + " / " + fmtPct(S.neutro.cob95_uf, 0)) +
       kp("Erro absoluto médio da mediana", fmtN(c.mae_nacional, 1) + " p.p. nac · " + fmtN(c.mae_uf, 1) + " UF", "Brier vencedor por UF: " + fmtN(c.brier_uf, 3) + " (neutro " + fmtN(S.neutro.brier_uf, 3) + ")");
     // curva de calibração
@@ -612,16 +626,16 @@ code { font-size: 12px; }
       hu += "<tr><td>" + r.ano + "</td><td class='l'>" + esc(r.alvo) + "</td><td class='l'>" + esc(VARN[r["var"]] || r["var"]) + "</td><td>" + fmtN(r.mae, 1) + "</td><td>" + fmtS(r.vies) + "</td><td>" + fmtPct(r.cob80, 0) + "</td><td>" + fmtPct(r.cob95, 0) + "</td></tr>";
     });
     document.getElementById("tbl-val-uf").innerHTML = hu + "</tbody>";
-    var ord = [["calibrado", "Calibrado"], ["neutro", "Neutro"], ["pleno", "Viés pleno"], ["calibrado_temporal", "Calibrado, só anos anteriores"]];
-    var hs = "<caption>Escores por visão (todas as eleições). CRPS e erros em p.p.; menor = melhor.</caption><thead><tr><th>Visão</th><th>Cob. 80% nac/UF</th><th>Cob. 95% nac/UF</th><th>CRPS nac</th><th>CRPS UF</th><th>Brier UF</th><th>Log-loss UF</th></tr></thead><tbody>";
+    var ord = [["calibrado_aninhado", "Calibrado, fora da amostra (aninhado)"], ["calibrado", "Calibrado"], ["neutro", "Neutro"], ["pleno", "Viés pleno"], ["calibrado_temporal", "Calibrado, só anos anteriores"]];
+    var hs = "<caption>Escores por visão (todas as eleições; exterior fora). Só a linha fora da amostra escolhe todos os parâmetros sem o ano avaliado; nas demais, só o prior de viés exclui o ano. CRPS em p.p.; menor = melhor.</caption><thead><tr><th>Visão</th><th>Cob. 80% nac/UF</th><th>Cob. 95% nac/UF</th><th>CRPS nac</th><th>CRPS UF</th><th>Brier UF</th><th>Log-loss UF</th></tr></thead><tbody>";
     ord.forEach(function (o) { var s = S[o[0]]; if (!s) return;
-      hs += "<tr" + (o[0] === "calibrado" ? " class='destaque'" : "") + "><td>" + o[1] + "</td><td>" + fmtPct(s.cob80_nacional, 0) + " / " + fmtPct(s.cob80_uf, 0) + "</td><td>" + fmtPct(s.cob95_nacional, 0) + " / " + fmtPct(s.cob95_uf, 0) + "</td><td>" + fmtN(s.crps_nacional, 2) + "</td><td>" + fmtN(s.crps_uf, 2) + "</td><td>" + fmtN(s.brier_uf, 3) + "</td><td>" + fmtN(s.logloss_uf, 3) + "</td></tr>"; });
+      hs += "<tr" + (o[0] === "calibrado_aninhado" ? " class='destaque'" : "") + "><td>" + o[1] + "</td><td>" + fmtPct(s.cob80_nacional, 0) + " / " + fmtPct(s.cob80_uf, 0) + "</td><td>" + fmtPct(s.cob95_nacional, 0) + " / " + fmtPct(s.cob95_uf, 0) + "</td><td>" + fmtN(s.crps_nacional, 2) + "</td><td>" + fmtN(s.crps_uf, 2) + "</td><td>" + fmtN(s.brier_uf, 3) + "</td><td>" + fmtN(s.logloss_uf, 3) + "</td></tr>"; });
     document.getElementById("tbl-val-sc").innerHTML = hs + "</tbody>";
   }
 
   // ---------- segmentos
   function dv(m, soft, maxAbs) {
-    if (m == null) return "<span class='muted'>–</span>";
+    if (m == null) return "<div class='dv" + (soft ? " soft" : "") + "' aria-hidden='true'></div>";
     var w = Math.min(50, Math.abs(m) / maxAbs * 50);
     return "<div class='dv" + (soft ? " soft" : "") + "' role='img' aria-label='margem " + fmtS(m, 0) + "'><i class='" + (m >= 0 ? "p" : "n") + "' style='width:" + w + "%'></i></div>";
   }
@@ -630,7 +644,7 @@ code { font-size: 12px; }
     document.getElementById("seg-avisos").innerHTML = "<b>Cuidado ao comparar.</b> " + S.avisos.map(esc).join(" ");
     var maxAbs = 45;
     var html = S.dimensoes.map(function (dim) {
-      var h = "<div class='card'><table class='segtab'><caption><b>" + esc(dim.rotulo) + "</b></caption><thead><tr><th class='l'>Segmento</th><th>Tamanho</th><th>2022</th><th>2026</th><th class='l' style='width:40%'>Margem de Lula</th></tr></thead><tbody>";
+      var h = "<div class='card'><table class='segtab'><caption><b>" + esc(dim.rotulo) + "</b></caption><thead><tr><th class='l'>Segmento</th><th>Tamanho</th><th>2022</th><th>2026</th><th class='l' style='width:40%'>Margem (Lula − adversário)</th></tr></thead><tbody>";
       dim.categorias.forEach(function (c) {
         var m22 = c.voto_2022_2t ? c.voto_2022_2t.margem_lula : null, m26 = c.voto_2026_1t ? c.voto_2026_1t.margem_lula : null;
         h += "<tr><td class='c'>" + esc(c.categoria) + "</td><td>" + (c.tamanho_pct != null ? fmtN(c.tamanho_pct, 0) + "%" : "–") + "</td><td>" + (m22 == null ? "–" : fmtS(m22, 0)) + "</td><td>" + (m26 == null ? "–" : fmtS(m26, 0)) + "</td><td class='l'>" + dv(m22, true, maxAbs) + dv(m26, false, maxAbs) + "</td></tr>";
@@ -642,6 +656,38 @@ code { font-size: 12px; }
     var T = S.totais;
     document.getElementById("seg-comp").innerHTML = "Total: 2022 2º turno Datafolha " + T.voto_2022_2t.lula + " x " + T.voto_2022_2t.bolsonaro + " (TSE: Lula " + fmtN(T.voto_2022_2t.resultado_tse_lula, 1) + "%); 2026 1º turno " + T.voto_2026_1t.lula + " x " + T.voto_2026_1t.flavio + ". " +
       "<b>Comparecimento por segmento:</b> quem mais se abstém (70+, menor escolaridade) pende para Lula nas pesquisas; o ajuste para eleitores que votam é de " + fmtN(aj.br_1t_pp, 2) + " p.p. (1º turno) e " + fmtN(aj.br_2t_pp, 2) + " p.p. (2º turno) na fatia de Lula, aplicado só na visão calibrada (o viés histórico já contém esse efeito, por isso o erro histórico usado no prior é descontado dele). Fontes: Datafolha BR-08297/2022 e BR-04029/2026, TSE 2026, Censo 2022, MDS.";
+  }
+
+
+  // ---------- modelo alternativo
+  function renderAlt() {
+    if (!ALT || !D) return;
+    var V = D.visoes, A = ALT.cenarios_2026;
+    var cols = [["Principal: calibrado", V.calibrado.prob, function (k) { return V.calibrado.prob[k] ? V.calibrado.prob[k].p : null; }, V.calibrado.segundo_turno.lula_quantis[3]],
+      ["Principal: neutro", null, function (k) { return V.neutro.prob[k] ? V.neutro.prob[k].p : null; }, V.neutro.segundo_turno.lula_quantis[3]],
+      ["Principal: viés pleno", null, function (k) { return V.pleno.prob[k] ? V.pleno.prob[k].p : null; }, V.pleno.segundo_turno.lula_quantis[3]],
+      ["Alternativo: neutro", null, function (k) { return A.neutro.prob[k]; }, A.neutro.quantis_pct_validos.lula_2t.p50],
+      ["Alternativo: histórico", null, function (k) { return A.historico.prob[k]; }, A.historico.quantis_pct_validos.lula_2t.p50]];
+    var linhas = [["Lula vence a eleição", "lula_vence"], ["Flávio vence a eleição", "flavio_vence"], ["Decidida no 1º turno", "decide_1t"],
+      ["Lula vence no 1º turno", "lula_vence_1t"], ["Flávio vence no 1º turno", "flavio_vence_1t"], ["Lula em 1º no 1º turno", "lula_1o_no_1t"]];
+    var h = "<thead><tr><th>Probabilidade</th>" + cols.map(function (c) { return "<th>" + c[0] + "</th>"; }).join("") + "</tr></thead><tbody>";
+    linhas.forEach(function (l) { h += "<tr><td>" + l[0] + "</td>" + cols.map(function (c) { var v = c[2](l[1]); return "<td>" + (v == null ? "–" : fmtPct(v)) + "</td>"; }).join("") + "</tr>"; });
+    h += "<tr><td>2º turno Lula, mediana % válidos</td>" + cols.map(function (c) { return "<td>" + fmtN(c[3], 1) + "%</td>"; }).join("") + "</tr></tbody>";
+    var br = ALT.backtest_resumo || {};
+    document.getElementById("tbl-alt").innerHTML = h + "<caption style='caption-side:bottom;padding-top:8px'>Modelo alternativo: " + esc((ALT.meta || {}).modelo || "") + "; " + fmtN((ALT.meta || {}).n_simulacoes_por_variante) + " simulações por variante. Backtest do alternativo (2018 e 2022, neutro): cobertura nacional 50/80/95% = " + (br.neutro ? [0.5, 0.8, 0.95].map(function (q) { return fmtPct(br.neutro.cobertura_nacional[String(q)], 0); }).join(" / ") : "–") + ".</caption>";
+    var sem14 = (ALT.sensibilidade_2026 || {})["pool_sem_2014/neutro"];
+    document.getElementById("alt-txt").innerHTML =
+      "<p><b>Onde concordam.</b> As médias de pesquisas são quase iguais: Lula com " + fmtN(D.entradas.p2_nacional, 1) + "% (principal) e " + fmtN(ALT.agregado_2026.lula_bipartidario_1t_pct, 1) + "% (alternativo) dos votos dos dois primeiros no 1º turno, e " + fmtN(D.entradas.q_nacional, 1) + "% e " + fmtN(ALT.agregado_2026.lula_2t_pct_validos, 1) + "% no 2º turno. Sem viés, os dois dão um 2º turno próximo de cara ou coroa; com o erro histórico médio aplicado por inteiro, os dois dão a Lula entre " + fmtPct(Math.min(V.pleno.prob.lula_vence.p, A.historico.prob.lula_vence), 0) + " e " + fmtPct(Math.max(V.pleno.prob.lula_vence.p, A.historico.prob.lula_vence), 0) + ".</p>" +
+      "<p><b>Onde discordam e por quê.</b> (1) <i>Viés:</i> o principal tem como resultado central uma correção encolhida, estimada dos erros de 2014/2018/2022; o alternativo mostra só os extremos (zero ou erro médio). (2) <i>Decisão no 1º turno:</i> o alternativo sorteia o erro de cada eleição passada como ele foi; o erro de margem de 2014 (~10 p.p.) gera caudas largas e cerca de " + fmtPct(A.neutro.prob.decide_1t, 0) + " de decisão no 1º turno" + (sem14 ? " (sem 2014, " + fmtPct(sem14.decide_1t, 0) + ")" : "") + "; o principal usa um erro t calibrado com contração da terceira via e fica em " + fmtPct(V.neutro.prob.decide_1t.p, 0) + " no neutro. (3) <i>Estados:</i> o alternativo não usa pesquisas estaduais (swing uniforme + desvio histórico da UF); o principal combina o prior com as pesquisas estaduais, o que muda as UFs com pesquisa recente que destoa de 2022.</p>";
+    var uf = D.visoes.calibrado.ufs.map(function (u) {
+      var a = (A.neutro.ufs || {})[u.uf] || {}, ah = (A.historico.ufs || {})[u.uf] || {};
+      var un = D.visoes.neutro.ufs.filter(function (x) { return x.uf === u.uf; })[0];
+      return { uf: u.uf, c: u.p_lula_2t, n: un ? un.p_lula_2t : null, an: a.p_lula_vence_2t, ah: ah.p_lula_vence_2t };
+    }).filter(function (r) { return r.an != null; });
+    uf.sort(function (x, y) { return Math.abs(y.n - y.an) - Math.abs(x.n - x.an); });
+    var hu = "<thead><tr><th>UF</th><th>Principal calibrado</th><th>Principal neutro</th><th>Alternativo neutro</th><th>Alternativo histórico</th><th>Diferença (neutro − neutro)</th></tr></thead><tbody>";
+    uf.forEach(function (r) { hu += "<tr><td>" + (r.uf === "ZZ" ? "Exterior" : r.uf) + "</td><td>" + pc(r.c) + "%</td><td>" + pc(r.n) + "%</td><td>" + pc(r.an) + "%</td><td>" + (r.ah == null ? "–" : pc(r.ah) + "%") + "</td><td>" + fmtS((r.n - r.an) * 100, 0) + " p.p.</td></tr>"; });
+    document.getElementById("tbl-alt-uf").innerHTML = hu + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Ordenado pela maior diferença entre as visões neutras dos dois modelos.</caption>";
   }
 
   // ---------- pesquisas
