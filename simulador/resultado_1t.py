@@ -380,8 +380,15 @@ PARAM_MUN = {
                                        "eleitorado) entre um município não apurado e a faixa dos já apurados: "
                                        "quando só as capitais foram apuradas, o interior é extrapolação."},
     "tolerancia_soma_uf": {"valor": 0.25, "origem": "inferencia",
-                           "nota": "Soma dos municípios x votos do arquivo da UF: diferença relativa acima disso -> "
-                                   "método antigo na UF (arquivos de horários diferentes divergem um pouco no início)."},
+                           "nota": "Válidos por eleitor totalizado (soma dos municípios x arquivo da UF): diferença "
+                                   "relativa acima disso -> método antigo na UF. Compara taxas, não totais: os arquivos "
+                                   "por município do CDN chegam atrasados em relação à UF/abrangência (totais divergem "
+                                   "~20% no início sem erro algum), mas cada arquivo é coerente consigo mesmo."},
+    "tentativas_download": {"valor": 3, "origem": "inferencia",
+                            "nota": "Tentativas por arquivo de município/abrangência (timeouts de handshake TLS)."},
+    "max_frac_sem_arquivo": {"valor": 0.10, "origem": "inferencia",
+                             "nota": "Fração do eleitorado totalizado da UF em municípios sem arquivo (nem cache) acima "
+                                     "da qual a UF volta ao método antigo; abaixo, esses municípios contam como não apurados."},
     "workers": {"valor": 24, "origem": "inferencia", "nota": "Downloads simultâneos dos arquivos por município."},
     "prazo_download_s": {"valor": 330, "origem": "inferencia",
                          "nota": "Tempo máximo baixando municípios; UF incompleta -> método antigo."},
@@ -614,32 +621,50 @@ def baixar_municipios(ciclo: str, cd: str, ufs: list, numeros: dict, cands: list
     except Exception:                                            # noqa: BLE001
         cache = {}
     base = base_municipal()
-    meta = {"erros": [], "baixados": 0, "do_cache": 0, "ufs_ok": [], "ufs_falha": []}
+    meta = {"erros": [], "baixados": 0, "do_cache": 0, "defasados": 0, "sem_arquivo": 0, "ufs_ok": [], "ufs_falha": [],
+            "motivo_fallback": {}}
+    n_tent = int(PARAM_MUN["tentativas_download"]["valor"])
+
+    def com_retentativa(url):
+        for i in range(n_tent):
+            try:
+                return baixar(url)
+            except Exception:                                    # noqa: BLE001
+                if i == n_tent - 1:
+                    raise
+                time.sleep(0.5 * (i + 1))
     abr = {}
     for uf in ufs:
         try:
-            abr[uf] = parse_ab(baixar(url_ab(ciclo, cd, uf)))
+            abr[uf] = parse_ab(com_retentativa(url_ab(ciclo, cd, uf)))
         except Exception as ex:                                  # noqa: BLE001
             meta["erros"].append(f"ab {uf}: {ex}")
             meta["ufs_falha"].append(uf)
+            meta["motivo_fallback"][uf] = f"falha ao baixar abrangência ({uf.lower()}-ab.json): {ex}"
     tarefas = []
     for uf, a in abr.items():
         for r in a.itertuples():
             if not (r.est > 0):
                 continue
             ch = f"{uf}-{r.cd}"
-            if ch in cache and cache[ch].get("versao") == r.versao:
+            if ch in cache and cache[ch].get("versao") == r.versao and cache[ch].get("est") == r.est:
                 meta["do_cache"] += 1
                 continue
             tarefas.append((uf, r.cd, r.versao))
     t0 = time.perf_counter()
     prazo = PARAM_MUN["prazo_download_s"]["valor"]
-    falhas = set()
+    falhas = {}
 
     def um(t):
         uf, cdm, ver = t
-        p = parse_tse(baixar(url_municipio(ciclo, cd, uf, cdm)), numeros)
-        return t, {"versao": ver, "est": p.get("eleitorado_totalizado"), "te": p.get("eleitorado"),
+        try:
+            p = parse_tse(com_retentativa(url_municipio(ciclo, cd, uf, cdm)), numeros)
+        except Exception as e:                                   # noqa: BLE001
+            raise RuntimeError(f"{uf}-{cdm}: {e}") from e
+        # O arquivo do município (CDN) pode estar atrás da abrangência: guarda o 'est' do próprio arquivo (os votos
+        # são coerentes com ele) e não marca a versão da abrangência, para baixar de novo na próxima rodada.
+        est = p.get("eleitorado_totalizado")
+        return t, {"versao": ver, "est": est, "te": p.get("eleitorado"),
                    "votos": [float(p["votos"].get(c, 0.0)) for c in cands]}
     if tarefas:
         with ThreadPoolExecutor(max_workers=PARAM_MUN["workers"]["valor"]) as ex:
@@ -647,6 +672,8 @@ def baixar_municipios(ciclo: str, cd: str, ufs: list, numeros: dict, cands: list
             for fu in as_completed(futs):
                 try:
                     t, d = fu.result()
+                    if not (d["est"] is not None and np.isfinite(d["est"])):
+                        raise RuntimeError(f"{t[0]}-{t[1]}: arquivo sem eleitorado totalizado")
                     cache[f"{t[0]}-{t[1]}"] = d
                     meta["baixados"] += 1
                 except Exception as e:                           # noqa: BLE001
@@ -658,8 +685,8 @@ def baixar_municipios(ciclo: str, cd: str, ufs: list, numeros: dict, cands: list
                     break
     for t in tarefas:
         ch = f"{t[0]}-{t[1]}"
-        if ch not in cache or cache[ch].get("versao") != t[2]:
-            falhas.add(t[0])
+        if ch not in cache:                                       # nem baixado agora nem de rodada anterior
+            falhas.setdefault(t[0], set()).add(t[1])
     try:
         cache_dir.mkdir(parents=True, exist_ok=True)
         cache_p.write_text(json.dumps(cache), encoding="utf-8")
@@ -668,16 +695,34 @@ def baixar_municipios(ciclo: str, cd: str, ufs: list, numeros: dict, cands: list
     dados = {}
     K = len(cands)
     for uf, a in abr.items():
-        if uf in falhas or a.empty:
+        if a.empty:
             meta["ufs_falha"].append(uf)
+            meta["motivo_fallback"][uf] = "abrangência sem municípios"
+            continue
+        sem = falhas.get(uf, set())
+        est_uf = float(a.est.clip(lower=0).sum())
+        est_sem = float(a[a.cd.isin(sem)].est.sum())
+        if sem and (est_uf <= 0 or est_sem / est_uf > PARAM_MUN["max_frac_sem_arquivo"]["valor"]):
+            meta["ufs_falha"].append(uf)
+            meta["motivo_fallback"][uf] = (f"{len(sem)} municípios sem arquivo após {n_tent} tentativas "
+                                           f"({est_sem / max(est_uf, 1):.1%} do eleitorado totalizado da UF)")
             continue
         m = a.copy()
         for k in range(K):
             m[f"v{k}"] = 0.0
         for i, r in enumerate(m.itertuples()):
             ch = f"{uf}-{r.cd}"
-            if r.est > 0 and ch in cache:
-                m.loc[i, [f"v{k}" for k in range(K)]] = cache[ch]["votos"]
+            if r.est > 0 and ch in cache and r.cd not in sem:
+                c = cache[ch]
+                m.loc[i, [f"v{k}" for k in range(K)]] = c["votos"]
+                # 'est' do próprio arquivo (votos coerentes com ele), não o da abrangência, que pode estar à frente
+                if c.get("est") is not None and np.isfinite(c["est"]):
+                    if c["est"] < r.est:
+                        meta["defasados"] += 1
+                    m.loc[i, "est"] = min(float(c["est"]), r.est)
+            elif r.est > 0:                                       # sem arquivo: conta como não apurado
+                m.loc[i, "est"] = 0.0
+                meta["sem_arquivo"] += 1
         m = m.merge(base[base.uf == uf].drop(columns="uf"), on="cd", how="left")
         dados[uf] = m
         meta["ufs_ok"].append(uf)
@@ -687,6 +732,7 @@ def baixar_municipios(ciclo: str, cd: str, ufs: list, numeros: dict, cands: list
 
 def projecao_municipal_2026(res: dict, cd_info: dict | None, log=print, baixar=None) -> dict | None:
     """Projeção por município das UFs com apuração parcial (2026). None se não der (método antigo)."""
+    MOTIVO_FALLBACK.clear()
     try:
         ciclo, cd = (cd_info or {}).get("ciclo") or "ele2026", (cd_info or {}).get("cd") or "6257"
         cands = CANDS_ANO[2026]
@@ -694,24 +740,46 @@ def projecao_municipal_2026(res: dict, cd_info: dict | None, log=print, baixar=N
         if not parciais:
             return None
         dados, meta = baixar_municipios(ciclo, cd, parciais, NUMEROS[2026], cands, log=log, baixar=baixar)
+        MOTIVO_FALLBACK.update(meta["motivo_fallback"])
         if not dados:
             log("projeção por município indisponível: método antigo (válidos / pst) em todas as UFs")
             return None
         pj = projetar_municipios(dados, len(cands), cands.index("Lula"), cands.index("Flavio"))
-        # coerência com o arquivo da UF: se a soma dos municípios não bate com o apurado na UF, método antigo na UF
+        # coerência com o arquivo da UF: válidos por eleitor totalizado (os arquivos por município podem estar
+        # atrasados em relação ao da UF, então os totais divergem sem erro; a taxa só diverge se houver erro de
+        # leitura/agregação). Sem 'eleitorado_totalizado' no arquivo da UF, compara os totais de votos.
+        tol = PARAM_MUN["tolerancia_soma_uf"]["valor"]
         for uf in list(pj["ufs"]):
-            v_mun = float(dados[uf][[f"v{k}" for k in range(len(cands))]].to_numpy().sum())
+            d = dados[uf]
+            v_mun = float(d[[f"v{k}" for k in range(len(cands))]].to_numpy().sum())
             v_uf = float(sum(res[uf]["votos"].values()))
-            if v_uf > 0 and abs(v_mun - v_uf) / v_uf > PARAM_MUN["tolerancia_soma_uf"]["valor"]:
-                meta["erros"].append(f"{uf}: municípios somam {v_mun:.0f} válidos, UF {v_uf:.0f}: método antigo")
+            e_mun = float(d.est.clip(lower=0).sum())
+            e_uf = _num(res[uf].get("eleitorado_totalizado"))
+            if np.isfinite(e_uf) and e_uf > 0 and e_mun > 0 and v_uf > 0:
+                r_mun, r_uf = v_mun / e_mun, v_uf / e_uf
+                if abs(r_mun - r_uf) / r_uf > tol:
+                    motivo = (f"válidos por eleitor totalizado: municípios {r_mun:.3f} ({v_mun:.0f}/{e_mun:.0f}), "
+                              f"UF {r_uf:.3f} ({v_uf:.0f}/{e_uf:.0f}): diferença > {tol:.0%}")
+                    meta["erros"].append(f"{uf}: {motivo}: método antigo")
+                    meta["motivo_fallback"][uf] = motivo
+                    pj["ufs"].pop(uf)
+            elif v_uf > 0 and abs(v_mun - v_uf) / v_uf > tol:
+                motivo = f"municípios somam {v_mun:.0f} válidos, UF {v_uf:.0f}: diferença > {tol:.0%}"
+                meta["erros"].append(f"{uf}: {motivo}: método antigo")
+                meta["motivo_fallback"][uf] = motivo
                 pj["ufs"].pop(uf)
+        MOTIVO_FALLBACK.update(meta["motivo_fallback"])
         pj["meta"] = meta
         log(f"projeção por município: {len(pj['ufs'])} UFs; {meta['baixados']} arquivos baixados, "
             f"{meta['do_cache']} do cache, {meta['tempo_s']} s")
         return pj
     except Exception as ex:                                       # noqa: BLE001
         log(f"projeção por município falhou ({ex}): método antigo")
+        MOTIVO_FALLBACK["_geral"] = f"projeção por município falhou: {ex}"
         return None
+
+
+MOTIVO_FALLBACK: dict = {}      # {UF: motivo} da última chamada de projecao_municipal_2026 (vai para o meta)
 
 
 # ---------------------------------------------------------------- replay com 2022 (validação da projeção)
@@ -1471,6 +1539,7 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
             raise
         log(f"consolidação com projeção por município falhou ({ex}): método antigo")
         pj = None
+        MOTIVO_FALLBACK["_geral"] = f"consolidação com projeção por município falhou: {ex}"
         c = consolidar(res, 2026, _ufs_ref_2026(), _previsao_uf_2026(js))
     saida["meta"]["projecao_parcial"] = {
         "metodo_uf": dict(zip(UFS, c["metodo_uf"])), "parametros": PARAM_MUN,
@@ -1481,6 +1550,13 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
                                                 "sd_fatia_lula_pp": round(100 * r["sd_fatia_a"], 3)}
                                              for u, r in pj["ufs"].items()},
         "nacional_metodo_antigo": None}
+    motivo = {}
+    for u, met in zip(UFS, c["metodo_uf"]):
+        if met == "validos/pst":
+            motivo[u] = MOTIVO_FALLBACK.get(u) or MOTIVO_FALLBACK.get("_geral") or (
+                "projeção por município não executada (fonte não-TSE ou desativada)" if pj is None and not MOTIVO_FALLBACK
+                else "sem projeção por município para a UF")
+    saida["meta"]["projecao_parcial"]["motivo_fallback"] = motivo
     if pj is not None:
         c_ant = consolidar(res, 2026, _ufs_ref_2026(), _previsao_uf_2026(js))
         saida["meta"]["projecao_parcial"]["nacional_metodo_antigo"] = {

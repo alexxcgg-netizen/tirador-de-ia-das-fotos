@@ -257,6 +257,7 @@ def test_rodar_2026_parcial_com_municipios(monkeypatch, tmp_path):
         json.dumps(R._limpo(obj), allow_nan=False))))
     # o AC falso tem fatias próprias (40/45): a soma dos municípios não bate com o AC do arquivo da UF -> ajusta
     vv_ac = sum(e[2] for e in _fake_tse()[1].values())
+    est_ac = sum(e[1] for e in _fake_tse()[1].values())
     orig = falso
 
     def falso_ac(*a, **k):
@@ -265,15 +266,58 @@ def test_rodar_2026_parcial_com_municipios(monkeypatch, tmp_path):
         votos.update({c: vv_ac * 0.15 / 5 for c in cands[2:]})
         res["AC"]["votos"] = votos
         res["AC"]["validos"] = vv_ac
+        res["AC"]["eleitorado_totalizado"] = est_ac      # coerente com os arquivos por município
         return res
     monkeypatch.setattr(R, "buscar_resultados", falso_ac)
     out = R.rodar_2026(2000, 1, fonte="auto", log=lambda *a: None)
     pp = out["meta"]["projecao_parcial"]
     assert pp["metodo_uf"]["AC"] == "municipios"
     assert pp["metodo_uf"]["SP"] == "validos/pst"
+    assert "AC" not in pp["motivo_fallback"] and pp["motivo_fallback"]["SP"]
     assert pp["nacional_metodo_antigo"] is not None
     assert "resultados_2t.json" in gravados and gravados["resultados_2t.json"]["meta"]["status"] == "parcial"
     assert 0 <= out["segundo_turno"]["p_a_vence"] <= 1
     # sem municípios (flag): todas as UFs no método antigo
     out2 = R.rodar_2026(2000, 1, fonte="auto", log=lambda *a: None, municipios=False)
     assert out2["meta"]["projecao_parcial"]["metodo_uf"]["AC"] == "validos/pst"
+
+
+def test_arquivo_municipal_defasado_e_falha_transitoria(tmp_path, monkeypatch):
+    """CDN serve arquivo do município atrás da abrangência (est menor) e timeouts transitórios: a UF continua
+    na projeção por município (taxa válidos/eleitor coerente), o arquivo defasado é baixado de novo na rodada seguinte."""
+    monkeypatch.setattr(R, "CACHE_2026", tmp_path)
+    baixar0, estado, calls = _fake_tse()
+    falhou = set()
+
+    def baixar(url, timeout=20):
+        if not url.endswith("-ab.json") and url not in falhou:
+            falhou.add(url)
+            raise OSError("The handshake operation timed out")
+        js = baixar0(url, timeout)
+        if not url.endswith("-ab.json"):                     # metade do apurado: arquivo atrasado
+            for k in ("est",):
+                js["e"][k] = str(int(int(js["e"][k]) * 0.5))
+            js["v"]["vv"] = str(int(int(js["v"]["vv"]) * 0.5))
+            for car in js["carg"]:
+                for ag in car["agr"]:
+                    for par in ag["par"]:
+                        for c in par["cand"]:
+                            c["vap"] = str(int(int(c["vap"]) * 0.5))
+        return js
+    monkeypatch.setattr(R.time, "sleep", lambda s: None)
+    vv = sum(e[2] for e in estado.values())
+    est = sum(e[1] for e in estado.values())
+    votos = {"Lula": vv * 0.40, "Flavio": vv * 0.45}
+    votos.update({c: vv * 0.15 / 5 for c in R.CANDS_ANO[2026][2:]})
+    res = {"AC": {"pst": 60.0, "votos": votos, "eleitorado_totalizado": est}}
+    pj = R.projecao_municipal_2026(res, None, log=lambda *a: None, baixar=baixar)
+    assert pj is not None and "AC" in pj["ufs"], R.MOTIVO_FALLBACK
+    assert pj["meta"]["defasados"] > 0 and pj["meta"]["motivo_fallback"] == {}
+    n0 = len(falhou)
+    pj2 = R.projecao_municipal_2026(res, None, log=lambda *a: None, baixar=baixar)
+    assert pj2["meta"]["baixados"] > 0 and len(falhou) == n0      # defasados baixados de novo
+    # taxa válidos/eleitor incoerente (erro de leitura): método antigo, com motivo registrado
+    ruim = {"AC": dict(res["AC"], votos={k: v * 3 for k, v in votos.items()})}
+    pj3 = R.projecao_municipal_2026(ruim, None, log=lambda *a: None, baixar=baixar)
+    assert pj3 is None or "AC" not in pj3["ufs"]
+    assert "AC" in R.MOTIVO_FALLBACK
