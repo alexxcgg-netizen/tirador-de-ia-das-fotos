@@ -168,6 +168,23 @@ code { font-size: 12px; }
     <div class="grid g4" id="cards"></div>
   </section>
 
+  <section id="sec-2t" style="display:none">
+    <h2>2º turno: previsão com o 1º turno apurado</h2>
+    <p class="sub">Depois da apuração, o 1º turno simulado é trocado pelo resultado oficial do TSE por UF (UFs ainda em apuração são projetadas, com incerteza proporcional ao que falta apurar). O 2º turno parte dessas fatias reais e transfere os votos dos eliminados pela matriz Quaest (com incerteza), aplica a variação histórica do comparecimento entre turnos por UF, dá peso reduzido às pesquisas de 2º turno feitas antes do 1º turno e usa o erro nacional, regional e estadual calibrado em 2014, 2018 e 2022 (1º turno real → 2º turno real). Gerado por <code>resultado_1t.py --rodar-tudo</code>.</p>
+    <div class="note" id="t2-status" style="margin-bottom:12px"></div>
+    <div id="t2-corpo">
+    <div class="grid g4" id="t2-cards"></div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card tbl-wrap"><table id="t2-1t"></table></div>
+      <div class="card tbl-wrap"><table id="t2-transf"></table></div>
+    </div>
+    <details style="margin-top:12px"><summary>2º turno por UF</summary>
+      <div class="card tbl-wrap"><table id="t2-uf"></table></div>
+    </details>
+    </div>
+    <p class="sub" id="t2-ensaio" style="margin-top:10px"></p>
+  </section>
+
   <section>
     <h2>Sensibilidade: o resultado depende da premissa sobre o erro das pesquisas</h2>
     <p class="sub">O <b>Modelo calibrado</b> é o resultado principal: integra a incerteza sobre o viés das pesquisas, com um prior tirado dos erros de 2014, 2018 e 2022, encolhido em direção a zero e reduzido para institutos com método que deveria diminuí-lo. <b>Neutro</b> supõe viés zero. <b>Viés histórico pleno</b> repete o erro médio daqueles anos sem encolher. Os mercados de previsão aparecem só como comparação.</p>
@@ -329,7 +346,7 @@ code { font-size: 12px; }
 <script>
 (function () {
   "use strict";
-  var D = null, ALT = null, vis = "calibrado", met = "2t", selUF = null, charts = {};
+  var D = null, ALT = null, T2 = null, vis = "calibrado", met = "2t", selUF = null, charts = {};
   var VNOME = { calibrado: "Modelo calibrado", neutro: "Neutro (viés 0)", pleno: "Viés histórico pleno" };
   var fmtPct = function (p, d) { return (p * 100).toLocaleString("pt-BR", { minimumFractionDigits: d == null ? 1 : d, maximumFractionDigits: d == null ? 1 : d }) + "%"; };
   var fmtN = function (x, d) { return x == null ? "–" : Number(x).toLocaleString("pt-BR", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
@@ -379,6 +396,9 @@ code { font-size: 12px; }
     fetch("resultados_alt.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (a) { ALT = a; safe(renderAlt); })
       .catch(function () { var el = document.getElementById("sec-alt"); if (el) el.style.display = "none"; });
+    fetch("resultados_2t.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (a) { T2 = a; safe(render2T); })
+      .catch(function () { var el = document.getElementById("sec-2t"); if (el) el.style.display = "none"; });
   }).catch(function (e) {
     document.getElementById("meta").textContent = "Erro ao carregar resultados.json: " + e.message + " (abra via servidor estático, ex.: python -m http.server)";
   });
@@ -390,7 +410,7 @@ code { font-size: 12px; }
     var m = D.meta;
     document.getElementById("meta").textContent = "Dados até " + dmy(m.data_referencia) + " · " + fmtN(m.n_simulacoes_por_visao) + " simulações por visão";
     document.getElementById("vis-desc").innerHTML = "<b>Visão: " + esc(R().descricao) + ".</b> " + (vis === "calibrado" ? "" : "Visão de sensibilidade; o resultado principal é o Modelo calibrado. ") + "1º turno em 4/10/2026; eventual 2º turno em 25/10/2026.";
-    [renderCards, renderSens, renderHist, renderMapa, renderTabelaUF, renderValidacao, renderSegmentos, renderAlt, renderPesquisas, renderInst, renderMercados, renderEntradas, renderPremissas].forEach(safe);
+    [renderCards, renderSens, renderHist, renderMapa, renderTabelaUF, renderValidacao, renderSegmentos, renderAlt, render2T, renderPesquisas, renderInst, renderMercados, renderEntradas, renderPremissas].forEach(safe);
     document.getElementById("rodape").innerHTML = "Gerado em " + esc(m.gerado_em) + " · " + fmtN(m.n_simulacoes_por_visao) + " simulações × 3 visões em " + fmtN(m.tempo_simulacao_s, 1) + " s · semente " + esc(m.semente) + " · Python " + esc(m.python) + " / NumPy " + esc(m.numpy) + ". Código, dados e fontes: pasta <code>simulador/</code> (README.md, BACKTEST.md).";
   }
   window.__renderTudo = renderTudo;
@@ -681,6 +701,56 @@ code { font-size: 12px; }
     var hu = "<thead><tr><th>UF</th><th>Principal calibrado</th><th>Principal neutro</th><th>Alternativo neutro</th><th>Alternativo histórico</th><th>Diferença (neutro − neutro)</th></tr></thead><tbody>";
     uf.forEach(function (r) { hu += "<tr><td>" + (r.uf === "ZZ" ? "Exterior" : r.uf) + "</td><td>" + pc(r.c) + "%</td><td>" + pc(r.n) + "%</td><td>" + pc(r.an) + "%</td><td>" + (r.ah == null ? "–" : pc(r.ah) + "%") + "</td><td>" + fmtS((r.n - r.an) * 100, 0) + " p.p.</td></tr>"; });
     document.getElementById("tbl-alt-uf").innerHTML = hu + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Ordenado pela maior diferença entre as visões neutras dos dois modelos.</caption>";
+  }
+
+
+  // ---------- 2º turno com o 1º turno apurado (resultados_2t.json, gerado por resultado_1t.py)
+  var NOMEC = { Lula: "Lula", Flavio: "Flávio Bolsonaro", Caiado: "Caiado", Cury: "Cury", Zema: "Zema", Renan: "Renan Santos", Outros: "Outros", Bolsonaro: "Bolsonaro" };
+  function nomeC(c) { return NOMEC[c] || c; }
+  function dotC(c) { return c === "Lula" ? "l" : (c === "Flavio" ? "f" : "n"); }
+  function render2T() {
+    var X = T2, sec = document.getElementById("sec-2t");
+    if (!X || !sec) return;
+    sec.style.display = "";
+    var m = X.meta || {}, st = document.getElementById("t2-status");
+    var ens = X.ensaio_2022 && X.ensaio_2022.anos ? X.ensaio_2022 : null;
+    var txtEns = "";
+    if (ens) {
+      var e22 = ens.anos["2022"] || {}, ag = ens.agregado || {};
+      txtEns = "<b>Ensaio com 2022</b> (1º turno de 2022 como se fosse hoje, erros calibrados só com 2014 e 2018): previsão de " + fmtN(e22.previsto_a_media, 1) + "% para Lula no 2º turno (p10–p90 " + fmtN(e22.previsto_a_quantis[1], 1) + "–" + fmtN(e22.previsto_a_quantis[5], 1) + "), P(Lula vence) " + fmtPct(e22.p_a_vence, 0) + "; resultado real " + fmtN(e22.real_a_pct, 1) + "%. Nos três ensaios (2014, 2018, 2022, cada um sem o próprio ano na calibração): erro médio absoluto nacional " + fmtN(ag.mae_nacional_pp, 1) + " p.p.; resultado nacional dentro do intervalo de 80% em " + fmtPct(ag.cobertura_80_nacional, 0) + " dos casos; UFs dentro do intervalo de 80% em " + fmtPct(ag.uf_cobertura_80, 0) + ". Detalhes em <code>data/ensaio_2022/</code>.";
+    }
+    document.getElementById("t2-ensaio").innerHTML = txtEns;
+    if (m.status === "aguardando" || !X.segundo_turno) {
+      st.innerHTML = X.decidido_1t ? "<b>" + esc(X.mensagem || "Eleição decidida no 1º turno.") + "</b>" : "<b>Aguardando a apuração.</b> " + esc(m.mensagem || "") + (m.gerado_em ? " Última verificação: " + esc(m.gerado_em) + "." : "");
+      document.getElementById("t2-corpo").style.display = "none";
+      return;
+    }
+    document.getElementById("t2-corpo").style.display = "";
+    var S = X.segundo_turno, A = S.par[0], B = S.par[1];
+    st.innerHTML = (m.status === "final" ? "<b>Apuração do 1º turno concluída</b>" : "<b>Apuração parcial: " + fmtN(m.pst_nacional, 2) + "% das seções totalizadas.</b> UFs em apuração são projetadas; os números mudam a cada atualização") +
+      " · fonte: " + esc(m.fonte || "TSE") + (m.atualizado_tse ? " (" + esc(m.atualizado_tse) + ")" : "") + " · gerado em " + esc(m.gerado_em) + " · " + fmtN(S.n) + " simulações." +
+      (S.erros && S.erros.par_previsto === false ? " <b>Par de 2º turno diferente do previsto:</b> sem matriz de transferência medida; incerteza ampliada." : "");
+    var bar = '<div class="bar2" aria-hidden="true"><span style="width:' + (S.p_a_vence * 100) + '%"></span></div>';
+    var q = S.a_quantis;
+    document.getElementById("t2-cards").innerHTML =
+      card(nomeC(A) + " vence o 2º turno", dotC(A), { p: S.p_a_vence }, "≈ " + emDez(S.p_a_vence) + " · e.p. MC " + fmtPct(S.ep_mc, 2), A === "Lula" ? bar : "") +
+      card(nomeC(B) + " vence o 2º turno", dotC(B), { p: S.p_b_vence }, "≈ " + emDez(S.p_b_vence)) +
+      '<div class="card stat"><div class="lab"><i class="dot ' + dotC(A) + '"></i>' + esc(nomeC(A)) + ', % válidos no 2º turno</div><div class="val">' + fmtN(q[3], 1) + '%</div><div class="det">p10–p90: ' + fmtN(q[1], 1) + "–" + fmtN(q[5], 1) + " · p2,5–p97,5: " + fmtN(q[0], 1) + "–" + fmtN(q[6], 1) + "</div></div>" +
+      '<div class="card stat"><div class="lab"><i class="dot n"></i>Centro da projeção</div><div class="val">' + fmtN(S.centro.centro_a_pct, 1) + '%</div><div class="det">transferência ' + fmtN(S.centro.via_transferencia_a_pct, 1) + "% · pesquisas " + (S.centro.pesquisas_a_pct == null ? "–" : fmtN(S.centro.pesquisas_a_pct, 1) + "% (peso " + fmtN(S.centro.peso_pesquisas, 2) + ")") + " · viés histórico " + fmtS(-S.centro.vies_historico_pp, 1) + " p.p.</div></div>";
+    var R1 = (X.primeiro_turno_real || {}).nacional || {};
+    var ks = Object.keys(R1).sort(function (a, b) { return R1[b] - R1[a]; });
+    document.getElementById("t2-1t").innerHTML = "<caption>1º turno " + (m.status === "final" ? "apurado" : "projetado") + " (votos válidos)</caption><thead><tr><th>Candidato</th><th>% válidos</th></tr></thead><tbody>" +
+      ks.map(function (k) { return "<tr><td><i class='dot " + dotC(k) + "'></i> " + esc(nomeC(k)) + "</td><td>" + fmtN(R1[k], 2) + "%</td></tr>"; }).join("") + "</tbody>";
+    var T = S.transferencia || {};
+    document.getElementById("t2-transf").innerHTML = "<caption>Para onde vão os votos dos eliminados (centro da matriz)</caption><thead><tr><th>Eleitor de</th><th>" + esc(nomeC(A)) + "</th><th>" + esc(nomeC(B)) + "</th><th>Branco/nulo/abstenção</th></tr></thead><tbody>" +
+      Object.keys(T).map(function (k) { return "<tr><td>" + esc(nomeC(k)) + "</td><td>" + fmtPct(T[k][0], 0) + "</td><td>" + fmtPct(T[k][1], 0) + "</td><td>" + fmtPct(T[k][2], 0) + "</td></tr>"; }).join("") +
+      "</tbody><caption style='caption-side:bottom;padding-top:8px'>" + esc(m.transferencia_fonte || "") + ". Erro nacional " + fmtN(S.erros.dp_nacional_pp, 1) + " p.p. (t, " + S.erros.gl_t + " gl), regional " + fmtN(S.erros.dp_regional_pp, 1) + ", estadual " + fmtN(S.erros.dp_uf_pp, 1) + ".</caption>";
+    var ufs = S.ufs.slice().sort(function (x, y) { return Math.abs(x.p_a - 0.5) - Math.abs(y.p_a - 0.5); });
+    var h = "<thead><tr><th>UF</th><th>Apurado</th><th>" + esc(nomeC(A)) + " 1º t.</th><th>" + esc(nomeC(B)) + " 1º t.</th><th>" + esc(nomeC(A)) + " 2º t. (p10–p90)</th><th>P(" + esc(nomeC(A)) + " vence na UF)</th></tr></thead><tbody>";
+    ufs.forEach(function (u) {
+      h += "<tr><td>" + (u.uf === "ZZ" ? "Exterior" : esc(u.uf)) + "</td><td>" + fmtN(u.pst, 1) + "%" + (u.fonte === "previsão" ? " (prev.)" : "") + "</td><td>" + fmtN(u.a_1t, 1) + "%</td><td>" + fmtN(u.b_1t, 1) + "%</td><td>" + fmtN(u.a_q[1], 1) + "% <span class='muted'>(" + fmtN(u.a_q[0], 1) + "–" + fmtN(u.a_q[2], 1) + ")</span></td><td>" + fmtPct(u.p_a, 0) + "</td></tr>";
+    });
+    document.getElementById("t2-uf").innerHTML = h + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Ordenado da UF mais disputada para a menos disputada.</caption>";
   }
 
   // ---------- pesquisas

@@ -551,7 +551,10 @@ def simular_lote(base: Base, vies: dict, B: int, rng: np.random.Generator, P: di
         top0 = 1 - m0.sum(2)
         mov = m0 - m1                                             # votos que saem (ou entram, se < 0) dos menores
         # saem: divididos pela matriz de transferência; entram: tirados de Lula/Flávio na proporção de cada um
-        r_ef = np.where(mov >= 0, r_l[:, None, :], p2[:, :, None])
+        if P.get("terceira_via.destino_contracao", "matriz") == "proporcional":
+            r_ef = np.broadcast_to(p2[:, :, None], mov.shape)          # sensibilidade: saída sem mexer em p2
+        else:
+            r_ef = np.where(mov >= 0, r_l[:, None, :], p2[:, :, None])
         L = top0 * p2 + (mov * r_ef).sum(2)
         F = top0 * (1 - p2) + (mov * (1 - r_ef)).sum(2)
         L = np.maximum(L, 0.002); F = np.maximum(F, 0.002)

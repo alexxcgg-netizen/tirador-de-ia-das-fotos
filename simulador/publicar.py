@@ -37,6 +37,8 @@ def main():
     html = (ORIG / "index.html").read_text(encoding="utf-8")
     (DEST / "index.html").write_text(converter(html), encoding="utf-8")
     shutil.copyfile(ORIG / "resultados.json", DEST / "resultados.json")
+    if (ORIG / "resultados_2t.json").exists():     # 2º turno com o 1º turno apurado (resultado_1t.py)
+        shutil.copyfile(ORIG / "resultados_2t.json", DEST / "resultados_2t.json")
     alt = AQUI.parent / "modelo_alternativo" / "resultados_alt.json"
     if alt.exists():                      # comparação com o modelo alternativo (lida relativamente pelo painel)
         shutil.copyfile(alt, ORIG / "resultados_alt.json")

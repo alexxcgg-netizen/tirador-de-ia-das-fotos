@@ -15,6 +15,8 @@ pip install numpy pandas pytest                 # Python 3.10+
 python simulador/backtest.py                    # grade + LOEO + BACKTEST.md + data/backtest_saida.json (~13 min)
 python simulador/rodar.py                       # 500.000 simulações x 3 visões -> web/resultados.json (~45 s)
 python simulador/publicar.py                    # cópia para artifact em web_publicar/ (+ resultados_alt.json)
+python simulador/resultado_1t.py --rodar-tudo   # noite da apuração: TSE -> avaliação -> 2º turno -> publicar (~30 s)
+python simulador/resultado_1t.py --ensaio-2022  # ensaio do pipeline com 2022 (+ validação 2014/2018) (~75 s)
 python -m pytest simulador/tests -q             # testes (~25 s)
 cd simulador/web && python -m http.server 8000  # abrir http://localhost:8000
 ```
@@ -38,6 +40,7 @@ simulador/
   rodar.py            2026: 3 visões -> web/resultados.json (inclui validação e segmentos)
   segmentos.py        prior demográfico por UF, ajuste de comparecimento, voto por segmento (SEGMENTOS.md)
   publicar.py         gera web_publicar/ (página sem <html>/<head>/<body>, para artifact)
+  resultado_1t.py     noite da apuração: resultado TSE, avaliação (AVALIACAO_1T.md) e 2º turno condicionado
   BACKTEST.md         relatório do backtest (tabelas)
   data/               pesquisas 2026 e históricas, resultados TSE, rejeição, eventos, segmentos
   web/                painel (index.html) + resultados.json
@@ -49,16 +52,18 @@ simulador/
 
 | Probabilidade | **Modelo calibrado** (principal) | Neutro (viés 0) | Viés histórico pleno | Polymarket (3/10) |
 |---|---|---|---|---|
-| Lula vence a eleição | **35,7%** | 45,5% | 30,4% | 40,1% |
-| Flávio Bolsonaro vence a eleição | **64,3%** | 54,5% | 69,6% | 58,8% |
-| Decidida no 1º turno | 20,8% (Lula 4,8; Flávio 16,0) | 15,7% (9,4; 6,3) | 32,0% (3,4; 28,6) | 5,3% |
-| Lula em 1º no 1º turno | 34,1% | 56,3% | 23,5% | 71,4% |
-| 1º turno Lula, % válidos (p10–p90) | 44,3 (40,1–48,5) | 46,0 (42,1–49,9) | 43,2 (38,8–47,7) | |
-| 1º turno Flávio, % válidos (p10–p90) | 46,8 (42,5–51,0) | 45,1 (41,1–49,1) | 48,0 (43,5–52,6) | |
-| 2º turno Lula, % válidos (p10–p90) | 48,7 (43,9–53,6) | 49,6 (44,9–54,3) | 48,2 (43,2–53,2) | |
+| Lula vence a eleição | **35,9%** | 45,7% | 30,5% | 40,1% |
+| Flávio Bolsonaro vence a eleição | **64,1%** | 54,3% | 69,5% | 58,8% |
+| Decidida no 1º turno | 21,4% (Lula 5,1; Flávio 16,3) | 16,4% (9,9; 6,5) | 32,9% (3,5; 29,3) | 5,3% |
+| Lula em 1º no 1º turno | 34,5% | 56,5% | 23,6% | 71,4% |
+| 1º turno Lula, % válidos (p10–p90) | 44,4 (40,3–48,6) | 46,1 (42,2–50,0) | 43,3 (38,9–47,8) | |
+| 1º turno Flávio, % válidos (p10–p90) | 46,8 (42,6–51,1) | 45,2 (41,2–49,2) | 48,1 (43,6–52,7) | |
+| 2º turno Lula, % válidos (p10–p90) | 48,7 (43,9–53,6) | 49,6 (44,9–54,4) | 48,2 (43,2–53,2) | |
 
+Rodada refeita na madrugada de 4/10 com a pesquisa final da AtlasIntel (27/9–2/10, BR-00999/2026, publicada
+em votos válidos: Lula 47,0, Flávio 44,1; 2º turno 50,1 x 49,9): mudanças ≤ 0,6 p.p. nas probabilidades.
 Erro de Monte Carlo ≤ 0,07 p.p. UFs disputadas no calibrado (P(Lula vence o 2º turno na UF)):
-PA 56%, AM 47%, TO 36%, MG 34%, AP 13%, RS 11%, SP 10%, RJ 7%, ES 7%, DF 5%, AL 78%;
+PA 56%, AM 47%, TO 36%, MG 35%, AP 13%, RS 11%, SP 11%, RJ 7%, ES 7%, DF 5%, AL 78%;
 demais UFs do Nordeste ≥ 98%; Sul/Centro-Oeste/RO/AC/RR ≤ 11%.
 
 **Leitura.** A média das pesquisas (efeitos de instituto, véspera incluída) dá Lula com 50,8% dos
@@ -155,6 +160,56 @@ métricas por UF.
 - Validação dos indecisos e da escolha do adversário (2014: Aécio era o não-PT mais votado na média de
   véspera por instituto, mas não na média simples da última semana) em BACKTEST.md.
 
+## Noite da apuração: `resultado_1t.py`
+
+```bash
+python simulador/resultado_1t.py --rodar-tudo                 # repetir à vontade enquanto a apuração avança
+python simulador/resultado_1t.py --rodar-tudo --n 100000      # mais rápido
+python simulador/resultado_1t.py --rodar-tudo --fonte manual  # TSE fora do ar: data/resultado_1t_manual.csv
+```
+
+**a) Resultado oficial.** O código da eleição vem do arquivo público de configuração do TSE
+(`https://resultados.tse.jus.br/oficial/comum/config/ele-c.json`): ciclo `ele2026`, eleição federal do 1º turno
+**6257** (2º turno 6258). Presidente, Brasil/UF/exterior:
+`https://resultados.tse.jus.br/oficial/ele2026/6257/dados/{uf}/{uf}-c0001-e006257-u.json` (formato "u", o mesmo
+de 2024; na madrugada de 4/10 já publicado, com zeros). O padrão de 2022 (`dados-simplificados/...-r.json`)
+devolve 404 hoje; o leitor entende os dois formatos. Lê % de seções totalizadas (`pst`), eleitorado,
+comparecimento, abstenção, brancos, nulos, válidos e votos por candidato (por número: 13 Lula, 22 Flávio,
+55 Caiado, 70 Cury, 30 Zema, 14 Renan; demais em "Outros"; votos anulados sub judice ficam fora dos válidos).
+Fallbacks: última leitura gravada em `data/tse_1t_2026/` (fora do git) e CSV manual
+(`uf,pst,eleitorado,comparecimento,abstencao,validos,brancos,nulos,lula,flavio,caiado,cury,zema,renan,outros`),
+preenchido de qualquer fonte de apuração (G1, UOL etc.; não há JSON público estável desses portais que desse para
+testar antes da eleição). UF parcial: fatias das seções apuradas e válidos projetados por `válidos / pst`;
+UF sem nenhuma seção: previsão de véspera do modelo calibrado. Antes da 1ª parcial, grava status "aguardando".
+
+**b) Avaliação** (`data/avaliacao_1t.json`, `AVALIACAO_1T.md`): 3 visões do modelo, modelo alternativo, média das
+pesquisas, última pesquisa nacional de cada instituto (últimos 7 dias, convertida para válidos) e mercados;
+erros nacionais e por UF, PIT, cobertura dos intervalos, CRPS aproximado pelos quantis, Brier e log score dos
+eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesquisas pelo erro na margem.
+
+**c) 2º turno condicionado ao 1º turno real** (`web/resultados_2t.json`, seção "2º turno" do painel; 500 mil simulações):
+- fatias reais por UF (UFs parciais com ruído ∝ √(1 − pst)); se alguém passa de 50% com a apuração concluída, não há simulação;
+- transferência dos eliminados: Quaest 2–3/10 (Caiado 19/43/38, Renan 11/60/29 para Lula/Flávio/fora) e 24–27/9
+  (Cury 28/35/37, Zema 10/80/10), Dirichlet α = 30; par diferente de Lula x Flávio: linha genérica e erro × 1,5;
+- comparecimento: abstenção e brancos/nulos reais do 1º turno + variação média 1º→2º turno da UF em 2014/2018/2022;
+- pesquisas de 2º turno: as de antes do 1º turno com peso 0,25 em logito (em 2018 e 2022 superestimaram o PT em
+  3,5 e 4,7 p.p.); as feitas depois do 1º turno, quando entrarem em `pesquisas_nacionais.csv`, entram por precisão
+  (dp 1,5 p.p. + deriva de 3 p.p. por 21 dias até o 2º turno);
+- erro calibrado em 2014/2018/2022 (1º turno real + o que se sabia na véspera → 2º turno real): erros nacionais
+  da projeção +2,7 / −0,3 / +2,9 p.p. (pró-PT); dp nacional com prior √((2·3² + Σe²)/(2 + n)) = 2,6 p.p. (t5),
+  viés encolhido (τ0 = 2 p.p.; −1,1 p.p. no centro), dp regional ~1,1 e estadual ~1,6 p.p. (resíduos por UF
+  depois do ajuste nacional). A variância nacional que já vem da incerteza da matriz não é contada duas vezes.
+- Estimativas ecológicas TSE (fração do PT nos votos ganhos entre turnos): 2014 0,40; 2018 0,63; 2022 0,30 —
+  mostram quanto a transferência real varia de uma eleição para outra (reportadas em `resultados_2t.json`).
+
+**Ensaio com 2022** (1º turno de 2022 como se fosse a noite de hoje; resultado lido de JSON no formato do TSE de
+2022, reconstruídos dos dados abertos em `tests/fixtures/tse/2022/`; erros calibrados só com 2014 e 2018):
+2º turno previsto Lula 53,1% (p10–p90 49,6–56,6; P(Lula vence) 88%); real 50,9% (PIT 0,20, dentro do intervalo
+de 80%); 26 de 27 UFs com o vencedor certo, erro médio absoluto por UF 2,1 p.p., todas as UFs no intervalo de 80%.
+Na véspera do 1º turno, o modelo principal dava 54,3% para Lula no 2º turno. Ensaios 2014/2018 (mesma regra, sem o
+próprio ano): Dilma 53,6 (real 51,6; PIT 0,24), Haddad 43,3 (real 44,9; PIT 0,70); nos três, resultado nacional
+dentro do intervalo de 80%, UFs 91% no de 80% e 98% no de 95%. Saídas em `data/ensaio_2022/`.
+
 ## Comparação com o modelo alternativo (`modelo_alternativo/`)
 Modelo independente (filtro de Kalman, bootstrap dos erros reais de 2014/18/22, swing uniforme sem
 pesquisas estaduais). Médias de pesquisas quase idênticas (p2 50,7–50,8; q 49,5–49,6). Neutros: 45,5%
@@ -199,13 +254,29 @@ aplicado por inteiro (medido nos dados do TSE), e só o restante do erro histór
   coberturas são estimativas grosseiras.
 - O erro de 2022 no 1º turno, medido pela média ampla (incluindo institutos que erraram para o outro
   lado), foi pequeno (+0,6 p.p. em p2); o viés calibrado depende muito de 2014 e 2018.
-- **Decisão no 1º turno** (21% calibrado; 16% neutro) fica bem acima dos mercados (~5%): caudas t com
-  dp de 4 p.p. escolhido no backtest; o modelo alternativo dá ainda mais (36%).
+- **Decisão no 1º turno** (21% calibrado; 16% neutro) fica bem acima dos mercados (~5%). Decomposição
+  (BACKTEST.md, "Decisão no 1º turno"): o que pesa é o dp do erro nacional de margem (4,0 p.p. em p2; desligado,
+  a probabilidade cai a ~1%; com dp 3,0, a 14%) e, em segundo lugar, a contração da terceira via (sem ela, 11%);
+  o viés calibrado muda sobretudo *quem* venceria no 1º turno; caudas t5, comparecimento e erros estaduais quase
+  não contam. Na validação aninhada (parâmetros e prior sem o ano), a véspera de 2014 e de 2022 teve P(decisão)
+  de 31% e 26%, e nenhuma das duas foi decidida: indício de que esta cauda é larga, como dizem os mercados. Mas
+  reduzir o dp derruba a cobertura de 80% para 67% (abaixo da restrição); tirar a contração piora muito o CRPS
+  (2,41 → 3,02) e a cobertura (73% → 60%); encolher mais a contração (tau0_log 0,15) melhora um pouco o Brier da
+  decisão (0,055 → 0,042) com CRPS praticamente igual (2,41 → 2,44), diferença compatível com ruído em 3
+  eleições. **Parâmetros mantidos**; esta probabilidade é a parte menos confiável do modelo. O modelo
+  alternativo dá ainda mais (36%).
 - Pesquisas estaduais: poucas rodadas por UF; AP sem n na Quaest.
 - Matriz de transferência de subamostras pequenas de uma pesquisa; no backtest usou-se a matriz
   implícita das pesquisas pareadas.
 - Prior demográfico e ajuste de comparecimento não testados no backtest (seriam vazamento).
-- AtlasIntel final, Veritá 26/9–2/10 e Gerp 1–3/10 não estavam publicadas na coleta.
+- AtlasIntel final (27/9–2/10) incluída na madrugada de 4/10. Não localizadas com fonte verificável até
+  4/10 ~02h UTC: consolidação nacional da Veritá 26/9–2/10 (BR-04522/2026; só relatórios estaduais citados no
+  site do instituto) e Gerp 1–3/10 (BR-08168/2026).
+- **Pipeline da noite da apuração** (`resultado_1t.py`): a projeção de UFs com apuração parcial supõe que as
+  seções restantes da UF votem como as já apuradas (a ordem de totalização dentro da UF não é aleatória:
+  capitais costumam entrar antes); o erro do 2º turno foi calibrado com 3 eleições (prior de dp 3 p.p.);
+  a matriz de transferência vem de subamostras pequenas da Quaest; o endpoint do TSE de 2026 foi testado só antes
+  da apuração (com zeros) e o formato de 2022 só com arquivos reconstruídos (os JSON originais saíram do ar).
 - O 2º turno é projetado em 3/10; fatos entre os turnos não estão no modelo.
 
 ## Neutralidade

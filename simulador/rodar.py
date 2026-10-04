@@ -81,6 +81,7 @@ def executar(n: int, seed: int, lote: int, visoes=M.VISOES, base=None, vieses=No
     vieses = vieses or vieses_2026(base, prem)
     U = len(base.ufs)
     K = base.e.K
+    cands = list(base.e.cands)          # 2026: M.CANDS; ensaio com 2022 (resultado_1t.py): candidatos de 2022
     saida, brutos = {}, {}
     for ci, vis in enumerate(visoes):
         rng = np.random.default_rng([seed, ci])
@@ -125,18 +126,18 @@ def executar(n: int, seed: int, lote: int, visoes=M.VISOES, base=None, vieses=No
             "lula_vence_2t_se_houver": _p(((A["Q"] > 0.5) & ~A["venceu_1t"] & A["par_lf"]).sum()
                                           / max((~A["venceu_1t"] & A["par_lf"]).sum(), 1), n),
         }
-        res["prob_top2"] = {c: _p(((A["primeiro"] == k) | (A["segundo"] == k)).mean(), n) for k, c in enumerate(M.CANDS)}
-        res["prob_1o_lugar"] = {c: _p((A["primeiro"] == k).mean(), n) for k, c in enumerate(M.CANDS)}
+        res["prob_top2"] = {c: _p(((A["primeiro"] == k) | (A["segundo"] == k)).mean(), n) for k, c in enumerate(cands)}
+        res["prob_1o_lugar"] = {c: _p((A["primeiro"] == k).mean(), n) for k, c in enumerate(cands)}
         res["primeiro_turno"] = {c: {"media": round(float(nat1[:, k].mean() * 100), 3),
                                      "quantis": [round(float(x) * 100, 2) for x in np.quantile(nat1[:, k], QS)]}
-                                 for k, c in enumerate(M.CANDS)}
+                                 for k, c in enumerate(cands)}
         tv = 1 - nat1[:, 0] - nat1[:, 1]
         res["primeiro_turno"]["terceira_via"] = {"media": round(float(tv.mean() * 100), 3),
                                                  "quantis": [round(float(x) * 100, 2) for x in np.quantile(tv, QS)]}
         res["primeiro_turno"]["margem_lula_flavio"] = {
             "media": round(float((nat1[:, 0] - nat1[:, 1]).mean() * 100), 3),
             "quantis": [round(float(x) * 100, 2) for x in np.quantile(nat1[:, 0] - nat1[:, 1], QS)]}
-        res["hist_1t"] = {c: _hist(nat1[:, k] * 100, 20, 65, 0.25) for k, c in enumerate(M.CANDS[:2])}
+        res["hist_1t"] = {c: _hist(nat1[:, k] * 100, 20, 65, 0.25) for k, c in enumerate(cands[:2])}
         res["hist_1t"]["Menores"] = _hist(tv * 100, 0, 25, 0.25)
         marg2 = (2 * A["Q"] - 1) * 100
         res["segundo_turno"] = {
@@ -166,7 +167,7 @@ def executar(n: int, seed: int, lote: int, visoes=M.VISOES, base=None, vieses=No
                 "lula_2t_q95": _q_hist(hq[u], [0.025, 0.975]),
                 "p_lula_2t": round(winq[u] / n, 4),
                 "ep_mc_p_lula_2t": round(math.sqrt(max(winq[u] / n * (1 - winq[u] / n), 1e-12) / n), 5),
-                "lula_2t_2022": round(float(r.pt_2t_2022) * 100, 2),
+                "lula_2t_2022": round(float(r.pt_2t_2022) * 100, 2) if "pt_2t_2022" in base.ufs else None,
             })
         res["ufs"] = ufl
         saida[vis] = res

@@ -401,6 +401,11 @@ def avaliar_rodada(b: M.Base, r: dict, horizonte: str) -> tuple[list, list]:
             cont.append(_resumo_var(s, y, nome, "nacional", ano, "1T"))
         prob.append(_prob(float(np.mean(r["primeiro"] == 0)), rr["pt1"]["BR"] > rr["opp1"]["BR"],
                           "PT 1º no 1º turno", "nacional", ano, "1T"))
+        # decisão no 1º turno (alguém com > 50% dos válidos): nenhuma das 3 eleições foi decidida no 1º turno
+        lider_real = max(rr["pt1"]["BR"], rr["opp1"]["BR"])
+        prob.append(_prob(float(np.mean(r["venceu_1t"])), lider_real > 0.5, "Decidida no 1º turno",
+                          "nacional_extra", ano, "1T"))
+        cont.append(_resumo_var(n1.max(1), lider_real, "lider1", "nacional_extra", ano, "1T"))
         for i, u in enumerate(ufs):
             nv = "exterior" if u == "ZZ" else "uf"
             cont.append(_resumo_var(r["uf_L"][:, i], rr["pt1"][u], "pt1", nv, ano, "1T", u))
@@ -617,6 +622,139 @@ def validar_indecisos(P: dict) -> list:
                             "erro_rej": 100 * (pn.p2_nat - real),
                             "fonte": "2ª preferência dos indecisos (Quaest 1/10/2022, publicada em 2024: só validação)"})
     return out
+
+
+# ---------------------------------------------------------------- decisão no 1º turno (diagnóstico)
+GRADE_DEC = {"erro_nacional_1t.dp_p2_pp": [3.0, 4.0, 5.0, 6.0], "erro_nacional_1t.gl_t": [5, 10],
+             "terceira_via.dp_log": [0.10, 0.20]}
+VARIANTES_DEC = {
+    "atual": {},
+    "contração da 3ª via mais encolhida (tau0_log 0,15)": {"terceira_via.tau0_log": 0.15},
+    "sem contração da 3ª via (tau0_log 0)": {"terceira_via.tau0_log": 0.0},
+    "contração sem mexer em p2 (proporcional)": {"terceira_via.destino_contracao": "proporcional"},
+}
+
+
+def avaliar_decisao_1t(P: dict, n=20000, log=print) -> dict:
+    """P(alguém > 50% dos válidos no 1º turno) na véspera de 2014/2018/2022 (nenhuma decidida no 1º turno),
+    por variante estrutural, com validação totalmente aninhada: para cada ano deixado de fora, dp/gl/dp_log
+    são escolhidos (mesma regra da grade: cobertura >= 75/90% e menor CRPS de pt1/opp1/T) só com os outros
+    anos, e o prior de viés também exclui o ano."""
+    out = {}
+    for nome, ov in VARIANTES_DEC.items():
+        Pv = dict(P); Pv.update(ov)
+        err = erros_brutos(Pv)
+        linhas = []
+        for vals in itertools.product(*GRADE_DEC.values()):
+            Pc = dict(Pv); Pc.update(dict(zip(GRADE_DEC, vals)))
+            c, p, _ = rodar(Pc, "calibrado", horizontes=("v1",), n=n, err=err)
+            for ano in ANOS:
+                cc = c[c.ano == ano]
+                sel = cc[(cc.nivel == "nacional") & cc["var"].isin(["pt1", "opp1", "T"])]
+                nat = cc[(cc.nivel == "nacional") & cc["var"].isin(["pt1", "opp1", "T", "margem", "p2"])]
+                lid = cc[cc["var"] == "lider1"].iloc[0]
+                linhas.append({**dict(zip(GRADE_DEC, vals)), "ano": ano, "crps": sel.crps.mean(), "cob80": sel.cob80.mean(),
+                               "cob95": sel.cob95.mean(), "n": len(sel), "crps_nac": nat.crps.mean(),
+                               "cob80_nac": nat.cob80.mean(), "cob95_nac": nat.cob95.mean(),
+                               "p_decide": float(p[(p.ano == ano) & (p.evento == "Decidida no 1º turno")].p.iloc[0]),
+                               "pit_lider": lid.pit, "crps_lider": lid.crps, "lider_mediana": lid.mediana,
+                               "lider_real": lid.real})
+        tab = pd.DataFrame(linhas)
+        ch = list(GRADE_DEC)
+        res = []
+        for a in ANOS:
+            m, _ = _escolher(tab, ch, [x for x in ANOS if x != a])
+            r = tab[(tab.ano == a) & np.all([np.isclose(tab[k].astype(float), float(m[k])) for k in ch], axis=0)].iloc[0]
+            res.append({"ano": int(a), "escolha": {k: _py(v) for k, v in m.items()}, "crps_nac": float(r.crps_nac),
+                        "cob80": float(r.cob80_nac), "cob95": float(r.cob95_nac), "p_decide": float(r.p_decide),
+                        "pit_lider": float(r.pit_lider), "crps_lider": float(r.crps_lider),
+                        "lider_mediana": float(r.lider_mediana), "lider_real": float(r.lider_real)})
+        R = pd.DataFrame(res)
+        pdc = np.clip(R.p_decide.values, 1e-3, 1 - 1e-3)
+        out[nome] = {"aninhado": res, "crps_nac": float(R.crps_nac.mean()), "cob80": float(R.cob80.mean()),
+                     "cob95": float(R.cob95.mean()), "brier_decide": float(np.mean(R.p_decide.values ** 2)),
+                     "logloss_decide": float(np.mean(-np.log(1 - pdc))), "crps_lider": float(R.crps_lider.mean())}
+        log(f"[decisão 1T] {nome}: {json.dumps({k: v for k, v in out[nome].items() if k != 'aninhado'})}")
+    return out
+
+
+def decompor_decisao_2026(P: dict, n=200000, seed=1) -> list:
+    """Quanto cada componente contribui para P(decidida no 1º turno) em 2026 (desliga um de cada vez)."""
+    import rodar as R  # import tardio (rodar importa backtest)
+    base = M.construir_base_2026(P)
+    V = R.vieses_2026(base, P, erros_brutos(P))
+    linhas = []
+
+    def um(rotulo, vis, Pm=None, vm=None):
+        v = dict(V[vis]); v.update(vm or {})
+        r = M.simular_lote(base, v, n, np.random.default_rng(seed), Pm or P)
+        d = r["venceu_1t"]
+        linhas.append({"visao": vis, "componente": rotulo, "p_decide": float(d.mean()),
+                       "p_lula_1t": float((d & (r["primeiro"] == 0)).mean()),
+                       "p_flavio_1t": float((d & (r["primeiro"] == 1)).mean()),
+                       "lula_media": float(r["nat1"][:, 0].mean() * 100), "flavio_media": float(r["nat1"][:, 1].mean() * 100),
+                       "terceira_via_media": float((1 - r["nat1"][:, 0] - r["nat1"][:, 1]).mean() * 100)})
+    for vis in ("calibrado", "neutro"):
+        um("modelo como está", vis)
+        um("erro nacional de margem: dp 4,0 -> 3,0", vis, com_params(P, erro_nacional_1t__dp_p2_pp=3.0))
+        um("erro nacional de margem: dp 4,0 -> 2,0", vis, com_params(P, erro_nacional_1t__dp_p2_pp=2.0))
+        um("erro nacional de margem desligado", vis, com_params(P, erro_nacional_1t__dp_p2_pp=0.0))
+        um("caudas: t5 -> t30 (quase normal)", vis, com_params(P, erro_nacional_1t__gl_t=30))
+        um("sem contração da 3ª via (média e incerteza 0)", vis, vm={"muT": (0.0, 0.0)})
+        um("sem erro aleatório da 3ª via", vis, com_params(P, terceira_via__dp_log=0.0), {"muT": (V[vis]["muT"][0], 0.0)})
+        if vis == "calibrado":
+            um("sem ajuste de comparecimento", vis, vm={"ajuste_comp": False})
+            um("viés sem incerteza (dp 0)", vis, vm={"b1": (V[vis]["b1"][0], 0.0)})
+            um("viés do 1º turno = 0", vis, vm={"b1": (0.0, 0.0)})
+    return linhas
+
+
+def secao_decisao_md(dec: dict | None, decomp: list | None) -> str:
+    L = ["## Decisão no 1º turno: diagnóstico\n"]
+    L.append("Nenhuma das três eleições do backtest foi decidida no 1º turno (líder com 41,6% em 2014, 46,0% em 2018 e "
+             "48,4% em 2022). O evento entra agora nas probabilidades nacionais ('Decidida no 1º turno') e a fatia do "
+             "líder ('lider1') nas contínuas, fora das médias de cobertura e CRPS usadas na grade.\n")
+    if decomp:
+        L.append("**Decomposição em 2026** (200 mil simulações, um componente desligado de cada vez; p.p. de votos válidos):\n")
+        t = pd.DataFrame(decomp)
+        for c in ("p_decide", "p_lula_1t", "p_flavio_1t"):
+            t[c] = t[c] * 100
+        L.append(tabela_md(t, ["visao", "componente", "p_decide", "p_lula_1t", "p_flavio_1t", "lula_media", "flavio_media",
+                               "terceira_via_media"],
+                           ["Visão", "Componente alterado", "P(decidida) %", "Lula vence no 1T %", "Flávio vence no 1T %",
+                            "Lula méd.", "Flávio méd.", "3ª via méd."]) + "\n")
+    if dec:
+        L.append("**Validação aninhada por variante** (para cada ano, dp/gl/dp_log escolhidos sem o ano, com a regra da "
+                 "grade; prior de viés sem o ano; 20 mil simulações):\n")
+        rows = []
+        for nome, d in dec.items():
+            pa = {r["ano"]: r for r in d["aninhado"]}
+            rows.append({"Variante": nome, "P dec. 2014": 100 * pa[2014]["p_decide"], "P dec. 2018": 100 * pa[2018]["p_decide"],
+                         "P dec. 2022": 100 * pa[2022]["p_decide"], "Brier dec.": d["brier_decide"],
+                         "Log-loss dec.": d["logloss_decide"], "CRPS nac 1T": d["crps_nac"], "Cob. 80%": 100 * d["cob80"],
+                         "Cob. 95%": 100 * d["cob95"], "CRPS líder": d["crps_lider"],
+                         "PIT líder 14/18/22": "/".join(f"{pa[a]['pit_lider']:.2f}" for a in ANOS)})
+        t = pd.DataFrame(rows)
+        L.append(tabela_md(t, list(t.columns), dec={"Brier dec.": 3, "Log-loss dec.": 3, "CRPS nac 1T": 2, "CRPS líder": 2}) + "\n")
+    L.append("""Leitura:
+* O componente que mais pesa é o **erro nacional de margem** (dp 4,0 p.p. em p2, ~7 p.p. na margem): desligado, a
+  probabilidade cai para perto de zero; com dp 3,0 ela cai cerca de um terço. O segundo é a **contração da
+  terceira via** (os votos que saem dos menores vão sobretudo para os dois primeiros e aproximam o líder de 50%).
+  O viés calibrado muda **quem** vence no 1º turno (desloca de Lula para Flávio) mais do que o total; caudas t5
+  não são a causa (com t30 a probabilidade sobe um pouco, porque a mesma variância fica mais concentrada perto de
+  ±1–1,5 dp); comparecimento e erros estaduais quase não contam.
+* **O backtest não sustenta reduzir o dp nacional:** com dp 3,0 ou 2,0 a cobertura de 80% cai para 67% e a de 95%
+  para 93%/80% (abaixo da restrição); a escolha aninhada continua entre 3 e 6. A probabilidade de decisão na
+  véspera de 2014 (~31%) e de 2022 (~16–26%) foi alta e nenhuma das duas foi decidida, o que aponta na mesma
+  direção dos mercados, mas são 3 eventos (2 informativos) e o Brier com 3 'não' sempre premia estreitar.
+* **Sem contração** a decisão no 1º turno fica mais bem calibrada (Brier menor), mas o CRPS nacional piora muito e a
+  cobertura de 80% cai para 60%: os menores perderam votos na urna nas três eleições. **Contração mais encolhida**
+  (tau0_log 0,15) melhora um pouco o Brier da decisão e o CRPS do líder, com CRPS nacional praticamente igual
+  (diferença dentro do ruído de 20 mil simulações): não há evidência suficiente para trocar.
+* Decisão: **parâmetros mantidos**. A probabilidade de decisão no 1º turno é a parte menos confiável do modelo
+  (cauda de um erro estimado com 3 eleições) e é apresentada com essa ressalva no README (Limitações).
+""")
+    return "\n".join(L)
 
 
 # ---------------------------------------------------------------- relatório
@@ -862,6 +1000,8 @@ O motor de `modelo.py` rodou como se fosse a véspera de cada turno, só com as 
         L.append("Sensibilidade ao encolhimento do viés do 2º turno projetado na véspera do 1º (tau0, p.p.):\n")
         L.append(tabela_md(s, ["vies.tau0_q_pp", "crps"], ["tau0 q", "CRPS nacional 2T"], {"crps": 3}) + "\n")
     # indecisos
+    if fin.get("decisao_1t") or fin.get("decomposicao_2026"):
+        L.append(secao_decisao_md(fin.get("decisao_1t"), fin.get("decomposicao_2026")))
     L.append("## Indecisos: rejeição/2ª preferência x proporcional\n")
     ti = pd.DataFrame(fin["indecisos"])
     L.append(tabela_md(ti, ["ano", "turno", "real", "proporcional", "rejeicao", "erro_prop", "erro_rej", "fonte"],
@@ -900,6 +1040,9 @@ def exportar_json(P, rel, fin, caminho=DADOS / "backtest_saida.json"):
                              for a, d in fin["erros"].items()},
         "indecisos": fin["indecisos"],
         "loeo": {k: {"melhor": v["melhor"], "loeo": v["loeo"]} for k, v in (rel or {}).items()},
+        "prob_decisao_1t": vc["prob"][vc["prob"].evento == "Decidida no 1º turno"].round(4).to_dict(orient="records"),
+        "decisao_1t": fin.get("decisao_1t"),
+        "decomposicao_decisao_2026": fin.get("decomposicao_2026"),
     }
     caminho.write_text(json.dumps(js, ensure_ascii=False, default=_py, allow_nan=False), encoding="utf-8")
     return js
@@ -909,6 +1052,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--rapido", action="store_true", help="pula a grade; usa premissas.json")
     ap.add_argument("--n", type=int, default=None)
+    ap.add_argument("--sem-decisao", action="store_true", help="pula o diagnóstico da decisão no 1º turno (~4 min)")
     a = ap.parse_args()
     t0 = time.perf_counter()
     P = M.carregar_premissas()
@@ -920,6 +1064,9 @@ def main():
         P = Pc
     fin = avaliar_final(P, n=40000, rel=rel)
     fin["_err_obj"] = erros_brutos(P)
+    if not a.sem_decisao:
+        fin["decisao_1t"] = avaliar_decisao_1t(P)
+        fin["decomposicao_2026"] = decompor_decisao_2026(P)
     tempo = time.perf_counter() - t0
     (AQUI / "BACKTEST.md").write_text(escrever(P, rel, fin, tempo), encoding="utf-8")
     exportar_json(P, rel, fin)
