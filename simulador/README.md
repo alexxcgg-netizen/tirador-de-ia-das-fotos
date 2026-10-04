@@ -264,8 +264,8 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   inalterado (erro +2,0/−1,6/+2,2 p.p. nos dois métodos), erro médio por UF 2,45→2,87 (2014), 2,19→1,80 (2018),
   2,11→2,10 (2022), média 2,25 nos dois; cobertura das UFs no intervalo de 80% 0,91→0,94 e no de 95% 0,975→0,988.
   Melhora 2018 e 2022 (a validação pedida) e 4 de 5 eleições na distribuição entre UFs isolada; piora 2014
-  (Marina, cujo voto não seguiu o lean). Efeito em 2026 (cópia a seco, 91% apurado): nacional igual (Lula 47,0%;
-  P(Lula) 12,6%→12,8%), UFs ±0,35 p.p. (NE sobe até +0,36 no PI; S/CO/RO/RR/AC caem até −0,34 em SC).
+  (Marina, cujo voto não seguiu o lean). Efeito em 2026 (cópia a seco com o TSE a 91,8% apurado): nacional igual (Lula
+  47,2% nos dois; P(Lula) 13,9% → 14,0%), UFs ±0,36 p.p. (NE sobe até +0,36 no PI; S/CO/RO/RR/AC caem até −0,35 em SC).
 - **Comparecimento entre turnos (checado em 2014/2018/2022, LOEO).** A variação média da abstenção por UF (método
   atual) teve o menor erro (1,29 p.p. por UF; encolhida para o nacional 1,35; só nacional 1,80; sem variação 1,92).
   Brancos+nulos: média por UF 2,35, sem variação 1,92 (só 2022 favorece "sem variação"; mantido). Efeito partidário

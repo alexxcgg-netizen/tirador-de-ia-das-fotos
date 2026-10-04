@@ -40,6 +40,8 @@ Uso:
     python simulador/resultado_1t.py --gerar-fixture-2022   # (re)gera os JSON de teste de 2022
     python simulador/resultado_1t.py --replay-2022          # valida a projeção da apuração parcial (2022)
     python simulador/resultado_1t.py --rodar-tudo --sem-municipios  # só o método antigo de projeção
+    python simulador/resultado_1t.py --rodar-tudo --saida /tmp/x    # ensaio a seco: nada em web/ nem data/
+    python simulador/resultado_1t.py --backtest-2t                  # matriz única x regionalizada (2014/18/22)
 """
 from __future__ import annotations
 
@@ -58,6 +60,7 @@ import pandas as pd
 AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
 import modelo as M  # noqa: E402
+import transferencia_regional as TR  # noqa: E402
 
 DADOS = AQUI / "data"
 WEB = AQUI / "web"
@@ -124,6 +127,11 @@ PARAM_2T = {
     "dp_bn_pp": {"valor": 0.5, "origem": "inferencia"},
     "fator_par_imprevisto": {"valor": 1.5, "origem": "inferencia",
                              "nota": "Par de 2º turno diferente do previsto: sem matriz de transferência medida; erro x1,5."},
+    "transferencia_regional": {"valor": True, "origem": "backtest",
+                               "nota": "Transferência dependente do lean da UF (transferencia_regional.py). Desligada: no "
+                                       "backtest leave-one-election-out melhorou 2002/2010/2018/2022 mas piorou 2014 e "
+                                       "a média 2014-2022 do erro por UF (BACKTEST.md, seção 2º turno regional). "
+                                       "Calculada sempre como sensibilidade em segundo_turno.sensibilidade_regional."},
 }
 
 
@@ -968,16 +976,21 @@ def ecologico(ano: int) -> dict:
             "inclinacao_ganho_pt_por_menores_uf": float(coef[1]), "intercepto_uf": float(coef[0])}
 
 
-def calibrar_2t(anos: tuple, w_pre: float, P: dict | None = None) -> dict:
+def calibrar_2t(anos: tuple, w_pre: float, P: dict | None = None, beta: float | None = None) -> dict:
     """Erros históricos da projeção '1º turno real -> 2º turno' em cada ano de `anos`, com o que se sabia na
     véspera do 1º turno (linha de transferência implícita, pesquisas de 2º turno com peso w_pre).
-    Devolve dp nacional (RMS dos erros), dp regional e estadual (resíduos depois do deslocamento nacional)."""
+    Devolve dp nacional (RMS dos erros), dp regional e estadual (resíduos depois do deslocamento nacional).
+    beta: transferência regionalizada (resíduos medidos com o mesmo método usado na simulação)."""
     erros, res_uf, detalhe = [], [], []
     for a in anos:
         d = historico_ano(a)
         pre = preditores_hist(a, P)
         m = np.array([u != "ZZ" for u in d["ufs"]])
-        qtr = _q_transf(d["L"], d["F"], d["T"], pre["linha"])
+        if beta:
+            z = TR.lean_z(d["L"], d["F"], d["V1"])
+            qtr = TR._qtr(d["L"], d["F"], d["T"], pre["linha"], z, beta, d["V1"])
+        else:
+            qtr = _q_transf(d["L"], d["F"], d["T"], pre["linha"])
         w2 = d["V1"]
         qtr_br = float(np.sum(w2 * qtr) / w2.sum())
         if pre["q_pesquisas"] is not None:
@@ -1008,17 +1021,19 @@ def calibrar_2t(anos: tuple, w_pre: float, P: dict | None = None) -> dict:
     rms = float(np.sqrt(np.mean(np.square(erros))))
     sd_nat = max(math.sqrt((nu0 * s0 ** 2 + float(np.sum(np.square(erros)))) / (nu0 + len(erros))), piso)
     vies, vies_dp = M.eb_vies(erros, sd_nat, PARAM_2T["tau0_vies_pp"]["valor"])
-    return {"anos": list(anos), "dp_nacional_pp": sd_nat, "rms_erros_pp": rms, "vies_pp": vies, "vies_dp_pp": vies_dp,
+    return {"anos": list(anos), "beta_transferencia": beta or 0.0, "dp_nacional_pp": sd_nat, "rms_erros_pp": rms, "vies_pp": vies, "vies_dp_pp": vies_dp,
             "dp_regional_pp": sd_reg, "dp_uf_pp": sd_uf, "erros_pp": erros, "detalhe": detalhe}
 
 
 # ================================================================ c) simulação do 2º turno
 def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict, d_comp: pd.DataFrame,
                n: int = 500_000, seed: int = 20261025, lote: int = 100_000, par_previsto: bool = True,
-               sd_proj: np.ndarray | None = None) -> dict:
+               sd_proj: np.ndarray | None = None, regional: dict | None = None) -> dict:
     """2º turno par[0] x par[1] condicionado ao 1º turno real (consolidado em `c`).
 
-    transf: {candidato eliminado: [p_A, p_B, p_fora]}; q_pesq: {'q': fatia de A, 'peso': w} ou None."""
+    transf: {candidato eliminado: [p_A, p_B, p_fora]}; q_pesq: {'q': fatia de A, 'peso': w} ou None.
+    regional: {'mu': beta, 'dp': dp de beta} -> transferência dependente do lean da UF (transferencia_regional.py),
+    com beta sorteado ~ N(mu, dp²) em cada simulação; None = matriz nacional única (método anterior)."""
     cands = c["cands"]
     A, B = cands.index(par[0]), cands.index(par[1])
     elim = [k for k in range(len(cands)) if k not in (A, B)]
@@ -1036,10 +1051,28 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
         den = S[..., A] + S[..., B] + (S[..., elim] * (R[..., 0] + R[..., 1])).sum(-1)
         return num / den
 
+    if regional is not None:
+        Vreg = c["V1"].astype(float)
+        z_uf = TR.lean_z(S0[:, A], S0[:, B], Vreg)
+        g_beta, C_beta = TR.deslocamentos_beta(rows, S0, A, B, elim, Vreg)
+
+        def regionalizar(R, beta):
+            """R (..., E, 3) linhas nacionais; beta (...) -> linhas por UF (..., U, E, 3)."""
+            part = R[..., 0] + R[..., 1]
+            p = np.clip(R[..., 0] / np.maximum(part, 1e-9), 1e-4, 1 - 1e-4)
+            cc = np.stack([np.interp(beta, g_beta, C_beta[:, j]) for j in range(len(elim))], -1)   # (..., E)
+            lg = M.logit(p)[..., None, :] + beta[..., None, None] * z_uf[:, None] + cc[..., None, :]
+            pu = M.expit(lg)
+            pt = part[..., None, :]
+            return np.stack([pt * pu, pt * (1 - pu), np.broadcast_to(R[..., None, :, 2], pu.shape)], -1)
+
     abst2_c = np.clip(c["abst1"] + d_comp["d_abst"].values, 3, 80)
     bn2_c = np.clip(c["bn1"] + d_comp["d_bn"].values, 0.3, 30)
     W2c = c["eleitores"] * (1 - abst2_c / 100) * (1 - bn2_c / 100)
-    qtr_c = q_transf(S0[None], rows[None, None])[0]
+    if regional is not None:
+        qtr_c = q_transf(S0, regionalizar(rows, np.asarray(regional["mu"], float)))
+    else:
+        qtr_c = q_transf(S0[None], rows[None, None])[0]
     qtr_br = float(np.sum(W2c * qtr_c) / W2c.sum())
     if q_pesq is not None and q_pesq.get("q") is not None:
         w = q_pesq["peso"]
@@ -1059,7 +1092,11 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
     rng = np.random.default_rng(seed)
     # parte da variância nacional já vem da incerteza da matriz (Dirichlet): não contar duas vezes
     Rp = np.stack([rng.dirichlet(alfa * rows[j] + 1e-3, 20000) for j in range(len(elim))], axis=1)
-    qp = q_transf(S0[None], Rp[:, None, :, :])
+    if regional is not None:
+        bp = regional["mu"] + rng.standard_normal(20000) * regional["dp"]
+        qp = q_transf(S0[None], regionalizar(Rp, bp))
+    else:
+        qp = q_transf(S0[None], Rp[:, None, :, :])
     var_dir = float(np.var((W2c * qp).sum(1) / W2c.sum()) * 1e4)
     sd_e = math.sqrt(max(sd_nat ** 2 - var_dir, (0.5 * sd_nat) ** 2))
     acc = {"Q": [], "decide": [], "nat1": []}
@@ -1076,7 +1113,11 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
         nat1 = (c["V1"][None, :, None] * S).sum(1) / c["V1"].sum()
         decide = nat1.max(1) > 0.5
         R = np.stack([rng.dirichlet(alfa * rows[j] + 1e-3, Bn) for j in range(len(elim))], axis=1)   # (B, E, 3)
-        qtr = q_transf(S, R[:, None, :, :])
+        if regional is not None:
+            bt = regional["mu"] + rng.standard_normal(Bn) * regional["dp"]
+            qtr = q_transf(S, regionalizar(R, bt))
+        else:
+            qtr = q_transf(S, R[:, None, :, :])
         e_nat = M.t_unit(rng, Bn, gl).astype(float) * sd_e
         e_reg = rng.standard_normal((Bn, 6)) * cal["dp_regional_pp"]
         e_uf = M.t_unit(rng, (Bn, U), gl).astype(float) * cal["dp_uf_pp"]
@@ -1127,6 +1168,12 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
                   "dp_nacional_da_matriz_pp": round(math.sqrt(var_dir), 3), "dp_regional_pp": round(cal["dp_regional_pp"], 3),
                   "dp_uf_pp": round(cal["dp_uf_pp"], 3), "gl_t": gl, "par_previsto": par_previsto},
         "transferencia": {cands[k]: [round(x, 3) for x in transf.get(cands[k], LINHA_GENERICA)] for k in elim},
+        "transferencia_regional": None if regional is None else {
+            "beta_media": round(float(regional["mu"]), 4), "beta_dp": round(float(regional["dp"]), 4),
+            "lean_logito_uf": {u: round(float(x), 4) for u, x in zip(UFS, z_uf)},
+            "fatia_pt_decididos_uf": {u: {cands[k]: round(float(r[j, 0] / max(r[j, 0] + r[j, 1], 1e-9)), 4)
+                                          for j, k in enumerate(elim)}
+                                      for u, r in zip(UFS, regionalizar(rows, np.asarray(regional["mu"], float)))}},
         "ufs": ufs_out,
         "_Q": Q,
     }
@@ -1515,9 +1562,26 @@ def _limpo(x):
     return x
 
 
-def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bool = True) -> dict:
+def regional_2026() -> dict:
+    """beta da transferência regionalizada (todas as eleições de ANOS_BETA) e dp preditivo."""
+    eb = TR.estimar_beta()
+    return {"mu": eb["mu"], "dp": eb["dp_preditivo"], "estimativa": eb}
+
+
+def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bool = True,
+               saida_dir: Path | None = None, regional: bool | None = None) -> dict:
+    """saida_dir: grava resultados_2t.json, avaliacao_1t.json e AVALIACAO_1T.md lá (ensaio a seco; web/ e data/
+    intocados). regional: None = PARAM_2T['transferencia_regional']; a outra opção vira sensibilidade."""
+    WEB_ = Path(saida_dir) if saida_dir else WEB
+    DADOS_ = Path(saida_dir) if saida_dir else DADOS
+    AQUI_ = Path(saida_dir) if saida_dir else AQUI
+    regional = PARAM_2T["transferencia_regional"]["valor"] if regional is None else regional
     prem = M.carregar_premissas()
-    res = buscar_resultados(2026, fonte, log=log)
+    if fonte == "cache":
+        res = buscar_resultados(2026, "diretorio", CACHE_2026, log=log)
+        res["_meta"] = {"fonte": "cache local (ensaio a seco)", "erros": []}
+    else:
+        res = buscar_resultados(2026, fonte, log=log)
     meta_f = res.pop("_meta", {})
     js = json.loads((WEB / "resultados.json").read_text(encoding="utf-8"))
     agora = datetime.now(timezone.utc)
@@ -1533,7 +1597,7 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
         saida["meta"]["mensagem"] = ("Apuração ainda não começou (ou TSE indisponível): 0% das seções totalizadas. "
                                      "A previsão do 2º turno aparece aqui depois das primeiras parciais.")
         log(saida["meta"]["mensagem"])
-        _gravar_json(WEB / "resultados_2t.json", saida)
+        _gravar_json(WEB_ / "resultados_2t.json", saida)
         return saida
     pj = None
     if municipios and fonte in ("auto", "tse") and str(meta_f.get("fonte") or "").startswith("TSE"):
@@ -1580,8 +1644,8 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
         prev += previsoes_alternativo(json.loads(alt.read_text(encoding="utf-8")), M.CANDS)
     prev += [previsao_media_pesquisas(base, M.CANDS)] + previsoes_pesquisas_2026() + previsoes_mercados()
     av = avaliar(c, prev)
-    _gravar_json(DADOS / "avaliacao_1t.json", av)
-    (AQUI / "AVALIACAO_1T.md").write_text(escrever_avaliacao_md(
+    _gravar_json(DADOS_ / "avaliacao_1t.json", av)
+    (AQUI_ / "AVALIACAO_1T.md").write_text(escrever_avaliacao_md(
         av, "Avaliação das previsões do 1º turno de 2026",
         "Fonte do resultado: " + str(meta_f.get("fonte")) + "."), encoding="utf-8")
     # c) 2º turno
@@ -1593,13 +1657,27 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
     saida["decidido_1t"] = decidido and status == "final"
     if saida["decidido_1t"]:
         saida["mensagem"] = f"{par[0]} teve mais de 50% dos votos válidos: eleição decidida no 1º turno."
-        _gravar_json(WEB / "resultados_2t.json", saida)
+        _gravar_json(WEB_ / "resultados_2t.json", saida)
         return saida
-    cal = calibrar_2t((2014, 2018, 2022), PARAM_2T["peso_pesquisas_pre_1t"]["valor"])
+    reg = regional_2026() if previsto else None
+    w_pre = PARAM_2T["peso_pesquisas_pre_1t"]["valor"]
+    cal = calibrar_2t((2014, 2018, 2022), w_pre, beta=reg["mu"] if (regional and reg) else None)
     qp = pesquisas_2t_2026(par, prem, pd.Timestamp(agora.date()))
     d_comp = delta_comparecimento()
     sim = simular_2t(c, par, transf_para_par(par, 2026), qp, cal, d_comp, n=n, seed=seed, par_previsto=previsto,
-                     sd_proj=_sd_proj(c))
+                     sd_proj=_sd_proj(c), regional=reg if regional else None)
+    if reg is not None:
+        # sensibilidade: o outro método (regionalizado se o oficial é o nacional, e vice-versa), n menor
+        cal_s = calibrar_2t((2014, 2018, 2022), w_pre, beta=None if regional else reg["mu"])
+        sim_s = simular_2t(c, par, transf_para_par(par, 2026), qp, cal_s, d_comp, n=max(n // 5, 20_000), seed=seed,
+                           par_previsto=previsto, sd_proj=_sd_proj(c), regional=None if regional else reg)
+        sim_s.pop("_Q", None)
+        sim["sensibilidade_regional"] = {
+            "metodo": "matriz nacional única" if regional else "transferência regionalizada (lean da UF)",
+            "p_a_vence": sim_s["p_a_vence"], "a_media": sim_s["a_media"], "a_quantis": sim_s["a_quantis"],
+            "transferencia_regional": sim_s.get("transferencia_regional"),
+            "ufs": {u["uf"]: {"a_media": u["a_media"], "a_q": u["a_q"], "p_a": u["p_a"]} for u in sim_s["ufs"]}}
+    sim["metodo_transferencia"] = "regionalizada" if (regional and reg) else "nacional"
     sim["pesquisas_2t"] = qp
     sim["calibracao"] = {k: v for k, v in cal.items()}
     sim["ecologico"] = [ecologico(a) for a in (2014, 2018, 2022)]
@@ -1607,7 +1685,7 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
     for u in sim["ufs"]:
         u["nome"] = nomes.get(u["uf"], u["uf"])
     saida["segundo_turno"] = sim
-    _gravar_json(WEB / "resultados_2t.json", saida)
+    _gravar_json(WEB_ / "resultados_2t.json", saida)
     log(f"[2T] {par[0]} x {par[1]}: P({par[0]}) = {sim['p_a_vence']:.3f}; {par[0]} {sim['a_media']:.1f}% "
         f"(p10–p90 {sim['a_quantis'][1]}–{sim['a_quantis'][5]}); apuração {c['pst_nacional']:.2f}%")
     return saida
@@ -1733,12 +1811,16 @@ def ensaio(ano: int, n: int = 500_000, seed: int = 20221002, P: dict | None = No
     par, decidido, previsto = definir_par(c)
     outros = tuple(a for a in (2014, 2018, 2022) if a != ano)
     w = PARAM_2T["peso_pesquisas_pre_1t"]["valor"]
-    cal = calibrar_2t(outros, w, P)
+    reg = None
+    if PARAM_2T["transferencia_regional"]["valor"] and previsto:
+        eb = TR.estimar_beta(tuple(x for x in TR.ANOS_BETA if x != ano))       # beta sem o próprio ano
+        reg = {"mu": eb["mu"], "dp": eb["dp_preditivo"]}
+    cal = calibrar_2t(outros, w, P, beta=reg["mu"] if reg else None)
     pre = preditores_hist(ano, P)
     qp = {"q": pre["q_pesquisas"], "peso": w, "tipo": "pre_1t"} if pre["q_pesquisas"] is not None else None
     d_comp = delta_comparecimento(outros)
     sim = simular_2t(c, par, transf_para_par(par, ano, pre["linha"]), qp, cal, d_comp, n=n, seed=seed,
-                     par_previsto=previsto)
+                     par_previsto=previsto, regional=reg)
     d = historico_ano(ano)
     real_q = d["q_br"] * 100
     Q = sim.pop("_Q")
@@ -1807,13 +1889,89 @@ def ensaios_historicos(n: int, log=print) -> dict:
     return resumo
 
 
+# ================================================================ backtest do 2º turno: matriz única x regionalizada
+def _c_hist(ano: int) -> dict:
+    """1º turno real de `ano` (CSV TSE por UF) consolidado como na noite da apuração; menores em 'Outros'."""
+    cands = CANDS_ANO[ano]
+    h = _hist()
+    r1 = h[(h.ano == ano) & (h.turno == 1)].set_index("uf")
+    ufs_ref = pd.DataFrame({"uf": UFS, "eleitores": r1.loc[UFS, "eleitorado"].values,
+                            "abst1": r1.loc[UFS, "abstencao_pct"].values,
+                            "bn1": (r1.loc[UFS, "branco_pct_comp"] + r1.loc[UFS, "nulo_pct_comp"]).values})
+    res = {}
+    for uf in ["BR"] + UFS:
+        r = r1.loc[uf]
+        votos = {cands[0]: r.pt_votos, cands[1]: r.oponente_votos,
+                 "Outros": r.votos_validos - r.pt_votos - r.oponente_votos}
+        res[uf] = {"abr": uf, "pst": 100.0, "psi": 100.0, "eleitorado": float(r.eleitorado),
+                   "comparecimento": float(r.comparecimento), "abstencao": float(r.abstencoes),
+                   "validos": float(r.votos_validos), "brancos": float(r.brancos), "nulos": float(r.nulos),
+                   "total": float(r.comparecimento), "votos": votos, "atualizado": "TSE (CSV)"}
+    return consolidar(res, ano, ufs_ref)
+
+
+def _metricas_2t(sim: dict, d: dict) -> dict:
+    real_q = d["q_br"] * 100
+    Q = sim["_Q"]
+    real_uf = dict(zip(d["ufs"], d["q"] * 100))
+    us = [u for u in sim["ufs"] if u["uf"] != "ZZ"]
+    e = np.array([u["a_media"] - real_uf[u["uf"]] for u in us])
+    reg = np.array([u["regiao"] for u in us])
+    return {"erro_nacional_pp": round(sim["a_media"] - real_q, 3), "pit": round(float(np.mean(Q * 100 < real_q)), 3),
+            "em_80": bool(sim["a_quantis"][1] <= real_q <= sim["a_quantis"][5]),
+            "uf_mae_pp": round(float(np.mean(np.abs(e))), 3), "uf_rmse_pp": round(float(np.sqrt(np.mean(e ** 2))), 3),
+            "uf_cob80": round(float(np.mean([u["a_q"][0] <= real_uf[u["uf"]] <= u["a_q"][2] for u in us])), 3),
+            "uf_cob95": round(float(np.mean([u["a_q95"][0] <= real_uf[u["uf"]] <= u["a_q95"][1] for u in us])), 3),
+            "uf_acerto": round(float(np.mean([(u["p_a"] > 0.5) == (real_uf[u["uf"]] > 50) for u in us])), 3),
+            "uf_brier": round(float(np.mean([(u["p_a"] - (real_uf[u["uf"]] > 50)) ** 2 for u in us])), 4),
+            **{f"vies_{g}": round(float(np.mean(e[reg == g])), 3) for g in ["N", "NE", "CO", "SE", "S"]}}
+
+
+def backtest_2t(anos=(2014, 2018, 2022), n: int = 100_000, seed: int = 20221002, log=print) -> pd.DataFrame:
+    """Pipeline do 2º turno (1º turno real + o que se sabia na véspera -> 2º turno), leave-one-election-out:
+    calibração, beta e comparecimento sem o próprio ano. Variantes: 'nacional' (matriz única, método anterior) e
+    'regionalizada' (transferencia_regional.py)."""
+    P = M.carregar_premissas()
+    w = PARAM_2T["peso_pesquisas_pre_1t"]["valor"]
+    linhas = []
+    for ano in anos:
+        c = _c_hist(ano)
+        par, _, previsto = definir_par(c)
+        outros = tuple(a for a in anos if a != ano)
+        pre = preditores_hist(ano, P)
+        qp = {"q": pre["q_pesquisas"], "peso": w, "tipo": "pre_1t"} if pre["q_pesquisas"] is not None else None
+        d_comp = delta_comparecimento(outros)
+        eb = TR.estimar_beta(tuple(a for a in TR.ANOS_BETA if a != ano))
+        reg = {"mu": eb["mu"], "dp": eb["dp_preditivo"]}
+        d = historico_ano(ano)
+        for nome, rg in (("nacional", None), ("regionalizada", reg)):
+            cal = calibrar_2t(outros, w, P, beta=rg["mu"] if rg else None)
+            sim = simular_2t(c, par, transf_para_par(par, ano, pre["linha"]), qp, cal, d_comp, n=n, seed=seed,
+                             par_previsto=previsto, regional=rg)
+            linhas.append({"ano": ano, "variante": nome, "beta": 0.0 if rg is None else round(rg["mu"], 3),
+                           "a_media": sim["a_media"], **_metricas_2t(sim, d)})
+    t = pd.DataFrame(linhas)
+    with pd.option_context("display.width", 250, "display.max_columns", 30):
+        log(t.to_string())
+        log(t.groupby("variante")[["uf_mae_pp", "uf_rmse_pp", "uf_cob80", "uf_cob95", "uf_brier"]].mean().round(3))
+    return t
+
+
 # ================================================================ CLI
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--rodar-tudo", action="store_true", help="a) resultado TSE, b) avaliação, c) 2º turno, d) publicar")
     ap.add_argument("--ensaio-2022", action="store_true", help="ensaio completo com 2022 (+ validação 2014/2018)")
     ap.add_argument("--gerar-fixture-2022", action="store_true")
-    ap.add_argument("--fonte", default="auto", choices=["auto", "tse", "manual"])
+    ap.add_argument("--fonte", default="auto", choices=["auto", "tse", "manual", "cache"],
+                    help="cache = só a última leitura gravada em data/tse_1t_2026/ (sem rede)")
+    ap.add_argument("--saida", default=None,
+                    help="ensaio a seco: grava resultados_2t.json/avaliacao_1t.json/AVALIACAO_1T.md nesta pasta e "
+                         "não roda publicar.py (web/ e data/ intocados)")
+    ap.add_argument("--transf-regional", choices=["padrao", "sim", "nao"], default="padrao",
+                    help="transferência regionalizada no 2º turno (padrão: PARAM_2T['transferencia_regional'])")
+    ap.add_argument("--backtest-2t", action="store_true",
+                    help="matriz nacional única x transferência regionalizada, LOEO 2014/2018/2022 (+ comparecimento)")
     ap.add_argument("--sem-municipios", action="store_true",
                     help="não usar a projeção por município (método antigo: válidos / pst por UF)")
     ap.add_argument("--replay-2022", action="store_true",
@@ -1828,9 +1986,15 @@ def main():
         r = ensaios_historicos(a.n)
         print(json.dumps(r["agregado"], ensure_ascii=False))
     if a.rodar_tudo:
-        rodar_2026(a.n, a.seed, a.fonte, municipios=not a.sem_municipios)
-        import publicar
-        publicar.main()
+        rg = {"padrao": None, "sim": True, "nao": False}[a.transf_regional]
+        rodar_2026(a.n, a.seed, a.fonte, municipios=not a.sem_municipios, saida_dir=a.saida, regional=rg)
+        if not a.saida:
+            import publicar
+            publicar.main()
+    if a.backtest_2t:
+        TR.backtest_regional()
+        TR.backtest_comparecimento()
+        backtest_2t(n=min(a.n, 100_000))
     if a.replay_2022:
         t = replay_resumo()
         _gravar_json(DADOS / "replay_projecao_2022.json", {"gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -1838,7 +2002,7 @@ def main():
                                                             "tabela": t.reset_index().to_dict(orient="records")})
         with pd.option_context("display.width", 250, "display.max_columns", 30):
             print(t)
-    if not (a.rodar_tudo or a.ensaio_2022 or a.gerar_fixture_2022 or a.replay_2022):
+    if not (a.rodar_tudo or a.ensaio_2022 or a.gerar_fixture_2022 or a.replay_2022 or a.backtest_2t):
         ap.print_help()
     print(f"tempo {time.perf_counter() - t0:.1f} s")
 
