@@ -1,0 +1,2996 @@
+{
+"gamma": {
+"brazil-presidential-election": [
+{
+"slug": "brazil-presidential-election",
+"title": "Brazil Presidential Election",
+"markets": [
+{
+"question": "Will Tarcisio de Freitas win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Tarcisio de Freitas",
+"conditionId": "0x81a537b379a35e4e17c286d3b37394e94bd74c1779bbe9a13670eb991b201a3a",
+"slug": "will-tarcisio-de-frietas-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"52634616068523389389514492087655237014427439869589807217055529923225131895030\", \"106302272146511626715366732538958019243031587527887799373406690681902311718700\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "14783253.143296001",
+"volume24hr": 135590,
+"liquidity": "1175833.88714",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Luiz Inácio Lula da Silva win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Luiz Inácio Lula da Silva",
+"conditionId": "0xdf8e2dc5860027decbe6164555c3c1c9645c3bd33e16b9dc57ca87125047d4a8",
+"slug": "will-luiz-incio-lula-da-silva-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.375\", \"0.625\"]",
+"clobTokenIds": "[\"30630994248667897740988010928640156931882346081873066002335460180076741328029\", \"79191939610100241429039499950443680906623179487184628479206155805558220344190\"]",
+"bestBid": 0.37,
+"bestAsk": 0.38,
+"lastTradePrice": 0.38,
+"volume": "14910247.342059989",
+"volume24hr": 600204.322425,
+"liquidity": "359325.9669",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Jair Bolsonaro win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Jair Bolsonaro",
+"conditionId": "0x63d8f3a34c90bd5342dda8acf62b6a898dfa52f86475efaf180b66493ef6af80",
+"slug": "will-jair-bolsonaro-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"66991175107696133528353695394151645462081911990365106169948013117379189357520\", \"106199154714545451005463800266480893448383896699905306895283360115694583822185\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "7617282.168873998",
+"volume24hr": 8014.31,
+"liquidity": "1449179.82683",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Fernando Haddad win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Fernando Haddad",
+"conditionId": "0xdd3d104667774208eae2239f576122ecdd1c04ba81cc14d26d22a36b33887977",
+"slug": "will-fernando-haddad-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"34763699632057764824138626876692302096202604335992573366008355204521657293675\", \"44100414831057444580239592647354703752415482100034079696797886870617637485145\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "7739822.851963002",
+"volume24hr": 2000,
+"liquidity": "894174.39058",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Michelle Bolsonaro win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Michelle Bolsonaro",
+"conditionId": "0x37ec4c6b57a18b16eed1241f6155ee7ff45bc1697d7848f15ac33d406e38ed00",
+"slug": "will-michelle-bolsonaro-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"91154058715822908897619103072380844452822017332608583147987152526225529443892\", \"16879668974983992641795221456967869661599530861479349066809692639705609051027\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10417996.912317999",
+"volume24hr": 8039.57,
+"liquidity": "1756380.20916",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Eduardo Bolsonaro win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Eduardo Bolsonaro",
+"conditionId": "0xe1d5733322fd2215f136412f419d9ff805d097f78c68de3261515ff736895f2b",
+"slug": "will-eduardo-bolsonaro-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"68827474128979817444758177181483142354604256745613325980470518365059439724226\", \"74201542293075536162258436779948914914665324387949186755842303569200449516790\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10485707.335772",
+"volume24hr": 6003.6,
+"liquidity": "2517964.37048",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Carlos Roberto Massa Júnior win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Ratinho Júnior",
+"conditionId": "0xa59bb6bb91e5c1e4d533864520fbd3bb75d6d0ebb813b4cd8a8b88479bfa8966",
+"slug": "will-carlos-roberto-massa-jnior-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"7424753944577407627798342086224300332261118341771286172561357635231967087849\", \"59719566460284176747563170948594542001910357576928243006415040827066185298735\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10501753.546619004",
+"volume24hr": 6000,
+"liquidity": "2778430.17001",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Renan Santos win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Renan Santos",
+"conditionId": "0x05297f854d3b757d5e51a1a29c7f225a80b14b2a161d6b7f9a61677da7a80ced",
+"slug": "will-renan-santos-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0015\", \"0.9985\"]",
+"clobTokenIds": "[\"93998891488819623915454849994768171534113749478841216025646247933473925258016\", \"7565921021555775006041943394390068423142281108752994121417017072842379450830\"]",
+"bestBid": 0.001,
+"bestAsk": 0.002,
+"lastTradePrice": 0.001,
+"volume": "16905203.880470987",
+"volume24hr": 821981.5721670003,
+"liquidity": "636417.03619",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Flávio Bolsonaro",
+"conditionId": "0x1a01bf78f56a507fcb666d564d8c8b91b0750679163ed6e96746102c9b7d285d",
+"slug": "will-flvio-bolsonaro-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.6265\", \"0.3735\"]",
+"clobTokenIds": "[\"109876868437950584369987384406356259939519193117253465815665152916226511121427\", \"38310927461258927563020508025396887688249787380193911540547071417200646834355\"]",
+"bestBid": 0.626,
+"bestAsk": 0.627,
+"lastTradePrice": 0.628,
+"volume": "14501074.831821002",
+"volume24hr": 654641.0985559999,
+"liquidity": "481162.4408",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Ronaldo Caiado win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Ronaldo Caiado",
+"conditionId": "0xbca3d70ec52a5a441ccc365a3b1b48b9cd0f08dfff4bc5871e2cd92d0d92caa1",
+"slug": "will-ronaldo-caiado-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"36262307788727352725358528951052957737657822670589615830114396216160368496388\", \"46647902352070183258066763519254338558701019805822306126128459427684955493048\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "7813998.378361998",
+"volume24hr": null,
+"liquidity": "1492433.90701",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Romeu Zema win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Romeu Zema",
+"conditionId": "0x054725b2a7971376f7924a7021221b12acc50fe78d97817824fe411704d5b5a2",
+"slug": "will-romeu-zema-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"44340846524235712899508083510503343345123518718867913608211694999290628967401\", \"38633448065261608755072088507033278254893488240734399014852176650195563610767\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "7730217.031736001",
+"volume24hr": 2.2,
+"liquidity": "991242.49515",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Camilo Santana win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Camilo Santana",
+"conditionId": "0x101d084cd035070abde58d8a3113b78e11ba68028b0d9e7e38ea7d780797aecc",
+"slug": "will-camilo-santana-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"40200361970099951836914907993971598083846841136374094155950298822866778978473\", \"19426561498944480100112574303715252854511498242084732425528134709477022078274\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "5609157.589657001",
+"volume24hr": null,
+"liquidity": "1418413.61895",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Geraldo Alckmin win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Geraldo Alckmin",
+"conditionId": "0xd0536d9612e041312235baceac52bde48821e8aad4607533513b3782904b7d49",
+"slug": "will-geraldo-alckmin-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0015\", \"0.9985\"]",
+"clobTokenIds": "[\"70059117674007036240163073645113489994895807359788046023215512784288966325609\", \"36365720386664227244786004973842669393494622748773462921946756661027332562108\"]",
+"bestBid": 0.001,
+"bestAsk": 0.002,
+"lastTradePrice": 0.001,
+"volume": "7885573.568183997",
+"volume24hr": 140867.36200000005,
+"liquidity": "544885.64278",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Eduardo Leite win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Eduardo Leite",
+"conditionId": "0x70f1a7d2cd490b640676d5e31470bcbe16fef40087de1af8b6f6e44e299b5784",
+"slug": "will-eduardo-leite-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"114877796464914647568230859616993131921615428032065380781940199946418906101564\", \"9697405538019508678756776747825282312074484504476125199957573316007230038461\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "8030906.969926996",
+"volume24hr": null,
+"liquidity": "2889368.19448",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Aldo Rebelo win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Aldo Rebelo",
+"conditionId": "0xafd3f96b7b6084509e625270538ff0699003fafc042263c1216e7f084cef753a",
+"slug": "will-aldo-rebelo-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"18874063891853426715155938679650704186206312307574669405399400920527965569290\", \"95597933525611824079013318290908306632452395554424249697047125393686147365868\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "4984832.294043002",
+"volume24hr": null,
+"liquidity": "2786290.35567",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Tereza Cristina win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Tereza Cristina",
+"conditionId": "0xae7dd99bf126b033b77af2553a98b97e1190fd7bdddd5a792ca2791ae23e4d13",
+"slug": "will-tereza-cristina-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"111901744542692526827481385722975834672043376661227579870355575009066606657994\", \"64982418802960410634417234400461483693795282592809889685102027864089780598249\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "4109580.666595998",
+"volume24hr": null,
+"liquidity": "1754446.07437",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Helder Barbalho win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Helder Barbalho",
+"conditionId": "0x919c9bc428d2d19400437852066582b11bb7b00ad78529a0069cde76766b9faf",
+"slug": "will-helder-barbalho-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"49821018408733695378907631766783388197384982451576409356148180829521508621967\", \"72714416442822965658619792482622498214965370742798513442488186246322155432807\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "2430918.496881999",
+"volume24hr": null,
+"liquidity": "1714399.14639",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Pablo Marçal win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Pablo Marçal",
+"conditionId": "0xe7567eb9c84e1f859a7e18f1042c724dbf57c3cc0459b312bee22156a57e60ea",
+"slug": "will-pablo-marcal-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"72572221736897634802851345220625440437573759789073371714710674805950653460290\", \"9672782168124372602794464518660472014151020436078017456931499053959813127872\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "4013677.792228002",
+"volume24hr": null,
+"liquidity": "979977.8447",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Augusto Cury win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Augusto Cury",
+"conditionId": "0x536b507838dcdac8966510d84abb8f1c51362d632ab2023b94e810ba6fdf5cb7",
+"slug": "will-augusto-cury-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"61078489744701316174218443335134825688547680779921710765642429680039972907213\", \"55702511089357054967370685294383563985787421290055635794639010983168945589146\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "5296576.439753003",
+"volume24hr": 50000,
+"liquidity": "797890.89169",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Person O win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Person O",
+"conditionId": "0xadb93a20d727c2ada0cadc219c8aec70d2bf72c03dca956c72100b6882a16b40",
+"slug": "will-person-o-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": null,
+"clobTokenIds": "[\"42604620076708862818443600944948466773448743300914502417396048813803249322474\", \"64391290387675938053190816271296949368118542777276859988387753347167232761172\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Person P win the 2026 Brazilian presidential election?",
+"groupItemTitle": "Person P",
+"conditionId": "0xf131ce8f9ec2077f3519836c93e43cdbe64153721c7396809d50c66452a3e938",
+"slug": "will-person-p-win-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": null,
+"clobTokenIds": "[\"57282931096423043401419862153803529368461210176095971916776719841101127995811\", \"60998281623646447005232588499268983888707567676612670212797836536083800707039\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+}
+]
+}
+],
+"brazil-presidential-election-first-round-winner": [
+{
+"slug": "brazil-presidential-election-first-round-winner",
+"title": "Brazil Presidential Election First Round Winner",
+"markets": [
+{
+"question": "Will Lula win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Lula",
+"conditionId": "0xf19d6b617a3c6382448444824b42ba172be2d88b8a1491f7dfc7be6327e510a1",
+"slug": "will-lula-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.705\", \"0.295\"]",
+"clobTokenIds": "[\"59263952479040461395118740393989526475872507834003057062766690093774519981624\", \"53720115379916959421923495014610746985393867525164093155920821553793706417884\"]",
+"bestBid": 0.7,
+"bestAsk": 0.71,
+"lastTradePrice": 0.71,
+"volume": "703226.8714270004",
+"volume24hr": 203496.032938,
+"liquidity": "72716.7976",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Flavio Bolsonaro win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Flavio Bolsonaro",
+"conditionId": "0x3cb06270073639b93774e844b0cb35ac24d51d2fb6ced666401c817618b5c4e2",
+"slug": "will-flavio-bolsonaro-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.305\", \"0.695\"]",
+"clobTokenIds": "[\"114886952444256037305974558892464681775979337745943909320805991763525840901648\", \"107141406460820363548575023750456064218197581116423661492640462106712291533946\"]",
+"bestBid": 0.3,
+"bestAsk": 0.31,
+"lastTradePrice": 0.3,
+"volume": "687213.5079349998",
+"volume24hr": 193122.672115,
+"liquidity": "106978.1787",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Ronaldo Caiado win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Ronaldo Caiado",
+"conditionId": "0xf30b34767bc45f46ec7154da0c376d1c8084ee7e1e97cd38577a4090765fa8f3",
+"slug": "will-ronaldo-caiado-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"24051954144737826121997268891164508890030825067476569706311548827179766646402\", \"35804553803093643194128392351002201395951399349375253942809907385087268898910\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.002,
+"volume": "4126.467833000001",
+"volume24hr": null,
+"liquidity": "88112.51897",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Zema win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Zema",
+"conditionId": "0xaf014af44887a9bce647ee110a95b7947430b07ba809cd26c6e98233999d8eac",
+"slug": "will-zema-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"4093707954779061262426577451156597273058111927589384638531866017596610089279\", \"102039520351588106376462532124182417134633961962858035743957991225182770364299\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "1545.967333",
+"volume24hr": null,
+"liquidity": "85225.50244",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Renan Santos win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Renan Santos",
+"conditionId": "0x8b082ebeaf7209c1ab3c525836926a1ea528a8d79abcff431879de33659ec6f2",
+"slug": "will-renan-santos-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"115733938737169134574203339057872413857605206485174074018891100028816782064411\", \"91896696465702822219385449449455359140712314950849483738538257073184029158527\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "8551.935164",
+"volume24hr": 3090,
+"liquidity": "88479.70487",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Pablo Marçal win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Pablo Marçal",
+"conditionId": "0xbf330fb3887ebca74c6be44b6d7516872f494cd84b8860f1a03197a7f9264de0",
+"slug": "will-pablo-marcal-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"108071455511008721960153850519574085810674959782183349529045033828460288862205\", \"24231915330921407860679144848766280333342664508634548325899603765581202627817\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "1188.6564999999998",
+"volume24hr": null,
+"liquidity": "83734.07762",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Escritor Augusto Cury win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Escritor Augusto Cury",
+"conditionId": "0x82c1ac90e7055ec72cbc8fafe57b000da12b7f3c730cfab3b769a9ba300438db",
+"slug": "will-escritor-augusto-cury-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"43005188587007858650871147373721149312425184073323547086352590416708922412845\", \"510293935211222707309955095504921143156359721840873134236027195897362586961\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "7951.0996159999995",
+"volume24hr": 1100,
+"liquidity": "88771.21269",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Rui Costa Pimenta win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Rui Costa Pimenta",
+"conditionId": "0x60396c653c584969c3f4e9794a0708fd016d4d7d1a94ffa0adf3599d16288a84",
+"slug": "will-rui-costa-pimenta-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"56520992618564796010817708226863348154113994473884480627762880060675435236092\", \"3096155477138275068447037433898956197352010413304675761794399814863455084579\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "5477.009",
+"volume24hr": 5000,
+"liquidity": "86095.49467",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Clariana Barao win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Clariana Barao",
+"conditionId": "0x8cdf1496b1a1549c8b07d0a26706d9237429f29e4d2362bab74b9dc7690be2e1",
+"slug": "will-clariana-barao-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"102581344736245417936705467918313820050427124414275018486431526950517501376833\", \"84755597822418376867775250887569550148950478550893382762159350852212775230211\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "287.95649999999995",
+"volume24hr": null,
+"liquidity": "84238.62052",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Hertz Dias win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Hertz Dias",
+"conditionId": "0xeb8e340245da19e221336e81f67cef81c674c611b99faa7069c7e745713e8ac0",
+"slug": "will-hertz-dias-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"26205219140849820999268809870699592745558351258420745800920604194345474782120\", \"106303147859271280243849618661677159235016906602520287937997514511376889774896\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "13295.9665",
+"volume24hr": 13000,
+"liquidity": "78786.03741",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Samara win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Samara",
+"conditionId": "0xee74327692a3485628ca2f4c0156d0d16c8252c040050facdd8b13d7515da706",
+"slug": "will-samara-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"88028479511124227747262399713360591678500186603466091820052306838526300098865\", \"56678798222982677119403158990880114215449582130449222920941093132549624715681\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10295.9665",
+"volume24hr": 10000,
+"liquidity": "82659.2934",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Veterinário Wilson Grassi win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Veterinário Wilson Grassi",
+"conditionId": "0x7e57f62b14f3a42ffd26707767435f09b89b21ff2249a636b8eaec2f2e796878",
+"slug": "will-veterinario-wilson-grassi-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"134414765765669597932233857124993548936481998783640367409770481271886644169\", \"62328550278186259363240687870704449321448331456642420022276461646830520922301\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10315.9665",
+"volume24hr": 10000,
+"liquidity": "81515.20913",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Edmilson Costa win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Edmilson Costa",
+"conditionId": "0x86aa95bd56c2ae3281ff58317c31a233c12938738fd843ff221d720b4fb8e15e",
+"slug": "will-edmilson-costa-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"83311403186434164838252665349297581867940344729766191166038149166226925195294\", \"103733756592336614940262337732688687352548764241819866273541632124300211162561\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10259.322",
+"volume24hr": 10000,
+"liquidity": "81210.33642",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Candidate A win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate A",
+"conditionId": "0xb46f54a9dd82c40b0575485deb42d0f5e8b6161f414cf23104c0e37c5194c6b7",
+"slug": "will-candidate-a-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"52001002324488667136740611621428380513981609177631767444413473125570276267900\", \"74174160314258790437432804748021762505664904286434638661645424455126638650864\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate B win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate B",
+"conditionId": "0x7749c9355bb8ac85684d0dc178e23b07032b19467d3f6d850b942194e0950e3a",
+"slug": "will-candidate-b-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"81482115593707315339989033631833157930397829806592601936231035808957526066632\", \"82990153002844453331373859316695856449199710208414359628804064286441418685543\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate C win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate C",
+"conditionId": "0x21c002dc7fe81dd0e51b486edad38022343fbbe36c7b0e631972902b2a8d9430",
+"slug": "will-candidate-c-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"50102060808188691022312167382795858901886291207075982690076129114059679000984\", \"86908198913859008041768157768768494437954257761190240097911147450463062390891\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate D win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate D",
+"conditionId": "0x262030aa3dcebcf3f613c100ef5cc7c1244f1f9bf4ee8dd4b8ee26a8aab3aff6",
+"slug": "will-candidate-d-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"45936940216983764412475876068668790740308166767191676257755953420153751986861\", \"69009307523566150765401225191590224804883996228722389916111000641534257430040\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate E win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate E",
+"conditionId": "0xaf7f308012e0f9bb939d57d9da9570d7c3d114186369d8dfb9195ddfe5e79a7f",
+"slug": "will-candidate-e-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"58491125671099670741121269349196052045592772182420769335944257888625708196139\", \"7558248408677934339336482838011834523752444989594452002875753399572050975984\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate F win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate F",
+"conditionId": "0x1f5d76ff5a35273f5407eb3ece800763578ed95e3e1e3db891f428dc299aadb4",
+"slug": "will-candidate-f-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"586573512999114442736696090480920140786274736745002084066066615418744582336\", \"45807059625266666143999571922184073622588810745903467494048076406226616354910\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate G win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate G",
+"conditionId": "0x7a8eacc86dcfdbb2103d1b7ea2fad96df7b81293dc8b5448e0822362e26db14e",
+"slug": "will-candidate-g-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"4732807227628698434102484566273606570014735682683562456057276319967980949621\", \"65690631588014074842195155335374006403144333430510889908015733744146422952606\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate H win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate H",
+"conditionId": "0xaf50a189667cd7ae90da4afc7b39aaab231a5e876e45911f0ff2eaa8fee5b0b8",
+"slug": "will-candidate-h-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"53075373717005742970482718641478630162297132489002833522847136877439034128177\", \"94274489813477224834279749926235754086536346133491092162650346066245432225836\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate I win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate I",
+"conditionId": "0x7e2f6828290851d7fcca4db5a42bace7508d324534995918bc5b4b577e237ac7",
+"slug": "will-candidate-i-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"23784919453821123868010850395679995198729457704885409192094550933083763648329\", \"107738621049686148705343240813321707238585850087356513721818715835909643907586\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate J win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate J",
+"conditionId": "0x8821f255bd45d77163b8d6af674f27010157b66e490fc811ddf5bc727202056b",
+"slug": "will-candidate-j-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"22474914018177119378107323980289454944424211060716224735927292093505126122853\", \"5994680182718191901105748947891244735417798404724540086105968810385171191837\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate K win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate K",
+"conditionId": "0x308770fe877cbea3cd51c51298ecbbf34133ce7473c7ae0015092de3aaaf79a2",
+"slug": "will-candidate-k-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"75996962766324468350130951380504971458764032756784772078820659575680628530294\", \"18741395776084102922966817868748991209534622359239614618622415464132423349671\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate L win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate L",
+"conditionId": "0x8fac4d719174e182ef00ccf02c6cd9b760e841f6df69d531126d552d96a9621e",
+"slug": "will-candidate-l-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"32950069382314304874160529624806210540862794741812219769077562280902295683962\", \"104583051229937763101152569078932837926675163471031651526228345328101575943362\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate M win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate M",
+"conditionId": "0xdda54614699ed144f8242a9ce91bebf7b0a7cec4374a74f55c928dac18927bf8",
+"slug": "will-candidate-m-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"86267409242597837088823186779443996065796034401228521890442575166018519244881\", \"23248678949487427306589558526563855751275304625385845863019629919005243860733\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate N win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate N",
+"conditionId": "0xf578db156e2cbed10ff1e922f4e9f34c0673b7c6cfa0d2bfbbd30f15086a94ec",
+"slug": "will-candidate-n-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"112394658714854993856681385367030361429595582051771414648632932740926380886182\", \"45653653597517403294296879063749039698239876323693428422510060400906475897906\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate O win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate O",
+"conditionId": "0xcd56ca1da6c3f6dbde50d3cd427ab39ad582d651d619c64b2f1dd9ac7297b6d4",
+"slug": "will-candidate-o-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"111248404723302964744080697526250670414348280409114598744756693570129378949760\", \"69275075895171155770629627030659223703061149110935110418463871013837634639890\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate P win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate P",
+"conditionId": "0xf2edae73e07614dd7b241b0789a729380c3957626d39bea64cb14aca53dd3d8a",
+"slug": "will-candidate-p-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"73549966788170361259477622357298625299195898230687087671632019375385560196505\", \"77219004429001145655469096687992325083129986621357076803681075045008517433255\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate Q win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate Q",
+"conditionId": "0x00af4896e6db6571651b1cd853c940bd23044b39031d813a48d2a0d716f20a5c",
+"slug": "will-candidate-q-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"49240934233129120648362089929677491318135092913969199947347796996295754295107\", \"60583040801574348170423543565289958926058692111825159322934795818716428070876\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate R win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate R",
+"conditionId": "0xe3e828a6baadeda3582a25d356169e03dadc98f3fb4bde892f25f109a3c4bbc9",
+"slug": "will-candidate-r-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"62224711515850595981571511256084302417622467935172651066778189909026146008830\", \"94889480162237871421791462458374283488284595421228556723076605687147594714641\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate S win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate S",
+"conditionId": "0x7848d6ad655c46b16c8c5534481912b6aca92265777ed7cc5a24ee04214ffdbf",
+"slug": "will-candidate-s-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"44179727270323207190483948348359477520436640950984711591752283174725803751659\", \"92405283495505888485248211679390775112712643482782359124303784975740647757224\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate T win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate T",
+"conditionId": "0x03e951e5f4e0c59ede9d82ef4672a310b614937d1b2b6f72e4c207120d5bcebd",
+"slug": "will-candidate-t-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"54689730335584145872659007419797350644135984014867969271997075185327473299408\", \"67485459940759690005575515815212011467090375402700849017771418119619105360881\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate U win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate U",
+"conditionId": "0xf94848ad449c279a2f8240ff7410dff30d3fbe2ab41c6d8f41c45c2fd84cb332",
+"slug": "will-candidate-u-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"14736777774042171292679126759359945394012182503626930491741934385283418926414\", \"89136877449680602093611386766755592768583972499657559471520703228816169538382\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate V win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate V",
+"conditionId": "0x8285d6e95a044bbbd51ae3b6de3b6e2dfb038ac5496a9391431d84fb01369d2b",
+"slug": "will-candidate-v-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"87408939485510364930717810896906030154112243550086875617513223272666160821547\", \"45535999803499602033250925222106858778670114581338062447480500633340521742676\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate W win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate W",
+"conditionId": "0x5e28c1edfa028aa8a9d1ebf53ea4a60dad99daf7127c82858896dcbad1a28505",
+"slug": "will-candidate-w-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"37082122590142571578327783519764871226655805046730666172158965875446014510395\", \"100601794196197306291132140110831641202209479770757929992827821492735088346162\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate X win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate X",
+"conditionId": "0x2a828aedfb7ae79b0a65c217f49697d6119e128cd69fb99216de3a70842fee97",
+"slug": "will-candidate-x-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"29825911558569201990395057570388197077097149970495021303293440685615001789482\", \"11974018540640771927987988499916124993446183453844118993421894214456713475965\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate Y win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate Y",
+"conditionId": "0x03c731da640b45637dde3a0ea0aa9daa26cafbe9a5eb2cb6ce443771ace22e24",
+"slug": "will-candidate-y-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"43666187836947607999050534432362115741274724280056178870382358293223892579490\", \"44915823650364062139754191769211920079645446666922922526192752978996849913799\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate Z win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Candidate Z",
+"conditionId": "0xa69c361c7d39f5088fb9d7bcc64c663ca467357e64cf39c09dc6f8604527b088",
+"slug": "will-candidate-z-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"24904315784494383604014033477965627845651361092128989378953206396201328475108\", \"65042894830988920846036063900167896014100951057329201378595852855396790945960\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will another candidate win the most votes in the first round of the 2026 Brazil presidential election?",
+"groupItemTitle": "Other",
+"conditionId": "0x0fdecde0acdbf4a4fe8349f9e2ee54e625114c20b01438a0b10e72b5a6615f09",
+"slug": "will-someone-else-win-the-most-votes-in-the-first-round-of-the-2026-brazil-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"108767075314919538636210224251687202291555572915369479262871403594487200722003\", \"66485289552469106199268579155526813209579043085480344999735515052316191027781\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+}
+]
+}
+],
+"will-any-presidential-candidate-win-outright-in-the-first-round-of-the-brazil-election": [
+{
+"slug": "will-any-presidential-candidate-win-outright-in-the-first-round-of-the-brazil-election",
+"title": "Will any presidential candidate win outright in the first round of the Brazil election?",
+"markets": [
+{
+"question": "Will any presidential candidate win outright in the first round of the Brazil election?",
+"groupItemTitle": "",
+"conditionId": "0x087469b4129c64c688397028059dfd366796adbd426e0079ee4cfdd2e4a07b61",
+"slug": "will-any-presidential-candidate-win-outright-in-the-first-round-of-the-brazil-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0575\", \"0.9425\"]",
+"clobTokenIds": "[\"29464249359795764732112771440808805030560641430581197204785405866716242261762\", \"45822599979868501396582860994506290061594012396386219725082308923565779306211\"]",
+"bestBid": 0.055,
+"bestAsk": 0.06,
+"lastTradePrice": 0.06,
+"volume": "732759.9134829997",
+"volume24hr": 125724.40430699999,
+"liquidity": "64710.13801",
+"active": true,
+"closed": false
+}
+]
+}
+],
+"brazil-presidential-election-first-round-margin-of-victory": [
+{
+"slug": "brazil-presidential-election-first-round-margin-of-victory",
+"title": "Brazil Presidential Election First Round: Margin of Victory",
+"markets": [
+{
+"question": "Will Luiz Inácio Lula da Silva win the first round of the 2026 Brazilian presidential election by less than 5%?",
+"groupItemTitle": "Lula da Silva <5%",
+"conditionId": "0x5d5b8feb963ddcc0f4688f7ac0c0d375f99945b7a07155d60cd1a306c6b3054b",
+"slug": "will-luiz-incio-lula-da-silva-win-the-first-round-of-the-2026-brazilian-presidential-election-by-less-than-5-639",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.57\", \"0.43\"]",
+"clobTokenIds": "[\"111141743875022425014082366328706246366536998743881258465740846069926282242834\", \"73197386422190855683808847899890112720383354193439504968265722423178479955299\"]",
+"bestBid": 0.56,
+"bestAsk": 0.58,
+"lastTradePrice": 0.53,
+"volume": "205595.712367",
+"volume24hr": 36748.22003899999,
+"liquidity": "48835.7022",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Luiz Inácio Lula da Silva win the first round of the 2026 Brazilian presidential election by 5–10%?",
+"groupItemTitle": "Lula da Silva 5-10%",
+"conditionId": "0x5377b12dd060efd8e3597620f120648f1bf99452a95eb70374b128d9ca133227",
+"slug": "will-luiz-incio-lula-da-silva-win-the-first-round-of-the-2026-brazilian-presidential-election-by-510-971",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.125\", \"0.875\"]",
+"clobTokenIds": "[\"48407765042087399444287625227087734986428382872828112503518998286869389847258\", \"247047209822374154288211144964214527388236984575039338710647093931430457756\"]",
+"bestBid": 0.12,
+"bestAsk": 0.13,
+"lastTradePrice": 0.14,
+"volume": "265273.2549890001",
+"volume24hr": 119580.42238700001,
+"liquidity": "28489.7291",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Luiz Inácio Lula da Silva win the first round of the 2026 Brazilian presidential election by 10–15%?",
+"groupItemTitle": "Lula da Silva 10-15%",
+"conditionId": "0xd99603add7350a5ff33c8dc609ab0eaae2d5d18162bb00eeb63c38c81ae038f8",
+"slug": "will-luiz-incio-lula-da-silva-win-the-first-round-of-the-2026-brazilian-presidential-election-by-1015-995",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.003\", \"0.997\"]",
+"clobTokenIds": "[\"111501008889215248446738380766334499893429002495174888541812674365305743816241\", \"68985689280964359721858876785601369759982303652640879035310084127715508408780\"]",
+"bestBid": 0.002,
+"bestAsk": 0.004,
+"lastTradePrice": 0.005,
+"volume": "101539.60141100001",
+"volume24hr": 16790.305647,
+"liquidity": "38825.72187",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Luiz Inácio Lula da Silva win the first round of the 2026 Brazilian presidential election by at least 15%?",
+"groupItemTitle": "Lula da Silva 15%+",
+"conditionId": "0x9dd4229c1346ba75c83a20b8176a02bae4f16a1dfd37f8b5a413d1ea69d8e03c",
+"slug": "will-luiz-incio-lula-da-silva-win-the-first-round-of-the-2026-brazilian-presidential-election-by-at-least-15-722",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"56009151213187635954366185401352128499401353317237291178150142441551329323017\", \"115185678488470447867915312736434195109954523227516283415121972843153558531966\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "54453.003225000015",
+"volume24hr": 10071.046,
+"liquidity": "26056.38105",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Flávio Bolsonaro win the first round of the 2026 Brazilian presidential election by less than 5%?",
+"groupItemTitle": "Flávio Bolsonaro <5%",
+"conditionId": "0x25966b196ffc1682fc77df0298784831a60aea8abe03b9aa4fc219d1422feb9f",
+"slug": "will-flvio-bolsonaro-win-the-first-round-of-the-2026-brazilian-presidential-election-by-less-than-5-183",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.2755\", \"0.7245\"]",
+"clobTokenIds": "[\"94495166556994695319220591877877326867271103412306477867919432683718476975192\", \"113360269013551492694108876383291795836420539790876926045774589578082333933690\"]",
+"bestBid": 0.262,
+"bestAsk": 0.289,
+"lastTradePrice": 0.285,
+"volume": "150415.28613099997",
+"volume24hr": 43392.33467500001,
+"liquidity": "42125.85746",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Flávio Bolsonaro win the first round of the 2026 Brazilian presidential election by 5–10%?",
+"groupItemTitle": "Flávio Bolsonaro 5-10%",
+"conditionId": "0x3a539f4052dc3340948b9f56119fbee92919f7bf9bb3cc73fd7feeb310d030d4",
+"slug": "will-flvio-bolsonaro-win-the-first-round-of-the-2026-brazilian-presidential-election-by-510",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.035\", \"0.965\"]",
+"clobTokenIds": "[\"104163730910213129535412784044547089656279554877287473050849076919118163831116\", \"86039822478024155976164016425659784963955476867418121591295874549123281014027\"]",
+"bestBid": 0.029,
+"bestAsk": 0.041,
+"lastTradePrice": 0.029,
+"volume": "127705.55545400003",
+"volume24hr": 34294.50137800001,
+"liquidity": "36966.3389",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Flávio Bolsonaro win the first round of the 2026 Brazilian presidential election by at least 10%?",
+"groupItemTitle": "Flávio Bolsonaro 10%+",
+"conditionId": "0x277dfee905afb258ea2a73842a7ea9a8cba4e3d52597d33f69bc7d159c52f3da",
+"slug": "will-flvio-bolsonaro-win-the-first-round-of-the-2026-brazilian-presidential-election-by-at-least-10-148",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0015\", \"0.9985\"]",
+"clobTokenIds": "[\"74970159510592493365491323778496021428254857628787750938391931595678615272366\", \"22264007619534561295317069667372944960526554253117433294532051046489351594144\"]",
+"bestBid": 0.001,
+"bestAsk": 0.002,
+"lastTradePrice": 0.001,
+"volume": "81410.671539",
+"volume24hr": 23589.741428999998,
+"liquidity": "26157.79906",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Renan Santos win the first round of the 2026 Brazilian presidential election?",
+"groupItemTitle": "Renan Santos Victory",
+"conditionId": "0x819cc40b88572690508717385d9397af991f8bc929f764fa73c99e5e10c1e55b",
+"slug": "will-renan-santos-win-the-first-round-of-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"10454882518429916448752742772766159951084470578369066727370400009390341769549\", \"106172419686511198848432067128074407495874298607566038198661381453643403335421\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "223171.17960699997",
+"volume24hr": null,
+"liquidity": "30440.26455",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Tarcisio de Freitas win the first round of the 2026 Brazilian presidential election?",
+"groupItemTitle": "Tarcisio de Freitas Victory",
+"conditionId": "0x6f98bf552b696e6698beb205cf3849a80696c9c03ef500435d01e9c57e4315e3",
+"slug": "will-tarcisio-de-freitas-win-the-first-round-of-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"83269757217555629943134578848786647915368681844160716033008008468705095911501\", \"29883936130703081407249591258861436828904783883551884691558546057960504371523\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10653.459399000005",
+"volume24hr": null,
+"liquidity": "26514.46678",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Carlos Roberto Massa Júnior win the first round of the 2026 Brazilian presidential election?",
+"groupItemTitle": "Ratinho Júnior Victory",
+"conditionId": "0x1ebb9c918900fedc11089b62d09353ef7e9986ad9ff94fbce786e2541c1e3980",
+"slug": "will-carlos-roberto-massa-jnior-win-the-first-round-of-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"48237610808655602451252745673035721002146805186546999349082405380140320056791\", \"34691135979724685003302612453350395231351112907973284703206145013152583035126\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "10075.553492000001",
+"volume24hr": null,
+"liquidity": "25029.77877",
+"active": true,
+"closed": false
+},
+{
+"question": "Will another person win the first round of the 2026 Brazilian presidential election?",
+"groupItemTitle": "Other",
+"conditionId": "0xf0918b480dabee05030dd06079dcc206f9abdb14f89821deacc025fce5cef2aa",
+"slug": "will-another-person-win-the-first-round-of-the-2026-brazilian-presidential-election",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"74306749719457212671387730053142004427663532632544536840572498618977716344069\", \"41336310534101815155284317254172849991240538401814187941211425250856441386279\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "12026.104700000002",
+"volume24hr": null,
+"liquidity": "30304.39656",
+"active": true,
+"closed": false
+}
+]
+}
+],
+"brazil-presidential-election-first-round-1st-place-in-sao-paulo": [
+{
+"slug": "brazil-presidential-election-first-round-1st-place-in-sao-paulo",
+"title": "Brazil Presidential Election First Round: 1st Place in São Paulo",
+"markets": [
+{
+"question": "Will Clariana Barao win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Clariana Barao",
+"conditionId": "0xac12cf7e929d8d6aba323c4affc92695de3651ece2010311568818bb499612fa",
+"slug": "will-clariana-barao-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"15463717327988183358641810201516509918230603480401284141691069707649528480193\", \"67665711494291675585899995885680806970225361960978710042928662411769872537813\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "595.58",
+"volume24hr": null,
+"liquidity": "11524.30345",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Edmilson Costa win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Edmilson Costa",
+"conditionId": "0x30483f41c8e4c20a48032863c1a0392fc65066f93cdaa5c76fb0658087c42bb0",
+"slug": "will-edmilson-costa-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"96279336605309554356404855269396161003796380584036877580290336638921418384877\", \"4863251759638702082263643727190810326713253305361365911979225217717838291174\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "596.38",
+"volume24hr": null,
+"liquidity": "11533.22509",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Escritor Augusto Cury win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Escritor Augusto Cury",
+"conditionId": "0xeeaf5e161cf3abd3cddc82e5664e179480c3e06cb1db23233fa331b58893c482",
+"slug": "will-escritor-augusto-cury-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"1767759019679416493945974602393410929210204867537878148791862323983313673980\", \"27878245475891925016614571102228468077907095633018164835223040657565670035272\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "1308.024516",
+"volume24hr": null,
+"liquidity": "11568.53428",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Flavio Bolsonaro win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Flavio Bolsonaro",
+"conditionId": "0x7e1029777e7c435cea8a5728d47223c867c8edd8256719094e78ee2fad34aa7b",
+"slug": "will-flavio-bolsonaro-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.98\", \"0.02\"]",
+"clobTokenIds": "[\"9309085889676971389114061141074399812160360297366571641279713238486006212949\", \"41429246184581018570785106189265619211057707611828502962525080874192287747168\"]",
+"bestBid": 0.968,
+"bestAsk": 0.992,
+"lastTradePrice": 0.991,
+"volume": "11528.653089",
+"volume24hr": 1672.430806,
+"liquidity": "13191.30431",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Hertz Dias win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Hertz Dias",
+"conditionId": "0x91c19b6597d02986586313dd754c60345504bfbce75df76cb6808e780e049d0c",
+"slug": "will-hertz-dias-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"59808581122743253306930612792656800019975308655856882710691254337338220278831\", \"115239775827230576298334243175679701955895855461881435498118905244670208133632\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "591.11",
+"volume24hr": null,
+"liquidity": "11479.38345",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Lula win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Lula",
+"conditionId": "0xf92cdd99a92dec02643c3c0d377e420750e0bd40be6bdcffdfbe4520a97318fd",
+"slug": "will-lula-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0135\", \"0.9865\"]",
+"clobTokenIds": "[\"102138300421257402569021830037127500965284156693067256875328890242918725353235\", \"80311267488018712170703933580479699281882066969113740931301495710832661389118\"]",
+"bestBid": 0.002,
+"bestAsk": 0.025,
+"lastTradePrice": 0.007,
+"volume": "11525.024553",
+"volume24hr": 1191.763544,
+"liquidity": "16248.71598",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Pablo Marçal win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Pablo Marçal",
+"conditionId": "0x25dc00d77304d10f9cd3bf53f6c6b4d3c9ee4167706f83a42d103a18d8b41417",
+"slug": "will-pablo-marcal-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"1033943791859449387133480180606119068700984325949871326163584163973469514346\", \"42124537666445908503629174285841085889535879080683122172841922123236174298549\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "1188.57",
+"volume24hr": null,
+"liquidity": "11780.05827",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Renan Santos win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Renan Santos",
+"conditionId": "0xb43e6561a802f94818d3d605845f44b3a0d793726e68ff36570143e8fc4f7350",
+"slug": "will-renan-santos-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0095\", \"0.9905\"]",
+"clobTokenIds": "[\"40097292955770645581405395336782175620784348951313230919615862764430133030192\", \"13177034731157193708882384731787687897079467014007089384508429404091067871038\"]",
+"bestBid": null,
+"bestAsk": 0.019,
+"lastTradePrice": 0.001,
+"volume": "2361.962994",
+"volume24hr": 932.384106,
+"liquidity": "12444.26983",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Ronaldo Caiado win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Ronaldo Caiado",
+"conditionId": "0x4ed5ef63e84f85eb2f556ab733134ea82e6d803fd68a54cf17f1c373657761d0",
+"slug": "will-ronaldo-caiado-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"72229878797211756912063886701494626017516726307470854513607897840325386076397\", \"55102346458463822551874570925819923084437787814374777014055915336691834187905\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "690.932",
+"volume24hr": null,
+"liquidity": "11973.83126",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Rui Costa Pimenta win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Rui Costa Pimenta",
+"conditionId": "0x08bc34256d880da25b4b25b1dae6d603d5218cc26565274874fbd01f2a0af1ae",
+"slug": "will-rui-costa-pimenta-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"72927046779193853354373039717365041820839925477668914214238872479917336155932\", \"102731095453414789671276525706625409710961602979855508370763055880849926102521\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "601.73",
+"volume24hr": 5,
+"liquidity": "11489.61702",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Samara win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Samara",
+"conditionId": "0xc0e4bd16a8126b637ab93fb70def7f2d934a58eaf9c403ba5eebda856d28fa89",
+"slug": "will-samara-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"76555722265573408564113584544187247781565456304862176392604399233615448671896\", \"68668570504013367865491209877668625106358612274762244545130167484106005085425\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "700.25",
+"volume24hr": null,
+"liquidity": "11779.25406",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Veterinário Wilson Grassi win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Veterinário Wilson Grassi",
+"conditionId": "0xe2978b128ddbb022547bf42e5bd4b3d0f6c012c1906d8dd9b5b56b1af3e20107",
+"slug": "will-veterinario-wilson-grassi-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"72594387485455973391243074598420064826730617981347080982874306273496625246055\", \"37593246142699861211068575348223878228701801989963685963573231346994055129504\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "593.26",
+"volume24hr": null,
+"liquidity": "11750.62774",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Zema win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Zema",
+"conditionId": "0x17e3fc7f464eb9179e393ff4b426767e454203961b6dc7b2a6fe2164a7a9075b",
+"slug": "will-zema-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.0005\", \"0.9995\"]",
+"clobTokenIds": "[\"85680878048066217916560879245110528272091612541395604340006383626715493999463\", \"79971100716895314776784195779102429690909160826180371019061931248198977626299\"]",
+"bestBid": null,
+"bestAsk": 0.001,
+"lastTradePrice": 0.001,
+"volume": "747.9195",
+"volume24hr": null,
+"liquidity": "11790.37199",
+"active": true,
+"closed": false
+},
+{
+"question": "Will Candidate A win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate A",
+"conditionId": "0x138bc0b705acc6bd9a563b7fe054552607fd4c014ca895f39186d62f8df4e55e",
+"slug": "will-candidate-a-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"112859278785521989777520133268232070771090922188790379360332556263131630069453\", \"79887474912756035925180267183012020384431440483223815574056347610653071347177\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate B win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate B",
+"conditionId": "0x81b0522df07dd4cf397039fa3eba03429f7c5c61cf7cae95380e28d37240854b",
+"slug": "will-candidate-b-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"60639505207744368245661613561139384133683176605196794940674114103389501869236\", \"90314929292563290973031328771540382270136303528543078888537005270954017515945\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate C win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate C",
+"conditionId": "0xe9914c0a7642c2f23b7f69442f03d1c6196b1e902c1b58a170cdf57f08783291",
+"slug": "will-candidate-c-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"27818219253358639993702600598317648833356045286682557198502463336613277660913\", \"111877624902359642149273923403825088201502960459875091592779112668655327141693\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate D win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate D",
+"conditionId": "0x3afd7c25db1694b35e0c31dd5b0f812e9860243d16b9586864bbd808374736aa",
+"slug": "will-candidate-d-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"42621701558473413812449359543143134339218882857430618514587948513690151395137\", \"98975772259776823275230134367030514289380311778965841845886506225637216708205\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate E win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate E",
+"conditionId": "0x762eb03ff48d3983b922a00d6cdc2859f89d2833146c807a61239bb321af0dfc",
+"slug": "will-candidate-e-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"114824806935889899562411990187133548397241017101668506340860041287096619430094\", \"5621553693866169238029389253450134095687412756475575041464728896637937614470\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate F win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate F",
+"conditionId": "0x354901deb19a225afc74dc1441424cfa4c3f44f764a73873f1d7676050fcd03c",
+"slug": "will-candidate-f-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"15951223689205414225409018718003232938998641779514039063658358576525270597405\", \"2620488309034239296919439518613728687115813975248207397502364690105087516829\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate G win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate G",
+"conditionId": "0xd1643139e8421fe22add31d39ed7cac732c5dcc2b17e65f4f7df9f81155474c5",
+"slug": "will-candidate-g-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"95018743474776242138063132780897537387568321345674780619229536437077708997423\", \"26867756161729601553241082938266178889779006108275590878909200394868022370899\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate H win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate H",
+"conditionId": "0xefbd8d6f716ab4d295608de75d7b96e76b885d1745db0937648b6a8403b6d49d",
+"slug": "will-candidate-h-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"60856058933624830461687886342857044505743170813557859897734737436006283513608\", \"40488813803615225671967817567080442977453985356604960763659168185805925078826\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate I win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate I",
+"conditionId": "0xccc2d7fa4120850dff3156f59705a6e41e0c7acd6190a89e089c5ea3dd95e267",
+"slug": "will-candidate-i-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"82184488256964382335339372493376837952325748288391129040510291500653327417625\", \"10680599727232478510380576123512167332729774961014100868984712888008129453363\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate J win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate J",
+"conditionId": "0x0aded3adfa01affa72599bffb799bede5327d0eb3c7735046b342a5e83e626b2",
+"slug": "will-candidate-j-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"93408206561215929682454862647660696260558435616287987952808887898931455516997\", \"13208102641650132962255329769742282908198988761472881497952085984128166459801\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate K win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate K",
+"conditionId": "0xcf506e0a5df634ab905986f2b1d0c108430b117d7d8cde00403e7f0e8ee97267",
+"slug": "will-candidate-k-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"100273297524910699312385222806094422230496643328635894702980463647948607580761\", \"74037224609077328879387306735211993824333061051559963695524666555021029605831\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate L win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate L",
+"conditionId": "0x7de3ba6bbf291cb96c4466a88cc761fc1facda3c11d3a82e6d8ec18a5d0de224",
+"slug": "will-candidate-l-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"65881389879697697871559394611475578466982821050786649601685729700748408144003\", \"10298188429198088834240274286419434636983967355398108943790163165905739189196\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate M win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate M",
+"conditionId": "0xf4b79bc62ce4a40acdb062913d1dfe18d10add2983a3efbda31d1f6b0387db0b",
+"slug": "will-candidate-m-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"100361645039426748951677767023107112206270782669625578788759849008690374558754\", \"19750943125053709624826494257145413526983127113333839800945735525444225845736\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate N win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate N",
+"conditionId": "0xe04167c7a18a98afa038a2f6a75c6e6114ec14319665d66f65a4914387466799",
+"slug": "will-candidate-n-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"61256715168803854425809764672984700524260542776222927657318820754950128407042\", \"67674553966797472044783723492641717604346231618452230139264048031043085309417\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate O win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate O",
+"conditionId": "0x15b90ccc44ee2722da01e0d3d46f5c5af39245a9030e4183828f549ee8dbb0ef",
+"slug": "will-candidate-o-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"11739505315981755175625554413897768859746122354585313906550428333497076450225\", \"7903489532267465707595665907252563491339034656659309622681210961888541675112\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate P win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate P",
+"conditionId": "0x26d99aee18a91e5e12b7141599810bbb785182f99096496119b8bd2a8bcc80ae",
+"slug": "will-candidate-p-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"97361602592568810649779043583816245319979988526156548605291607479879710786785\", \"80792618147594052743276083148929588043534576077045861008723273606698040227343\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate Q win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate Q",
+"conditionId": "0x6e57723c1ea3c8d02dc969cc6266dbf47c09978b87cc629d5e6eb58e8f2d65c2",
+"slug": "will-candidate-q-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"86512495558636747339767574484213193860532582629184551852402743262250322834874\", \"20994868447206356897781431369281629642450628459801291760236192595002047234962\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate R win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate R",
+"conditionId": "0x9a6077f74ff88545b6e581ea8fd765765268d727b0439a3a0d7cefee01373179",
+"slug": "will-candidate-r-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"68310152529833544345867386900806040375626537145457746351139913068989850671930\", \"109894881600272996383703710942331787047357506904781410007842611489364531227685\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate S win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate S",
+"conditionId": "0x8475a00d9fdf08265f9af550a665884bb98e80662478ed2814c02b3b2fe2c2c2",
+"slug": "will-candidate-s-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"5277071622201114780036237401711222408565712614721291082211688451295864900296\", \"66769099702761773173282155828142095846878437405903773050832722565760973503851\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate T win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate T",
+"conditionId": "0x894fb55166cd7a62e82f513a90a0ec5e29c6cdb57a540ccbf215b686aa35b65c",
+"slug": "will-candidate-t-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"54089688421697399616025225591722434920133811071093637196162098625331601763301\", \"43069557227738727719772367101741369826878453413332712850685488997595007130616\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate U win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate U",
+"conditionId": "0xe1f428a04c4ed25de322afe9b1e28b0ea697571eadb91a53dc424e955b2aa469",
+"slug": "will-candidate-u-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"63156460061928927922909984707268173616693385012265370508867790573159177518108\", \"12306237614187865858156302955551325436988887669455761517674137213761177623368\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate V win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate V",
+"conditionId": "0xb7dbb2ea01441628b6d8527659ceb9553f7f812d858b3a9ccb407694e0cab4b6",
+"slug": "will-candidate-v-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"62320108454201409232784187564119088428634440649555693345016258569827632001095\", \"37411457960116410011038511808031883134398378793545545182013514117365347837203\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate W win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate W",
+"conditionId": "0x46a4c973e1bba11078e7e168c7bb5354ca55d4bff68cc02ab922a19f26603cd2",
+"slug": "will-candidate-w-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"83758603698413502216878998001306304654087944474680594039412143321034396842866\", \"28852407357254690041601184847093198843800150051343790157128198601396167906812\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate X win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate X",
+"conditionId": "0x71994bf5a893637d5eb09324595fe66085aeb02a3b0b1c90e7156ffcd41ff217",
+"slug": "will-candidate-x-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"7115430537300691882944661948925135493464364151347868409390331678226288143038\", \"66312552793327112401148552615714090749923298846283899426721248715053184509323\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate Y win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate Y",
+"conditionId": "0x331d4255998eda9c1d8be76f50d9e9fb499b7ab80929c0c60ffc00d3750726ac",
+"slug": "will-candidate-y-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"90902490196249121417900566822549423354621286338341617872154501820142550945857\", \"98234868099342613805484304036144587248512798244077254973419429568652128032154\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will Candidate Z win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Candidate Z",
+"conditionId": "0x1301ebc644ec5f023d62bae2d98b4efaacb99611ba3d86fa52d207e23c53ce4a",
+"slug": "will-candidate-z-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"33046912120535146725105379165880169384771500992443587484726786300677595208407\", \"47309809400335921609207726075556734931767759677946153319413364503608261558896\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+},
+{
+"question": "Will someone else win the most votes in the next Brazil presidential election from São Paulo?",
+"groupItemTitle": "Other",
+"conditionId": "0x6273ba17f6d1308ff85123fade4fbfa3995d25e455d23c3c1410708ca3bedfef",
+"slug": "will-someone-else-win-the-most-votes-in-the-next-brazil-presidential-election-from-sao-paulo",
+"outcomes": "[\"Yes\", \"No\"]",
+"outcomePrices": "[\"0.5\", \"0.5\"]",
+"clobTokenIds": "[\"57080297056613798931405687102966442302964137549429819078272004200100774376324\", \"55027957462935626603207318210732790760383364549700341762406256150992281069472\"]",
+"bestBid": 0,
+"bestAsk": 1,
+"lastTradePrice": 0,
+"volume": "0",
+"volume24hr": 0,
+"liquidity": "0",
+"active": false,
+"closed": false
+}
+]
+}
+]
+},
+"kalshi": {
+"KXBRPRES": {
+"markets": [
+{
+"ticker": "KXBRPRES-26-ACUR",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Augusto Cury win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Augusto Cury",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0100",
+"volume_fp": "216286.63",
+"volume_24h_fp": "72.63",
+"open_interest_fp": "187088.82"
+},
+{
+"ticker": "KXBRPRES-26-CGOM",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Ciro Gomes win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Ciro Gomes",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0100",
+"volume_fp": "1213.02",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "1213.02"
+},
+{
+"ticker": "KXBRPRES-26-AREB",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Aldo Rebelo win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Aldo Rebelo",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0020",
+"volume_fp": "79914.26",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "60128.76"
+},
+{
+"ticker": "KXBRPRES-26-RCAI",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Ronaldo Caiado win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Ronaldo Caiado",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "218975.73",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "119535.04"
+},
+{
+"ticker": "KXBRPRES-26-RZEM",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Romeu Zema win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Romeu Zema",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0020",
+"volume_fp": "324184.55",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "158976.61"
+},
+{
+"ticker": "KXBRPRES-26-RSAN",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Renan Santos win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Renan Santos",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0010",
+"yes_ask_dollars": "0.0020",
+"last_price_dollars": "0.0020",
+"volume_fp": "1195929.83",
+"volume_24h_fp": "32861.26",
+"open_interest_fp": "760314.47"
+},
+{
+"ticker": "KXBRPRES-26-RJUN",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Ratinho Júnior win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Ratinho Júnior",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0020",
+"volume_fp": "138880.75",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "62666.75"
+},
+{
+"ticker": "KXBRPRES-26-EBOL",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Eduardo Bolsonaro win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Eduardo Bolsonaro",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0020",
+"volume_fp": "57664.36",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "57568.36"
+},
+{
+"ticker": "KXBRPRES-26-FBOL",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Flávio Bolsonaro win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Flávio Bolsonaro",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.6300",
+"yes_ask_dollars": "0.6400",
+"last_price_dollars": "0.6300",
+"volume_fp": "1675731.17",
+"volume_24h_fp": "232740.24",
+"open_interest_fp": "854053.38"
+},
+{
+"ticker": "KXBRPRES-26-MB",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Michelle Bolsonaro win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Michelle Bolsonaro",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0020",
+"volume_fp": "105558.45",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "63211.45"
+},
+{
+"ticker": "KXBRPRES-26-TDF",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Tarcisio de Frietas win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Tarcísio de Freitas",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "269595.58",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "81824.39"
+},
+{
+"ticker": "KXBRPRES-26-FH",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Fernando Haddad win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Fernando Haddad",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "210049.63",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "112057.96"
+},
+{
+"ticker": "KXBRPRES-26-LULA",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Luiz Inácio Lula da Silva win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Luiz Inácio Lula da Silva",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.3600",
+"yes_ask_dollars": "0.3700",
+"last_price_dollars": "0.3700",
+"volume_fp": "1503616.35",
+"volume_24h_fp": "170133.44",
+"open_interest_fp": "832710.52"
+},
+{
+"ticker": "KXBRPRES-26-JB",
+"event_ticker": "KXBRPRES-26",
+"title": "Will Jair Bolsonaro win the 2026 Brazilian presidential election?",
+"yes_sub_title": "Jair Bolsonaro",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "259366.06",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "225224.20"
+}
+]
+},
+"KXBRPRES1R": {
+"markets": [
+{
+"ticker": "KXBRPRES1R-26OCT04-ACUR",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Augusto Cury win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Augusto Cury",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0100",
+"volume_fp": "2531.47",
+"volume_24h_fp": "2337.97",
+"open_interest_fp": "2531.47"
+},
+{
+"ticker": "KXBRPRES1R-26OCT04-TFRE",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Tarcísio de Freitas win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Tarcísio de Freitas",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "1051.00",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "1051.00"
+},
+{
+"ticker": "KXBRPRES1R-26OCT04-RZEM",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Romeu Zema win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Romeu Zema",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "2870.41",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "1909.89"
+},
+{
+"ticker": "KXBRPRES1R-26OCT04-RSAN",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Renan Santos win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Renan Santos",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "4927.62",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "3517.20"
+},
+{
+"ticker": "KXBRPRES1R-26OCT04-RCAI",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Ronaldo Caiado win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Ronaldo Caiado",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0010",
+"last_price_dollars": "0.0010",
+"volume_fp": "2755.05",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "2200.00"
+},
+{
+"ticker": "KXBRPRES1R-26OCT04-LSIL",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Luiz Inácio Lula da Silva win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Luiz Inácio Lula da Silva",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.7200",
+"yes_ask_dollars": "0.7300",
+"last_price_dollars": "0.7300",
+"volume_fp": "207844.86",
+"volume_24h_fp": "84883.36",
+"open_interest_fp": "111402.76"
+},
+{
+"ticker": "KXBRPRES1R-26OCT04-FHAD",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Fernando Haddad win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Fernando Haddad",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0010",
+"yes_ask_dollars": "0.0020",
+"last_price_dollars": "0.0010",
+"volume_fp": "13293.76",
+"volume_24h_fp": "1726.47",
+"open_interest_fp": "12699.01"
+},
+{
+"ticker": "KXBRPRES1R-26OCT04-FBOL",
+"event_ticker": "KXBRPRES1R-26OCT04",
+"title": "Will Flávio Bolsonaro win the first round of the 2026 Brazilian presidential election?",
+"yes_sub_title": "Flávio Bolsonaro",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.2900",
+"yes_ask_dollars": "0.3100",
+"last_price_dollars": "0.2900",
+"volume_fp": "224476.96",
+"volume_24h_fp": "47308.26",
+"open_interest_fp": "104390.75"
+}
+]
+},
+"KXBRAZILPRES1R": {
+"markets": [
+{
+"ticker": "KXBRAZILPRES1R-26OCT04",
+"event_ticker": "KXBRAZILPRES1R-26OCT04",
+"title": "Will anyone win outright in the first round of the 2026 Brazil Presidential election?",
+"yes_sub_title": "Yes",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0600",
+"yes_ask_dollars": "0.0680",
+"last_price_dollars": "0.0690",
+"volume_fp": "108320.45",
+"volume_24h_fp": "25981.25",
+"open_interest_fp": "49848.50"
+}
+]
+},
+"KXBRPRES1MOV": {
+"markets": [
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-RZEM-P50",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Romeu Zema in the first round of the 2026 Brazilian presidential election be above 0%?",
+"yes_sub_title": "Romeu Zema wins",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0000",
+"volume_fp": "0.00",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "0.00"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-RSAN-P50",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Renan Santos in the first round of the 2026 Brazilian presidential election be above 0%?",
+"yes_sub_title": "Renan Santos wins",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0000",
+"volume_fp": "0.00",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "0.00"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-LSIL-P7",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Lula da Silva in the first round of the 2026 Brazilian presidential election be between 5% and 10%?",
+"yes_sub_title": "Lula da Silva, 5-10%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.1000",
+"yes_ask_dollars": "0.1200",
+"last_price_dollars": "0.1200",
+"volume_fp": "20526.23",
+"volume_24h_fp": "6027.64",
+"open_interest_fp": "8874.69"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-LSIL-P57",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Lula da Silva in the first round of the 2026 Brazilian presidential election be above 15%?",
+"yes_sub_title": "Lula da Silva, ≥15%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0100",
+"volume_fp": "1689.00",
+"volume_24h_fp": "106.00",
+"open_interest_fp": "1483.00"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-LSIL-P2",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Lula da Silva in the first round of the 2026 Brazilian presidential election be between 0% and 5%?",
+"yes_sub_title": "Lula da Silva, 0-5%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.5500",
+"yes_ask_dollars": "0.5700",
+"last_price_dollars": "0.5200",
+"volume_fp": "31610.83",
+"volume_24h_fp": "8978.01",
+"open_interest_fp": "15375.91"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-LSIL-P12",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Lula da Silva in the first round of the 2026 Brazilian presidential election be between 10% and 15%?",
+"yes_sub_title": "Lula da Silva, 10-15%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0100",
+"volume_fp": "9873.34",
+"volume_24h_fp": "106.00",
+"open_interest_fp": "4578.34"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-FHAD-P50",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Fernando Haddad in the first round of the 2026 Brazilian presidential election be above 0%?",
+"yes_sub_title": "Fernando Haddad wins",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0000",
+"volume_fp": "0.00",
+"volume_24h_fp": "0.00",
+"open_interest_fp": "0.00"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-FBOL-P7",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Flávio Bolsonaro in the first round of the 2026 Brazilian presidential election be between 5% and 10%?",
+"yes_sub_title": "Flávio Bolsonaro, 5-10%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0300",
+"yes_ask_dollars": "0.0400",
+"last_price_dollars": "0.0300",
+"volume_fp": "19234.48",
+"volume_24h_fp": "4428.40",
+"open_interest_fp": "15253.22"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-FBOL-P57",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Flávio Bolsonaro in the first round of the 2026 Brazilian presidential election be above 15%?",
+"yes_sub_title": "Flávio Bolsonaro, ≥15%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0100",
+"volume_fp": "2712.03",
+"volume_24h_fp": "2712.03",
+"open_interest_fp": "2712.03"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-FBOL-P2",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Flávio Bolsonaro in the first round of the 2026 Brazilian presidential election be between 0% and 5%?",
+"yes_sub_title": "Flávio Bolsonaro, 0-5%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.2900",
+"yes_ask_dollars": "0.3000",
+"last_price_dollars": "0.3000",
+"volume_fp": "23446.10",
+"volume_24h_fp": "6649.52",
+"open_interest_fp": "12378.50"
+},
+{
+"ticker": "KXBRPRES1MOV-BRPRES26-FBOL-P12",
+"event_ticker": "KXBRPRES1MOV-BRPRES26",
+"title": "Will the margin of victory for Flávio Bolsonaro in the first round of the 2026 Brazilian presidential election be between 10% and 15%?",
+"yes_sub_title": "Flávio Bolsonaro, 10-15%",
+"status": "active",
+"result": "",
+"yes_bid_dollars": "0.0000",
+"yes_ask_dollars": "0.0100",
+"last_price_dollars": "0.0300",
+"volume_fp": "6031.66",
+"volume_24h_fp": "1892.02",
+"open_interest_fp": "6031.66"
+}
+]
+}
+},
+"clob": {
+"30630994248667897740988010928640156931882346081873066002335460180076741328029": {
+"history": [
+{
+"t": 1791115226,
+"p": 0.365
+},
+{
+"t": 1791115997,
+"p": 0.365
+},
+{
+"t": 1791116777,
+"p": 0.365
+},
+{
+"t": 1791117558,
+"p": 0.365
+},
+{
+"t": 1791118345,
+"p": 0.365
+},
+{
+"t": 1791119118,
+"p": 0.365
+},
+{
+"t": 1791119894,
+"p": 0.365
+},
+{
+"t": 1791120678,
+"p": 0.375
+},
+{
+"t": 1791121458,
+"p": 0.375
+},
+{
+"t": 1791122233,
+"p": 0.355
+},
+{
+"t": 1791123016,
+"p": 0.355
+},
+{
+"t": 1791123798,
+"p": 0.355
+},
+{
+"t": 1791124590,
+"p": 0.365
+},
+{
+"t": 1791125372,
+"p": 0.365
+},
+{
+"t": 1791126139,
+"p": 0.375
+},
+{
+"t": 1791126921,
+"p": 0.375
+},
+{
+"t": 1791127711,
+"p": 0.375
+},
+{
+"t": 1791128480,
+"p": 0.375
+},
+{
+"t": 1791129259,
+"p": 0.375
+},
+{
+"t": 1791130040,
+"p": 0.375
+},
+{
+"t": 1791130820,
+"p": 0.375
+},
+{
+"t": 1791131594,
+"p": 0.375
+},
+{
+"t": 1791132380,
+"p": 0.375
+},
+{
+"t": 1791133159,
+"p": 0.375
+},
+{
+"t": 1791133935,
+"p": 0.375
+},
+{
+"t": 1791134722,
+"p": 0.375
+},
+{
+"t": 1791135267,
+"p": 0.375
+}
+]
+},
+"109876868437950584369987384406356259939519193117253465815665152916226511121427": {
+"history": [
+{
+"t": 1791115219,
+"p": 0.6305
+},
+{
+"t": 1791115995,
+"p": 0.6305
+},
+{
+"t": 1791116775,
+"p": 0.6315
+},
+{
+"t": 1791117556,
+"p": 0.6345
+},
+{
+"t": 1791118342,
+"p": 0.6335
+},
+{
+"t": 1791119115,
+"p": 0.6335
+},
+{
+"t": 1791119891,
+"p": 0.6345
+},
+{
+"t": 1791120675,
+"p": 0.632
+},
+{
+"t": 1791121455,
+"p": 0.6315
+},
+{
+"t": 1791122231,
+"p": 0.637
+},
+{
+"t": 1791123011,
+"p": 0.6305
+},
+{
+"t": 1791123796,
+"p": 0.634
+},
+{
+"t": 1791124577,
+"p": 0.6325
+},
+{
+"t": 1791125367,
+"p": 0.6245
+},
+{
+"t": 1791126136,
+"p": 0.6185
+},
+{
+"t": 1791126917,
+"p": 0.626
+},
+{
+"t": 1791127708,
+"p": 0.6255
+},
+{
+"t": 1791128477,
+"p": 0.6215
+},
+{
+"t": 1791129256,
+"p": 0.6195
+},
+{
+"t": 1791130037,
+"p": 0.6195
+},
+{
+"t": 1791130816,
+"p": 0.6195
+},
+{
+"t": 1791131591,
+"p": 0.6205
+},
+{
+"t": 1791132377,
+"p": 0.6205
+},
+{
+"t": 1791133156,
+"p": 0.6205
+},
+{
+"t": 1791133931,
+"p": 0.6255
+},
+{
+"t": 1791134717,
+"p": 0.6255
+},
+{
+"t": 1791135253,
+"p": 0.627
+}
+]
+},
+"42604620076708862818443600944948466773448743300914502417396048813803249322474": {
+"history": []
+},
+"57282931096423043401419862153803529368461210176095971916776719841101127995811": {
+"history": []
+},
+"59263952479040461395118740393989526475872507834003057062766690093774519981624": {
+"history": [
+{
+"t": 1791115228,
+"p": 0.62
+},
+{
+"t": 1791115998,
+"p": 0.625
+},
+{
+"t": 1791116778,
+"p": 0.625
+},
+{
+"t": 1791117559,
+"p": 0.625
+},
+{
+"t": 1791118345,
+"p": 0.625
+},
+{
+"t": 1791119119,
+"p": 0.625
+},
+{
+"t": 1791119895,
+"p": 0.625
+},
+{
+"t": 1791120679,
+"p": 0.625
+},
+{
+"t": 1791121458,
+"p": 0.635
+},
+{
+"t": 1791122234,
+"p": 0.635
+},
+{
+"t": 1791123017,
+"p": 0.635
+},
+{
+"t": 1791123799,
+"p": 0.645
+},
+{
+"t": 1791124594,
+"p": 0.645
+},
+{
+"t": 1791125373,
+"p": 0.645
+},
+{
+"t": 1791126140,
+"p": 0.645
+},
+{
+"t": 1791126922,
+"p": 0.655
+},
+{
+"t": 1791127711,
+"p": 0.655
+},
+{
+"t": 1791128481,
+"p": 0.665
+},
+{
+"t": 1791129260,
+"p": 0.665
+},
+{
+"t": 1791130040,
+"p": 0.665
+},
+{
+"t": 1791130821,
+"p": 0.655
+},
+{
+"t": 1791131595,
+"p": 0.66
+},
+{
+"t": 1791132380,
+"p": 0.67
+},
+{
+"t": 1791133160,
+"p": 0.69
+},
+{
+"t": 1791133935,
+"p": 0.705
+},
+{
+"t": 1791134723,
+"p": 0.705
+},
+{
+"t": 1791135140,
+"p": 0.705
+}
+]
+},
+"114886952444256037305974558892464681775979337745943909320805991763525840901648": {
+"history": [
+{
+"t": 1791115219,
+"p": 0.385
+},
+{
+"t": 1791115995,
+"p": 0.385
+},
+{
+"t": 1791116775,
+"p": 0.385
+},
+{
+"t": 1791117556,
+"p": 0.385
+},
+{
+"t": 1791118343,
+"p": 0.385
+},
+{
+"t": 1791119116,
+"p": 0.385
+},
+{
+"t": 1791119891,
+"p": 0.385
+},
+{
+"t": 1791120676,
+"p": 0.375
+},
+{
+"t": 1791121455,
+"p": 0.375
+},
+{
+"t": 1791122231,
+"p": 0.36
+},
+{
+"t": 1791123012,
+"p": 0.345
+},
+{
+"t": 1791123796,
+"p": 0.345
+},
+{
+"t": 1791124578,
+"p": 0.345
+},
+{
+"t": 1791125368,
+"p": 0.36
+},
+{
+"t": 1791126137,
+"p": 0.355
+},
+{
+"t": 1791126917,
+"p": 0.345
+},
+{
+"t": 1791127708,
+"p": 0.35
+},
+{
+"t": 1791128477,
+"p": 0.345
+},
+{
+"t": 1791129256,
+"p": 0.345
+},
+{
+"t": 1791130037,
+"p": 0.345
+},
+{
+"t": 1791130816,
+"p": 0.345
+},
+{
+"t": 1791131591,
+"p": 0.345
+},
+{
+"t": 1791132377,
+"p": 0.335
+},
+{
+"t": 1791133156,
+"p": 0.315
+},
+{
+"t": 1791133932,
+"p": 0.305
+},
+{
+"t": 1791134717,
+"p": 0.305
+},
+{
+"t": 1791135253,
+"p": 0.3
+}
+]
+},
+"52001002324488667136740611621428380513981609177631767444413473125570276267900": {
+"history": []
+},
+"81482115593707315339989033631833157930397829806592601936231035808957526066632": {
+"history": []
+},
+"50102060808188691022312167382795858901886291207075982690076129114059679000984": {
+"history": []
+},
+"45936940216983764412475876068668790740308166767191676257755953420153751986861": {
+"history": []
+},
+"58491125671099670741121269349196052045592772182420769335944257888625708196139": {
+"history": []
+},
+"586573512999114442736696090480920140786274736745002084066066615418744582336": {
+"history": []
+},
+"4732807227628698434102484566273606570014735682683562456057276319967980949621": {
+"history": []
+},
+"53075373717005742970482718641478630162297132489002833522847136877439034128177": {
+"history": []
+},
+"23784919453821123868010850395679995198729457704885409192094550933083763648329": {
+"history": []
+},
+"22474914018177119378107323980289454944424211060716224735927292093505126122853": {
+"history": []
+},
+"75996962766324468350130951380504971458764032756784772078820659575680628530294": {
+"history": []
+},
+"32950069382314304874160529624806210540862794741812219769077562280902295683962": {
+"history": []
+},
+"86267409242597837088823186779443996065796034401228521890442575166018519244881": {
+"history": []
+},
+"112394658714854993856681385367030361429595582051771414648632932740926380886182": {
+"history": []
+},
+"111248404723302964744080697526250670414348280409114598744756693570129378949760": {
+"history": []
+},
+"73549966788170361259477622357298625299195898230687087671632019375385560196505": {
+"history": []
+},
+"49240934233129120648362089929677491318135092913969199947347796996295754295107": {
+"history": []
+},
+"62224711515850595981571511256084302417622467935172651066778189909026146008830": {
+"history": []
+},
+"44179727270323207190483948348359477520436640950984711591752283174725803751659": {
+"history": []
+},
+"54689730335584145872659007419797350644135984014867969271997075185327473299408": {
+"history": []
+},
+"14736777774042171292679126759359945394012182503626930491741934385283418926414": {
+"history": []
+},
+"87408939485510364930717810896906030154112243550086875617513223272666160821547": {
+"history": []
+},
+"37082122590142571578327783519764871226655805046730666172158965875446014510395": {
+"history": []
+},
+"29825911558569201990395057570388197077097149970495021303293440685615001789482": {
+"history": []
+},
+"43666187836947607999050534432362115741274724280056178870382358293223892579490": {
+"history": []
+},
+"24904315784494383604014033477965627845651361092128989378953206396201328475108": {
+"history": []
+},
+"108767075314919538636210224251687202291555572915369479262871403594487200722003": {
+"history": []
+}
+}
+}
