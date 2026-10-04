@@ -152,6 +152,16 @@ ul.lim li { margin-bottom: 6px; }
 .kpi-mini { font-size: 22px; font-weight: 650; font-variant-numeric: tabular-nums; }
 caption { caption-side: top; text-align: left; color: var(--text-2); font-size: 13px; padding-bottom: 6px; }
 code { font-size: 12px; }
+/* mercado ao vivo / apuração ao vivo */
+.chart-box.short { height: 220px; }
+.pill.stale { background: var(--warn-bg); border-color: var(--warn-border); color: var(--text); font-weight: 600; }
+.pill.ok { border-color: var(--text-3); }
+.mv-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 12px; font-size: 13px; color: var(--text-2); }
+.stat .val.duo { font-size: 26px; display: flex; flex-wrap: wrap; gap: 0 14px; align-items: baseline; }
+.stat .val.duo small { font-size: 13px; font-weight: 500; color: var(--text-2); margin-right: 4px; }
+@media (max-width: 420px) { .stat .val.duo { font-size: 22px; } }
+td.pos { font-weight: 650; }
+.ap-veredito { font-size: 14px; margin: 0 0 8px; }
 </style>
 </head>
 <body>
@@ -173,6 +183,30 @@ code { font-size: 12px; }
   <section>
     <p class="sub" id="vis-desc"></p>
     <div class="grid g4" id="cards"></div>
+  </section>
+
+  <section id="sec-mercado" style="display:none">
+    <h2>Mercado ao vivo</h2>
+    <p class="sub">Preços da Polymarket e da Kalshi coletados a cada poucos minutos e normalizados para somar 100% em cada mercado. São apostas, não pesquisas nem o modelo: servem para ver como o mercado reage à apuração. Gerado por <code>mercado_ao_vivo.py</code>.</p>
+    <div class="mv-head" id="mv-head"></div>
+    <div class="grid g3" id="mv-cards"></div>
+    <div class="card" style="margin-top:12px">
+      <div class="legend"><span><i class="dot l"></i>Lula vence</span><span><i class="dot f"></i>Flávio vence</span><span><i class="ln"></i>Polymarket</span><span><i class="ln dash"></i>Kalshi</span><span class="muted">hoje, horário de Brasília; linha vertical: 17h, fim da votação</span></div>
+      <div class="chart-box short"><canvas id="ch-mv" aria-label="Probabilidade implícita de vitória ao longo do dia"></canvas></div>
+    </div>
+  </section>
+
+
+  <section id="sec-apur" style="display:none">
+    <h2>Apuração ao vivo: como ler</h2>
+    <p class="sub">Referências para comparar a apuração do 1º turno com as duas visões do modelo (calibrado e neutro). Linha de indiferença = valor final em que as duas visões ficam igualmente prováveis: para Lula, abaixo dela favorece o calibrado e acima favorece o neutro (para Flávio, o contrário). Números em % dos votos válidos, de <code>benchmarks.py</code>; guia completo em <code>GUIA_APURACAO.md</code>.</p>
+    <div class="note" id="ap-aviso" style="margin-bottom:12px"></div>
+    <div class="card" id="ap-vivo" style="margin-bottom:12px;display:none"></div>
+    <div class="grid g2">
+      <div class="card tbl-wrap" style="max-height:none"><h3 id="ap-nac-t"></h3><table id="ap-nac"></table><p class="sub" id="ap-nac-n" style="margin:8px 0 0"></p></div>
+      <div class="card tbl-wrap" style="max-height:none"><h3 id="ap-ordem-t"></h3><table id="ap-ordem"></table><p class="sub" id="ap-ordem-n" style="margin:8px 0 0"></p></div>
+    </div>
+    <div class="card tbl-wrap" style="margin-top:12px"><h3 id="ap-uf-t"></h3><table id="ap-uf"></table><p class="sub" id="ap-uf-n" style="margin:8px 0 0"></p></div>
   </section>
 
   <section id="sec-2t" style="display:none">
@@ -404,15 +438,36 @@ code { font-size: 12px; }
       .then(function (a) { ALT = a; safe(renderAlt); })
       .catch(function () { var el = document.getElementById("sec-alt"); if (el) el.style.display = "none"; });
     fetch("resultados_2t.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-      .then(function (a) { T2 = a; safe(render2T); })
+      .then(function (a) { T2 = a; safe(render2T); safe(renderApuracao); })
       .catch(function () { var el = document.getElementById("sec-2t"); if (el) el.style.display = "none"; });
   }).catch(function (e) {
     document.getElementById("meta").textContent = "Erro ao carregar resultados.json: " + e.message + " (abra via servidor estático, ex.: python -m http.server)";
   });
 
+  // ---------- arquivos ao vivo (opcionais: se faltarem, o painel correspondente fica escondido)
+  var MV = null, BM = null;
+  function getJSON(url) {
+    return fetch(url + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+  }
+  function carregarMercado() {
+    getJSON("mercado_ao_vivo.json").then(function (m) { MV = m; safe(renderMercadoVivo); })
+      .catch(function () { safe(renderMercadoVivo); });     // mantém o último retrato; o selo "desatualizado" avisa
+  }
+  function carregarBenchmarks() {
+    getJSON("benchmarks.json").then(function (b) { BM = b; safe(renderApuracao); }).catch(function () { safe(renderApuracao); });
+  }
+  function recarregar2T() {
+    if (!D) return;
+    getJSON("resultados_2t.json").then(function (a) { T2 = a; safe(render2T); safe(renderApuracao); }).catch(function () {});
+  }
+  carregarMercado(); carregarBenchmarks();
+  setInterval(carregarMercado, 60000);
+  setInterval(recarregar2T, 120000);
+
   function R() { return D.visoes[vis]; }
   function safe(f) { try { f(); } catch (e) { if (window.console) console.warn(e); } }
   function renderTudo() {
+    safe(renderMercadoVivo); safe(renderApuracao);
     if (!D) return;
     var m = D.meta;
     document.getElementById("meta").textContent = "Dados até " + dmy(m.data_referencia) + " · " + fmtN(m.n_simulacoes_por_visao) + " simulações por visão";
@@ -844,6 +899,191 @@ code { font-size: 12px; }
     }
     tab("tbl-in1", E.pesquisas_media_1t, "1º turno: Lula/(Lula+Flávio).");
     tab("tbl-in2", E.pesquisas_media_2t, "2º turno: Lula/(Lula+Flávio).");
+  }
+
+  // ---------- mercado ao vivo (web/mercado_ao_vivo.json, mercado_ao_vivo.py)
+  var RE_L = /lula/i, RE_F = /fl[aá]vio/i, RE_SIM = /^(sim|yes)$/i;
+  var MV_DEST = { vencedor: { l: "vencedor_lula", f: "vencedor_flavio" }, vencedor_1t: { l: "1t_lula_primeiro", f: "1t_flavio_primeiro" }, decide_1t: { s: "decide_no_1t" } };
+  function mvProb(plat, ev, quem) {
+    var re = quem === "l" ? RE_L : (quem === "f" ? RE_F : RE_SIM);
+    var g = (MV.ultimo || []).filter(function (x) { return x.plataforma === plat && x.evento === ev; })[0];
+    var r = g ? (g.resultados || []).filter(function (x) { return re.test(String(x.resultado)); })[0] : null;
+    if (r) { var v = quem === "s" ? r.preco : (r.normalizado != null ? r.normalizado : r.preco); if (typeof v === "number" && isFinite(v)) return v; }
+    var d = (MV.destaques || {})[plat] || {}, k = (MV_DEST[ev] || {})[quem];
+    return k && typeof d[k] === "number" ? d[k] : null;
+  }
+  function mvSerie(plat, ev, re) {
+    var sm = MV.series_meta || {}, S = MV.series || {};
+    var k = Object.keys(S).filter(function (k) {
+      var m = sm[k] || {}, p = k.split("|");
+      return (m.plataforma || p[0]) === plat && (m.evento || p[1]) === ev && re.test(String(m.resultado || p.slice(2).join("|")));
+    })[0];
+    return k ? S[k].filter(function (x) { return x && isFinite(x[0]) && isFinite(x[1]); }).map(function (x) { return { x: x[0] * 1000, y: x[1] * 100 }; }) : [];
+  }
+  function hBRT(ms) { var d = new Date(ms - 3 * 3600000); return ("0" + d.getUTCHours()).slice(-2) + ":" + ("0" + d.getUTCMinutes()).slice(-2); }
+  function pctOu(v, d) { return v == null ? "–" : fmtPct(v, d); }
+  function renderMercadoVivo() {
+    var sec = document.getElementById("sec-mercado");
+    if (!sec) return;
+    if (!MV || !MV.gerado_utc) { sec.style.display = "none"; return; }
+    sec.style.display = "";
+    var tGer = Date.parse(MV.gerado_utc), idade = Math.max(0, (Date.now() - tGer) / 60000);
+    var velho = !isFinite(idade) || idade > 10;
+    document.getElementById("mv-head").innerHTML = "<span>Coleta: <b>" + (isFinite(tGer) ? hBRT(tGer) : "?") + "</b> (Brasília) · " + esc(MV.gerado_utc) + "</span>" +
+      (velho ? "<span class='pill stale'>desatualizado: " + (isFinite(idade) ? "há " + fmtN(idade, 0) + " min" : "horário inválido") + "</span>" : "<span class='pill ok'>atualizado há " + fmtN(idade, 0) + " min</span>");
+    var duo = function (ev, lab) {
+      var pl = mvProb("Polymarket", ev, "l"), pf = mvProb("Polymarket", ev, "f"), kl = mvProb("Kalshi", ev, "l"), kf = mvProb("Kalshi", ev, "f");
+      var bar = pl != null && pf != null ? '<div class="bar2" aria-hidden="true"><span style="width:' + (100 * pl / Math.max(pl + pf, 1e-9)) + '%"></span></div>' : "";
+      return '<div class="card stat"><div class="lab">' + lab + ' <span class="muted">· Polymarket</span></div><div class="val duo"><span><small><i class="dot l"></i> Lula</small>' + pctOu(pl) + '</span><span><small><i class="dot f"></i> Flávio</small>' + pctOu(pf) + '</span></div>' +
+        '<div class="det">Kalshi: Lula ' + pctOu(kl) + " · Flávio " + pctOu(kf) + "</div>" + bar + "</div>";
+    };
+    var ds = mvProb("Polymarket", "decide_1t", "s"), dk = mvProb("Kalshi", "decide_1t", "s");
+    document.getElementById("mv-cards").innerHTML = duo("vencedor", "Vence a eleição") + duo("vencedor_1t", "1º lugar no 1º turno") +
+      '<div class="card stat"><div class="lab"><i class="dot n"></i>Decidida no 1º turno <span class="muted">· Polymarket</span></div><div class="val">' + pctOu(ds) + '</div><div class="det">Kalshi: ' + pctOu(dk) + " · alguém acima de 50% dos válidos</div></div>";
+    var ser = [
+      { label: "Lula (Polymarket)", data: mvSerie("Polymarket", "vencedor", RE_L), borderColor: css("--lula"), dash: [] },
+      { label: "Flávio (Polymarket)", data: mvSerie("Polymarket", "vencedor", RE_F), borderColor: css("--flavio"), dash: [] },
+      { label: "Lula (Kalshi)", data: mvSerie("Kalshi", "vencedor", RE_L), borderColor: css("--lula"), dash: [5, 4] },
+      { label: "Flávio (Kalshi)", data: mvSerie("Kalshi", "vencedor", RE_F), borderColor: css("--flavio"), dash: [5, 4] }
+    ].filter(function (s) { return s.data.length >= 2; });
+    var o = baseOpts("", "probabilidade (%)");
+    var x0 = Date.parse(MV.desde_utc), xs = [];
+    ser.forEach(function (s) { s.data.forEach(function (p) { xs.push(p.x); }); });
+    if (isFinite(x0)) o.scales.x.min = x0;
+    if (xs.length) o.scales.x.max = Math.max.apply(null, xs);
+    o.scales.x.ticks.callback = function (v) { return hBRT(v); }; o.scales.x.ticks.maxTicksLimit = 6;
+    o.scales.y.min = 0; o.scales.y.max = 100; o.scales.y.ticks.stepSize = 25;
+    o.plugins.tooltip.callbacks = { title: function (it) { return hBRT(it[0].parsed.x) + " (Brasília)"; }, label: function (it) { return it.dataset.label + ": " + fmtN(it.parsed.y, 1) + "%"; } };
+    o.interaction = { mode: "nearest", axis: "x", intersect: false };
+    var dia = isFinite(tGer) ? new Date(tGer).toISOString().slice(0, 10) : "";
+    o.plugins.vline = { lines: dia ? [{ x: Date.parse(dia + "T20:00:00Z"), label: "17h" }] : [] };
+    mk("ch-mv", { type: "line", plugins: [vline],
+      data: { datasets: ser.map(function (s) { return { label: s.label, data: s.data, borderColor: s.borderColor, borderDash: s.dash, borderWidth: 2, pointRadius: 0, tension: 0 }; }) },
+      options: o });
+  }
+
+  // ---------- apuração ao vivo: como ler (web/benchmarks.json + resultados_2t.json)
+  var UFS_OBS = ["SP", "MG", "RJ", "BA", "RS", "PR", "PE", "CE", "PA", "GO", "ES", "AM", "AL", "DF", "TO", "AP"];
+  function chaveC(obj, re) { return Object.keys(obj || {}).filter(function (k) { return re.test(k); })[0]; }
+  function ivl(x) { return x ? fmtN(x.media, 1) + (x.p10 != null ? " <span class='muted'>(" + fmtN(x.p10, 1) + "–" + fmtN(x.p90, 1) + ")</span>" : "") : "–"; }
+  function interpTraj(pts, pct, k) {
+    if (!pts.length) return null;
+    if (pct <= pts[0].pct_apurado) return pts[0][k];
+    for (var i = 1; i < pts.length; i++) {
+      var a = pts[i - 1], b = pts[i];
+      if (pct <= b.pct_apurado) { var t = (pct - a.pct_apurado) / Math.max(b.pct_apurado - a.pct_apurado, 1e-9); return a[k] + t * (b[k] - a[k]); }
+    }
+    return pts[pts.length - 1][k];
+  }
+  function apuracaoAoVivo() {
+    var X = T2;
+    if (!X || !X.meta || (X.meta.status !== "parcial" && X.meta.status !== "final") || !X.primeiro_turno_real) return null;
+    var out = { status: X.meta.status, pst: X.meta.pst_nacional, atualizado: X.meta.atualizado_tse, ufs: {} };
+    var R1 = X.primeiro_turno_real.nacional || {}, kl = chaveC(R1, RE_L), kf = chaveC(R1, RE_F);
+    out.lula = kl ? R1[kl] : null; out.flavio = kf ? R1[kf] : null;
+    var T = X.primeiro_turno_real.nacional_tse_parcial || {}, tl = chaveC(T, RE_L), tf = chaveC(T, RE_F);
+    out.margemTSE = tl && tf ? 100 * (T[tl] - T[tf]) : null;
+    var S = X.segundo_turno;
+    if (S && S.ufs && S.par) {
+      var iL = RE_L.test(S.par[0]) ? "a_1t" : (RE_L.test(S.par[1]) ? "b_1t" : null);
+      var iF = RE_F.test(S.par[0]) ? "a_1t" : (RE_F.test(S.par[1]) ? "b_1t" : null);
+      S.ufs.forEach(function (u) { out.ufs[u.uf] = { pst: u.pst, fonte: u.fonte, lula: iL ? u[iL] : null, flavio: iF ? u[iF] : null }; });
+    }
+    var met = ((X.meta.projecao_parcial || {}).metodo_uf) || {};
+    Object.keys(met).forEach(function (u) { if (out.ufs[u]) out.ufs[u].metodo = met[u]; });
+    return out;
+  }
+  function renderApuracao() {
+    var sec = document.getElementById("sec-apur");
+    if (!sec) return;
+    var B = BM;
+    if (!B || !B.nacional || !B.ufs) { sec.style.display = "none"; return; }
+    sec.style.display = "";
+    var N = B.nacional, TR = (B.trajetoria_apuracao || {}), pts = (TR.pontos || []).filter(function (p) { return isFinite(p.pct_apurado); });
+    var faixa = pts.filter(function (p) { return p.pct_apurado >= 10 && p.pct_apurado <= 20; });
+    var fx = faixa.length ? " Pela ordem de 2022, com 10–20% apurado o esperado hoje é <b>Flávio ~" + fmtN(Math.min.apply(null, faixa.map(function (p) { return -p.margem_esperada_neutro; })), 0) + " a " + fmtN(Math.max.apply(null, faixa.map(function (p) { return -p.margem_esperada_calibrado; })), 0) + " p.p. à frente nas duas visões</b>; isso não é notícia." : "";
+    document.getElementById("ap-aviso").innerHTML = "<b>Uma liderança cedo de Flávio é esperada.</b> Em 2022 Bolsonaro liderou a apuração do 1º turno até cerca de dois terços das seções totalizadas, e Lula, que terminou 5,2 p.p. à frente, só passou à frente com ~70% apurado: o Sul, o Sudeste e o Centro-Oeste são totalizados antes do Norte e do Nordeste." + fx +
+      " Leia as UFs quase fechadas (≥ 95% apurado) contra a linha da própria UF, não a margem nacional parcial.";
+
+    var L = apuracaoAoVivo();
+    // tabela nacional
+    var linhaN = function (nome, dot, cal, neu, sn, v22) {
+      var menor = sn.calibrado_3x < sn.neutro_3x;
+      return "<tr><td><i class='dot " + dot + "'></i> " + nome + "</td><td>" + ivl(cal) + "</td><td>" + ivl(neu) + "</td><td class='pos'>" + fmtN(sn.indiferenca, 1) + "</td><td>" + (menor ? "≤ " : "≥ ") + fmtN(sn.calibrado_3x, 1) + "</td><td>" + (menor ? "≥ " : "≤ ") + fmtN(sn.neutro_3x, 1) + "</td><td>" + fmtN(v22, 1) + "</td></tr>";
+    };
+    document.getElementById("ap-nac-t").textContent = "Brasil, resultado final do 1º turno (% válidos; margem em p.p.)";
+    var hN = "<thead><tr><th></th><th>Calibrado (p10–p90)</th><th>Neutro (p10–p90)</th><th>Linha de indiferença</th><th>3:1 calibrado</th><th>3:1 neutro</th><th>2022</th></tr></thead><tbody>";
+    if (N.sinal_lula) hN += linhaN("Lula", "l", N.lula_calibrado, N.lula_neutro, N.sinal_lula, N.lula_2022_1t);
+    if (N.sinal_flavio) hN += linhaN("Flávio", "f", N.flavio_calibrado, N.flavio_neutro, N.sinal_flavio, N.bolsonaro_2022_1t);
+    if (N.sinal_margem) hN += linhaN("Margem Lula − Flávio", "n", N.margem_calibrado, N.margem_neutro, N.sinal_margem, N.margem_2022_1t);
+    document.getElementById("ap-nac").innerHTML = hN + "</tbody>";
+    document.getElementById("ap-nac-n").innerHTML = "Lula abaixo da linha (Flávio acima) deixa o calibrado mais provável que o neutro; acima, o neutro. As visões estão próximas: só valores além das colunas 3:1 dão razão de 3 para 1. 2022: Lula e Bolsonaro.";
+
+    // ordem de apuração
+    var maisPerto = L && isFinite(L.pst) && pts.length ? pts.reduce(function (a, b) { return Math.abs(b.pct_apurado - L.pst) < Math.abs(a.pct_apurado - L.pst) ? b : a; }) : null;
+    document.getElementById("ap-ordem-t").textContent = "Margem parcial Lula − Flávio esperada no relógio, pela ordem de 2022 (p.p.)";
+    var hO = "<thead><tr><th>% apurado</th><th>Hora 2022 (BRT)</th><th>2022 real</th><th>Calibrado</th><th>Neutro</th><th>Indiferença</th></tr></thead><tbody>";
+    pts.forEach(function (p) {
+      hO += "<tr" + (p === maisPerto ? " class='destaque'" : "") + "><td>" + fmtN(p.pct_apurado, p.pct_apurado < 10 ? 1 : 0) + "%</td><td>" + esc(p.hora_brasilia_2022) + "</td><td>" + fmtS(p.margem_2022) + "</td><td>" + fmtS(p.margem_esperada_calibrado) + "</td><td>" + fmtS(p.margem_esperada_neutro) + "</td><td>" + fmtS(p.margem_indiferenca) + "</td></tr>";
+    });
+    document.getElementById("ap-ordem").innerHTML = hO + "</tbody>";
+    document.getElementById("ap-ordem-n").innerHTML = esc(TR.nota || "") + " Margem parcial acima da coluna Neutro sugere resultado melhor para Lula que a média das pesquisas; abaixo da coluna Calibrado, melhor para Flávio que o calibrado." + (maisPerto ? " Linha destacada: a mais próxima do % apurado agora." : "") + "";
+
+    // UFs
+    var ufsB = B.ufs.slice();
+    var lista = L && Object.keys(L.ufs).length ? ufsB : ufsB.filter(function (u) { return UFS_OBS.indexOf(u.uf) >= 0; });
+    lista.sort(function (a, b) { return (b.pct_eleitorado || 0) - (a.pct_eleitorado || 0); });
+    var vivoUF = L && Object.keys(L.ufs).length;
+    document.getElementById("ap-uf-t").textContent = (vivoUF ? "Todas as UFs: apuração agora contra a linha de indiferença da UF" : "UFs a observar (grandes colégios e disputadas)") + " (% válidos, resultado final na UF)";
+    var hU = "<thead><tr><th>UF</th><th>% eleit.</th>" +
+      (vivoUF ? "<th>Apurado</th><th>Lula agora</th><th>Lula − linha</th><th>Favorece</th>" : "") +
+      "<th>Lula calibrado</th><th>Lula neutro</th><th>Linha Lula</th><th>Linha Flávio</th><th>2022 Lula / Bolsonaro</th></tr></thead><tbody>";
+    var soma = 0, sw = 0, nFech = 0, nCal = 0, nNeu = 0, fechNE = [];
+    lista.forEach(function (u) {
+      var nome = u.uf === "ZZ" ? "Exterior" : u.uf, sl = u.sinal_lula || {}, sf = u.sinal_flavio || {};
+      var cols = "";
+      if (vivoUF) {
+        var v = L.ufs[u.uf] || {}, temp = isFinite(v.pst) && v.pst > 0 && v.fonte !== "previsão";
+        var fech = temp && v.pst >= 95, dif = v.lula != null && isFinite(sl.indiferenca) ? v.lula - sl.indiferenca : null;
+        var fav = "<span class='muted'>" + (temp ? "parcial" : "sem seções") + "</span>";
+        if (fech && dif != null) {
+          nFech++; soma += dif * (u.pct_eleitorado || 0); sw += (u.pct_eleitorado || 0);
+          if (dif < 0) nCal++; else nNeu++;
+          if (["BA", "PE", "CE"].indexOf(u.uf) >= 0) fechNE.push(u.uf);
+          fav = dif < 0 ? "calibrado" : "neutro";
+        }
+        cols = "<td>" + (temp ? fmtN(v.pst, 1) + "%" : "–") + "</td><td>" + (temp && v.lula != null ? fmtN(v.lula, 1) + (fech ? "" : "<span class='muted'>*</span>") : "–") + "</td><td" + (fech ? " class='pos'" : "") + ">" + (temp && dif != null ? fmtS(dif) : "–") + "</td><td>" + fav + "</td>";
+      }
+      hU += "<tr><td>" + (UFS_OBS.indexOf(u.uf) >= 0 && vivoUF ? "<b>" + esc(nome) + "</b>" : esc(nome)) + "</td><td>" + fmtN(u.pct_eleitorado, 1) + "</td>" + cols + "<td>" + ivl(u.lula_calibrado) + "</td><td>" + ivl(u.lula_neutro) + "</td><td class='pos'>" + fmtN(sl.indiferenca, 1) + "</td><td>" + fmtN(sf.indiferenca, 1) + "</td><td>" + fmtN(u.lula_2022_1t, 1) + " / " + fmtN(u.bolsonaro_2022_1t, 1) + "</td></tr>";
+    });
+    document.getElementById("ap-uf").innerHTML = hU + "</tbody>";
+    document.getElementById("ap-uf-n").innerHTML = "Linha = valor final na UF em que calibrado e neutro empatam; Lula abaixo dela (Flávio acima) favorece o calibrado. Calibrado e neutro diferem ~1,6 p.p. por UF e o erro de uma UF é de 4–5 p.p.: o sinal está no padrão das UFs grandes, ponderado por eleitores, não numa UF isolada." + (vivoUF ? " * UF em apuração: valor projetado por <code>resultado_1t.py</code> (municípios restantes pelo swing), não o parcial bruto; só UFs com ≥ 95% apurado entram no veredito. Em negrito: UFs a observar." : "") + "";
+
+    // resumo ao vivo
+    var box = document.getElementById("ap-vivo");
+    if (!L) { box.style.display = "none"; box.innerHTML = ""; return; }
+    box.style.display = "";
+    var h = "<h3>" + (L.status === "final" ? "Apuração do 1º turno concluída" : "Apuração parcial: " + fmtN(L.pst, 2) + "% das seções totalizadas") + "</h3><p class='sub' style='margin:0 0 8px'>Fonte: <code>resultados_2t.json</code>" + (L.atualizado ? " · TSE " + esc(L.atualizado) : "") + (T2.meta.gerado_em ? " · gerado em " + esc(T2.meta.gerado_em) : "") + "</p>";
+    if (L.margemTSE != null && isFinite(L.pst) && pts.length && L.status !== "final") {
+      var ec = interpTraj(pts, L.pst, "margem_esperada_calibrado"), en = interpTraj(pts, L.pst, "margem_esperada_neutro");
+      var pos = L.margemTSE > en ? "acima da faixa (melhor para Lula que o neutro)" : (L.margemTSE < ec ? "abaixo da faixa (melhor para Flávio que o calibrado)" : "dentro da faixa esperada pelas duas visões");
+      h += "<p style='margin:0 0 6px'>Margem parcial do TSE (Lula − Flávio): <b>" + fmtS(L.margemTSE) + " p.p.</b>; esperado com " + fmtN(L.pst, 0) + "% apurado pela ordem de 2022: calibrado " + fmtS(ec) + ", neutro " + fmtS(en) + " → " + pos + ". Ilustrativo: a ordem de 2026 pode ser outra.</p>";
+    }
+    if (L.lula != null && N.sinal_lula) {
+      var dn = L.lula - N.sinal_lula.indiferenca;
+      h += "<p style='margin:0 0 6px'>Lula nacional " + (L.status === "final" ? "apurado" : "projetado (UFs parciais completadas pela projeção)") + ": <b>" + fmtN(L.lula, 1) + "%</b>" + (L.flavio != null ? ", Flávio " + fmtN(L.flavio, 1) + "%" : "") + " · linha de indiferença " + fmtN(N.sinal_lula.indiferenca, 1) + " → " + (dn < 0 ? "favorece o calibrado" : "favorece o neutro") + " (" + fmtS(dn) + " p.p.)" + (L.lula >= N.sinal_lula.neutro_3x ? "; além do 3:1 do neutro" : (L.lula <= N.sinal_lula.calibrado_3x ? "; além do 3:1 do calibrado" : "")) + ".</p>";
+    }
+    if (vivoUF) {
+      if (!nFech) h += "<p class='ap-veredito'><b>Nenhuma UF com ≥ 95% apurado ainda.</b> Espere UFs quase fechadas antes de ler o padrão.</p>";
+      else {
+        var med = sw > 0 ? soma / sw : 0;
+        var ver = med <= -3 ? "mais pró-Flávio que o calibrado: as pesquisas teriam superestimado Lula além do que as duas visões supõem" :
+          (med >= 3 ? "mais pró-Lula que o neutro: as pesquisas teriam subestimado Lula" : (med < 0 ? "favorecem o <b>calibrado</b>" : "favorecem o <b>neutro</b>"));
+        h += "<p class='ap-veredito'>UFs fechadas (≥ 95%): <b>" + nFech + "</b> (" + nCal + " abaixo da linha de Lula, " + nNeu + " acima). Média de Lula − linha ponderada por eleitores: <b>" + fmtS(med) + " p.p.</b> → " + ver + ".</p>";
+        if (!fechNE.length) h += "<p class='sub' style='margin:0'>Nenhuma UF grande do Nordeste (BA, PE, CE) fechada ainda: as primeiras a fechar costumam ser do Sul/Sudeste/Centro-Oeste e o erro tem componente regional. Espere ao menos uma antes de concluir.</p>";
+      }
+    }
+    box.innerHTML = h;
   }
 
   function renderPremissas() {

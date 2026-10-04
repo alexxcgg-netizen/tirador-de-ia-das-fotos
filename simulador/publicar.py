@@ -32,6 +32,24 @@ def converter(html: str) -> str:
     return out.strip() + "\n"
 
 
+def copiar_opcional(origem: Path, destino: Path) -> bool:
+    """Copia se existir; arquivo ausente ou ilegível não interrompe a publicação (o painel esconde o card).
+    Escreve num temporário e renomeia, para não publicar um JSON pela metade se outro processo estiver
+    regravando a origem."""
+    if not origem.exists():
+        print("ausente (pulado):", origem.name)
+        return False
+    tmp = destino.with_name(destino.name + ".tmp")
+    try:
+        shutil.copyfile(origem, tmp)
+        tmp.replace(destino)
+    except OSError as ex:
+        print(f"falha ao copiar {origem.name} (pulado): {ex}")
+        tmp.unlink(missing_ok=True)
+        return False
+    return True
+
+
 def main():
     DEST.mkdir(exist_ok=True)
     html = (ORIG / "index.html").read_text(encoding="utf-8")
@@ -39,6 +57,8 @@ def main():
     shutil.copyfile(ORIG / "resultados.json", DEST / "resultados.json")
     if (ORIG / "resultados_2t.json").exists():     # 2º turno com o 1º turno apurado (resultado_1t.py)
         shutil.copyfile(ORIG / "resultados_2t.json", DEST / "resultados_2t.json")
+    for nome in ("mercado_ao_vivo.json", "benchmarks.json"):   # painéis "Mercado ao vivo" e "Apuração ao vivo"
+        copiar_opcional(ORIG / nome, DEST / nome)
     alt = AQUI.parent / "modelo_alternativo" / "resultados_alt.json"
     if alt.exists():                      # comparação com o modelo alternativo (lida relativamente pelo painel)
         shutil.copyfile(alt, ORIG / "resultados_alt.json")
