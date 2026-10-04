@@ -383,7 +383,7 @@ PARAM_MUN = {
                            "nota": "Soma dos municípios x votos do arquivo da UF: diferença relativa acima disso -> "
                                    "método antigo na UF (arquivos de horários diferentes divergem um pouco no início)."},
     "workers": {"valor": 24, "origem": "inferencia", "nota": "Downloads simultâneos dos arquivos por município."},
-    "prazo_download_s": {"valor": 150, "origem": "inferencia",
+    "prazo_download_s": {"valor": 330, "origem": "inferencia",
                          "nota": "Tempo máximo baixando municípios; UF incompleta -> método antigo."},
 }
 
