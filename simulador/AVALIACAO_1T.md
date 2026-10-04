@@ -1,12 +1,12 @@
 # Avaliação das previsões do 1º turno de 2026
 
-Gerado por `resultado_1t.py` em 2026-10-04 21:46 UTC. Seções totalizadas no Brasil: 36,60% (TSE, 04/10/2026 18:37:14). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
+Gerado por `resultado_1t.py` em 2026-10-04 21:50 UTC. Seções totalizadas no Brasil: 41,57% (TSE, 04/10/2026 18:43:29). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
 
 ## Resultado (votos válidos, %)
 
 | Lula | Flavio | Caiado | Cury | Zema | Renan | Outros |
 |---|---|---|---|---|---|---|
-| 44,82 | 47,01 | 2,35 | 2,81 | 0,33 | 2,37 | 0,32 |
+| 44,65 | 47,41 | 2,20 | 2,91 | 0,29 | 2,29 | 0,23 |
 
 Decidida no 1º turno: não. Ordem: Flavio, Lula, Cury.
 
@@ -16,28 +16,28 @@ Erro = previsto − real (p.p. de votos válidos; positivo = previsão acima do 
 
 | Fonte | Lula prev. | erro | Flavio prev. | erro | Erro na margem | MAE 2 primeiros | PIT Lula | PIT Flavio | Em 80% (Lula/Flavio) | CRPS Lula/Flavio |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Modelo principal: neutro | 46,1 | 1,3 | 45,2 | -1,8 | 3,1 | 1,5 | 0,34 | 0,73 | sim/sim | 0,78/0,87 |
-| Modelo principal: calibrado | 44,4 | -0,4 | 46,8 | -0,2 | -0,2 | 0,3 | 0,55 | 0,52 | sim/sim | 0,70/0,68 |
-| Modelo principal: viés pleno | 43,3 | -1,5 | 48,1 | 1,1 | -2,6 | 1,3 | 0,67 | 0,38 | sim/sim | 0,90/0,86 |
-| Modelo alternativo: neutro | 46,6 | 1,7 | 45,3 | -1,8 | 3,5 | 1,8 | 0,31 | 0,65 | sim/sim | 1,24/1,20 |
-| Modelo alternativo: historico | 43,8 | -1,1 | 48,1 | 1,0 | -2,1 | 1,1 | 0,59 | 0,39 | sim/sim | 1,07/1,17 |
-| Média das pesquisas (agregador, sem ajustes) | 45,3 | 0,5 | 43,8 | -3,2 | 3,6 | 1,8 | – | – | – | –/– |
-| Nexus (25/09–27/09) | 47,2 | 2,4 | 41,6 | -5,4 | 7,8 | 3,9 | – | – | – | –/– |
-| Ideia (25/09–28/09) | 50,6 | 5,8 | 49,4 | 2,3 | 3,5 | 4,1 | – | – | – | –/– |
-| Indexa (27/09–29/09) | 53,4 | 8,6 | 46,6 | -0,4 | 9,0 | 4,5 | – | – | – | –/– |
-| Real Time Big Data (26/09–30/09) | 45,7 | 0,9 | 41,5 | -5,5 | 6,4 | 3,2 | – | – | – | –/– |
-| Vox Brasil (29/09–01/10) | 45,0 | 0,2 | 45,9 | -1,1 | 1,3 | 0,7 | – | – | – | –/– |
-| CNT/MDA (29/09–02/10) | 47,7 | 2,9 | 42,1 | -4,9 | 7,8 | 3,9 | – | – | – | –/– |
-| PoderData (30/09–02/10) | 44,7 | -0,1 | 43,6 | -3,4 | 3,3 | 1,8 | – | – | – | –/– |
-| IFP (29/09–02/10) | 43,9 | -0,9 | 40,5 | -6,5 | 5,6 | 3,7 | – | – | – | –/– |
-| Gerp (30/09–02/10) | 44,1 | -0,7 | 46,2 | -0,8 | 0,0 | 0,8 | – | – | – | –/– |
-| AtlasIntel (27/09–02/10) | 47,0 | 2,1 | 44,1 | -3,0 | 5,1 | 2,5 | – | – | – | –/– |
-| Palver (30/09–03/10) | 43,4 | -1,4 | 47,5 | 0,5 | -1,8 | 0,9 | – | – | – | –/– |
-| Quaest (02/10–03/10) | 46,0 | 1,2 | 43,7 | -3,3 | 4,5 | 2,2 | – | – | – | –/– |
-| Datafolha (03/10–03/10) | 45,6 | 0,8 | 43,5 | -3,5 | 4,4 | 2,2 | – | – | – | –/– |
-| Futura (02/10–03/10) | 42,6 | -2,2 | 44,7 | -2,3 | 0,1 | 2,2 | – | – | – | –/– |
+| Modelo principal: neutro | 46,1 | 1,4 | 45,2 | -2,2 | 3,7 | 1,8 | 0,32 | 0,77 | sim/sim | 0,80/1,00 |
+| Modelo principal: calibrado | 44,4 | -0,2 | 46,8 | -0,6 | 0,4 | 0,4 | 0,53 | 0,57 | sim/sim | 0,67/0,73 |
+| Modelo principal: viés pleno | 43,3 | -1,3 | 48,1 | 0,7 | -2,0 | 1,0 | 0,65 | 0,42 | sim/sim | 0,88/0,80 |
+| Modelo alternativo: neutro | 46,6 | 1,9 | 45,3 | -2,2 | 4,1 | 2,0 | 0,30 | 0,69 | sim/sim | 1,26/1,26 |
+| Modelo alternativo: historico | 43,8 | -0,9 | 48,1 | 0,6 | -1,5 | 0,8 | 0,57 | 0,42 | sim/sim | 1,05/1,11 |
+| Média das pesquisas (agregador, sem ajustes) | 45,3 | 0,6 | 43,8 | -3,6 | 4,2 | 2,1 | – | – | – | –/– |
+| Nexus (25/09–27/09) | 47,2 | 2,5 | 41,6 | -5,8 | 8,4 | 4,2 | – | – | – | –/– |
+| Ideia (25/09–28/09) | 50,6 | 6,0 | 49,4 | 1,9 | 4,0 | 4,0 | – | – | – | –/– |
+| Indexa (27/09–29/09) | 53,4 | 8,8 | 46,6 | -0,8 | 9,6 | 4,8 | – | – | – | –/– |
+| Real Time Big Data (26/09–30/09) | 45,7 | 1,1 | 41,5 | -5,9 | 7,0 | 3,5 | – | – | – | –/– |
+| Vox Brasil (29/09–01/10) | 45,0 | 0,3 | 45,9 | -1,5 | 1,9 | 0,9 | – | – | – | –/– |
+| CNT/MDA (29/09–02/10) | 47,7 | 3,1 | 42,1 | -5,3 | 8,4 | 4,2 | – | – | – | –/– |
+| PoderData (30/09–02/10) | 44,7 | 0,0 | 43,6 | -3,8 | 3,8 | 1,9 | – | – | – | –/– |
+| IFP (29/09–02/10) | 43,9 | -0,8 | 40,5 | -6,9 | 6,2 | 3,8 | – | – | – | –/– |
+| Gerp (30/09–02/10) | 44,1 | -0,6 | 46,2 | -1,2 | 0,6 | 0,9 | – | – | – | –/– |
+| AtlasIntel (27/09–02/10) | 47,0 | 2,3 | 44,1 | -3,4 | 5,7 | 2,8 | – | – | – | –/– |
+| Palver (30/09–03/10) | 43,4 | -1,2 | 47,5 | 0,1 | -1,3 | 0,6 | – | – | – | –/– |
+| Quaest (02/10–03/10) | 46,0 | 1,3 | 43,7 | -3,7 | 5,1 | 2,5 | – | – | – | –/– |
+| Datafolha (03/10–03/10) | 45,6 | 1,0 | 43,5 | -3,9 | 4,9 | 2,5 | – | – | – | –/– |
+| Futura (02/10–03/10) | 42,6 | -2,0 | 44,7 | -2,7 | 0,7 | 2,3 | – | – | – | –/– |
 
-**Pesquisas ordenadas pelo erro absoluto na margem entre os dois primeiros:** Gerp (30/09–02/10) 0,0; Futura (02/10–03/10) 0,1; Vox Brasil (29/09–01/10) 1,3; Palver (30/09–03/10) -1,8; PoderData (30/09–02/10) 3,3; Ideia (25/09–28/09) 3,5; Datafolha (03/10–03/10) 4,4; Quaest (02/10–03/10) 4,5; AtlasIntel (27/09–02/10) 5,1; IFP (29/09–02/10) 5,6; Real Time Big Data (26/09–30/09) 6,4; Nexus (25/09–27/09) 7,8; CNT/MDA (29/09–02/10) 7,8; Indexa (27/09–29/09) 9,0.
+**Pesquisas ordenadas pelo erro absoluto na margem entre os dois primeiros:** Gerp (30/09–02/10) 0,6; Futura (02/10–03/10) 0,7; Palver (30/09–03/10) -1,3; Vox Brasil (29/09–01/10) 1,9; PoderData (30/09–02/10) 3,8; Ideia (25/09–28/09) 4,0; Datafolha (03/10–03/10) 4,9; Quaest (02/10–03/10) 5,1; AtlasIntel (27/09–02/10) 5,7; IFP (29/09–02/10) 6,2; Real Time Big Data (26/09–30/09) 7,0; Nexus (25/09–27/09) 8,4; CNT/MDA (29/09–02/10) 8,4; Indexa (27/09–29/09) 9,6.
 
 ## Eventos (Brier e log score)
 
@@ -85,7 +85,7 @@ Brier = (p − ocorreu)²; log score = log da probabilidade dada ao que acontece
 |---|---|---|---|---|---|---|---|---|
 | Modelo principal: neutro | 27 | 1,9 | 0,8 | 2,8 | -1,4 | 100% | 0,057 | 96% |
 | Modelo principal: calibrado | 27 | 1,9 | -0,8 | 2,3 | 0,2 | 98% | 0,060 | 93% |
-| Modelo principal: viés pleno | 27 | 2,5 | -1,9 | 2,5 | 1,5 | 96% | 0,068 | 89% |
+| Modelo principal: viés pleno | 27 | 2,5 | -1,9 | 2,4 | 1,5 | 96% | 0,068 | 89% |
 | Modelo alternativo: neutro | – | – | – | – | – | –% | 0,060 | 89% |
 | Modelo alternativo: historico | – | – | – | – | – | –% | 0,065 | 93% |
 
@@ -95,33 +95,33 @@ Exterior fora das métricas por UF. Viés positivo = previsão acima do resultad
 
 | UF | Lula | Flavio | Situação |
 |---|---|---|---|
-| AC | 28,8 | 64,4 | parcial |
-| AL | 54,4 | 40,8 | parcial |
-| AM | 48,9 | 44,3 | parcial |
-| AP | 46,4 | 45,0 | parcial |
-| BA | 65,1 | 29,4 | parcial |
-| CE | 61,0 | 33,2 | parcial |
+| AC | 28,7 | 64,5 | parcial |
+| AL | 54,2 | 41,0 | parcial |
+| AM | 48,6 | 44,6 | parcial |
+| AP | 46,3 | 45,1 | parcial |
+| BA | 65,3 | 29,2 | parcial |
+| CE | 61,0 | 33,1 | parcial |
 | DF | 38,2 | 51,2 | parcial |
-| ES | 37,1 | 55,3 | parcial |
-| GO | 30,3 | 54,5 | parcial |
-| MA | 63,6 | 31,3 | parcial |
-| MG | 42,6 | 48,8 | parcial |
-| MS | 33,9 | 59,3 | parcial |
-| MT | 29,0 | 65,4 | parcial |
-| PA | 49,2 | 45,1 | parcial |
-| PB | 60,9 | 33,4 | parcial |
-| PE | 63,0 | 31,4 | parcial |
-| PI | 69,2 | 25,6 | parcial |
+| ES | 37,3 | 55,2 | parcial |
+| GO | 30,5 | 54,4 | parcial |
+| MA | 63,5 | 31,4 | parcial |
+| MG | 42,7 | 48,8 | parcial |
+| MS | 34,0 | 59,2 | parcial |
+| MT | 29,0 | 65,3 | parcial |
+| PA | 49,3 | 45,0 | parcial |
+| PB | 61,0 | 33,3 | parcial |
+| PE | 63,1 | 31,3 | parcial |
+| PI | 69,3 | 25,5 | parcial |
 | PR | 31,0 | 60,1 | parcial |
-| RJ | 40,2 | 52,2 | parcial |
-| RN | 58,6 | 35,9 | parcial |
+| RJ | 40,3 | 52,1 | parcial |
+| RN | 58,7 | 35,8 | parcial |
 | RO | 25,7 | 67,6 | parcial |
-| RR | 22,6 | 71,2 | parcial |
+| RR | 22,4 | 71,3 | parcial |
 | RS | 35,8 | 55,5 | parcial |
-| SC | 24,8 | 66,9 | parcial |
-| SE | 62,1 | 31,3 | parcial |
-| SP | 38,3 | 50,4 | previsão |
-| TO | 43,1 | 50,8 | parcial |
-| ZZ | 43,9 | 48,3 | previsão |
+| SC | 24,7 | 66,9 | parcial |
+| SE | 62,0 | 31,3 | parcial |
+| SP | 37,6 | 52,3 | parcial |
+| TO | 43,3 | 50,5 | parcial |
+| ZZ | 47,9 | 42,7 | parcial |
 
 Leitura: uma eleição é uma única realização; um modelo bem calibrado erra fora do intervalo de 80% em 1 a cada 5 eleições. Comparações entre institutos em uma só eleição dizem pouco sobre a qualidade metodológica de cada um.

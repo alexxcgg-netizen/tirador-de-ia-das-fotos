@@ -162,11 +162,17 @@ def urls_presidente(ciclo: str, cd: str, uf: str) -> list:
             f"{BASE_TSE}/oficial/{ciclo}/{cd}/dados-simplificados/{uf}/{uf}-c0001-e{cd6}-r.json"]   # 2022
 
 
-def _baixar(url: str, timeout=20) -> dict:
+def _baixar(url: str, timeout=20, tentativas=3) -> dict:
     req = urllib.request.Request(url, headers={"User-Agent": "simulador-eleicao-2026 (pesquisa academica)",
                                                "Cache-Control": "no-cache"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode("utf-8"))
+    for i in range(tentativas):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except Exception:
+            if i == tentativas - 1:
+                raise
+            time.sleep(1.5 * (i + 1))
 
 
 def parse_tse(js: dict, numeros: dict | None = None) -> dict:
