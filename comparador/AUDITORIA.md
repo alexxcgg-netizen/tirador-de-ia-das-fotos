@@ -1,41 +1,42 @@
-# Auditoria de equilíbrio do comparador (03/10/2026, revisão após a leitura dos planos)
+# Auditoria de equilíbrio do comparador (04/10/2026, revisão "lacunas finais")
 
-Método: um script conta as palavras de cada campo (proposta, concreto, vago, custo, exige, evidência, histórico, quem ganha, quem perde, riscos) dos dados embutidos em `index.html`. As etiquetas como [fato] não entram na conta. O mesmo script conta as fontes, as promessas difíceis, as etiquetas de cautela ([alegação], [opinião], [inferência]) e, desde esta revisão, as etiquetas [declaração de campanha].
+Método: um script conta as palavras de cada campo (proposta, concreto, vago, custo, exige, evidência, histórico, quem ganha, quem perde, riscos) dos dados embutidos em `index.html`. As etiquetas como [fato] não entram na conta. O mesmo script conta as fontes, as promessas difíceis, as etiquetas de cautela ([alegação], [opinião], [inferência]) e as etiquetas [declaração de campanha].
 
-## O que mudou nesta revisão
+## O que mudou nesta revisão (04/10/2026)
 
-Os seis planos registrados foram lidos diretamente (cópias do Poder360 e do Congresso em Foco; o TSE bloqueou acesso automatizado). Com isso:
+Base: `research_notes/Propostas e viabilidade dos candidatos/lacunas_finais.md`.
 
-- Uma nova etiqueta, **[declaração de campanha]**, marca propostas ditas fora do plano registrado. O mesmo critério vale para todos: Lula 2 (tarifa zero), Flávio 9 (R$ 190 bi, IVA de 20%, Estatuto do Desarmamento, porta de saída de 2 anos, cashback, PEC 12/2026, anistia/indulto, Jerusalém/BRICS/Mercosul), Caiado 2, Zema 3, Cury 2, Renan 0. A diferença reflete o que está ou não nos documentos, não um critério diferente.
-- Lula: saiu a meta de “dívida abaixo de 80% do PIB até 2030”, que não está no plano. A promessa difícil correspondente virou “fechar a conta pelo crescimento, sem meta de dívida” (Lula recusou meta em 27/08; o PLOA 2027 projeta ~90% em 2029–30).
-- Flávio: entram no plano, com página, 4% de crescimento, R$ 900 bi, 2,5 mi de moradias, ≥10 ministérios, dobrar o gasto federal em segurança, 5 presídios, maioridade 16/14 e 500 mil vagas. Entram o relato da CNN (25/09) sobre uma PEC de R$ 300 bi [alegação], o voto “Sim” na PEC 45/2023 e as ordens de grandeza [calc] de segurança e vagas.
-- Goiás: “seguiu a tendência nacional” foi trocado pelo dado do FBSP (−58% contra −31,5%), com a letalidade policial (4,9 contra 3,1 por 100 mil; 29,6% das mortes violentas).
-- Os dois favoritos ganharam o PDF do próprio plano como fonte e uma avaliação do FGV IBRE (21/07/2026). Lula ganhou a avaliação do OPEB sobre sua política externa, em paralelo à do OPEB sobre Flávio.
-- CSS: corrigido um transbordo de 3 px a 400 px quando o painel “Ver base” estava aberto (já existia antes). O `<select>` dos critérios agora se ajusta à largura do cartão.
+- **Correção do orçamento de 2027.** As fichas “R$ 65,7 bi” e “R$ 10,9 bi” vinham do PLDO 2026 (abril de 2025) e foram superadas pela EC 136/2025 e pelo PLOA 2027. Saíram. Entraram “R$ 222,1 bi” (discricionárias do Executivo no PLOA 2027) e “R$ 18,6 bi” (resultado projetado, com a explicação da meta de R$ 73,2 bi e das deduções de R$ 64,7 bi), ambas com o Informativo PLOA 2027 das Consultorias de Orçamento como fonte. O contexto de Saúde e a promessa difícil de saúde de Lula passaram a dizer que a saúde fica exatamente no piso no PLOA 2027.
+- **Proporções recalculadas [calc].** Mínimo de 2027: de “83% das discricionárias livres” para “~25% das discricionárias do Executivo”. Tarifa zero: de “mais que todas as discricionárias livres” para “cerca de metade”. Dobrar o gasto em segurança: “8–10% das discricionárias do Executivo”.
+- **Avaliações nomeadas, 3 novas para cada favorito**, sempre com data: Lula — Fraga (Veja, ~24/07), XP/Sbardelotto (31/08), TAG/Leite (29/09), e, a favor, economistas heterodoxos na CartaCapital (01/10). Flávio — Inhasz/Insper (24/09), Salto (03/10, sem nomear candidato), heterodoxos na CartaCapital (01/10), e, a favor, TAG/Leite (29/09). A mesma reportagem do NeoFeed (TAG) e a mesma da CartaCapital entram como fonte para os dois.
+- **Posições que faltavam:** Lula — “parar com essa babaquice de fazer superávit” (comício, 12/09) como [declaração de campanha]; drogas: nenhuma posição de campanha, última fala de 26/06/2024. Flávio — mínimo e Previdência preservados em falas (Sachsida 25/09; Flávio 03/10); autonomia do BC só pela coordenadora (14/09); Petrobras: só a crítica ao imposto de exportação (20/03); Ucrânia: só comparação retórica (22/06); “0,4%” do plano confere com o FBSP, mas sobre a despesa total. Caiado: armas para civis não encontrado. Regra de Proteção: até 18 meses pela página do MDS.
+- **Custos [calc]:** IVA de 20% em reais (~R$ 480–560 bi/ano ou ~R$ 150 bi, conforme a leitura), venda das fatias da União em Petrobras e BB (~R$ 253 bi, uma vez), bônus e fundo de Zema (~R$ 8–12 bi e ~R$ 2,4 bi/ano).
+- Nenhum rótulo objetivo mudou de valor; só as bases de custo de Flávio (economia), Zema (social) e Lula (saúde) foram reescritas.
 
 ## Lula × Flávio Bolsonaro por área
 
 | Área | Palavras Lula | Palavras Flávio | Diferença | Fontes L/F | Promessas difíceis L/F | Cautela L/F | Declaração L/F | Rótulos L (custo/PEC/evid.) | Rótulos F |
 |---|---|---|---|---|---|---|---|---|---|
-| Economia e fiscal | 362 | 390 | −7% | 12/12 | 5/5 | 4/7 | 1/2 | parcial / não depende / contra | parcial / em parte / contra |
-| Segurança pública | 313 | 330 | −5% | 9/10 | 2/2 | 3/3 | 0/2 | não / em parte / mista | não / em parte / contra |
-| Saúde | 194 | 193 | +1% | 4/4 | 1/1 | 3/3 | 0/0 | não / não depende / mista | não / não depende / sem base |
+| Economia e fiscal | 386 | 422 | −9% | 18/18 | 5/5 | 4/7 | 2/3 | parcial / não depende / contra | parcial / em parte / contra |
+| Segurança pública | 326 | 349 | −7% | 10/11 | 2/2 | 3/3 | 0/2 | não / em parte / mista | não / em parte / contra |
+| Saúde | 198 | 193 | +3% | 4/4 | 1/1 | 3/3 | 0/0 | não / não depende / mista | não / não depende / sem base |
 | Educação | 205 | 196 | +4% | 6/6 | 1/1 | 4/4 | 0/0 | parcial / não depende / mista | não / não depende / mista |
-| Social, Previdência e trabalho | 279 | 286 | −2% | 10/10 | 2/2 | 4/4 | 0/3 | parcial / em parte / a favor | não / em parte / sem base |
+| Social, Previdência e trabalho | 279 | 295 | −5% | 10/10 | 2/2 | 4/4 | 0/4 | parcial / em parte / a favor | não / em parte / sem base |
 | Instituições e corrupção | 215 | 237 | −9% | 8/8 | 1/1 | 3/3 | 0/1 | sem base / não depende / sem base | sem base / em parte / sem base |
-| Política externa | 156 | 155 | +1% | 5/5 | 1/1 | 4/3 | 0/1 | sem base / não depende / sem base | sem base / não depende / sem base |
-| Meio ambiente, agro, energia, infra | 248 | 226 | +9% | 7/7 | 1/1 | 3/5 | 0/1 | parcial / não depende / a favor | não / não depende / contra |
-| **Total** | **1.972** | **2.013** | **−2,0%** | **61/62** | **14/14** | **28/32** | **2/10** | | |
+| Política externa | 156 | 167 | −7% | 6/6 | 1/1 | 4/3 | 0/1 | sem base / não depende / sem base | sem base / não depende / sem base |
+| Meio ambiente, agro, energia, infra | 257 | 245 | +5% | 8/8 | 1/1 | 3/5 | 0/1 | parcial / não depende / a favor | não / não depende / contra |
+| **Total** | **2.022** | **2.104** | **−3,9%** | **70/71** | **14/14** | **28/32** | **2/12** | | |
 
-(“Declaração” nesta tabela conta, nos campos da análise completa, as etiquetas [declaração de campanha] e as menções “fora do plano/programa” ou “não consta”; a contagem por candidato na seção anterior conta só as etiquetas, incluindo as promessas difíceis.)
+Antes desta revisão: 1.972 × 2.013 palavras (−2,0%), 61/62 fontes, 14/14 promessas difíceis.
 
-- Todas as áreas ficam dentro de ±10%. Segurança chegou a −24% depois das correções, porque separar “no plano” de “fora do plano” e incluir as 500 mil vagas alongou o texto de Flávio. O texto dele foi enxugado e o de Lula recebeu os itens do plano conferidos por página (FNSP p. 28, controle de armas p. 28, condição da PEC p. 30) e a mesma base de gasto federal (FBSP). Instituições chegou a −15% e foi enxugada da mesma forma.
-- Fontes: 61 contra 62. A diferença de uma fonte vem da segurança, onde Flávio cita também a votação da PEC 45/2023 (Conjur).
-- Promessas que soam fáceis mas não são: 14 itens para cada um (391 palavras para Lula, 352 para Flávio), com a mesma contagem por área de antes. Mudou o item de dívida de Lula (ver acima). Os itens de Flávio sobre R$ 190 bi, IVA de 20%, anistia e porta de saída levam a etiqueta [declaração de campanha]; o de tarifa zero de Lula também. As 500 mil vagas e o dobro do gasto em segurança de Flávio estão na linha correspondente da seção 5 do relatório; no comparador aparecem no campo “Custo” da segurança, com o [calc], para manter a paridade por área.
-- Etiquetas de cautela: Lula 28, Flávio 32. A diferença vem do [alegação] sobre o relato da CNN e do [opinião] do FGV IBRE em Economia, e de [inferência] em Ambiente.
-- Os dois recebem o mesmo escrutínio sobre passivos: INSS, Master e Gonet para Lula; Dark Horse, rachadinhas e Aras para Flávio. Os dois têm a ressalva de que não há condenação nem denúncia vigente.
+(“Declaração” nesta tabela conta, nos campos da análise completa, as etiquetas [declaração de campanha] e as menções “fora do plano/programa” ou “não consta”; a contagem por candidato abaixo conta só as etiquetas, incluindo as promessas difíceis: Lula 2, Flávio 10, Caiado 2, Zema 3, Cury 2, Renan 0.)
 
-## Rótulos objetivos alterados por esta revisão (base visível na página)
+- Todas as áreas ficam dentro de ±10%. Economia chegou a −14% com as novas falas e avaliações de Flávio; o texto dele foi enxugado (custo e “o que exige”) e o de Lula recebeu a meta e o resultado de 2027 do PLOA. Segurança chegou a −10%; saiu de Flávio uma frase repetida sobre a idade penal.
+- Fontes: 70 contra 71. A diferença de uma fonte continua vindo da segurança (votação da PEC 45/2023 de Flávio). Fontes novas por área: Economia +6/+6; Segurança +1/+1 (CNN 2024 sobre drogas para Lula; Anuário FBSP sobre os 0,4% para Flávio); Externa +1/+1 (PDF do plano de Lula, que já era citado por página; Congresso em Foco sobre a Ucrânia para Flávio); Ambiente +1/+1 (Agência Brasil sobre o Morpho; Gazeta do Povo sobre combustíveis). Em Social, a fonte da Regra de Proteção foi trocada (Agência Gov, fora do ar, pela página do MDS), sem mudar a contagem.
+- Promessas que soam fáceis mas não são: 14 itens para cada um (400 palavras para Lula, 361 para Flávio), sem itens novos; mudaram os textos de resposta (mínimo, tarifa zero, IVA, R$ 190 bi, saúde).
+- Etiquetas de cautela: Lula 28, Flávio 32, como antes.
+
+## Rótulos objetivos alterados na revisão de 03/10/2026 (base visível na página; nenhum mudou em 04/10)
 
 | Área / candidato | Critério | Antes | Agora | Base |
 |---|---|---|---|---|
@@ -49,7 +50,7 @@ Os seis planos registrados foram lidos diretamente (cópias do Poder360 e do Con
 
 ## Candidatos menores (resumo + obstáculo, todas as áreas)
 
-Caiado 335, Zema 322, Cury 232, Renan Santos 359 palavras (antes: 311, 282, 205, 325). Cresceram com os itens conferidos nos planos (autonomia do BC e redução de danos de Caiado; internação involuntária e porte rural de Zema; fonte do crédito de Cury; custo da desfavelização de Renan) e com a marcação das falas fora dos planos. Para Caiado, Cury e Renan, a política externa segue “não encontrada”.
+Caiado 345, Zema 332, Cury 232, Renan Santos 359 palavras (na revisão de 03/10: 335, 322, 232, 359; antes dela: 311, 282, 205, 325). Nesta revisão, Caiado ganhou a frase sobre armas (nada encontrado) e Zema, o custo [calc] do bônus e do fundo e o valor da fatia da União na Petrobras. Cresceram com os itens conferidos nos planos (autonomia do BC e redução de danos de Caiado; internação involuntária e porte rural de Zema; fonte do crédito de Cury; custo da desfavelização de Renan) e com a marcação das falas fora dos planos. Para Caiado, Cury e Renan, a política externa segue “não encontrada”.
 
 ## Neutralidade de apresentação
 
@@ -60,11 +61,11 @@ Caiado 335, Zema 322, Cury 232, Renan Santos 359 palavras (antes: 311, 282, 205,
 
 ## Verificação
 
-Playwright (Chromium 1194), página envolvida num esqueleto mínimo, Google Fonts bloqueado, 1366 px e 400 px, claro e escuro: nenhum erro de console, nenhuma rolagem horizontal (também com todos os painéis abertos), cálculo, persistência e “apagar” funcionando. Capturas em `screenshots/`.
+Playwright (Chromium 1194, `ignoreHTTPSErrors`), página envolvida num esqueleto mínimo só para o teste, Google Fonts bloqueado, 1366 px e 400 px, claro e escuro, refeito em 04/10/2026: nenhum erro de console, nenhuma rolagem horizontal (scrollWidth = largura da janela, também com todos os painéis abertos), cálculo, persistência e “apagar” funcionando. Capturas refeitas em `screenshots/`.
 
 ## Assimetrias que permanecem (vêm do relatório)
 
 - Evidência em Ambiente: “a favor” para Lula (queda de 50,6% do desmatamento, sem atribuição causal) e “contra” para Flávio. O rótulo de Flávio vem do histórico do campo (2019–22), não de uma avaliação da proposta. As duas bases estão explícitas.
 - Evidência em Segurança: “mista” para Lula e “contra” para Flávio (armas, contestada), como no relatório.
-- Custo: Lula tem “parcial” em 4 áreas e Flávio em 1. Isso reflete custos conhecidos de programas que já existem, não um plano de financiamento.
+- Custo: Lula tem “parcial” em 4 áreas e Flávio em 1. As novas contas [calc] (IVA em reais, privatizações) são do relatório, não dos planos, e por isso não mudaram o rótulo de Flávio. Isso reflete custos conhecidos de programas que já existem, não um plano de financiamento.
 - Declarações fora do plano: 10 em Flávio contra 2 em Lula na análise completa. É o resultado da leitura dos documentos: o plano de Flávio deixa fora vários números que a campanha divulgou, e o de Lula deixa fora a tarifa zero e qualquer meta de dívida.
