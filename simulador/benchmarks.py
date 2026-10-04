@@ -238,6 +238,64 @@ def bellwether_municipios(arquivos: dict | None = None, min_validos: int = 100_0
     return out
 
 
+# ------------------------------------------------------------------ ordem da apuração (2022 → 2026)
+# 1º turno de 2022, % das seções totalizadas pelo TSE x % válidos (horário de Brasília).
+# Fontes: blog ao vivo da Suno (https://www.suno.com.br/noticias/votacao-eleicoes-2022/), CGTN (70%),
+# France 24 (97,3%), TSE (final). Detalhes e ressalvas em APURACAO_2022_ORDEM.md.
+APURACAO_2022_1T = [
+    # (horário, % apurado, Lula, Bolsonaro)
+    ("17:36", 0.62, 41.04, 48.23),
+    ("17:49", 1.03, 41.32, 48.37),
+    ("18:14", 4.23, 42.03, 48.84),
+    ("18:38", 10.0, 42.87, 48.35),
+    ("19:00", 20.0, 43.32, 47.93),
+    ("19:21", 35.51, 43.86, 47.34),
+    ("19:38", 52.21, 44.86, 46.31),
+    ("20:06", 66.66, 45.55, 45.69),
+    ("20:15", 70.0, 45.74, 45.51),
+    ("~21:30", 97.3, 47.9, 43.7),
+    ("22:57", 99.54, 48.31, 43.30),
+    ("final", 100.0, 48.43, 43.20),
+]
+
+
+def _margem_regional(ufs: list, chave: str) -> float:
+    """Margem Lula − adversário média (ponderada por eleitores) em N+NE menos a de S+SE+CO."""
+    acc = {True: [0.0, 0.0], False: [0.0, 0.0]}
+    for r in ufs:
+        if r["uf"] == "ZZ" or chave not in r:
+            continue
+        m = r[chave]["media"] if isinstance(r[chave], dict) else r[chave]
+        g = r["regiao"] in ("N", "NE")
+        acc[g][0] += m * r["eleitores"]
+        acc[g][1] += r["eleitores"]
+    return acc[True][0] / acc[True][1] - acc[False][0] / acc[False][1]
+
+
+def trajetoria_esperada(nacional: dict, ufs: list) -> dict:
+    """Margem parcial (Lula − Flávio) esperada por % apurado, se a ordem da apuração repetir 2022.
+
+    deriva_2022(p) = margem parcial − margem final em 2022. Para 2026 ela é escalada por
+    k = (gap regional N+NE x S+SE+CO esperado em 2026) / (gap de 2022), porque a deriva vem de
+    o Sul/Sudeste/Centro-Oeste serem totalizados antes do Norte/Nordeste.
+    """
+    final22 = APURACAO_2022_1T[-1][2] - APURACAO_2022_1T[-1][3]
+    k = {v: _margem_regional(ufs, f"margem_{v}") / _margem_regional(ufs, "margem_2022_1t") for v in VISOES}
+    linhas = []
+    for hora, pct, lula, bol in APURACAO_2022_1T:
+        der = (lula - bol) - final22
+        lin = {"hora_brasilia_2022": hora, "pct_apurado": pct, "lula_2022": lula, "bolsonaro_2022": bol,
+               "margem_2022": round(lula - bol, 2), "deriva_2022": round(der, 2)}
+        for v in VISOES:
+            lin[f"margem_esperada_{v}"] = round(nacional[f"margem_{v}"]["media"] + k[v] * der, 2)
+        kk = (k["calibrado"] + k["neutro"]) / 2
+        lin["margem_indiferenca"] = round(nacional["sinal_margem"]["indiferenca"] + kk * der, 2)
+        linhas.append(lin)
+    return {"k_escala": {v: round(x, 3) for v, x in k.items()}, "pontos": linhas,
+            "nota": ("Ilustrativo: supõe a mesma ordem de totalização de 2022, escalada pelo gap regional esperado. "
+                     "Margem em p.p. dos válidos, Lula − Flávio (2022: Lula − Bolsonaro).")}
+
+
 # ------------------------------------------------------------------ saída
 def achatar(r: dict) -> dict:
     f = {"uf": r["uf"], "nome": r["nome"], "regiao": r["regiao"], "eleitores_2026": r["eleitores"],
@@ -278,6 +336,7 @@ def gerar(prev: dict | None = None, hist: pd.DataFrame | None = None, escrever: 
         },
         "nacional": unid[0],
         "ufs": unid[1:],
+        "trajetoria_apuracao": trajetoria_esperada(unid[0], unid[1:]),
         "bellwether_ufs": bellwether_ufs(hist),
         "bellwether_municipios": bellwether_municipios(),
     }
@@ -301,6 +360,10 @@ def main():
     for r in out["ufs"]:
         print(f"{r['uf']:3} Lula cal {r['lula_calibrado']['media']:5.1f} neu {r['lula_neutro']['media']:5.1f} "
               f"ind {r['sinal_lula']['indiferenca']:5.1f} sep {r['sinal_lula']['separacao']:.2f} 2022 {r.get('lula_2022_1t', '')}")
+    for p in out["trajetoria_apuracao"]["pontos"]:
+        print(f"{p['pct_apurado']:6.2f}% 2022 {p['margem_2022']:+6.2f} | 2026 cal {p['margem_esperada_calibrado']:+6.2f} "
+              f"neu {p['margem_esperada_neutro']:+6.2f} ind {p['margem_indiferenca']:+6.2f}")
+    print("k:", out["trajetoria_apuracao"]["k_escala"])
     print("Bellwether UFs:", [(b["uf"], b["desvio_medio_abs_2p_pp"]) for b in out["bellwether_ufs"][:6]])
     print("Bellwether municípios:", [(b["municipio"], b["uf"], b["desvio_medio_abs_2p_pp"]) for b in out["bellwether_municipios"][:8]])
 

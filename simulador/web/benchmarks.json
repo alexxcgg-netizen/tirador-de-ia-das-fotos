@@ -1,6 +1,6 @@
 {
  "meta": {
-  "gerado_em": "2026-10-04T17:36:10+00:00",
+  "gerado_em": "2026-10-04T17:39:13+00:00",
   "previsao_gerada_em": "2026-10-04T02:14:26+00:00",
   "data_referencia": "2026-10-03",
   "unidade": "% dos votos válidos no 1º turno",
@@ -1709,6 +1709,147 @@
    "swing_lula_esperado_neutro": 1.69
   }
  ],
+ "trajetoria_apuracao": {
+  "k_escala": {
+   "calibrado": 0.865,
+   "neutro": 0.86
+  },
+  "pontos": [
+   {
+    "hora_brasilia_2022": "17:36",
+    "pct_apurado": 0.62,
+    "lula_2022": 41.04,
+    "bolsonaro_2022": 48.23,
+    "margem_2022": -7.19,
+    "deriva_2022": -12.42,
+    "margem_esperada_calibrado": -13.16,
+    "margem_esperada_neutro": -9.79,
+    "margem_indiferenca": -11.47
+   },
+   {
+    "hora_brasilia_2022": "17:49",
+    "pct_apurado": 1.03,
+    "lula_2022": 41.32,
+    "bolsonaro_2022": 48.37,
+    "margem_2022": -7.05,
+    "deriva_2022": -12.28,
+    "margem_esperada_calibrado": -13.03,
+    "margem_esperada_neutro": -9.67,
+    "margem_indiferenca": -11.35
+   },
+   {
+    "hora_brasilia_2022": "18:14",
+    "pct_apurado": 4.23,
+    "lula_2022": 42.03,
+    "bolsonaro_2022": 48.84,
+    "margem_2022": -6.81,
+    "deriva_2022": -12.04,
+    "margem_esperada_calibrado": -12.83,
+    "margem_esperada_neutro": -9.46,
+    "margem_indiferenca": -11.14
+   },
+   {
+    "hora_brasilia_2022": "18:38",
+    "pct_apurado": 10.0,
+    "lula_2022": 42.87,
+    "bolsonaro_2022": 48.35,
+    "margem_2022": -5.48,
+    "deriva_2022": -10.71,
+    "margem_esperada_calibrado": -11.68,
+    "margem_esperada_neutro": -8.32,
+    "margem_indiferenca": -10.0
+   },
+   {
+    "hora_brasilia_2022": "19:00",
+    "pct_apurado": 20.0,
+    "lula_2022": 43.32,
+    "bolsonaro_2022": 47.93,
+    "margem_2022": -4.61,
+    "deriva_2022": -9.84,
+    "margem_esperada_calibrado": -10.92,
+    "margem_esperada_neutro": -7.57,
+    "margem_indiferenca": -9.25
+   },
+   {
+    "hora_brasilia_2022": "19:21",
+    "pct_apurado": 35.51,
+    "lula_2022": 43.86,
+    "bolsonaro_2022": 47.34,
+    "margem_2022": -3.48,
+    "deriva_2022": -8.71,
+    "margem_esperada_calibrado": -9.95,
+    "margem_esperada_neutro": -6.6,
+    "margem_indiferenca": -8.27
+   },
+   {
+    "hora_brasilia_2022": "19:38",
+    "pct_apurado": 52.21,
+    "lula_2022": 44.86,
+    "bolsonaro_2022": 46.31,
+    "margem_2022": -1.45,
+    "deriva_2022": -6.68,
+    "margem_esperada_calibrado": -8.19,
+    "margem_esperada_neutro": -4.85,
+    "margem_indiferenca": -6.52
+   },
+   {
+    "hora_brasilia_2022": "20:06",
+    "pct_apurado": 66.66,
+    "lula_2022": 45.55,
+    "bolsonaro_2022": 45.69,
+    "margem_2022": -0.14,
+    "deriva_2022": -5.37,
+    "margem_esperada_calibrado": -7.06,
+    "margem_esperada_neutro": -3.73,
+    "margem_indiferenca": -5.39
+   },
+   {
+    "hora_brasilia_2022": "20:15",
+    "pct_apurado": 70.0,
+    "lula_2022": 45.74,
+    "bolsonaro_2022": 45.51,
+    "margem_2022": 0.23,
+    "deriva_2022": -5.0,
+    "margem_esperada_calibrado": -6.74,
+    "margem_esperada_neutro": -3.41,
+    "margem_indiferenca": -5.07
+   },
+   {
+    "hora_brasilia_2022": "~21:30",
+    "pct_apurado": 97.3,
+    "lula_2022": 47.9,
+    "bolsonaro_2022": 43.7,
+    "margem_2022": 4.2,
+    "deriva_2022": -1.03,
+    "margem_esperada_calibrado": -3.3,
+    "margem_esperada_neutro": 0.0,
+    "margem_indiferenca": -1.65
+   },
+   {
+    "hora_brasilia_2022": "22:57",
+    "pct_apurado": 99.54,
+    "lula_2022": 48.31,
+    "bolsonaro_2022": 43.3,
+    "margem_2022": 5.01,
+    "deriva_2022": -0.22,
+    "margem_esperada_calibrado": -2.6,
+    "margem_esperada_neutro": 0.7,
+    "margem_indiferenca": -0.95
+   },
+   {
+    "hora_brasilia_2022": "final",
+    "pct_apurado": 100.0,
+    "lula_2022": 48.43,
+    "bolsonaro_2022": 43.2,
+    "margem_2022": 5.23,
+    "deriva_2022": 0.0,
+    "margem_esperada_calibrado": -2.41,
+    "margem_esperada_neutro": 0.89,
+    "margem_indiferenca": -0.76
+   }
+  ],
+  "nota": "Ilustrativo: supõe a mesma ordem de totalização de 2022, escalada pelo gap regional esperado. Margem em p.p. dos válidos, Lula − Flávio (2022: Lula − Bolsonaro)."
+ },
  "bellwether_ufs": [
   {
    "uf": "MG",

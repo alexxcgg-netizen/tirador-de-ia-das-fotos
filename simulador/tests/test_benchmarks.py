@@ -86,3 +86,18 @@ def test_csv_achatado(out):
     f = B.achatar(out["ufs"][0])
     for k in ("lula_calibrado_p10", "flavio_neutro_p90", "sinal_lula_indiferenca", "lula_2022_1t"):
         assert k in f
+
+
+def test_trajetoria_apuracao(out):
+    t = out["trajetoria_apuracao"]
+    pts = t["pontos"]
+    assert pts[-1]["deriva_2022"] == pytest.approx(0.0)
+    assert [p["pct_apurado"] for p in pts] == sorted(p["pct_apurado"] for p in pts)
+    # em 2022 Bolsonaro liderou até ~2/3 apurados e Lula virou por volta de 70%
+    assert all(p["margem_2022"] < 0 for p in pts if p["pct_apurado"] <= 66.66)
+    assert all(p["margem_2022"] > 0 for p in pts if p["pct_apurado"] >= 70)
+    for v in B.VISOES:
+        assert 0.5 < t["k_escala"][v] < 1.5
+        assert pts[-1][f"margem_esperada_{v}"] == pytest.approx(out["nacional"][f"margem_{v}"]["media"])
+        # parcial cedo é mais pró-Flávio que o final esperado
+        assert pts[3][f"margem_esperada_{v}"] < pts[-1][f"margem_esperada_{v}"]
