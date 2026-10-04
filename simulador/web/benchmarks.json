@@ -1,0 +1,2310 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-04T17:36:10+00:00",
+  "previsao_gerada_em": "2026-10-04T02:14:26+00:00",
+  "data_referencia": "2026-10-03",
+  "unidade": "% dos votos válidos no 1º turno",
+  "metodo": "Cada visão aproximada por normal (média do modelo; dp = (p90 − p10)/2,563; limiares com o dp médio das duas). sinal.indiferenca = valor final em que calibrado e neutro são igualmente prováveis; calibrado_3x / neutro_3x = valor a partir do qual a visão é 3x mais provável que a outra. separacao = |Δmédia|/dp: abaixo de ~0,5 a UF sozinha quase não distingue as visões.",
+  "fontes": [
+   "web/resultados.json (rodada de 3–4/10/2026)",
+   "data/resultados_uf_2002_2022.csv (TSE)",
+   "data/municipios_2018.csv, data/municipios_2022.csv (TSE votacao_candidato_munzona, 1º turno)"
+  ]
+ },
+ "nacional": {
+  "uf": "BR",
+  "nome": "Brasil",
+  "regiao": "BR",
+  "eleitores": 158745463,
+  "lula_calibrado": {
+   "media": 44.42,
+   "p10": 40.26,
+   "p50": 44.42,
+   "p90": 48.6,
+   "sd": 3.254
+  },
+  "flavio_calibrado": {
+   "media": 46.83,
+   "p10": 42.58,
+   "p50": 46.84,
+   "p90": 51.07,
+   "sd": 3.312
+  },
+  "margem_calibrado": {
+   "media": -2.41,
+   "p10": -10.62,
+   "p50": -2.42,
+   "p90": 5.81,
+   "sd": 6.41
+  },
+  "lula_neutro": {
+   "media": 46.07,
+   "p10": 42.18,
+   "p50": 46.08,
+   "p90": 49.97,
+   "sd": 3.039
+  },
+  "flavio_neutro": {
+   "media": 45.18,
+   "p10": 41.21,
+   "p50": 45.18,
+   "p90": 49.15,
+   "sd": 3.098
+  },
+  "margem_neutro": {
+   "media": 0.89,
+   "p10": -6.76,
+   "p50": 0.9,
+   "p90": 8.56,
+   "sd": 5.977
+  },
+  "pct_eleitorado": 100.0,
+  "lula_2022_1t": 48.43,
+  "bolsonaro_2022_1t": 43.2,
+  "margem_2022_1t": 5.23,
+  "sinal_lula": {
+   "indiferenca": 45.25,
+   "calibrado_3x": 38.65,
+   "neutro_3x": 51.84,
+   "separacao": 0.52
+  },
+  "sinal_flavio": {
+   "indiferenca": 46.01,
+   "calibrado_3x": 52.84,
+   "neutro_3x": 39.17,
+   "separacao": 0.51
+  },
+  "sinal_margem": {
+   "indiferenca": -0.76,
+   "calibrado_3x": -13.53,
+   "neutro_3x": 12.01,
+   "separacao": 0.53
+  },
+  "swing_lula_esperado_calibrado": -4.01,
+  "swing_lula_esperado_neutro": -2.36
+ },
+ "ufs": [
+  {
+   "uf": "SP",
+   "nome": "São Paulo",
+   "regiao": "SE",
+   "eleitores": 34104226,
+   "lula_calibrado": {
+    "media": 38.3,
+    "p10": 32.8,
+    "p50": 38.2,
+    "p90": 43.9,
+    "sd": 4.331
+   },
+   "flavio_calibrado": {
+    "media": 50.43,
+    "p10": 44.8,
+    "p50": 50.5,
+    "p90": 56.0,
+    "sd": 4.37
+   },
+   "margem_calibrado": {
+    "media": -12.13
+   },
+   "lula_neutro": {
+    "media": 40.01,
+    "p10": 34.6,
+    "p50": 40.0,
+    "p90": 45.4,
+    "sd": 4.214
+   },
+   "flavio_neutro": {
+    "media": 48.72,
+    "p10": 43.2,
+    "p50": 48.8,
+    "p90": 54.2,
+    "sd": 4.292
+   },
+   "margem_neutro": {
+    "media": -8.71
+   },
+   "pct_eleitorado": 21.484,
+   "lula_2022_1t": 40.89,
+   "bolsonaro_2022_1t": 47.71,
+   "margem_2022_1t": -6.82,
+   "sinal_lula": {
+    "indiferenca": 39.16,
+    "calibrado_3x": 27.43,
+    "neutro_3x": 50.88,
+    "separacao": 0.4
+   },
+   "sinal_flavio": {
+    "indiferenca": 49.57,
+    "calibrado_3x": 61.63,
+    "neutro_3x": 37.52,
+    "separacao": 0.39
+   },
+   "swing_lula_esperado_calibrado": -2.59,
+   "swing_lula_esperado_neutro": -0.88
+  },
+  {
+   "uf": "MG",
+   "nome": "Minas Gerais",
+   "regiao": "SE",
+   "eleitores": 16377659,
+   "lula_calibrado": {
+    "media": 43.2,
+    "p10": 37.3,
+    "p50": 43.2,
+    "p90": 49.1,
+    "sd": 4.604
+   },
+   "flavio_calibrado": {
+    "media": 47.1,
+    "p10": 41.1,
+    "p50": 47.1,
+    "p90": 53.1,
+    "sd": 4.682
+   },
+   "margem_calibrado": {
+    "media": -3.9
+   },
+   "lula_neutro": {
+    "media": 44.97,
+    "p10": 39.3,
+    "p50": 45.0,
+    "p90": 50.7,
+    "sd": 4.448
+   },
+   "flavio_neutro": {
+    "media": 45.32,
+    "p10": 39.5,
+    "p50": 45.3,
+    "p90": 51.1,
+    "sd": 4.526
+   },
+   "margem_neutro": {
+    "media": -0.35
+   },
+   "pct_eleitorado": 10.317,
+   "lula_2022_1t": 48.29,
+   "bolsonaro_2022_1t": 43.6,
+   "margem_2022_1t": 4.69,
+   "sinal_lula": {
+    "indiferenca": 44.08,
+    "calibrado_3x": 31.37,
+    "neutro_3x": 56.8,
+    "separacao": 0.39
+   },
+   "sinal_flavio": {
+    "indiferenca": 46.21,
+    "calibrado_3x": 59.29,
+    "neutro_3x": 33.13,
+    "separacao": 0.39
+   },
+   "swing_lula_esperado_calibrado": -5.09,
+   "swing_lula_esperado_neutro": -3.32
+  },
+  {
+   "uf": "RJ",
+   "nome": "Rio de Janeiro",
+   "regiao": "SE",
+   "eleitores": 12857000,
+   "lula_calibrado": {
+    "media": 38.54,
+    "p10": 32.6,
+    "p50": 38.5,
+    "p90": 44.6,
+    "sd": 4.682
+   },
+   "flavio_calibrado": {
+    "media": 53.69,
+    "p10": 47.6,
+    "p50": 53.8,
+    "p90": 59.7,
+    "sd": 4.721
+   },
+   "margem_calibrado": {
+    "media": -15.15
+   },
+   "lula_neutro": {
+    "media": 40.35,
+    "p10": 34.5,
+    "p50": 40.3,
+    "p90": 46.2,
+    "sd": 4.565
+   },
+   "flavio_neutro": {
+    "media": 51.88,
+    "p10": 46.0,
+    "p50": 51.9,
+    "p90": 57.7,
+    "sd": 4.565
+   },
+   "margem_neutro": {
+    "media": -11.53
+   },
+   "pct_eleitorado": 8.099,
+   "lula_2022_1t": 40.68,
+   "bolsonaro_2022_1t": 51.09,
+   "margem_2022_1t": -10.41,
+   "sinal_lula": {
+    "indiferenca": 39.45,
+    "calibrado_3x": 26.47,
+    "neutro_3x": 52.42,
+    "separacao": 0.39
+   },
+   "sinal_flavio": {
+    "indiferenca": 52.79,
+    "calibrado_3x": 65.87,
+    "neutro_3x": 39.7,
+    "separacao": 0.39
+   },
+   "swing_lula_esperado_calibrado": -2.14,
+   "swing_lula_esperado_neutro": -0.33
+  },
+  {
+   "uf": "BA",
+   "nome": "Bahia",
+   "regiao": "NE",
+   "eleitores": 11321005,
+   "lula_calibrado": {
+    "media": 60.67,
+    "p10": 54.1,
+    "p50": 60.9,
+    "p90": 67.0,
+    "sd": 5.033
+   },
+   "flavio_calibrado": {
+    "media": 33.22,
+    "p10": 26.9,
+    "p50": 33.0,
+    "p90": 39.8,
+    "sd": 5.033
+   },
+   "margem_calibrado": {
+    "media": 27.45
+   },
+   "lula_neutro": {
+    "media": 62.28,
+    "p10": 56.0,
+    "p50": 62.5,
+    "p90": 68.3,
+    "sd": 4.799
+   },
+   "flavio_neutro": {
+    "media": 31.62,
+    "p10": 25.6,
+    "p50": 31.4,
+    "p90": 37.9,
+    "sd": 4.799
+   },
+   "margem_neutro": {
+    "media": 30.66
+   },
+   "pct_eleitorado": 7.132,
+   "lula_2022_1t": 69.73,
+   "bolsonaro_2022_1t": 24.31,
+   "margem_2022_1t": 45.42,
+   "sinal_lula": {
+    "indiferenca": 61.48,
+    "calibrado_3x": 44.98,
+    "neutro_3x": 77.97,
+    "separacao": 0.33
+   },
+   "sinal_flavio": {
+    "indiferenca": 32.42,
+    "calibrado_3x": 49.01,
+    "neutro_3x": 15.83,
+    "separacao": 0.33
+   },
+   "swing_lula_esperado_calibrado": -9.06,
+   "swing_lula_esperado_neutro": -7.45
+  },
+  {
+   "uf": "PR",
+   "nome": "Paraná",
+   "regiao": "S",
+   "eleitores": 8609026,
+   "lula_calibrado": {
+    "media": 32.27,
+    "p10": 25.5,
+    "p50": 32.1,
+    "p90": 39.3,
+    "sd": 5.384
+   },
+   "flavio_calibrado": {
+    "media": 56.54,
+    "p10": 49.4,
+    "p50": 56.7,
+    "p90": 63.5,
+    "sd": 5.501
+   },
+   "margem_calibrado": {
+    "media": -24.27
+   },
+   "lula_neutro": {
+    "media": 33.83,
+    "p10": 27.0,
+    "p50": 33.6,
+    "p90": 40.8,
+    "sd": 5.384
+   },
+   "flavio_neutro": {
+    "media": 54.97,
+    "p10": 47.8,
+    "p50": 55.1,
+    "p90": 61.9,
+    "sd": 5.501
+   },
+   "margem_neutro": {
+    "media": -21.14
+   },
+   "pct_eleitorado": 5.423,
+   "lula_2022_1t": 35.99,
+   "bolsonaro_2022_1t": 55.26,
+   "margem_2022_1t": -19.27,
+   "sinal_lula": {
+    "indiferenca": 33.05,
+    "calibrado_3x": 12.64,
+    "neutro_3x": 53.46,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 55.75,
+    "calibrado_3x": 76.93,
+    "neutro_3x": 34.58,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -3.72,
+   "swing_lula_esperado_neutro": -2.16
+  },
+  {
+   "uf": "RS",
+   "nome": "Rio Grande do Sul",
+   "regiao": "S",
+   "eleitores": 8526233,
+   "lula_calibrado": {
+    "media": 40.16,
+    "p10": 33.4,
+    "p50": 40.1,
+    "p90": 47.0,
+    "sd": 5.306
+   },
+   "flavio_calibrado": {
+    "media": 51.69,
+    "p10": 44.8,
+    "p50": 51.8,
+    "p90": 58.5,
+    "sd": 5.345
+   },
+   "margem_calibrado": {
+    "media": -11.53
+   },
+   "lula_neutro": {
+    "media": 41.95,
+    "p10": 35.3,
+    "p50": 41.9,
+    "p90": 48.7,
+    "sd": 5.228
+   },
+   "flavio_neutro": {
+    "media": 49.9,
+    "p10": 43.1,
+    "p50": 49.9,
+    "p90": 56.6,
+    "sd": 5.267
+   },
+   "margem_neutro": {
+    "media": -7.95
+   },
+   "pct_eleitorado": 5.371,
+   "lula_2022_1t": 42.28,
+   "bolsonaro_2022_1t": 48.89,
+   "margem_2022_1t": -6.61,
+   "sinal_lula": {
+    "indiferenca": 41.05,
+    "calibrado_3x": 24.03,
+    "neutro_3x": 58.08,
+    "separacao": 0.34
+   },
+   "sinal_flavio": {
+    "indiferenca": 50.79,
+    "calibrado_3x": 68.07,
+    "neutro_3x": 33.52,
+    "separacao": 0.34
+   },
+   "swing_lula_esperado_calibrado": -2.12,
+   "swing_lula_esperado_neutro": -0.33
+  },
+  {
+   "uf": "PE",
+   "nome": "Pernambuco",
+   "regiao": "NE",
+   "eleitores": 7225744,
+   "lula_calibrado": {
+    "media": 62.82,
+    "p10": 56.2,
+    "p50": 63.0,
+    "p90": 69.1,
+    "sd": 5.033
+   },
+   "flavio_calibrado": {
+    "media": 31.43,
+    "p10": 25.1,
+    "p50": 31.2,
+    "p90": 38.0,
+    "sd": 5.033
+   },
+   "margem_calibrado": {
+    "media": 31.39
+   },
+   "lula_neutro": {
+    "media": 64.4,
+    "p10": 58.1,
+    "p50": 64.6,
+    "p90": 70.4,
+    "sd": 4.799
+   },
+   "flavio_neutro": {
+    "media": 29.85,
+    "p10": 23.8,
+    "p50": 29.6,
+    "p90": 36.1,
+    "sd": 4.799
+   },
+   "margem_neutro": {
+    "media": 34.55
+   },
+   "pct_eleitorado": 4.552,
+   "lula_2022_1t": 65.27,
+   "bolsonaro_2022_1t": 29.91,
+   "margem_2022_1t": 35.36,
+   "sinal_lula": {
+    "indiferenca": 63.61,
+    "calibrado_3x": 46.81,
+    "neutro_3x": 80.41,
+    "separacao": 0.32
+   },
+   "sinal_flavio": {
+    "indiferenca": 30.64,
+    "calibrado_3x": 47.44,
+    "neutro_3x": 13.84,
+    "separacao": 0.32
+   },
+   "swing_lula_esperado_calibrado": -2.45,
+   "swing_lula_esperado_neutro": -0.87
+  },
+  {
+   "uf": "CE",
+   "nome": "Ceará",
+   "regiao": "NE",
+   "eleitores": 6998494,
+   "lula_calibrado": {
+    "media": 61.43,
+    "p10": 54.3,
+    "p50": 61.7,
+    "p90": 68.3,
+    "sd": 5.462
+   },
+   "flavio_calibrado": {
+    "media": 31.67,
+    "p10": 24.8,
+    "p50": 31.4,
+    "p90": 38.8,
+    "sd": 5.462
+   },
+   "margem_calibrado": {
+    "media": 29.76
+   },
+   "lula_neutro": {
+    "media": 62.97,
+    "p10": 56.2,
+    "p50": 63.2,
+    "p90": 69.5,
+    "sd": 5.189
+   },
+   "flavio_neutro": {
+    "media": 30.13,
+    "p10": 23.6,
+    "p50": 29.9,
+    "p90": 36.9,
+    "sd": 5.189
+   },
+   "margem_neutro": {
+    "media": 32.84
+   },
+   "pct_eleitorado": 4.409,
+   "lula_2022_1t": 65.91,
+   "bolsonaro_2022_1t": 25.38,
+   "margem_2022_1t": 40.53,
+   "sinal_lula": {
+    "indiferenca": 62.2,
+    "calibrado_3x": 41.97,
+    "neutro_3x": 82.43,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 30.9,
+    "calibrado_3x": 51.13,
+    "neutro_3x": 10.67,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -4.48,
+   "swing_lula_esperado_neutro": -2.94
+  },
+  {
+   "uf": "PA",
+   "nome": "Pará",
+   "regiao": "N",
+   "eleitores": 6265355,
+   "lula_calibrado": {
+    "media": 46.85,
+    "p10": 40.0,
+    "p50": 46.9,
+    "p90": 53.7,
+    "sd": 5.345
+   },
+   "flavio_calibrado": {
+    "media": 45.45,
+    "p10": 38.6,
+    "p50": 45.4,
+    "p90": 52.4,
+    "sd": 5.384
+   },
+   "margem_calibrado": {
+    "media": 1.4
+   },
+   "lula_neutro": {
+    "media": 48.55,
+    "p10": 41.9,
+    "p50": 48.6,
+    "p90": 55.2,
+    "sd": 5.189
+   },
+   "flavio_neutro": {
+    "media": 43.75,
+    "p10": 37.1,
+    "p50": 43.7,
+    "p90": 50.4,
+    "sd": 5.189
+   },
+   "margem_neutro": {
+    "media": 4.8
+   },
+   "pct_eleitorado": 3.947,
+   "lula_2022_1t": 52.22,
+   "bolsonaro_2022_1t": 40.27,
+   "margem_2022_1t": 11.95,
+   "sinal_lula": {
+    "indiferenca": 47.7,
+    "calibrado_3x": 29.77,
+    "neutro_3x": 65.63,
+    "separacao": 0.32
+   },
+   "sinal_flavio": {
+    "indiferenca": 44.6,
+    "calibrado_3x": 62.66,
+    "neutro_3x": 26.54,
+    "separacao": 0.32
+   },
+   "swing_lula_esperado_calibrado": -5.37,
+   "swing_lula_esperado_neutro": -3.67
+  },
+  {
+   "uf": "SC",
+   "nome": "Santa Catarina",
+   "regiao": "S",
+   "eleitores": 5725753,
+   "lula_calibrado": {
+    "media": 27.14,
+    "p10": 20.5,
+    "p50": 26.8,
+    "p90": 34.1,
+    "sd": 5.306
+   },
+   "flavio_calibrado": {
+    "media": 64.06,
+    "p10": 57.0,
+    "p50": 64.4,
+    "p90": 70.8,
+    "sd": 5.384
+   },
+   "margem_calibrado": {
+    "media": -36.92
+   },
+   "lula_neutro": {
+    "media": 28.57,
+    "p10": 21.9,
+    "p50": 28.3,
+    "p90": 35.6,
+    "sd": 5.345
+   },
+   "flavio_neutro": {
+    "media": 62.63,
+    "p10": 55.5,
+    "p50": 62.9,
+    "p90": 69.4,
+    "sd": 5.423
+   },
+   "margem_neutro": {
+    "media": -34.06
+   },
+   "pct_eleitorado": 3.607,
+   "lula_2022_1t": 29.54,
+   "bolsonaro_2022_1t": 62.21,
+   "margem_2022_1t": -32.67,
+   "sinal_lula": {
+    "indiferenca": 27.86,
+    "calibrado_3x": 6.07,
+    "neutro_3x": 49.64,
+    "separacao": 0.27
+   },
+   "sinal_flavio": {
+    "indiferenca": 63.35,
+    "calibrado_3x": 85.78,
+    "neutro_3x": 40.91,
+    "separacao": 0.26
+   },
+   "swing_lula_esperado_calibrado": -2.4,
+   "swing_lula_esperado_neutro": -0.97
+  },
+  {
+   "uf": "MA",
+   "nome": "Maranhão",
+   "regiao": "NE",
+   "eleitores": 5186562,
+   "lula_calibrado": {
+    "media": 62.71,
+    "p10": 55.7,
+    "p50": 63.0,
+    "p90": 69.4,
+    "sd": 5.345
+   },
+   "flavio_calibrado": {
+    "media": 30.24,
+    "p10": 23.5,
+    "p50": 30.0,
+    "p90": 37.3,
+    "sd": 5.384
+   },
+   "margem_calibrado": {
+    "media": 32.47
+   },
+   "lula_neutro": {
+    "media": 64.16,
+    "p10": 57.5,
+    "p50": 64.4,
+    "p90": 70.5,
+    "sd": 5.072
+   },
+   "flavio_neutro": {
+    "media": 28.79,
+    "p10": 22.4,
+    "p50": 28.5,
+    "p90": 35.5,
+    "sd": 5.111
+   },
+   "margem_neutro": {
+    "media": 35.37
+   },
+   "pct_eleitorado": 3.267,
+   "lula_2022_1t": 68.84,
+   "bolsonaro_2022_1t": 26.02,
+   "margem_2022_1t": 42.82,
+   "sinal_lula": {
+    "indiferenca": 63.43,
+    "calibrado_3x": 42.88,
+    "neutro_3x": 83.99,
+    "separacao": 0.28
+   },
+   "sinal_flavio": {
+    "indiferenca": 29.52,
+    "calibrado_3x": 50.38,
+    "neutro_3x": 8.65,
+    "separacao": 0.28
+   },
+   "swing_lula_esperado_calibrado": -6.13,
+   "swing_lula_esperado_neutro": -4.68
+  },
+  {
+   "uf": "GO",
+   "nome": "Goiás",
+   "regiao": "CO",
+   "eleitores": 5080755,
+   "lula_calibrado": {
+    "media": 33.49,
+    "p10": 27.2,
+    "p50": 33.3,
+    "p90": 39.9,
+    "sd": 4.955
+   },
+   "flavio_calibrado": {
+    "media": 53.84,
+    "p10": 47.2,
+    "p50": 54.0,
+    "p90": 60.3,
+    "sd": 5.111
+   },
+   "margem_calibrado": {
+    "media": -20.35
+   },
+   "lula_neutro": {
+    "media": 34.99,
+    "p10": 28.8,
+    "p50": 34.9,
+    "p90": 41.3,
+    "sd": 4.877
+   },
+   "flavio_neutro": {
+    "media": 52.33,
+    "p10": 45.8,
+    "p50": 52.5,
+    "p90": 58.7,
+    "sd": 5.033
+   },
+   "margem_neutro": {
+    "media": -17.34
+   },
+   "pct_eleitorado": 3.201,
+   "lula_2022_1t": 39.51,
+   "bolsonaro_2022_1t": 52.16,
+   "margem_2022_1t": -12.65,
+   "sinal_lula": {
+    "indiferenca": 34.24,
+    "calibrado_3x": 16.54,
+    "neutro_3x": 51.94,
+    "separacao": 0.31
+   },
+   "sinal_flavio": {
+    "indiferenca": 53.08,
+    "calibrado_3x": 71.8,
+    "neutro_3x": 34.37,
+    "separacao": 0.3
+   },
+   "swing_lula_esperado_calibrado": -6.02,
+   "swing_lula_esperado_neutro": -4.52
+  },
+  {
+   "uf": "PB",
+   "nome": "Paraíba",
+   "regiao": "NE",
+   "eleitores": 3247397,
+   "lula_calibrado": {
+    "media": 60.53,
+    "p10": 53.2,
+    "p50": 60.8,
+    "p90": 67.6,
+    "sd": 5.618
+   },
+   "flavio_calibrado": {
+    "media": 33.14,
+    "p10": 26.1,
+    "p50": 32.9,
+    "p90": 40.5,
+    "sd": 5.618
+   },
+   "margem_calibrado": {
+    "media": 27.39
+   },
+   "lula_neutro": {
+    "media": 62.11,
+    "p10": 55.1,
+    "p50": 62.4,
+    "p90": 68.9,
+    "sd": 5.384
+   },
+   "flavio_neutro": {
+    "media": 31.56,
+    "p10": 24.8,
+    "p50": 31.3,
+    "p90": 38.6,
+    "sd": 5.384
+   },
+   "margem_neutro": {
+    "media": 30.55
+   },
+   "pct_eleitorado": 2.046,
+   "lula_2022_1t": 64.21,
+   "bolsonaro_2022_1t": 29.62,
+   "margem_2022_1t": 34.59,
+   "sinal_lula": {
+    "indiferenca": 61.32,
+    "calibrado_3x": 40.28,
+    "neutro_3x": 82.36,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 32.35,
+    "calibrado_3x": 53.39,
+    "neutro_3x": 11.31,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -3.68,
+   "swing_lula_esperado_neutro": -2.1
+  },
+  {
+   "uf": "ES",
+   "nome": "Espírito Santo",
+   "regiao": "SE",
+   "eleitores": 2990490,
+   "lula_calibrado": {
+    "media": 37.45,
+    "p10": 30.9,
+    "p50": 37.3,
+    "p90": 44.1,
+    "sd": 5.15
+   },
+   "flavio_calibrado": {
+    "media": 53.64,
+    "p10": 46.9,
+    "p50": 53.8,
+    "p90": 60.3,
+    "sd": 5.228
+   },
+   "margem_calibrado": {
+    "media": -16.19
+   },
+   "lula_neutro": {
+    "media": 39.16,
+    "p10": 32.7,
+    "p50": 39.1,
+    "p90": 45.7,
+    "sd": 5.072
+   },
+   "flavio_neutro": {
+    "media": 51.92,
+    "p10": 45.3,
+    "p50": 52.0,
+    "p90": 58.5,
+    "sd": 5.15
+   },
+   "margem_neutro": {
+    "media": -12.76
+   },
+   "pct_eleitorado": 1.884,
+   "lula_2022_1t": 40.4,
+   "bolsonaro_2022_1t": 52.23,
+   "margem_2022_1t": -11.83,
+   "sinal_lula": {
+    "indiferenca": 38.31,
+    "calibrado_3x": 21.52,
+    "neutro_3x": 55.09,
+    "separacao": 0.33
+   },
+   "sinal_flavio": {
+    "indiferenca": 52.78,
+    "calibrado_3x": 69.98,
+    "neutro_3x": 35.58,
+    "separacao": 0.33
+   },
+   "swing_lula_esperado_calibrado": -2.95,
+   "swing_lula_esperado_neutro": -1.24
+  },
+  {
+   "uf": "AM",
+   "nome": "Amazonas",
+   "regiao": "N",
+   "eleitores": 2801182,
+   "lula_calibrado": {
+    "media": 45.42,
+    "p10": 37.9,
+    "p50": 45.4,
+    "p90": 52.9,
+    "sd": 5.852
+   },
+   "flavio_calibrado": {
+    "media": 46.91,
+    "p10": 39.4,
+    "p50": 46.9,
+    "p90": 54.4,
+    "sd": 5.852
+   },
+   "margem_calibrado": {
+    "media": -1.49
+   },
+   "lula_neutro": {
+    "media": 47.11,
+    "p10": 39.8,
+    "p50": 47.1,
+    "p90": 54.4,
+    "sd": 5.696
+   },
+   "flavio_neutro": {
+    "media": 45.22,
+    "p10": 37.9,
+    "p50": 45.2,
+    "p90": 52.6,
+    "sd": 5.735
+   },
+   "margem_neutro": {
+    "media": 1.89
+   },
+   "pct_eleitorado": 1.765,
+   "lula_2022_1t": 49.58,
+   "bolsonaro_2022_1t": 42.8,
+   "margem_2022_1t": 6.78,
+   "sinal_lula": {
+    "indiferenca": 46.27,
+    "calibrado_3x": 24.59,
+    "neutro_3x": 67.94,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 46.07,
+    "calibrado_3x": 67.88,
+    "neutro_3x": 24.25,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -4.16,
+   "swing_lula_esperado_neutro": -2.47
+  },
+  {
+   "uf": "PI",
+   "nome": "Piauí",
+   "regiao": "NE",
+   "eleitores": 2708160,
+   "lula_calibrado": {
+    "media": 66.03,
+    "p10": 59.4,
+    "p50": 66.3,
+    "p90": 72.4,
+    "sd": 5.072
+   },
+   "flavio_calibrado": {
+    "media": 29.55,
+    "p10": 23.2,
+    "p50": 29.3,
+    "p90": 36.2,
+    "sd": 5.072
+   },
+   "margem_calibrado": {
+    "media": 36.48
+   },
+   "lula_neutro": {
+    "media": 67.46,
+    "p10": 61.1,
+    "p50": 67.7,
+    "p90": 73.5,
+    "sd": 4.838
+   },
+   "flavio_neutro": {
+    "media": 28.11,
+    "p10": 22.1,
+    "p50": 27.8,
+    "p90": 34.4,
+    "sd": 4.799
+   },
+   "margem_neutro": {
+    "media": 39.35
+   },
+   "pct_eleitorado": 1.706,
+   "lula_2022_1t": 74.25,
+   "bolsonaro_2022_1t": 19.9,
+   "margem_2022_1t": 54.35,
+   "sinal_lula": {
+    "indiferenca": 66.75,
+    "calibrado_3x": 47.88,
+    "neutro_3x": 85.61,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 28.83,
+    "calibrado_3x": 47.41,
+    "neutro_3x": 10.25,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -8.22,
+   "swing_lula_esperado_neutro": -6.79
+  },
+  {
+   "uf": "RN",
+   "nome": "Rio Grande do Norte",
+   "regiao": "NE",
+   "eleitores": 2660565,
+   "lula_calibrado": {
+    "media": 57.8,
+    "p10": 50.6,
+    "p50": 58.0,
+    "p90": 64.8,
+    "sd": 5.54
+   },
+   "flavio_calibrado": {
+    "media": 35.04,
+    "p10": 28.0,
+    "p50": 34.9,
+    "p90": 42.3,
+    "sd": 5.579
+   },
+   "margem_calibrado": {
+    "media": 22.76
+   },
+   "lula_neutro": {
+    "media": 59.38,
+    "p10": 52.4,
+    "p50": 59.6,
+    "p90": 66.1,
+    "sd": 5.345
+   },
+   "flavio_neutro": {
+    "media": 33.47,
+    "p10": 26.7,
+    "p50": 33.3,
+    "p90": 40.4,
+    "sd": 5.345
+   },
+   "margem_neutro": {
+    "media": 25.91
+   },
+   "pct_eleitorado": 1.676,
+   "lula_2022_1t": 62.98,
+   "bolsonaro_2022_1t": 31.02,
+   "margem_2022_1t": 31.96,
+   "sinal_lula": {
+    "indiferenca": 58.59,
+    "calibrado_3x": 37.99,
+    "neutro_3x": 79.19,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 34.26,
+    "calibrado_3x": 55.13,
+    "neutro_3x": 13.38,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -5.18,
+   "swing_lula_esperado_neutro": -3.6
+  },
+  {
+   "uf": "MT",
+   "nome": "Mato Grosso",
+   "regiao": "CO",
+   "eleitores": 2638230,
+   "lula_calibrado": {
+    "media": 29.78,
+    "p10": 23.0,
+    "p50": 29.5,
+    "p90": 36.9,
+    "sd": 5.423
+   },
+   "flavio_calibrado": {
+    "media": 62.65,
+    "p10": 55.5,
+    "p50": 62.9,
+    "p90": 69.5,
+    "sd": 5.462
+   },
+   "margem_calibrado": {
+    "media": -32.87
+   },
+   "lula_neutro": {
+    "media": 31.26,
+    "p10": 24.4,
+    "p50": 31.0,
+    "p90": 38.4,
+    "sd": 5.462
+   },
+   "flavio_neutro": {
+    "media": 61.17,
+    "p10": 54.0,
+    "p50": 61.4,
+    "p90": 68.1,
+    "sd": 5.501
+   },
+   "margem_neutro": {
+    "media": -29.91
+   },
+   "pct_eleitorado": 1.662,
+   "lula_2022_1t": 34.39,
+   "bolsonaro_2022_1t": 59.84,
+   "margem_2022_1t": -25.45,
+   "sinal_lula": {
+    "indiferenca": 30.52,
+    "calibrado_3x": 8.53,
+    "neutro_3x": 52.51,
+    "separacao": 0.27
+   },
+   "sinal_flavio": {
+    "indiferenca": 61.91,
+    "calibrado_3x": 84.21,
+    "neutro_3x": 39.61,
+    "separacao": 0.27
+   },
+   "swing_lula_esperado_calibrado": -4.61,
+   "swing_lula_esperado_neutro": -3.13
+  },
+  {
+   "uf": "AL",
+   "nome": "Alagoas",
+   "regiao": "NE",
+   "eleitores": 2441794,
+   "lula_calibrado": {
+    "media": 50.65,
+    "p10": 43.8,
+    "p50": 50.7,
+    "p90": 57.4,
+    "sd": 5.306
+   },
+   "flavio_calibrado": {
+    "media": 43.93,
+    "p10": 37.2,
+    "p50": 43.9,
+    "p90": 50.8,
+    "sd": 5.306
+   },
+   "margem_calibrado": {
+    "media": 6.72
+   },
+   "lula_neutro": {
+    "media": 52.49,
+    "p10": 45.9,
+    "p50": 52.6,
+    "p90": 59.0,
+    "sd": 5.111
+   },
+   "flavio_neutro": {
+    "media": 42.08,
+    "p10": 35.5,
+    "p50": 42.0,
+    "p90": 48.7,
+    "sd": 5.15
+   },
+   "margem_neutro": {
+    "media": 10.41
+   },
+   "pct_eleitorado": 1.538,
+   "lula_2022_1t": 56.5,
+   "bolsonaro_2022_1t": 36.05,
+   "margem_2022_1t": 20.45,
+   "sinal_lula": {
+    "indiferenca": 51.57,
+    "calibrado_3x": 35.37,
+    "neutro_3x": 67.77,
+    "separacao": 0.35
+   },
+   "sinal_flavio": {
+    "indiferenca": 43.0,
+    "calibrado_3x": 59.24,
+    "neutro_3x": 26.77,
+    "separacao": 0.35
+   },
+   "swing_lula_esperado_calibrado": -5.85,
+   "swing_lula_esperado_neutro": -4.01
+  },
+  {
+   "uf": "DF",
+   "nome": "Distrito Federal",
+   "regiao": "CO",
+   "eleitores": 2253132,
+   "lula_calibrado": {
+    "media": 36.73,
+    "p10": 30.2,
+    "p50": 36.6,
+    "p90": 43.5,
+    "sd": 5.189
+   },
+   "flavio_calibrado": {
+    "media": 53.8,
+    "p10": 47.0,
+    "p50": 53.9,
+    "p90": 60.5,
+    "sd": 5.267
+   },
+   "margem_calibrado": {
+    "media": -17.07
+   },
+   "lula_neutro": {
+    "media": 38.21,
+    "p10": 31.7,
+    "p50": 38.1,
+    "p90": 44.8,
+    "sd": 5.111
+   },
+   "flavio_neutro": {
+    "media": 52.31,
+    "p10": 45.6,
+    "p50": 52.4,
+    "p90": 58.9,
+    "sd": 5.189
+   },
+   "margem_neutro": {
+    "media": -14.1
+   },
+   "pct_eleitorado": 1.419,
+   "lula_2022_1t": 36.85,
+   "bolsonaro_2022_1t": 51.65,
+   "margem_2022_1t": -14.8,
+   "sinal_lula": {
+    "indiferenca": 37.47,
+    "calibrado_3x": 17.78,
+    "neutro_3x": 57.16,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 53.06,
+    "calibrado_3x": 73.21,
+    "neutro_3x": 32.9,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -0.12,
+   "swing_lula_esperado_neutro": 1.36
+  },
+  {
+   "uf": "MS",
+   "nome": "Mato Grosso do Sul",
+   "regiao": "CO",
+   "eleitores": 2024884,
+   "lula_calibrado": {
+    "media": 33.33,
+    "p10": 26.4,
+    "p50": 33.1,
+    "p90": 40.5,
+    "sd": 5.501
+   },
+   "flavio_calibrado": {
+    "media": 56.63,
+    "p10": 49.4,
+    "p50": 56.8,
+    "p90": 63.6,
+    "sd": 5.54
+   },
+   "margem_calibrado": {
+    "media": -23.3
+   },
+   "lula_neutro": {
+    "media": 34.92,
+    "p10": 28.0,
+    "p50": 34.8,
+    "p90": 42.0,
+    "sd": 5.462
+   },
+   "flavio_neutro": {
+    "media": 55.03,
+    "p10": 47.9,
+    "p50": 55.2,
+    "p90": 62.0,
+    "sd": 5.501
+   },
+   "margem_neutro": {
+    "media": -20.11
+   },
+   "pct_eleitorado": 1.276,
+   "lula_2022_1t": 39.04,
+   "bolsonaro_2022_1t": 52.7,
+   "margem_2022_1t": -13.66,
+   "sinal_lula": {
+    "indiferenca": 34.12,
+    "calibrado_3x": 13.36,
+    "neutro_3x": 54.89,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 55.83,
+    "calibrado_3x": 76.76,
+    "neutro_3x": 34.9,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -5.71,
+   "swing_lula_esperado_neutro": -4.12
+  },
+  {
+   "uf": "SE",
+   "nome": "Sergipe",
+   "regiao": "NE",
+   "eleitores": 1740124,
+   "lula_calibrado": {
+    "media": 59.66,
+    "p10": 52.2,
+    "p50": 59.9,
+    "p90": 66.8,
+    "sd": 5.696
+   },
+   "flavio_calibrado": {
+    "media": 34.79,
+    "p10": 27.6,
+    "p50": 34.6,
+    "p90": 42.2,
+    "sd": 5.696
+   },
+   "margem_calibrado": {
+    "media": 24.87
+   },
+   "lula_neutro": {
+    "media": 61.29,
+    "p10": 54.2,
+    "p50": 61.5,
+    "p90": 68.1,
+    "sd": 5.423
+   },
+   "flavio_neutro": {
+    "media": 33.15,
+    "p10": 26.3,
+    "p50": 32.9,
+    "p90": 40.3,
+    "sd": 5.462
+   },
+   "margem_neutro": {
+    "media": 28.14
+   },
+   "pct_eleitorado": 1.096,
+   "lula_2022_1t": 63.82,
+   "bolsonaro_2022_1t": 29.16,
+   "margem_2022_1t": 34.66,
+   "sinal_lula": {
+    "indiferenca": 60.47,
+    "calibrado_3x": 39.64,
+    "neutro_3x": 81.31,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 33.97,
+    "calibrado_3x": 54.82,
+    "neutro_3x": 13.12,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -4.16,
+   "swing_lula_esperado_neutro": -2.53
+  },
+  {
+   "uf": "RO",
+   "nome": "Rondônia",
+   "regiao": "N",
+   "eleitores": 1267105,
+   "lula_calibrado": {
+    "media": 23.97,
+    "p10": 17.7,
+    "p50": 23.6,
+    "p90": 30.7,
+    "sd": 5.072
+   },
+   "flavio_calibrado": {
+    "media": 67.7,
+    "p10": 60.9,
+    "p50": 68.1,
+    "p90": 74.1,
+    "sd": 5.15
+   },
+   "margem_calibrado": {
+    "media": -43.73
+   },
+   "lula_neutro": {
+    "media": 25.33,
+    "p10": 18.9,
+    "p50": 25.0,
+    "p90": 32.2,
+    "sd": 5.189
+   },
+   "flavio_neutro": {
+    "media": 66.33,
+    "p10": 59.5,
+    "p50": 66.7,
+    "p90": 72.8,
+    "sd": 5.189
+   },
+   "margem_neutro": {
+    "media": -41.0
+   },
+   "pct_eleitorado": 0.798,
+   "lula_2022_1t": 28.98,
+   "bolsonaro_2022_1t": 64.36,
+   "margem_2022_1t": -35.38,
+   "sinal_lula": {
+    "indiferenca": 24.65,
+    "calibrado_3x": 3.39,
+    "neutro_3x": 45.91,
+    "separacao": 0.27
+   },
+   "sinal_flavio": {
+    "indiferenca": 67.01,
+    "calibrado_3x": 88.44,
+    "neutro_3x": 45.59,
+    "separacao": 0.27
+   },
+   "swing_lula_esperado_calibrado": -5.01,
+   "swing_lula_esperado_neutro": -3.65
+  },
+  {
+   "uf": "TO",
+   "nome": "Tocantins",
+   "regiao": "N",
+   "eleitores": 1182307,
+   "lula_calibrado": {
+    "media": 42.48,
+    "p10": 35.2,
+    "p50": 42.4,
+    "p90": 49.8,
+    "sd": 5.696
+   },
+   "flavio_calibrado": {
+    "media": 47.05,
+    "p10": 39.7,
+    "p50": 47.1,
+    "p90": 54.4,
+    "sd": 5.735
+   },
+   "margem_calibrado": {
+    "media": -4.57
+   },
+   "lula_neutro": {
+    "media": 44.05,
+    "p10": 36.9,
+    "p50": 44.0,
+    "p90": 51.2,
+    "sd": 5.579
+   },
+   "flavio_neutro": {
+    "media": 45.48,
+    "p10": 38.3,
+    "p50": 45.5,
+    "p90": 52.7,
+    "sd": 5.618
+   },
+   "margem_neutro": {
+    "media": -1.43
+   },
+   "pct_eleitorado": 0.745,
+   "lula_2022_1t": 50.4,
+   "bolsonaro_2022_1t": 44.0,
+   "margem_2022_1t": 6.4,
+   "sinal_lula": {
+    "indiferenca": 43.26,
+    "calibrado_3x": 21.03,
+    "neutro_3x": 65.5,
+    "separacao": 0.28
+   },
+   "sinal_flavio": {
+    "indiferenca": 46.26,
+    "calibrado_3x": 68.81,
+    "neutro_3x": 23.72,
+    "separacao": 0.28
+   },
+   "swing_lula_esperado_calibrado": -7.92,
+   "swing_lula_esperado_neutro": -6.35
+  },
+  {
+   "uf": "ZZ",
+   "nome": "Exterior",
+   "regiao": "EXT",
+   "eleitores": 918876,
+   "lula_calibrado": {
+    "media": 43.91,
+    "p10": 28.3,
+    "p50": 43.8,
+    "p90": 59.7,
+    "sd": 12.251
+   },
+   "flavio_calibrado": {
+    "media": 48.28,
+    "p10": 32.4,
+    "p50": 48.4,
+    "p90": 63.9,
+    "sd": 12.29
+   },
+   "margem_calibrado": {
+    "media": -4.37
+   },
+   "lula_neutro": {
+    "media": 45.51,
+    "p10": 29.9,
+    "p50": 45.5,
+    "p90": 61.2,
+    "sd": 12.212
+   },
+   "flavio_neutro": {
+    "media": 46.67,
+    "p10": 31.0,
+    "p50": 46.7,
+    "p90": 62.3,
+    "sd": 12.212
+   },
+   "margem_neutro": {
+    "media": -1.16
+   },
+   "pct_eleitorado": 0.579,
+   "lula_2022_1t": 47.17,
+   "bolsonaro_2022_1t": 41.61,
+   "margem_2022_1t": 5.56,
+   "sinal_lula": {
+    "indiferenca": 44.71,
+    "calibrado_3x": -58.02,
+    "neutro_3x": 147.44,
+    "separacao": 0.13
+   },
+   "sinal_flavio": {
+    "indiferenca": 47.47,
+    "calibrado_3x": 149.89,
+    "neutro_3x": -54.94,
+    "separacao": 0.13
+   },
+   "swing_lula_esperado_calibrado": -3.26,
+   "swing_lula_esperado_neutro": -1.66
+  },
+  {
+   "uf": "AC",
+   "nome": "Acre",
+   "regiao": "N",
+   "eleitores": 614375,
+   "lula_calibrado": {
+    "media": 26.43,
+    "p10": 20.3,
+    "p50": 26.1,
+    "p90": 32.9,
+    "sd": 4.916
+   },
+   "flavio_calibrado": {
+    "media": 68.08,
+    "p10": 61.6,
+    "p50": 68.4,
+    "p90": 74.2,
+    "sd": 4.916
+   },
+   "margem_calibrado": {
+    "media": -41.65
+   },
+   "lula_neutro": {
+    "media": 27.87,
+    "p10": 21.7,
+    "p50": 27.6,
+    "p90": 34.4,
+    "sd": 4.955
+   },
+   "flavio_neutro": {
+    "media": 66.65,
+    "p10": 60.1,
+    "p50": 66.9,
+    "p90": 72.8,
+    "sd": 4.955
+   },
+   "margem_neutro": {
+    "media": -38.78
+   },
+   "pct_eleitorado": 0.387,
+   "lula_2022_1t": 29.26,
+   "bolsonaro_2022_1t": 62.5,
+   "margem_2022_1t": -33.24,
+   "sinal_lula": {
+    "indiferenca": 27.15,
+    "calibrado_3x": 8.57,
+    "neutro_3x": 45.73,
+    "separacao": 0.29
+   },
+   "sinal_flavio": {
+    "indiferenca": 67.36,
+    "calibrado_3x": 86.08,
+    "neutro_3x": 48.65,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -2.83,
+   "swing_lula_esperado_neutro": -1.39
+  },
+  {
+   "uf": "AP",
+   "nome": "Amapá",
+   "regiao": "N",
+   "eleitores": 577534,
+   "lula_calibrado": {
+    "media": 40.2,
+    "p10": 33.4,
+    "p50": 40.1,
+    "p90": 47.2,
+    "sd": 5.384
+   },
+   "flavio_calibrado": {
+    "media": 53.34,
+    "p10": 46.3,
+    "p50": 53.4,
+    "p90": 60.2,
+    "sd": 5.423
+   },
+   "margem_calibrado": {
+    "media": -13.14
+   },
+   "lula_neutro": {
+    "media": 41.78,
+    "p10": 35.0,
+    "p50": 41.7,
+    "p90": 48.6,
+    "sd": 5.306
+   },
+   "flavio_neutro": {
+    "media": 51.76,
+    "p10": 44.9,
+    "p50": 51.8,
+    "p90": 58.5,
+    "sd": 5.306
+   },
+   "margem_neutro": {
+    "media": -9.98
+   },
+   "pct_eleitorado": 0.364,
+   "lula_2022_1t": 45.67,
+   "bolsonaro_2022_1t": 43.41,
+   "margem_2022_1t": 2.26,
+   "sinal_lula": {
+    "indiferenca": 40.99,
+    "calibrado_3x": 21.13,
+    "neutro_3x": 60.85,
+    "separacao": 0.3
+   },
+   "sinal_flavio": {
+    "indiferenca": 52.55,
+    "calibrado_3x": 72.56,
+    "neutro_3x": 32.54,
+    "separacao": 0.29
+   },
+   "swing_lula_esperado_calibrado": -5.47,
+   "swing_lula_esperado_neutro": -3.89
+  },
+  {
+   "uf": "RR",
+   "nome": "Roraima",
+   "regiao": "N",
+   "eleitores": 401496,
+   "lula_calibrado": {
+    "media": 23.56,
+    "p10": 17.2,
+    "p50": 23.2,
+    "p90": 30.4,
+    "sd": 5.15
+   },
+   "flavio_calibrado": {
+    "media": 70.9,
+    "p10": 64.0,
+    "p50": 71.3,
+    "p90": 77.3,
+    "sd": 5.189
+   },
+   "margem_calibrado": {
+    "media": -47.34
+   },
+   "lula_neutro": {
+    "media": 24.74,
+    "p10": 18.2,
+    "p50": 24.3,
+    "p90": 31.7,
+    "sd": 5.267
+   },
+   "flavio_neutro": {
+    "media": 69.71,
+    "p10": 62.7,
+    "p50": 70.1,
+    "p90": 76.3,
+    "sd": 5.306
+   },
+   "margem_neutro": {
+    "media": -44.97
+   },
+   "pct_eleitorado": 0.253,
+   "lula_2022_1t": 23.05,
+   "bolsonaro_2022_1t": 69.57,
+   "margem_2022_1t": -46.52,
+   "sinal_lula": {
+    "indiferenca": 24.15,
+    "calibrado_3x": -1.11,
+    "neutro_3x": 49.41,
+    "separacao": 0.23
+   },
+   "sinal_flavio": {
+    "indiferenca": 70.31,
+    "calibrado_3x": 95.73,
+    "neutro_3x": 44.88,
+    "separacao": 0.23
+   },
+   "swing_lula_esperado_calibrado": 0.51,
+   "swing_lula_esperado_neutro": 1.69
+  }
+ ],
+ "bellwether_ufs": [
+  {
+   "uf": "MG",
+   "desvio_medio_abs_2p_pp": 2.03,
+   "desvio_medio_abs_2p_1t_pp": 1.81,
+   "desvio_medio_abs_validos_1t_pp": 1.18,
+   "lean_medio_2p_pp": 0.1,
+   "lean_2p_1t_2022_pp": -0.3,
+   "lean_2p_1t_por_ano": {
+    "2006": 1.71,
+    "2010": 1.45,
+    "2014": -3.12,
+    "2018": -2.48,
+    "2022": -0.3
+   },
+   "acertou_1o_lugar_1t": "5/5",
+   "acertou_vencedor_2t": "5/5"
+  },
+  {
+   "uf": "PA",
+   "desvio_medio_abs_2p_pp": 5.63,
+   "desvio_medio_abs_2p_1t_pp": 6.64,
+   "desvio_medio_abs_validos_1t_pp": 6.33,
+   "lean_medio_2p_pp": 4.32,
+   "lean_2p_1t_2022_pp": 3.6,
+   "lean_2p_1t_por_ano": {
+    "2006": 1.59,
+    "2010": -3.01,
+    "2014": 10.5,
+    "2018": 14.48,
+    "2022": 3.6
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "TO",
+   "desvio_medio_abs_2p_pp": 5.82,
+   "desvio_medio_abs_2p_1t_pp": 6.3,
+   "desvio_medio_abs_validos_1t_pp": 7.3,
+   "lean_medio_2p_pp": 5.82,
+   "lean_2p_1t_2022_pp": 0.53,
+   "lean_2p_1t_por_ano": {
+    "2006": 7.25,
+    "2010": 5.57,
+    "2014": 9.1,
+    "2018": 9.08,
+    "2022": 0.53
+   },
+   "acertou_1o_lugar_1t": "5/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "AP",
+   "desvio_medio_abs_2p_pp": 7.08,
+   "desvio_medio_abs_2p_1t_pp": 7.52,
+   "desvio_medio_abs_validos_1t_pp": 4.4,
+   "lean_medio_2p_pp": 6.31,
+   "lean_2p_1t_2022_pp": -1.59,
+   "lean_2p_1t_por_ano": {
+    "2006": 8.96,
+    "2010": 9.94,
+    "2014": 11.4,
+    "2018": 5.7,
+    "2022": -1.59
+   },
+   "acertou_1o_lugar_1t": "5/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "ES",
+   "desvio_medio_abs_2p_pp": 7.1,
+   "desvio_medio_abs_2p_1t_pp": 7.39,
+   "desvio_medio_abs_validos_1t_pp": 7.12,
+   "lean_medio_2p_pp": -5.17,
+   "lean_2p_1t_2022_pp": -9.24,
+   "lean_2p_1t_por_ano": {
+    "2006": 4.91,
+    "2010": -7.74,
+    "2014": -6.85,
+    "2018": -8.23,
+    "2022": -9.24
+   },
+   "acertou_1o_lugar_1t": "3/5",
+   "acertou_vencedor_2t": "2/5"
+  },
+  {
+   "uf": "AL",
+   "desvio_medio_abs_2p_pp": 7.82,
+   "desvio_medio_abs_2p_1t_pp": 8.37,
+   "desvio_medio_abs_validos_1t_pp": 7.57,
+   "lean_medio_2p_pp": 7.2,
+   "lean_2p_1t_2022_pp": 8.19,
+   "lean_2p_1t_por_ano": {
+    "2006": 1.37,
+    "2010": -0.71,
+    "2014": 13.94,
+    "2018": 17.66,
+    "2022": 8.19
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "RJ",
+   "desvio_medio_abs_2p_pp": 8.22,
+   "desvio_medio_abs_2p_1t_pp": 9.08,
+   "desvio_medio_abs_validos_1t_pp": 6.41,
+   "lean_medio_2p_pp": -1.36,
+   "lean_2p_1t_2022_pp": -8.53,
+   "lean_2p_1t_por_ano": {
+    "2006": 9.15,
+    "2010": 7.03,
+    "2014": 1.56,
+    "2018": -19.15,
+    "2022": -8.53
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "RS",
+   "desvio_medio_abs_2p_pp": 8.51,
+   "desvio_medio_abs_2p_1t_pp": 8.28,
+   "desvio_medio_abs_validos_1t_pp": 5.96,
+   "lean_medio_2p_pp": -8.51,
+   "lean_2p_1t_2022_pp": -6.48,
+   "lean_2p_1t_por_ano": {
+    "2006": -16.63,
+    "2010": -5.36,
+    "2014": -4.31,
+    "2018": -8.64,
+    "2022": -6.48
+   },
+   "acertou_1o_lugar_1t": "3/5",
+   "acertou_vencedor_2t": "1/5"
+  },
+  {
+   "uf": "GO",
+   "desvio_medio_abs_2p_pp": 9.17,
+   "desvio_medio_abs_2p_1t_pp": 10.02,
+   "desvio_medio_abs_validos_1t_pp": 7.79,
+   "lean_medio_2p_pp": -9.17,
+   "lean_2p_1t_2022_pp": -9.75,
+   "lean_2p_1t_por_ano": {
+    "2006": -10.04,
+    "2010": -7.3,
+    "2014": -11.78,
+    "2018": -11.24,
+    "2022": -9.75
+   },
+   "acertou_1o_lugar_1t": "2/5",
+   "acertou_vencedor_2t": "2/5"
+  },
+  {
+   "uf": "DF",
+   "desvio_medio_abs_2p_pp": 10.54,
+   "desvio_medio_abs_2p_1t_pp": 12.03,
+   "desvio_medio_abs_validos_1t_pp": 14.85,
+   "lean_medio_2p_pp": -10.54,
+   "lean_2p_1t_2022_pp": -11.22,
+   "lean_2p_1t_por_ano": {
+    "2006": -8.21,
+    "2010": -2.35,
+    "2014": -16.41,
+    "2018": -21.97,
+    "2022": -11.22
+   },
+   "acertou_1o_lugar_1t": "2/5",
+   "acertou_vencedor_2t": "3/5"
+  },
+  {
+   "uf": "MS",
+   "desvio_medio_abs_2p_pp": 10.76,
+   "desvio_medio_abs_2p_1t_pp": 10.41,
+   "desvio_medio_abs_validos_1t_pp": 7.71,
+   "lean_medio_2p_pp": -10.76,
+   "lean_2p_1t_2022_pp": -10.3,
+   "lean_2p_1t_por_ano": {
+    "2006": -14.84,
+    "2010": -10.5,
+    "2014": -7.78,
+    "2018": -8.64,
+    "2022": -10.3
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "1/5"
+  },
+  {
+   "uf": "MT",
+   "desvio_medio_abs_2p_pp": 10.84,
+   "desvio_medio_abs_2p_1t_pp": 11.31,
+   "desvio_medio_abs_validos_1t_pp": 6.91,
+   "lean_medio_2p_pp": -10.84,
+   "lean_2p_1t_2022_pp": -16.36,
+   "lean_2p_1t_por_ano": {
+    "2006": -12.51,
+    "2010": -9.69,
+    "2014": -8.31,
+    "2018": -9.68,
+    "2022": -16.36
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "1/5"
+  },
+  {
+   "uf": "RO",
+   "desvio_medio_abs_2p_pp": 11.92,
+   "desvio_medio_abs_2p_1t_pp": 11.97,
+   "desvio_medio_abs_validos_1t_pp": 7.64,
+   "lean_medio_2p_pp": -11.92,
+   "lean_2p_1t_2022_pp": -21.81,
+   "lean_2p_1t_por_ano": {
+    "2006": -4.94,
+    "2010": -11.69,
+    "2014": -7.21,
+    "2018": -14.23,
+    "2022": -21.81
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "2/5"
+  },
+  {
+   "uf": "SE",
+   "desvio_medio_abs_2p_pp": 12.02,
+   "desvio_medio_abs_2p_1t_pp": 12.54,
+   "desvio_medio_abs_validos_1t_pp": 10.31,
+   "lean_medio_2p_pp": 10.26,
+   "lean_2p_1t_2022_pp": 15.78,
+   "lean_2p_1t_por_ano": {
+    "2006": -2.24,
+    "2010": -3.38,
+    "2014": 15.4,
+    "2018": 25.92,
+    "2022": 15.78
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "SP",
+   "desvio_medio_abs_2p_pp": 12.32,
+   "desvio_medio_abs_2p_1t_pp": 13.0,
+   "desvio_medio_abs_validos_1t_pp": 11.53,
+   "lean_medio_2p_pp": -12.32,
+   "lean_2p_1t_2022_pp": -6.71,
+   "lean_2p_1t_por_ano": {
+    "2006": -13.44,
+    "2010": -11.13,
+    "2014": -18.51,
+    "2018": -15.23,
+    "2022": -6.71
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "1/5"
+  },
+  {
+   "uf": "PR",
+   "desvio_medio_abs_2p_pp": 12.89,
+   "desvio_medio_abs_2p_1t_pp": 13.32,
+   "desvio_medio_abs_validos_1t_pp": 9.95,
+   "lean_medio_2p_pp": -12.89,
+   "lean_2p_1t_2022_pp": -13.41,
+   "lean_2p_1t_por_ano": {
+    "2006": -12.18,
+    "2010": -12.0,
+    "2014": -15.85,
+    "2018": -13.15,
+    "2022": -13.41
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "1/5"
+  },
+  {
+   "uf": "RN",
+   "desvio_medio_abs_2p_pp": 13.37,
+   "desvio_medio_abs_2p_1t_pp": 14.06,
+   "desvio_medio_abs_validos_1t_pp": 12.26,
+   "lean_medio_2p_pp": 13.37,
+   "lean_2p_1t_2022_pp": 14.14,
+   "lean_2p_1t_por_ano": {
+    "2006": 11.72,
+    "2010": 5.8,
+    "2014": 19.81,
+    "2018": 18.81,
+    "2022": 14.14
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "PB",
+   "desvio_medio_abs_2p_pp": 14.15,
+   "desvio_medio_abs_2p_1t_pp": 14.67,
+   "desvio_medio_abs_validos_1t_pp": 13.79,
+   "lean_medio_2p_pp": 14.15,
+   "lean_2p_1t_2022_pp": 15.57,
+   "lean_2p_1t_por_ano": {
+    "2006": 16.22,
+    "2010": 6.19,
+    "2014": 15.03,
+    "2018": 20.35,
+    "2022": 15.57
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "AM",
+   "desvio_medio_abs_2p_pp": 15.92,
+   "desvio_medio_abs_2p_1t_pp": 18.05,
+   "desvio_medio_abs_validos_1t_pp": 14.52,
+   "lean_medio_2p_pp": 15.92,
+   "lean_2p_1t_2022_pp": 0.82,
+   "lean_2p_1t_por_ano": {
+    "2006": 32.38,
+    "2010": 29.48,
+    "2014": 18.37,
+    "2018": 9.23,
+    "2022": 0.82
+   },
+   "acertou_1o_lugar_1t": "5/5",
+   "acertou_vencedor_2t": "5/5"
+  },
+  {
+   "uf": "AC",
+   "desvio_medio_abs_2p_pp": 17.23,
+   "desvio_medio_abs_2p_1t_pp": 15.9,
+   "desvio_medio_abs_validos_1t_pp": 14.5,
+   "lean_medio_2p_pp": -17.23,
+   "lean_2p_1t_2022_pp": -20.97,
+   "lean_2p_1t_por_ano": {
+    "2006": -8.72,
+    "2010": -27.53,
+    "2014": -6.34,
+    "2018": -15.93,
+    "2022": -20.97
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "2/5"
+  },
+  {
+   "uf": "SC",
+   "desvio_medio_abs_2p_pp": 17.47,
+   "desvio_medio_abs_2p_1t_pp": 17.9,
+   "desvio_medio_abs_validos_1t_pp": 13.5,
+   "lean_medio_2p_pp": -17.47,
+   "lean_2p_1t_2022_pp": -20.66,
+   "lean_2p_1t_por_ano": {
+    "2006": -16.88,
+    "2010": -13.16,
+    "2014": -18.6,
+    "2018": -20.18,
+    "2022": -20.66
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "1/5"
+  },
+  {
+   "uf": "RR",
+   "desvio_medio_abs_2p_pp": 20.22,
+   "desvio_medio_abs_2p_1t_pp": 20.66,
+   "desvio_medio_abs_validos_1t_pp": 17.18,
+   "lean_medio_2p_pp": -20.22,
+   "lean_2p_1t_2022_pp": -27.97,
+   "lean_2p_1t_por_ano": {
+    "2006": -23.41,
+    "2010": -22.98,
+    "2014": -12.16,
+    "2018": -16.79,
+    "2022": -27.97
+   },
+   "acertou_1o_lugar_1t": "1/5",
+   "acertou_vencedor_2t": "1/5"
+  },
+  {
+   "uf": "PE",
+   "desvio_medio_abs_2p_pp": 20.55,
+   "desvio_medio_abs_2p_1t_pp": 22.4,
+   "desvio_medio_abs_validos_1t_pp": 15.24,
+   "lean_medio_2p_pp": 20.55,
+   "lean_2p_1t_2022_pp": 15.72,
+   "lean_2p_1t_por_ano": {
+    "2006": 21.76,
+    "2010": 19.06,
+    "2014": 32.82,
+    "2018": 22.64,
+    "2022": 15.72
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "BA",
+   "desvio_medio_abs_2p_pp": 20.97,
+   "desvio_medio_abs_2p_1t_pp": 22.03,
+   "desvio_medio_abs_validos_1t_pp": 21.18,
+   "lean_medio_2p_pp": 20.97,
+   "lean_2p_1t_2022_pp": 21.29,
+   "lean_2p_1t_por_ano": {
+    "2006": 18.05,
+    "2010": 15.92,
+    "2014": 21.71,
+    "2018": 33.15,
+    "2022": 21.29
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "CE",
+   "desvio_medio_abs_2p_pp": 22.39,
+   "desvio_medio_abs_2p_1t_pp": 22.12,
+   "desvio_medio_abs_validos_1t_pp": 18.0,
+   "lean_medio_2p_pp": 22.39,
+   "lean_2p_1t_2022_pp": 19.34,
+   "lean_2p_1t_por_ano": {
+    "2006": 21.9,
+    "2010": 21.22,
+    "2014": 26.65,
+    "2018": 21.49,
+    "2022": 19.34
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "PI",
+   "desvio_medio_abs_2p_pp": 24.17,
+   "desvio_medio_abs_2p_1t_pp": 25.3,
+   "desvio_medio_abs_validos_1t_pp": 25.56,
+   "lean_medio_2p_pp": 24.17,
+   "lean_2p_1t_2022_pp": 26.01,
+   "lean_2p_1t_por_ano": {
+    "2006": 16.71,
+    "2010": 17.24,
+    "2014": 28.25,
+    "2018": 38.28,
+    "2022": 26.01
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  },
+  {
+   "uf": "MA",
+   "desvio_medio_abs_2p_pp": 25.5,
+   "desvio_medio_abs_2p_1t_pp": 26.48,
+   "desvio_medio_abs_validos_1t_pp": 26.2,
+   "lean_medio_2p_pp": 25.5,
+   "lean_2p_1t_2022_pp": 19.72,
+   "lean_2p_1t_por_ano": {
+    "2006": 26.19,
+    "2010": 23.42,
+    "2014": 30.33,
+    "2018": 32.74,
+    "2022": 19.72
+   },
+   "acertou_1o_lugar_1t": "4/5",
+   "acertou_vencedor_2t": "4/5"
+  }
+ ],
+ "bellwether_municipios": [
+  {
+   "cd_municipio_tse": 48658,
+   "uf": "MG",
+   "municipio": "MONTES CLAROS",
+   "validos_2022": 222382,
+   "desvio_medio_abs_2p_pp": 1.75,
+   "lean_2018": -1.59,
+   "lean_2022": -1.91
+  },
+  {
+   "cd_municipio_tse": 4154,
+   "uf": "PA",
+   "municipio": "ANANINDEUA",
+   "validos_2022": 278875,
+   "desvio_medio_abs_2p_pp": 2.27,
+   "lean_2018": -2.66,
+   "lean_2022": -1.88
+  },
+  {
+   "cd_municipio_tse": 4472,
+   "uf": "PA",
+   "municipio": "CASTANHAL",
+   "validos_2022": 112472,
+   "desvio_medio_abs_2p_pp": 2.45,
+   "lean_2018": -0.81,
+   "lean_2022": -4.08
+  },
+  {
+   "cd_municipio_tse": 75833,
+   "uf": "PR",
+   "municipio": "GUARAPUAVA",
+   "validos_2022": 103527,
+   "desvio_medio_abs_2p_pp": 2.64,
+   "lean_2018": -1.63,
+   "lean_2022": -3.66
+  },
+  {
+   "cd_municipio_tse": 50911,
+   "uf": "MG",
+   "municipio": "RIBEIRÃO DAS NEVES",
+   "validos_2022": 165417,
+   "desvio_medio_abs_2p_pp": 2.75,
+   "lean_2018": -4.8,
+   "lean_2022": 0.71
+  },
+  {
+   "cd_municipio_tse": 65633,
+   "uf": "SP",
+   "municipio": "ITAQUAQUECETUBA",
+   "validos_2022": 185605,
+   "desvio_medio_abs_2p_pp": 2.86,
+   "lean_2018": -2.3,
+   "lean_2022": 3.42
+  },
+  {
+   "cd_municipio_tse": 4278,
+   "uf": "PA",
+   "municipio": "BELÉM",
+   "validos_2022": 857507,
+   "desvio_medio_abs_2p_pp": 3.13,
+   "lean_2018": -4.82,
+   "lean_2022": -1.44
+  },
+  {
+   "cd_municipio_tse": 17612,
+   "uf": "RN",
+   "municipio": "NATAL",
+   "validos_2022": 449729,
+   "desvio_medio_abs_2p_pp": 3.25,
+   "lean_2018": -4.94,
+   "lean_2022": 1.56
+  },
+  {
+   "cd_municipio_tse": 8036,
+   "uf": "MA",
+   "municipio": "IMPERATRIZ",
+   "validos_2022": 143659,
+   "desvio_medio_abs_2p_pp": 3.61,
+   "lean_2018": -1.11,
+   "lean_2022": -6.11
+  },
+  {
+   "cd_municipio_tse": 25313,
+   "uf": "PE",
+   "municipio": "RECIFE",
+   "validos_2022": 996696,
+   "desvio_medio_abs_2p_pp": 3.63,
+   "lean_2018": 2.18,
+   "lean_2022": 5.09
+  },
+  {
+   "cd_municipio_tse": 65510,
+   "uf": "SP",
+   "municipio": "ITAPEVI",
+   "validos_2022": 122712,
+   "desvio_medio_abs_2p_pp": 3.67,
+   "lean_2018": 0.67,
+   "lean_2022": 6.68
+  },
+  {
+   "cd_municipio_tse": 20516,
+   "uf": "PB",
+   "municipio": "JOÃO PESSOA",
+   "validos_2022": 458518,
+   "desvio_medio_abs_2p_pp": 3.7,
+   "lean_2018": -6.12,
+   "lean_2022": -1.28
+  },
+  {
+   "cd_municipio_tse": 64157,
+   "uf": "SP",
+   "municipio": "FERRAZ DE VASCONCELOS",
+   "validos_2022": 100058,
+   "desvio_medio_abs_2p_pp": 3.84,
+   "lean_2018": -2.22,
+   "lean_2022": 5.47
+  },
+  {
+   "cd_municipio_tse": 4839,
+   "uf": "PA",
+   "municipio": "MARABÁ",
+   "validos_2022": 139478,
+   "desvio_medio_abs_2p_pp": 3.88,
+   "lean_2018": 2.64,
+   "lean_2022": -5.12
+  },
+  {
+   "cd_municipio_tse": 63134,
+   "uf": "SP",
+   "municipio": "CARAPICUÍBA",
+   "validos_2022": 221422,
+   "desvio_medio_abs_2p_pp": 4.05,
+   "lean_2018": -4.41,
+   "lean_2022": 3.7
+  }
+ ]
+}
