@@ -1,6 +1,6 @@
 # Avaliação das previsões do 1º turno de 2026
 
-Gerado por `resultado_1t.py` em 2026-10-04 22:47 UTC. Seções totalizadas no Brasil: 64,81% (TSE, 04/10/2026 19:14:08). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
+Gerado por `resultado_1t.py` em 2026-10-04 22:54 UTC. Seções totalizadas no Brasil: 64,81% (TSE, 04/10/2026 19:14:08). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
 
 ## Resultado (votos válidos, %)
 
@@ -17,7 +17,7 @@ Erro = previsto − real (p.p. de votos válidos; positivo = previsão acima do 
 | Fonte | Lula prev. | erro | Flavio prev. | erro | Erro na margem | MAE 2 primeiros | PIT Lula | PIT Flavio | Em 80% (Lula/Flavio) | CRPS Lula/Flavio |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Modelo principal: neutro | 46,1 | 1,1 | 45,2 | -2,0 | 3,1 | 1,5 | 0,36 | 0,75 | sim/sim | 0,75/0,90 |
-| Modelo principal: calibrado | 44,4 | -0,5 | 46,8 | -0,3 | -0,2 | 0,4 | 0,56 | 0,54 | sim/sim | 0,72/0,70 |
+| Modelo principal: calibrado | 44,4 | -0,5 | 46,8 | -0,3 | -0,2 | 0,4 | 0,57 | 0,54 | sim/sim | 0,72/0,70 |
 | Modelo principal: viés pleno | 43,3 | -1,6 | 48,1 | 0,9 | -2,6 | 1,3 | 0,68 | 0,40 | sim/sim | 0,92/0,83 |
 | Modelo alternativo: neutro | 46,6 | 1,6 | 45,3 | -1,9 | 3,5 | 1,8 | 0,33 | 0,66 | sim/sim | 1,21/1,22 |
 | Modelo alternativo: historico | 43,8 | -1,2 | 48,1 | 0,9 | -2,1 | 1,0 | 0,60 | 0,40 | sim/sim | 1,09/1,14 |
