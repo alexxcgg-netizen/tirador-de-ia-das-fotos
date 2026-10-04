@@ -179,8 +179,53 @@ comparecimento, abstenção, brancos, nulos, válidos e votos por candidato (por
 Fallbacks: última leitura gravada em `data/tse_1t_2026/` (fora do git) e CSV manual
 (`uf,pst,eleitorado,comparecimento,abstencao,validos,brancos,nulos,lula,flavio,caiado,cury,zema,renan,outros`),
 preenchido de qualquer fonte de apuração (G1, UOL etc.; não há JSON público estável desses portais que desse para
-testar antes da eleição). UF parcial: fatias das seções apuradas e válidos projetados por `válidos / pst`;
-UF sem nenhuma seção: previsão de véspera do modelo calibrado. Antes da 1ª parcial, grava status "aguardando".
+testar antes da eleição). UF sem nenhuma seção: previsão de véspera do modelo calibrado. Antes da 1ª parcial,
+grava status "aguardando".
+
+**UF com apuração parcial: projeção por município** (antes: fatias das seções apuradas e válidos por
+`válidos / pst`, o que supõe que o resto da UF vota como o que já foi apurado; em 2022 Bolsonaro liderou até
+~67% porque o Centro-Sul totalizou antes). O TSE publica, por UF, a abrangência
+`.../dados/{uf}/{uf}-e006257-ab.json` (eleitorado `te` e eleitorado das seções totalizadas `est` de cada
+município; ~27 arquivos) e, por município, `.../dados/{uf}/{uf}{cdmun:05d}-c0001-e006257-u.json` (mesmo
+formato "u" da UF, com votos por candidato). Códigos de município do TSE de 2026 = os de 2022 (5.751 de 5.757
+casam; só um município novo no MT e 6 cidades do exterior não têm referência). Para cada município:
+- votos válidos restantes = (`te` − `est`) × taxa de válidos por eleitor de 2022 no município × variação da
+  taxa observada nos municípios já apurados (logaritmo, encolhida para a nacional);
+- fatias do restante = as já apuradas no município (se parcial); senão a fatia do PT em 2022 no município
+  deslocada (logito) pelo swing da UF, e a de Flávio entre os não-PT = a de Bolsonaro em 2022 deslocada do mesmo
+  jeito; os menores dividem o resto como na UF apurada. Swing da UF = média dos municípios apurados ponderada
+  por √válidos, encolhida para o swing nacional (k = 3 municípios efetivos), com inclinações no porte (log do
+  eleitorado) e na fatia do PT em 2022 estimadas dentro das UFs com o país todo (ridge 0,5) e sem extrapolar
+  para fora da faixa dos apurados;
+- incerteza (dp da fatia do PT na UF, usada no lugar do ruído antigo na simulação do 2º turno): ruído municipal
+  + erro comum do swing (piso 0,15 em logito) + extrapolação (municípios fora da faixa dos apurados); vai a zero
+  com a apuração.
+Só municípios com seções totalizadas e que mudaram desde a última leitura são baixados (24 em paralelo,
+~35 arquivos/s; cache em `data/tse_1t_2026/municipios/`; prazo de 150 s). Falha em qualquer arquivo de uma UF,
+ou soma dos municípios incoerente com o arquivo da UF (> 25%), põe a UF de volta no método antigo;
+`--sem-municipios` desliga tudo. `resultados_2t.json` registra o método de cada UF, o swing e o nacional pelo
+método antigo (`meta.projecao_parcial`). Referência: `data/municipios_2022.csv` (aptos, comparecimento,
+válidos, votos de Lula e Bolsonaro por município, agregados de `votacao_candidato_munzona_2022` e
+`detalhe_votacao_munzona_2022` do TSE; somas batem com o total nacional).
+
+**Validação (replay de 2022, `--replay-2022`, `data/replay_projecao_2022.json`):** reapuração do 1º turno de
+2022 com a zona eleitoral como unidade (`data/replay_munzona_2022.csv`), referência 2018 por município
+(`data/municipios_2018.csv`, Haddad/Bolsonaro — um swing bem menos uniforme que o esperado entre 2022 e 2026),
+cada UF num ritmo próprio e quatro ordens de totalização (5 sementes cada). Erro absoluto médio da fatia
+nacional de Lula (p.p. de válidos), antigo → novo:
+
+| Ordem | 10% | 25% | 50% | 75% |
+|---|---|---|---|---|
+| Bolsonaro na frente primeiro (como em 2022) | 8,9 → 1,4 | 7,0 → 1,4 | 4,7 → 1,1 | 2,5 → 0,5 |
+| municípios grandes primeiro | 2,4 → 2,2 | 2,4 → 0,8 | 2,0 → 0,6 | 1,0 → 0,3 |
+| municípios pequenos primeiro | 4,0 → 3,0 | 2,9 → 2,3 | 2,0 → 1,3 | 0,9 → 0,4 |
+| aleatória | 0,3 → 0,1 | 0,2 → 0,1 | 0,1 → 0,1 | 0,1 → 0,1 |
+
+Erro médio por UF (fatia de Lula, média das 4 ordens): 6,5 → 2,9 (10%), 5,4 → 2,1 (25%), 3,7 → 1,3 (50%),
+1,9 → 0,5 (75%); cobertura do intervalo de 90% por UF 0,82–0,98. Ponto fraco: na **margem** Lula − 2º
+colocado, com 10–25% apurado em ordem por porte, o método novo erra tanto quanto ou mais que o antigo (grandes
+primeiro, 10%: 2,2 → 4,8 p.p.; pequenos primeiro, 10%: 6,0 → 6,6) — só capitais apuradas não dizem como o
+interior variou; o intervalo se alarga nesse caso.
 
 **b) Avaliação** (`data/avaliacao_1t.json`, `AVALIACAO_1T.md`): 3 visões do modelo, modelo alternativo, média das
 pesquisas, última pesquisa nacional de cada instituto (últimos 7 dias, convertida para válidos) e mercados;
@@ -188,7 +233,8 @@ erros nacionais e por UF, PIT, cobertura dos intervalos, CRPS aproximado pelos q
 eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesquisas pelo erro na margem.
 
 **c) 2º turno condicionado ao 1º turno real** (`web/resultados_2t.json`, seção "2º turno" do painel; 500 mil simulações):
-- fatias reais por UF (UFs parciais com ruído ∝ √(1 − pst)); se alguém passa de 50% com a apuração concluída, não há simulação;
+- fatias reais por UF (UFs parciais projetadas por município, com o dp da projeção; no método antigo, ruído
+  ∝ √(1 − pst)); se alguém passa de 50% com a apuração concluída, não há simulação;
 - transferência dos eliminados: Quaest 2–3/10 (Caiado 19/43/38, Renan 11/60/29 para Lula/Flávio/fora) e 24–27/9
   (Cury 28/35/37, Zema 10/80/10), Dirichlet α = 30; par diferente de Lula x Flávio: linha genérica e erro × 1,5;
 - comparecimento: abstenção e brancos/nulos reais do 1º turno + variação média 1º→2º turno da UF em 2014/2018/2022;
@@ -272,9 +318,10 @@ aplicado por inteiro (medido nos dados do TSE), e só o restante do erro histór
 - AtlasIntel final (27/9–2/10) incluída na madrugada de 4/10. Não localizadas com fonte verificável até
   4/10 ~02h UTC: consolidação nacional da Veritá 26/9–2/10 (BR-04522/2026; só relatórios estaduais citados no
   site do instituto) e Gerp 1–3/10 (BR-08168/2026).
-- **Pipeline da noite da apuração** (`resultado_1t.py`): a projeção de UFs com apuração parcial supõe que as
-  seções restantes da UF votem como as já apuradas (a ordem de totalização dentro da UF não é aleatória:
-  capitais costumam entrar antes); o erro do 2º turno foi calibrado com 3 eleições (prior de dp 3 p.p.);
+- **Pipeline da noite da apuração** (`resultado_1t.py`): a projeção de UFs com apuração parcial é por
+  município (swing sobre 2022), validada só com um replay de 2022 (referência 2018) em ordens simuladas; os
+  arquivos por município do TSE de 2026 foram testados só antes da apuração (com zeros); dentro de um município
+  parcial supõe-se que o resto vote como o apurado; o erro do 2º turno foi calibrado com 3 eleições (prior de dp 3 p.p.);
   a matriz de transferência vem de subamostras pequenas da Quaest; o endpoint do TSE de 2026 foi testado só antes
   da apuração (com zeros) e o formato de 2022 só com arquivos reconstruídos (os JSON originais saíram do ar).
 - O 2º turno é projetado em 3/10; fatos entre os turnos não estão no modelo.

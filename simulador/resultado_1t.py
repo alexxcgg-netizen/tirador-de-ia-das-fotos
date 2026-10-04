@@ -14,7 +14,11 @@ a) **Resultado oficial (TSE).** Descobre o código da eleição no arquivo de
    "dados-simplificados" (``...-r.json``, usado em 2022). Fallbacks, nesta ordem:
    cópia local da última leitura bem-sucedida (``data/tse_1t_2026/``) e um CSV
    manual (``data/resultado_1t_manual.csv``), preenchido a partir de qualquer fonte
-   que publique a apuração (G1, UOL etc.). UFs com apuração parcial são projetadas.
+   que publique a apuração (G1, UOL etc.). UFs com apuração parcial são projetadas **por município**
+   (``{uf}-e006257-ab.json`` + ``{uf}{cdmun}-c0001-e006257-u.json``; votos restantes = eleitorado não
+   totalizado x taxa de válidos de 2022; fatias = apuradas no município ou 2022 deslocado pelo swing observado;
+   ver ``projetar_uf_municipios`` e ``--replay-2022``); se os arquivos por município falharem, a UF volta ao
+   método antigo (fatias apuradas, válidos / pst).
 b) **Avaliação** das previsões da véspera (3 visões do modelo, modelo alternativo,
    última pesquisa de cada instituto, média das pesquisas, mercados) contra o
    resultado: erros nacional e por UF, cobertura dos intervalos, Brier e log score
@@ -34,6 +38,8 @@ Uso:
     python simulador/resultado_1t.py --rodar-tudo --n 50000 # mais rápido
     python simulador/resultado_1t.py --ensaio-2022          # ensaio completo com 2022
     python simulador/resultado_1t.py --gerar-fixture-2022   # (re)gera os JSON de teste de 2022
+    python simulador/resultado_1t.py --replay-2022          # valida a projeção da apuração parcial (2022)
+    python simulador/resultado_1t.py --rodar-tudo --sem-municipios  # só o método antigo de projeção
 """
 from __future__ import annotations
 
@@ -283,11 +289,17 @@ def buscar_resultados(ano: int = 2026, fonte: str = "auto", diretorio: Path | No
 
 
 # ================================================================ consolidação (com projeção da apuração parcial)
-def consolidar(res: dict, ano: int, ufs_ref: pd.DataFrame, previsao_uf: dict | None = None) -> dict:
+def consolidar(res: dict, ano: int, ufs_ref: pd.DataFrame, previsao_uf: dict | None = None,
+               proj_mun: dict | None = None) -> dict:
     """Fatias de votos válidos por UF e nacionais; UFs parciais projetadas.
 
     ufs_ref: DataFrame com uf, eleitores, abst1, bn1 (referência para UFs sem apuração).
-    previsao_uf: {uf: {cand: fatia}} da previsão de véspera (UFs sem nenhuma seção totalizada)."""
+    previsao_uf: {uf: {cand: fatia}} da previsão de véspera (UFs sem nenhuma seção totalizada).
+    proj_mun: saída de projetar_municipios / projecao_municipal_2026; UFs parciais presentes nela usam a projeção
+    por município (fatias e válidos); as demais, o método antigo (fatias apuradas, válidos / pst)."""
+    pm = (proj_mun or {}).get("ufs", {})
+    metodo = []
+    sd_mun = np.full(len(UFS), np.nan)
     cands = CANDS_ANO[ano]
     K = len(cands)
     U = len(UFS)
@@ -311,6 +323,13 @@ def consolidar(res: dict, ano: int, ufs_ref: pd.DataFrame, previsao_uf: dict | N
             bn[i] = 100 * (r["brancos"] + r["nulos"]) / comp if np.isfinite(comp) and comp > 0 else ref.loc[uf, "bn1"]
             V1[i] = r["validos"] / (pst[i] / 100)
             fonte_uf.append("apurado" if pst[i] >= 99.995 else "parcial")
+            if pst[i] < 99.995 and uf in pm and np.all(np.isfinite(pm[uf]["S"])) and pm[uf]["V"] > 0:
+                S[i] = np.asarray(pm[uf]["S"], float) / np.sum(pm[uf]["S"])
+                V1[i] = float(pm[uf]["V"])
+                sd_mun[i] = float(pm[uf]["sd_logito"])
+                metodo.append("municipios")
+            else:
+                metodo.append("apurado" if pst[i] >= 99.995 else "validos/pst")
         else:
             prev = (previsao_uf or {}).get(uf)
             if prev is None:
@@ -320,12 +339,13 @@ def consolidar(res: dict, ano: int, ufs_ref: pd.DataFrame, previsao_uf: dict | N
             abst[i] = float(ref.loc[uf, "abst1"]); bn[i] = float(ref.loc[uf, "bn1"])
             V1[i] = ele[i] * (1 - abst[i] / 100) * (1 - bn[i] / 100)
             fonte_uf.append("previsão")
+            metodo.append("previsão")
     nat = (V1[:, None] * S).sum(0) / V1.sum()
     br = res.get("BR")
     return {"cands": cands, "S": S, "V1": V1, "pst": pst, "eleitores": ele, "abst1": abst, "bn1": bn,
             "fonte_uf": fonte_uf, "nacional": nat, "pst_nacional": float(br["pst"]) if br else float("nan"),
             "nacional_tse": ({c: br["votos"].get(c, 0.0) / max(br["validos"], 1) for c in cands} if br else None),
-            "atualizado": br["atualizado"] if br else "", "br": br}
+            "atualizado": br["atualizado"] if br else "", "br": br, "metodo_uf": metodo, "sd_mun": sd_mun}
 
 
 def status_apuracao(c: dict) -> str:
@@ -333,6 +353,468 @@ def status_apuracao(c: dict) -> str:
     if not np.isfinite(p) or p <= 0:
         return "aguardando"
     return "final" if p >= 99.995 else "parcial"
+
+
+# ================================================================ projeção por município (apuração parcial)
+# Em vez de supor que as seções restantes de uma UF votam como as já apuradas (válidos / pst), projeta cada
+# município: votos válidos restantes = eleitorado ainda não totalizado x taxa de válidos esperada (2022, ajustada
+# pela variação de comparecimento observada na UF) e fatias = as apuradas no município (se parcial) ou as de 2022
+# no município deslocadas pelo swing da UF medido nos municípios já apurados. Fonte ao vivo: arquivo de
+# abrangência por UF ({uf}-e006257-ab.json: seções/eleitorado totalizados por município) + arquivo de cada
+# município ({uf}{cdmun}-c0001-e006257-u.json, mesmo formato "u" da UF). Qualquer falha -> método antigo na UF.
+MUN_2022 = DADOS / "municipios_2022.csv"
+PARAM_MUN = {
+    "k_shrink_uf": {"valor": 3.0, "origem": "replay_2022",
+                    "nota": "Swing da UF encolhido para o swing nacional com peso de k municípios efetivos."},
+    "peso_municipio": {"valor": "sqrt_validos", "origem": "replay_2022",
+                       "nota": "Swing médio da UF ponderado por sqrt(válidos apurados): a capital não domina a média."},
+    "ridge_inclinacoes": {"valor": 0.5, "origem": "replay_2022",
+                          "nota": "Swing depende do porte e da inclinação política do município (estimado dentro das "
+                                  "UFs, com todo o país); ridge puxa para swing uniforme quando há poucos apurados."},
+    "min_validos_swing": {"valor": 30, "origem": "inferencia", "nota": "Municípios com menos válidos apurados ficam fora do swing."},
+    "dp_swing_piso_logito": {"valor": 0.15, "origem": "replay_2022",
+                             "nota": "Erro sistemático do swing (municípios apurados não são comparáveis aos restantes)."},
+    "dp_mun_piso_logito": {"valor": 0.20, "origem": "replay_2022", "nota": "Piso do ruído municipal em torno do swing."},
+    "dp_extrapolacao_logito": {"valor": 0.20, "origem": "replay_2022",
+                               "nota": "Erro comum extra por unidade de distância (logito da fatia do PT, log do "
+                                       "eleitorado) entre um município não apurado e a faixa dos já apurados: "
+                                       "quando só as capitais foram apuradas, o interior é extrapolação."},
+    "tolerancia_soma_uf": {"valor": 0.25, "origem": "inferencia",
+                           "nota": "Soma dos municípios x votos do arquivo da UF: diferença relativa acima disso -> "
+                                   "método antigo na UF (arquivos de horários diferentes divergem um pouco no início)."},
+    "workers": {"valor": 24, "origem": "inferencia", "nota": "Downloads simultâneos dos arquivos por município."},
+    "prazo_download_s": {"valor": 150, "origem": "inferencia",
+                         "nota": "Tempo máximo baixando municípios; UF incompleta -> método antigo."},
+}
+
+
+def _lg(p):
+    p = np.clip(np.asarray(p, float), 1e-4, 1 - 1e-4)
+    return np.log(p / (1 - p))
+
+
+def _ex(x):
+    return 1 / (1 + np.exp(-np.asarray(x, float)))
+
+
+def url_ab(ciclo: str, cd: str, uf: str) -> str:
+    uf = uf.lower()
+    return f"{BASE_TSE}/oficial/{ciclo}/{cd}/dados/{uf}/{uf}-e{int(cd):06d}-ab.json"
+
+
+def url_municipio(ciclo: str, cd: str, uf: str, cdmun) -> str:
+    uf = uf.lower()
+    return f"{BASE_TSE}/oficial/{ciclo}/{cd}/dados/{uf}/{uf}{int(cdmun):05d}-c0001-e{int(cd):06d}-u.json"
+
+
+def parse_ab(js: dict) -> pd.DataFrame:
+    """Arquivo de abrangência da UF: uma linha por município (cd, te, est, pst, chave de versão)."""
+    rows = []
+    for a in js.get("abr", []):
+        if str(a.get("tpabr", "")).lower() not in ("mun", "mu"):
+            continue
+        s, e = a.get("s", {}), a.get("e", {})
+        rows.append({"cd": int(a["cdabr"]), "te": _num(e.get("te")), "est": _num(e.get("est")), "pst": _num(s.get("pst")),
+                     "versao": f"{a.get('dt', '')} {a.get('ht', '')} {s.get('st', '')} {e.get('est', '')}"})
+    return pd.DataFrame(rows, columns=["cd", "te", "est", "pst", "versao"])
+
+
+def base_municipal(caminho: Path = MUN_2022) -> pd.DataFrame:
+    b = pd.read_csv(caminho)
+    return b.rename(columns={"cd_municipio_tse": "cd", "aptos": "b_aptos", "validos": "b_validos",
+                             "pt_votos": "b_pt", "bolsonaro_votos": "b_opp"})[["uf", "cd", "b_aptos", "b_validos", "b_pt", "b_opp"]]
+
+
+def _estatisticas_swing(m: pd.DataFrame, K: int, ia: int, ib: int) -> dict:
+    """Swing (logito) observado nos municípios com votos apurados, para A (PT) e para B dentro dos não-A,
+    e razão de válidos/eleitorado observada x esperada. m: colunas te, est, v0..v{K-1}, b_*."""
+    V = m[[f"v{k}" for k in range(K)]].to_numpy(float)
+    tot = V.sum(1)
+    ok = (tot >= PARAM_MUN["min_validos_swing"]["valor"]) & m.b_validos.notna().to_numpy() & (m.b_validos.fillna(0).to_numpy() > 0) \
+        & (m.est.to_numpy() > 0)
+    if not ok.any():
+        return {"n": 0}
+    V, tot, mm = V[ok], tot[ok], m[ok]
+    pa_b = (mm.b_pt / mm.b_validos).to_numpy()
+    pb_b = (mm.b_opp / (mm.b_validos - mm.b_pt).clip(lower=1)).to_numpy()
+    yA = _lg(V[:, ia] / tot) - _lg(pa_b)
+    yB = _lg(V[:, ib] / np.maximum(tot - V[:, ia], 1)) - _lg(pb_b)
+    taxa_obs = tot / mm.est.to_numpy()
+    taxa_esp = (mm.b_validos / mm.b_aptos).to_numpy()
+    w = np.sqrt(tot)
+    X = np.column_stack([_lg(pa_b), np.log(mm.b_aptos.clip(lower=1).to_numpy(float))])
+    return {"n": int(ok.sum()), "w": w, "yA": yA, "yB": yB, "ylr": np.log(taxa_obs / taxa_esp), "votos": tot, "X": X}
+
+
+def _x_municipios(m: pd.DataFrame) -> np.ndarray:
+    """Covariáveis do swing: logito da fatia do PT na referência e log do eleitorado na referência."""
+    b = m.b_validos.fillna(0).to_numpy(float)
+    pa = np.where(b > 0, m.b_pt.fillna(0).to_numpy(float) / np.maximum(b, 1), 0.5)
+    return np.column_stack([_lg(pa), np.log(np.maximum(m.b_aptos.fillna(1).to_numpy(float), 1))])
+
+
+def _quantil_w(x, w, q):
+    o = np.argsort(x)
+    c = np.cumsum(w[o]) / w.sum()
+    return float(x[o][min(np.searchsorted(c, q), len(x) - 1)])
+
+
+def _inclinacoes(sts: list, lam: float) -> dict:
+    """Inclinações do swing nas covariáveis, estimadas DENTRO das UFs (cada UF centrada na sua média ponderada)
+    com todos os municípios apurados do país; ridge (lam x soma dos pesos) puxa para swing uniforme."""
+    Xs, ys, ws = {"A": [], "B": []}, {"A": [], "B": []}, []
+    for st in sts:
+        w = st["w"]
+        xc = st["X"] - (w[:, None] * st["X"]).sum(0) / w.sum()
+        for k in ("A", "B"):
+            y = st["y" + k]
+            ys[k].append(y - _media_w(y, w))
+            Xs[k].append(xc)
+        ws.append(w)
+    out = {}
+    if not ws:
+        return {"bA": np.zeros(2), "bB": np.zeros(2)}
+    w = np.concatenate(ws)
+    Xall = np.concatenate([st["X"] for st in sts])
+    # faixa das covariáveis nos municípios apurados: a projeção não extrapola a inclinação para fora dela
+    out["x_lo"] = np.array([_quantil_w(Xall[:, j], w, 0.05) for j in range(Xall.shape[1])])
+    out["x_hi"] = np.array([_quantil_w(Xall[:, j], w, 0.95) for j in range(Xall.shape[1])])
+    for k in ("A", "B"):
+        X, y = np.concatenate(Xs[k]), np.concatenate(ys[k])
+        Xw = X * w[:, None]
+        sx = X.std(0) + 1e-9
+        A_ = Xw.T @ X + lam * w.sum() * np.diag(sx ** 2)
+        out["b" + k] = np.linalg.solve(A_, Xw.T @ y) if len(y) > 5 else np.zeros(2)
+    return out
+
+
+def _media_w(y, w):
+    return float(np.sum(w * y) / np.sum(w))
+
+
+def _resumo_swing(st: dict, incl: dict | None = None) -> dict:
+    """Intercepto do swing (swing médio depois de descontar as covariáveis), dispersão e variação de válidos."""
+    if not st or st.get("n", 0) == 0:
+        return {"n_eff": 0.0, "dA": 0.0, "dB": 0.0, "lr": 0.0, "sA": 0.15, "sB": 0.15}
+    incl = incl or {"bA": np.zeros(2), "bB": np.zeros(2)}
+    w = st["w"]
+    n_eff = float(w.sum() ** 2 / np.sum(w ** 2))
+    X = st["X"] if incl.get("x_lo") is None else np.clip(st["X"], incl["x_lo"], incl["x_hi"])
+    yA = st["yA"] - X @ incl["bA"]
+    yB = st["yB"] - X @ incl["bB"]
+    out = {"n_eff": n_eff, "dA": _media_w(yA, w), "dB": _media_w(yB, w), "lr": _media_w(st["ylr"], w)}
+    for k, y in (("sA", yA), ("sB", yB)):
+        out[k] = float(np.sqrt(_media_w((y - out["d" + k[1]]) ** 2, w))) if n_eff > 1.5 else 0.15
+    return out
+
+
+def projetar_uf_municipios(m: pd.DataFrame, K: int, ia: int = 0, ib: int = 1, prior: dict | None = None) -> dict:
+    """Projeção de uma UF a partir dos municípios.
+
+    m: uma linha por município: te (eleitorado atual), est (eleitorado das seções totalizadas), v0..v{K-1} (votos
+    apurados por candidato), b_aptos, b_validos, b_pt, b_opp (eleição de referência; NaN se município novo).
+    prior: swing nacional {'dA','dB','lr'} para o encolhimento. Devolve {'S','V','sd_logito','apurado','swing'}."""
+    prior = prior or {"dA": 0.0, "dB": 0.0, "lr": 0.0}
+    incl = {"bA": np.asarray(prior.get("bA", np.zeros(2))), "bB": np.asarray(prior.get("bB", np.zeros(2))),
+            "x_lo": prior.get("x_lo"), "x_hi": prior.get("x_hi")}
+    m = m.reset_index(drop=True)
+    V = m[[f"v{k}" for k in range(K)]].to_numpy(float)
+    tot = V.sum(1)
+    te = m.te.to_numpy(float)
+    est = np.minimum(m.est.fillna(0).to_numpy(float), te)
+    f = np.where(te > 0, est / np.maximum(te, 1), 1.0)
+    st = _estatisticas_swing(m, K, ia, ib)
+    r = _resumo_swing(st, incl)
+    kk = PARAM_MUN["k_shrink_uf"]["valor"]
+    n = r["n_eff"]
+    dA = (n * r["dA"] + kk * prior["dA"]) / (n + kk)
+    dB = (n * r["dB"] + kk * prior["dB"]) / (n + kk)
+    lr = (n * r["lr"] + kk * prior.get("lr", 0.0)) / (n + kk)
+    # fatias dos candidatos menores (fora A e B): composição apurada na UF
+    menores = [k for k in range(K) if k not in (ia, ib)]
+    vm = V[:, menores].sum(0)
+    comp_men = vm / vm.sum() if vm.sum() > 0 else np.full(len(menores), 1 / max(len(menores), 1))
+    S_uf_ap = V.sum(0) / max(V.sum(), 1)
+    tem_b = m.b_validos.notna().to_numpy() & (m.b_validos.fillna(0).to_numpy() > 0)
+    bval = m.b_validos.fillna(1).to_numpy(float)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        pa_b = np.where(tem_b, m.b_pt.fillna(0).to_numpy(float) / bval, np.nan)
+    pb_b = np.where(tem_b, m.b_opp.fillna(0).to_numpy(float) / np.maximum(bval - m.b_pt.fillna(0).to_numpy(float), 1), np.nan)
+    Xm = _x_municipios(m)
+    fora = np.zeros(len(m))                 # distância (covariáveis) até a faixa dos municípios já apurados
+    if incl.get("x_lo") is not None:
+        Xc = np.clip(Xm, incl["x_lo"], incl["x_hi"])
+        fora = np.abs(Xm - Xc).sum(1)
+        Xm = Xc
+    sA = _ex(_lg(pa_b) + dA + Xm @ incl["bA"])
+    sB = (1 - sA) * _ex(_lg(pb_b) + dB + Xm @ incl["bB"])
+    Sp = np.zeros((len(m), K))
+    Sp[:, ia], Sp[:, ib] = sA, sB
+    Sp[:, menores] = (1 - sA - sB)[:, None] * comp_men[None]
+    Sp[~tem_b] = S_uf_ap if V.sum() > 0 else np.full(K, 1 / K)
+    # taxa de válidos por eleitor para o eleitorado restante
+    taxa_esp = np.where(tem_b, bval / np.maximum(m.b_aptos.fillna(1).to_numpy(float), 1), np.nan) * math.exp(lr)
+    taxa_uf_obs = tot.sum() / est.sum() if est.sum() > 0 else np.nan
+    taxa_esp = np.where(np.isfinite(taxa_esp), taxa_esp, taxa_uf_obs if np.isfinite(taxa_uf_obs) else 0.8)
+    taxa_obs = np.where(est > 0, tot / np.maximum(est, 1), taxa_esp)
+    taxa = f * taxa_obs + (1 - f) * taxa_esp
+    # fatias do eleitorado restante: apuradas no município (se houver votos) ou a projeção por swing
+    sh_obs = np.where(tot[:, None] > 0, V / np.maximum(tot, 1)[:, None], 0)
+    S_rest = np.where((tot > 0)[:, None], sh_obs, Sp)
+    R = np.maximum(te - est, 0) * taxa
+    votos = V.sum(0) + (R[:, None] * S_rest).sum(0)
+    Vtot = float(votos.sum())
+    S = votos / max(Vtot, 1)
+    # incerteza na fatia de A (p.p. de fatia): ruído municipal independente + erro comum do swing
+    sig_mun = max(r["sA"], PARAM_MUN["dp_mun_piso_logito"]["valor"])
+    se_sw = math.sqrt(sig_mun ** 2 / max(n + kk, 1) + PARAM_MUN["dp_swing_piso_logito"]["valor"] ** 2)
+    sa = S_rest[:, ia]
+    deriv = sa * (1 - sa) * R
+    nao_ap = tot <= 0
+    fat = np.where(nao_ap, 1.0, np.sqrt(np.clip(1 - f, 0, 1)) * 0.5)      # parcial: só o resto do município varia
+    var = np.sum((deriv * sig_mun * fat) ** 2) + (np.sum(deriv[nao_ap]) * se_sw) ** 2 \
+        + (np.sum(deriv[~nao_ap]) * se_sw * 0.5) ** 2 \
+        + (np.sum(deriv[nao_ap] * fora[nao_ap]) * PARAM_MUN["dp_extrapolacao_logito"]["valor"]) ** 2
+    sd_fatia = math.sqrt(var) / max(Vtot, 1)
+    sA_uf = float(np.clip(S[ia], 0.01, 0.99))
+    return {"S": S, "V": Vtot, "sd_fatia_a": sd_fatia, "sd_logito": sd_fatia / (sA_uf * (1 - sA_uf)),
+            "apurado_frac": float(est.sum() / max(te.sum(), 1)), "n_municipios": int(len(m)),
+            "n_municipios_com_votos": int((tot > 0).sum()),
+            "swing": {"dA": dA, "dB": dB, "lr": lr, "n_eff": n, "dA_bruto": r["dA"], "sig_mun": sig_mun, "se_swing": se_sw},
+            "_st": st}
+
+
+def projetar_municipios(dados: dict, K: int, ia: int = 0, ib: int = 1) -> dict:
+    """dados: {uf: DataFrame (ver projetar_uf_municipios)}. Duas passadas: swing nacional (média dos municípios
+    apurados de todas as UFs, ponderada) como prior, depois cada UF encolhida para ele."""
+    sts = [_estatisticas_swing(m, K, ia, ib) for m in dados.values()]
+    sts = [s for s in sts if s.get("n", 0) > 0]
+    incl = _inclinacoes(sts, PARAM_MUN["ridge_inclinacoes"]["valor"]) if sts else {"bA": np.zeros(2), "bB": np.zeros(2)}
+    if sts:
+        junto = {k: np.concatenate([s[k] for s in sts]) for k in ("w", "yA", "yB", "ylr", "X")}
+        junto["n"] = sum(s["n"] for s in sts)
+        rn = _resumo_swing(junto, incl)
+        prior = {"dA": rn["dA"], "dB": rn["dB"], "lr": rn["lr"]} | incl
+    else:
+        prior = {"dA": 0.0, "dB": 0.0, "lr": 0.0} | incl
+    out = {uf: projetar_uf_municipios(m, K, ia, ib, prior) for uf, m in dados.items()}
+    return {"ufs": out, "prior_nacional": prior}
+
+
+def baixar_municipios(ciclo: str, cd: str, ufs: list, numeros: dict, cands: list, log=print,
+                      cache_dir: Path | None = None, baixar=None) -> tuple[dict, dict]:
+    """Baixa abrangência + arquivos por município (só os que têm seções totalizadas e mudaram desde a última
+    leitura). Devolve ({uf: DataFrame pronto para projetar}, meta). UFs com falha ficam de fora."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    baixar = baixar or _baixar
+    cache_dir = cache_dir or (CACHE_2026 / "municipios")
+    cache_p = cache_dir / "cache.json"
+    try:
+        cache = json.loads(cache_p.read_text(encoding="utf-8")) if cache_p.exists() else {}
+    except Exception:                                            # noqa: BLE001
+        cache = {}
+    base = base_municipal()
+    meta = {"erros": [], "baixados": 0, "do_cache": 0, "ufs_ok": [], "ufs_falha": []}
+    abr = {}
+    for uf in ufs:
+        try:
+            abr[uf] = parse_ab(baixar(url_ab(ciclo, cd, uf)))
+        except Exception as ex:                                  # noqa: BLE001
+            meta["erros"].append(f"ab {uf}: {ex}")
+            meta["ufs_falha"].append(uf)
+    tarefas = []
+    for uf, a in abr.items():
+        for r in a.itertuples():
+            if not (r.est > 0):
+                continue
+            ch = f"{uf}-{r.cd}"
+            if ch in cache and cache[ch].get("versao") == r.versao:
+                meta["do_cache"] += 1
+                continue
+            tarefas.append((uf, r.cd, r.versao))
+    t0 = time.perf_counter()
+    prazo = PARAM_MUN["prazo_download_s"]["valor"]
+    falhas = set()
+
+    def um(t):
+        uf, cdm, ver = t
+        p = parse_tse(baixar(url_municipio(ciclo, cd, uf, cdm)), numeros)
+        return t, {"versao": ver, "est": p.get("eleitorado_totalizado"), "te": p.get("eleitorado"),
+                   "votos": [float(p["votos"].get(c, 0.0)) for c in cands]}
+    if tarefas:
+        with ThreadPoolExecutor(max_workers=PARAM_MUN["workers"]["valor"]) as ex:
+            futs = [ex.submit(um, t) for t in tarefas]
+            for fu in as_completed(futs):
+                try:
+                    t, d = fu.result()
+                    cache[f"{t[0]}-{t[1]}"] = d
+                    meta["baixados"] += 1
+                except Exception as e:                           # noqa: BLE001
+                    meta["erros"].append(f"municipio: {e}")
+                if time.perf_counter() - t0 > prazo:
+                    meta["erros"].append("prazo de download esgotado")
+                    for g in futs:
+                        g.cancel()
+                    break
+    for t in tarefas:
+        ch = f"{t[0]}-{t[1]}"
+        if ch not in cache or cache[ch].get("versao") != t[2]:
+            falhas.add(t[0])
+    try:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_p.write_text(json.dumps(cache), encoding="utf-8")
+    except Exception as e:                                       # noqa: BLE001
+        meta["erros"].append(f"cache: {e}")
+    dados = {}
+    K = len(cands)
+    for uf, a in abr.items():
+        if uf in falhas or a.empty:
+            meta["ufs_falha"].append(uf)
+            continue
+        m = a.copy()
+        for k in range(K):
+            m[f"v{k}"] = 0.0
+        for i, r in enumerate(m.itertuples()):
+            ch = f"{uf}-{r.cd}"
+            if r.est > 0 and ch in cache:
+                m.loc[i, [f"v{k}" for k in range(K)]] = cache[ch]["votos"]
+        m = m.merge(base[base.uf == uf].drop(columns="uf"), on="cd", how="left")
+        dados[uf] = m
+        meta["ufs_ok"].append(uf)
+    meta["tempo_s"] = round(time.perf_counter() - t0, 1)
+    return dados, meta
+
+
+def projecao_municipal_2026(res: dict, cd_info: dict | None, log=print, baixar=None) -> dict | None:
+    """Projeção por município das UFs com apuração parcial (2026). None se não der (método antigo)."""
+    try:
+        ciclo, cd = (cd_info or {}).get("ciclo") or "ele2026", (cd_info or {}).get("cd") or "6257"
+        cands = CANDS_ANO[2026]
+        parciais = [u for u in UFS if u in res and isinstance(res[u], dict) and 0 < res[u].get("pst", 0) < 99.995]
+        if not parciais:
+            return None
+        dados, meta = baixar_municipios(ciclo, cd, parciais, NUMEROS[2026], cands, log=log, baixar=baixar)
+        if not dados:
+            log("projeção por município indisponível: método antigo (válidos / pst) em todas as UFs")
+            return None
+        pj = projetar_municipios(dados, len(cands), cands.index("Lula"), cands.index("Flavio"))
+        # coerência com o arquivo da UF: se a soma dos municípios não bate com o apurado na UF, método antigo na UF
+        for uf in list(pj["ufs"]):
+            v_mun = float(dados[uf][[f"v{k}" for k in range(len(cands))]].to_numpy().sum())
+            v_uf = float(sum(res[uf]["votos"].values()))
+            if v_uf > 0 and abs(v_mun - v_uf) / v_uf > PARAM_MUN["tolerancia_soma_uf"]["valor"]:
+                meta["erros"].append(f"{uf}: municípios somam {v_mun:.0f} válidos, UF {v_uf:.0f}: método antigo")
+                pj["ufs"].pop(uf)
+        pj["meta"] = meta
+        log(f"projeção por município: {len(pj['ufs'])} UFs; {meta['baixados']} arquivos baixados, "
+            f"{meta['do_cache']} do cache, {meta['tempo_s']} s")
+        return pj
+    except Exception as ex:                                       # noqa: BLE001
+        log(f"projeção por município falhou ({ex}): método antigo")
+        return None
+
+
+# ---------------------------------------------------------------- replay com 2022 (validação da projeção)
+REPLAY_ZONAS = DADOS / "replay_munzona_2022.csv"
+MUN_2018 = DADOS / "municipios_2018.csv"
+CENARIOS_REPLAY = ("grandes_primeiro", "pequenos_primeiro", "direita_primeiro", "aleatorio")
+
+
+def _ordem_replay(z: pd.DataFrame, cenario: str, rng) -> np.ndarray:
+    tam = z.groupby(["uf", "cd_municipio_tse"]).aptos.transform("sum").to_numpy(float)
+    ruido = rng.standard_normal(len(z))
+    if cenario == "grandes_primeiro":          # capitais/grandes municípios primeiro (ordem por porte + ruído)
+        chave = -np.log(tam) + 0.7 * ruido
+    elif cenario == "pequenos_primeiro":
+        chave = np.log(tam) + 0.7 * ruido
+    elif cenario == "direita_primeiro":       # como em 2022: Bolsonaro na frente no início da apuração
+        chave = -(z.bolsonaro / z.validos.clip(lower=1)).to_numpy() * 6 + 0.7 * ruido
+    else:
+        chave = ruido
+    return chave
+
+
+def replay_2022(cenario: str, pontos=(0.10, 0.25, 0.50, 0.75), seed: int = 1, z: pd.DataFrame | None = None,
+                base: pd.DataFrame | None = None) -> list:
+    """Reapura o 1º turno de 2022 em ordem não aleatória (zona eleitoral como unidade de totalização; cada UF
+    num ritmo próprio) e compara, em cada ponto da apuração, a projeção antiga (válidos / pst por UF) e a nova
+    (por município, referência 2018) com o resultado final. Erros em p.p. de votos válidos."""
+    cands = ["Lula", "Bolsonaro", "Ciro", "Tebet", "Outros"]
+    cols = ["lula", "bolsonaro", "ciro", "tebet", "outros"]
+    z = (pd.read_csv(REPLAY_ZONAS) if z is None else z).copy()
+    base = base_municipal(MUN_2018) if base is None else base
+    rng = np.random.default_rng(seed)
+    z["chave"] = _ordem_replay(z, cenario, rng)
+    z = z.sort_values(["uf", "chave"]).reset_index(drop=True)
+    final_uf = z.groupby("uf")[cols].sum()
+    final_br = final_uf.sum() / final_uf.to_numpy().sum()
+    final_s_uf = final_uf.div(final_uf.sum(axis=1), axis=0)
+    ritmo = {u: float(np.clip(rng.lognormal(0, 0.3), 0.4, 2.5)) for u in final_uf.index}
+    mun_tot = z.groupby(["uf", "cd_municipio_tse"], as_index=False).aptos.sum().rename(columns={"cd_municipio_tse": "cd",
+                                                                                               "aptos": "te"})
+    out = []
+    for p in pontos:
+        # fração apurada de cada UF; ajusta o ritmo para que o Brasil esteja em p
+        def frac_uf(esc):
+            return {u: float(np.clip(p * ritmo[u] * esc, 0.01, 1.0)) for u in ritmo}
+        lo, hi = 0.05, 20.0
+        apt_uf = z.groupby("uf").aptos.sum()
+        for _ in range(40):
+            mid = (lo + hi) / 2
+            fu = frac_uf(mid)
+            tot = sum(fu[u] * apt_uf[u] for u in fu) / apt_uf.sum()
+            lo, hi = (mid, hi) if tot < p else (lo, mid)
+        fu = frac_uf((lo + hi) / 2)
+        cum = z.groupby("uf").aptos.cumsum() - z.aptos
+        alvo = z.uf.map(fu) * z.uf.map(apt_uf)
+        fr = np.clip((alvo - cum) / z.aptos.clip(lower=1), 0, 1)        # fração apurada de cada zona
+        ap = z[["uf", "cd_municipio_tse"]].copy()
+        ap["est"] = z.aptos * fr
+        for k, c in enumerate(cols):
+            ap[f"v{k}"] = z[c] * fr
+        ap = ap.groupby(["uf", "cd_municipio_tse"], as_index=False).sum().rename(columns={"cd_municipio_tse": "cd"})
+        ap = ap.merge(mun_tot, on=["uf", "cd"])
+        # método antigo
+        ant_S, ant_V, nov_S, nov_V, sd_a = {}, {}, {}, {}, {}
+        dados = {}
+        for uf, g in ap.groupby("uf"):
+            v = g[[f"v{k}" for k in range(5)]].to_numpy().sum(0)
+            pst = g.est.sum() / g.te.sum()
+            ant_S[uf] = v / v.sum()
+            ant_V[uf] = v.sum() / pst
+            dados[uf] = g.merge(base[base.uf == uf].drop(columns="uf"), on="cd", how="left")
+        pj = projetar_municipios(dados, 5, 0, 1)
+        for uf, r in pj["ufs"].items():
+            nov_S[uf], nov_V[uf], sd_a[uf] = r["S"], r["V"], r["sd_fatia_a"]
+        ufs = sorted(ant_S)
+        res = {"cenario": cenario, "seed": seed, "apurado_pct": round(100 * float(ap.est.sum() / ap.te.sum()), 1)}
+        for nome, SS, VV in (("antigo", ant_S, ant_V), ("novo", nov_S, nov_V)):
+            nat = sum(VV[u] * SS[u] for u in ufs) / sum(VV[u] for u in ufs)
+            res[f"{nome}_erro_lula_pp"] = round(100 * float(nat[0] - final_br["lula"]), 3)
+            res[f"{nome}_erro_margem_pp"] = round(100 * float((nat[0] - nat[1]) - (final_br["lula"] - final_br["bolsonaro"])), 3)
+            erros_uf = [100 * (SS[u][0] - final_s_uf.loc[u, "lula"]) for u in ufs if u != "ZZ"]
+            res[f"{nome}_mae_uf_lula_pp"] = round(float(np.mean(np.abs(erros_uf))), 3)
+            res[f"{nome}_max_uf_lula_pp"] = round(float(np.max(np.abs(erros_uf))), 3)
+            res[f"{nome}_erro_validos_pct"] = round(100 * float(sum(VV.values()) / final_uf.to_numpy().sum() - 1), 3)
+        zsc = [abs(nov_S[u][0] - final_s_uf.loc[u, "lula"]) / max(sd_a[u], 1e-6) for u in ufs if u != "ZZ"]
+        res["novo_cobertura_90_uf"] = round(float(np.mean(np.array(zsc) <= 1.645)), 3)
+        res["novo_sd_medio_uf_pp"] = round(100 * float(np.mean([sd_a[u] for u in ufs if u != "ZZ"])), 3)
+        out.append(res)
+    return out
+
+
+def replay_resumo(cenarios=CENARIOS_REPLAY, seeds=range(1, 6), pontos=(0.10, 0.25, 0.50, 0.75)) -> pd.DataFrame:
+    z = pd.read_csv(REPLAY_ZONAS)
+    base = base_municipal(MUN_2018)
+    linhas = [r | {"ponto": p} for c in cenarios for s in seeds
+              for p, r in zip(pontos, replay_2022(c, pontos, s, z, base))]
+    t = pd.DataFrame(linhas)
+    num = [c for c in t.columns if c.startswith(("antigo", "novo"))]
+    a = t.copy()
+    for c in num:
+        if "erro" in c and "mae" not in c and "max" not in c:
+            a[c] = a[c].abs()
+    return a.groupby(["cenario", "ponto"])[["apurado_pct"] + num].mean().round(2)
 
 
 # ================================================================ histórico (2014/2018/2022)
@@ -936,6 +1418,10 @@ def _sd_proj(c: dict) -> np.ndarray:
     pst = c["pst"]
     sd = PARAM_2T["dp_projecao_uf_logito"]["valor"] * np.sqrt(np.clip(1 - pst / 100, 0, 1))
     sd[np.array(c["fonte_uf"]) == "previsão"] = PARAM_2T["dp_uf_sem_apuracao_logito"]["valor"]
+    sm = c.get("sd_mun")
+    if sm is not None:
+        ok = np.isfinite(sm)
+        sd[ok] = sm[ok]                      # projeção por município: incerteza própria (encolhe com a apuração)
     return sd
 
 
@@ -955,7 +1441,7 @@ def _limpo(x):
     return x
 
 
-def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print) -> dict:
+def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bool = True) -> dict:
     prem = M.carregar_premissas()
     res = buscar_resultados(2026, fonte, log=log)
     meta_f = res.pop("_meta", {})
@@ -975,7 +1461,30 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print) -> dict:
         log(saida["meta"]["mensagem"])
         _gravar_json(WEB / "resultados_2t.json", saida)
         return saida
-    c = consolidar(res, 2026, _ufs_ref_2026(), _previsao_uf_2026(js))
+    pj = None
+    if municipios and fonte in ("auto", "tse") and str(meta_f.get("fonte") or "").startswith("TSE"):
+        pj = projecao_municipal_2026(res, meta_f.get("codigo"), log=log)
+    try:
+        c = consolidar(res, 2026, _ufs_ref_2026(), _previsao_uf_2026(js), pj)
+    except Exception as ex:                                       # noqa: BLE001
+        if pj is None:
+            raise
+        log(f"consolidação com projeção por município falhou ({ex}): método antigo")
+        pj = None
+        c = consolidar(res, 2026, _ufs_ref_2026(), _previsao_uf_2026(js))
+    saida["meta"]["projecao_parcial"] = {
+        "metodo_uf": dict(zip(UFS, c["metodo_uf"])), "parametros": PARAM_MUN,
+        "download": None if pj is None else {k: v for k, v in pj.get("meta", {}).items() if k != "erros"} | {
+            "erros": pj.get("meta", {}).get("erros", [])[:20]},
+        "swing_uf": None if pj is None else {u: {k: round(float(v), 4) for k, v in r["swing"].items()}
+                                             | {"apurado_frac": round(r["apurado_frac"], 4),
+                                                "sd_fatia_lula_pp": round(100 * r["sd_fatia_a"], 3)}
+                                             for u, r in pj["ufs"].items()},
+        "nacional_metodo_antigo": None}
+    if pj is not None:
+        c_ant = consolidar(res, 2026, _ufs_ref_2026(), _previsao_uf_2026(js))
+        saida["meta"]["projecao_parcial"]["nacional_metodo_antigo"] = {
+            k: round(100 * float(v), 3) for k, v in zip(c_ant["cands"], c_ant["nacional"])}
     status = status_apuracao(c)
     saida["meta"]["status"] = status
     saida["meta"]["pst_nacional"] = c["pst_nacional"]
@@ -1223,6 +1732,10 @@ def main():
     ap.add_argument("--ensaio-2022", action="store_true", help="ensaio completo com 2022 (+ validação 2014/2018)")
     ap.add_argument("--gerar-fixture-2022", action="store_true")
     ap.add_argument("--fonte", default="auto", choices=["auto", "tse", "manual"])
+    ap.add_argument("--sem-municipios", action="store_true",
+                    help="não usar a projeção por município (método antigo: válidos / pst por UF)")
+    ap.add_argument("--replay-2022", action="store_true",
+                    help="valida a projeção da apuração parcial reapurando 2022 em ordem não aleatória")
     ap.add_argument("--n", type=int, default=500_000)
     ap.add_argument("--seed", type=int, default=20261025)
     a = ap.parse_args()
@@ -1233,10 +1746,17 @@ def main():
         r = ensaios_historicos(a.n)
         print(json.dumps(r["agregado"], ensure_ascii=False))
     if a.rodar_tudo:
-        rodar_2026(a.n, a.seed, a.fonte)
+        rodar_2026(a.n, a.seed, a.fonte, municipios=not a.sem_municipios)
         import publicar
         publicar.main()
-    if not (a.rodar_tudo or a.ensaio_2022 or a.gerar_fixture_2022):
+    if a.replay_2022:
+        t = replay_resumo()
+        _gravar_json(DADOS / "replay_projecao_2022.json", {"gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                                                            "parametros": PARAM_MUN,
+                                                            "tabela": t.reset_index().to_dict(orient="records")})
+        with pd.option_context("display.width", 250, "display.max_columns", 30):
+            print(t)
+    if not (a.rodar_tudo or a.ensaio_2022 or a.gerar_fixture_2022 or a.replay_2022):
         ap.print_help()
     print(f"tempo {time.perf_counter() - t0:.1f} s")
 
