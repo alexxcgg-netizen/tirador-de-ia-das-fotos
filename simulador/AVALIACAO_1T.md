@@ -1,12 +1,12 @@
 # Avaliação das previsões do 1º turno de 2026
 
-Gerado por `resultado_1t.py` em 2026-10-04 23:28 UTC. Seções totalizadas no Brasil: 91,06% (TSE, 04/10/2026 20:25:44). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
+Gerado por `resultado_1t.py` em 2026-10-04 23:35 UTC. Seções totalizadas no Brasil: 91,87% (TSE, 04/10/2026 20:34:15). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
 
 ## Resultado (votos válidos, %)
 
 | Lula | Flavio | Caiado | Cury | Zema | Renan | Outros |
 |---|---|---|---|---|---|---|
-| 45,02 | 47,14 | 2,19 | 2,90 | 0,28 | 2,26 | 0,22 |
+| 45,02 | 47,14 | 2,19 | 2,90 | 0,28 | 2,25 | 0,22 |
 
 Decidida no 1º turno: não. Ordem: Flavio, Lula, Cury.
 
@@ -85,7 +85,7 @@ Brier = (p − ocorreu)²; log score = log da probabilidade dada ao que acontece
 |---|---|---|---|---|---|---|---|---|
 | Modelo principal: neutro | 27 | 1,7 | 0,5 | 2,6 | -1,2 | 100% | 0,057 | 96% |
 | Modelo principal: calibrado | 27 | 1,9 | -1,1 | 2,1 | 0,4 | 98% | 0,060 | 93% |
-| Modelo principal: viés pleno | 27 | 2,6 | -2,2 | 2,5 | 1,7 | 98% | 0,068 | 89% |
+| Modelo principal: viés pleno | 27 | 2,7 | -2,2 | 2,5 | 1,7 | 98% | 0,068 | 89% |
 | Modelo alternativo: neutro | – | – | – | – | – | –% | 0,060 | 89% |
 | Modelo alternativo: historico | – | – | – | – | – | –% | 0,065 | 93% |
 
@@ -98,22 +98,22 @@ Exterior fora das métricas por UF. Viés positivo = previsão acima do resultad
 | AC | 28,7 | 64,5 | parcial |
 | AL | 54,2 | 40,9 | parcial |
 | AM | 47,8 | 45,3 | parcial |
-| AP | 45,7 | 45,6 | parcial |
-| BA | 65,3 | 29,3 | parcial |
-| CE | 62,5 | 31,9 | parcial |
+| AP | 45,7 | 45,7 | parcial |
+| BA | 65,4 | 29,2 | parcial |
+| CE | 62,6 | 31,8 | parcial |
 | DF | 38,1 | 51,3 | apurado |
 | ES | 37,8 | 54,8 | parcial |
 | GO | 31,0 | 53,6 | parcial |
 | MA | 63,5 | 31,4 | parcial |
-| MG | 43,2 | 48,3 | parcial |
+| MG | 43,3 | 48,3 | parcial |
 | MS | 34,6 | 58,6 | parcial |
 | MT | 29,2 | 65,2 | parcial |
 | PA | 49,5 | 44,9 | parcial |
 | PB | 61,3 | 33,1 | parcial |
 | PE | 63,4 | 31,1 | parcial |
-| PI | 70,5 | 24,5 | parcial |
+| PI | 70,6 | 24,4 | parcial |
 | PR | 31,2 | 59,9 | parcial |
-| RJ | 39,7 | 52,7 | parcial |
+| RJ | 39,6 | 52,8 | parcial |
 | RN | 59,6 | 34,9 | parcial |
 | RO | 25,9 | 67,5 | parcial |
 | RR | 22,8 | 71,1 | parcial |

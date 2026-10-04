@@ -247,6 +247,34 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   depois do ajuste nacional). A variância nacional que já vem da incerteza da matriz não é contada duas vezes.
 - Estimativas ecológicas TSE (fração do PT nos votos ganhos entre turnos): 2014 0,40; 2018 0,63; 2022 0,30 —
   mostram quanto a transferência real varia de uma eleição para outra (reportadas em `resultados_2t.json`).
+- **Transferência regionalizada (desde a noite de 4/10/2026; `transferencia_regional.py`).** A matriz Quaest continua
+  sendo o âncora nacional, mas a fatia "decidida" que cada eliminado dá ao PT, p = a/(a+b), passa a depender do lean
+  da UF no 1º turno: logito p_UF = logito p + β·z_UF + c(β), com z_UF = logito(Lula/(Lula+Flávio)) da UF menos o
+  nacional e c(β) recentrando cada linha para que a média nacional (ponderada pelos votos do eliminado em cada UF)
+  continue igual à da Quaest — redistribui entre UFs, não muda o nacional. β é o efeito de contexto ecológico (o
+  eleitor de terceira via num estado muito antipetista vai mais para o antipetista), estimado por MQ não linear
+  com os resultados por UF do TSE (1º → 2º turno) de 2002, 2010, 2014, 2018 e 2022 (β por ano 1,31 / 0,46 / 0,12 /
+  0,57 / 0,38; 2006 fora: Alckmin perdeu votos entre turnos) e combinado hierarquicamente (prior N(0; 0,5²),
+  variação entre eleições pelo método dos momentos): **β = 0,46, dp preditivo 0,44**, sorteado em cada simulação
+  junto com a Dirichlet da matriz. A calibração do erro regional/estadual passa a medir os resíduos com o mesmo
+  método. Um efeito regional fixo adicional (N/NE/CO/SE/S) foi testado e **não** entrou (piorou 2014 e 2022).
+  Desliga com `PARAM_2T["transferencia_regional"]` ou `--transf-regional nao`; o outro método sai sempre como
+  sensibilidade em `segundo_turno.sensibilidade_regional`.
+  *Backtest* (leave-one-election-out, detalhes em BACKTEST.md): pipeline completo 2014/2018/2022 — nacional
+  inalterado (erro +2,0/−1,6/+2,2 p.p. nos dois métodos), erro médio por UF 2,45→2,87 (2014), 2,19→1,80 (2018),
+  2,11→2,10 (2022), média 2,25 nos dois; cobertura das UFs no intervalo de 80% 0,91→0,94 e no de 95% 0,975→0,988.
+  Melhora 2018 e 2022 (a validação pedida) e 4 de 5 eleições na distribuição entre UFs isolada; piora 2014
+  (Marina, cujo voto não seguiu o lean). Efeito em 2026 (cópia a seco, 91% apurado): nacional igual (Lula 47,0%;
+  P(Lula) 12,6%→12,8%), UFs ±0,35 p.p. (NE sobe até +0,36 no PI; S/CO/RO/RR/AC caem até −0,34 em SC).
+- **Comparecimento entre turnos (checado em 2014/2018/2022, LOEO).** A variação média da abstenção por UF (método
+  atual) teve o menor erro (1,29 p.p. por UF; encolhida para o nacional 1,35; só nacional 1,80; sem variação 1,92).
+  Brancos+nulos: média por UF 2,35, sem variação 1,92 (só 2022 favorece "sem variação"; mantido). Efeito partidário
+  pequeno: a variação da abstenção quase não se correlaciona com o lean (r = −0,04, −0,04, −0,20) e a reponderação
+  das UFs muda o PT nacional em ≤ 0,25 p.p.; os erros nacionais da abstenção (−1,0, −0,5, +1,5 p.p.) batem com o
+  dp de 1 p.p. usado. Nada mudou.
+- **Ensaio a seco:** `--saida PASTA` grava `resultados_2t.json`, `avaliacao_1t.json` e `AVALIACAO_1T.md` na pasta e
+  não roda `publicar.py`; `--fonte cache` lê só a última leitura gravada (sem rede); `--backtest-2t` imprime os
+  backtests acima.
 
 **Ensaio com 2022** (1º turno de 2022 como se fosse a noite de hoje; resultado lido de JSON no formato do TSE de
 2022, reconstruídos dos dados abertos em `tests/fixtures/tse/2022/`; erros calibrados só com 2014 e 2018):

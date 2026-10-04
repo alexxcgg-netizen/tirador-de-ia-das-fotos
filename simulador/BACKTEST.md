@@ -263,3 +263,62 @@ Leitura:
 Leitura: a alocação por "espaço" (100 − rejeição − intenção) ou por 2ª preferência leva os indecisos para quem
 tem menos rejeição relativa à intenção atual. A linha de 2022 com a 2ª preferência da Quaest usa informação
 publicada depois da eleição e serve só para validar o método (não entra na calibração).
+
+## 2º turno condicionado ao 1º turno real: matriz nacional única x transferência regionalizada
+
+*Seção escrita à mão em 4/10/2026 (noite do 1º turno), fora do `backtest.py`; refazer com
+`python simulador/resultado_1t.py --backtest-2t` (não grava arquivos). Se `backtest.py` regenerar este arquivo,
+recolar esta seção.*
+
+**Método novo** (`transferencia_regional.py`): logito da fatia decidida do eliminado para o PT na UF =
+nacional + β·lean da UF (logito, 1º turno) + recentragem que mantém o nacional da matriz. β por eleição (MQ não
+linear em 27 UFs, participação 0,65): 2002 1,31 (ep 0,26); 2010 0,46 (0,15); 2014 0,12 (0,09); 2018 0,57 (0,17);
+2022 0,38 (0,27); 2006 excluído (oponente perdeu votos). Combinação hierárquica: μ = 0,46, τ entre eleições 0,40,
+dp preditivo 0,44. Nos testes abaixo β é sempre estimado **sem** o ano avaliado.
+
+**(1) Distribuição entre UFs isolada** — linha nacional da véspera (pesquisas pareadas; 2002/2010: linha genérica),
+nacional ajustado ao real (só a distribuição entre UFs conta). Erro médio absoluto por UF (p.p. do PT no 2º turno):
+
+| Ano | β (LOEO) | Matriz única | Regionalizada | + efeito regional fixo |
+|---|---|---|---|---|
+| 2002 | 0,33 | 3,05 | 2,83 | 2,72 |
+| 2010 | 0,45 | 1,33 | 1,19 | 1,02 |
+| 2014 | 0,56 | 1,39 | **2,29** | 2,02 |
+| 2018 | 0,42 | 1,86 | 1,68 | 1,55 |
+| 2022 | 0,46 | 0,53 | 0,40 | 0,94 |
+| Média (MAE / RMSE) | | 1,63 / 2,25 | 1,68 / 2,19 | 1,65 / 2,14 |
+
+Correlação erro x lean com a matriz única: −0,32, −0,52, −0,15, −0,44, −0,67 (UFs petistas subestimadas, antipetistas
+superestimadas) — o padrão que β corrige; com β: −0,04, +0,19, +0,58, −0,01, −0,30. 2014 é a exceção: o voto de
+Marina não seguiu o lean (β do ano 0,12) e β = 0,56 corrige demais. O efeito regional fixo melhora 2002/2010/2018,
+mas piora 2022 (0,40→0,94) e não entrou.
+
+**(2) Pipeline completo** (`simular_2t`, 100 mil simulações, LOEO para β, calibração e comparecimento; 1º turno real
+do CSV do TSE; pesquisas de 2º turno da véspera do 1º turno com peso 0,25):
+
+| Ano | Variante | Erro nacional | PIT | UF MAE | UF RMSE | Cob. 80% UF | Cob. 95% UF | Acerto UF | Brier UF |
+|---|---|---|---|---|---|---|---|---|---|
+| 2014 | matriz única | +1,99 | 0,24 | 2,45 | 3,32 | 0,89 | 0,96 | 0,96 | 0,027 |
+| 2014 | regionalizada | +2,04 | 0,23 | 2,87 | 3,88 | 0,89 | 0,96 | 1,00 | 0,020 |
+| 2018 | matriz única | −1,61 | 0,70 | 2,19 | 3,00 | 0,85 | 0,96 | 0,96 | 0,025 |
+| 2018 | regionalizada | −1,59 | 0,70 | 1,80 | 2,51 | 0,93 | 1,00 | 0,93 | 0,027 |
+| 2022 | matriz única | +2,20 | 0,20 | 2,11 | 2,24 | 1,00 | 1,00 | 0,96 | 0,024 |
+| 2022 | regionalizada | +2,20 | 0,21 | 2,10 | 2,18 | 1,00 | 1,00 | 0,96 | 0,024 |
+| Média | matriz única | 1,94 | | 2,25 | 2,85 | 0,91 | 0,975 | | 0,025 |
+| Média | regionalizada | 1,94 | | 2,25 | 2,86 | 0,94 | 0,988 | | 0,024 |
+
+Viés médio por região (previsto − real, p.p.), 2018: NE −3,7 → −2,3, S +0,3 → −0,3; 2022: NE +1,3 → +1,6,
+S +3,0 → +2,7 (o erro nacional de +2,2 domina).
+
+**Decisão: adotada** (`PARAM_2T["transferencia_regional"] = True`). Regra: nacional neutro e UF melhor na validação
+2018/2022 — nacional igual (por construção), UF MAE 2,19→1,80 e 2,11→2,10, cobertura melhor. Ressalva: com 2014 a
+média do MAE fica empatada (2,25) e, na distribuição isolada, a média 2014–2022 piora (1,26→1,46) por causa de 2014;
+o ganho esperado é pequeno e concentrado em eleições em que os eliminados são do campo antipetista (2018, 2022,
+2026). O método antigo é publicado como sensibilidade em `resultados_2t.json`.
+
+**Comparecimento 1º→2º turno por UF (LOEO 2014/2018/2022).** Erro médio absoluto da abstenção do 2º turno por UF
+(p.p.): média da variação por UF (atual) 1,29; encolhida para o nacional (k = 1) 1,35; (k = 3) 1,51; só nacional
+1,80; sem variação 1,92. Brancos+nulos: 2,35 / 2,30 / 2,31 / 2,43 / 1,92. Viés nacional da abstenção prevista:
+−1,0 (2014), −0,5 (2018), +1,5 (2022) — compatível com o dp nacional de 1 p.p. Efeito partidário: correlação da
+variação da abstenção com o lean −0,04, −0,04, −0,20 (2022: UFs petistas compareceram relativamente mais, −0,7
+p.p. por unidade de logito); a reponderação das UFs mexe ≤ 0,25 p.p. no PT nacional. Mantido o método atual.

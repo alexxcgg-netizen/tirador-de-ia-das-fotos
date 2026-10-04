@@ -185,9 +185,9 @@ def efeitos_regionais(anos: tuple, beta: float) -> dict:
     t = pd.DataFrame(rows)
     g = t.groupby(["regiao", "ano"]).res.mean().unstack()
     n = g.shape[1]
-    media = g.mean(1)
+    media = g.mean(axis=1)
     var_entre = float(np.var(g.values, ddof=1)) if n > 1 else 1.0
-    var_media = (g.var(1, ddof=1) / n).fillna(var_entre / n)
+    var_media = (g.var(axis=1, ddof=1) / n).fillna(var_entre / n)
     tau2 = max(float(np.var(media.values, ddof=1) - var_media.mean()), 0.0) if len(media) > 1 else 0.0
     k = tau2 / (tau2 + var_media)
     return {r: float(media[r] * k[r]) for r in media.index}
