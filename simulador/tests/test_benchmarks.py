@@ -76,6 +76,7 @@ def test_bellwether_ufs(out):
     assert bw[0]["acertou_vencedor_2t"] == "5/5"
 
 
+@pytest.mark.skipif(not (B.DATA / "municipios_2022.csv").exists(), reason="dados municipais ausentes")
 def test_bellwether_municipios(out):
     bm = out["bellwether_municipios"]
     assert 0 < len(bm) <= 15
