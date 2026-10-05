@@ -68,6 +68,34 @@ def documento_comparador(fragmento: str) -> str:
             + titulo + "\n" + cab + "".join(links) + "\n</head>\n<body>\n" + VOLTAR + corpo.strip() + "\n</body>\n</html>\n")
 
 
+VOLTAR_CENARIOS = """<nav class="voltar-painel" aria-label="Voltar" style="padding:10px 16px;font:600 0.92rem system-ui,sans-serif">\
+<a href="index.html" style="color:inherit">← Voltar ao painel</a></nav>
+"""
+
+
+def documento_cenarios(html: str) -> str:
+    """cenarios.html já é um documento completo; só injeta o link de volta ao painel, se ainda não houver um."""
+    if re.search(r"""href=["'](?:\./)?index\.html(?:#[^"']*)?["']""", html):
+        return html
+    m = re.search(r"<body[^>]*>", html, flags=re.I)
+    if not m:
+        return VOLTAR_CENARIOS + html
+    return html[:m.end()] + "\n" + VOLTAR_CENARIOS + html[m.end():]
+
+
+def publicar_cenarios(orig: Path, dest: Path) -> bool:
+    """Copia cenarios.html (com o link de volta) e cenarios.json, se existirem. Retorna se a página foi publicada."""
+    pag = orig / "cenarios.html"
+    if not pag.exists():
+        print("ausente (pulado): cenarios.html")
+        return False
+    tmp = dest / "cenarios.html.tmp"
+    tmp.write_text(documento_cenarios(pag.read_text(encoding="utf-8")), encoding="utf-8")
+    tmp.replace(dest / "cenarios.html")
+    copiar_opcional(orig / "cenarios.json", dest / "cenarios.json")
+    return True
+
+
 def copiar_opcional(origem: Path, destino: Path) -> bool:
     """Copia se existir; arquivo ausente ou ilegível não interrompe a publicação (o painel esconde o card).
     Escreve num temporário e renomeia, para não publicar um JSON pela metade se outro processo estiver
@@ -89,6 +117,7 @@ def copiar_opcional(origem: Path, destino: Path) -> bool:
 def main():
     DEST.mkdir(exist_ok=True)
     html = (ORIG / "index.html").read_text(encoding="utf-8")
+    publicar_cenarios(ORIG, DEST)          # "Cenários econômicos": página extra, menu só aparece se ela existir
     (DEST / "index.html").write_text(link_cenarios(converter(html), (DEST / "cenarios.html").exists()), encoding="utf-8")
     comp = AQUI.parent / "comparador" / "index.html"
     if comp.exists():                     # "Propostas dos candidatos": página extra do mesmo artifact
@@ -100,7 +129,8 @@ def main():
     shutil.copyfile(ORIG / "resultados.json", DEST / "resultados.json")
     if (ORIG / "resultados_2t.json").exists():     # 2º turno com o 1º turno apurado (resultado_1t.py)
         shutil.copyfile(ORIG / "resultados_2t.json", DEST / "resultados_2t.json")
-    for nome in ("mercado_ao_vivo.json", "benchmarks.json"):   # painéis "Mercado ao vivo" e "Apuração ao vivo"
+    for nome in ("mercado_ao_vivo.json", "benchmarks.json",    # painéis "Mercado ao vivo" e "Apuração ao vivo"
+                 "nordeste.json", "curiosidades.json"):        # abas "Nordeste" e "Curiosidades"
         copiar_opcional(ORIG / nome, DEST / nome)
     alt = AQUI.parent / "modelo_alternativo" / "resultados_alt.json"
     if alt.exists():                      # comparação com o modelo alternativo (lida relativamente pelo painel)

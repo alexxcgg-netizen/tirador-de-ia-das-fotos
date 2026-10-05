@@ -1,0 +1,1095 @@
+{
+ "meta": {
+  "titulo": "Nordeste no 1º turno de 2026 x 2022",
+  "referencia": "2026-10-05",
+  "gerado_por": "simulador/gerar_nordeste_json.py",
+  "fontes": [
+   "TSE: 1º turno 2026 por município (modelo_municipal/data/mun_2026_1t.csv), 2022 e 2018 (munzona)",
+   "IBGE Censo 2022 (evangélicos, renda), MDS (Bolsa Família set./2026)",
+   "research_notes/Nordeste e cenarios economicos 2026: nordeste_dados_1t.py, nordeste_dados_1t.md, nordeste_opiniao.md"
+  ],
+  "nota_calc": "[calc] = cálculo próprio a partir dos arquivos do TSE/IBGE/MDS no repositório. Swing = % de Lula nos válidos no 1T 2026 menos no 1T 2022. Δmargem = (Lula − Flávio) 2026 menos (Lula − Bolsonaro) 2022, em votos."
+ },
+ "resumo": {
+  "lula26": 63.8,
+  "flavio26": 30.9,
+  "lula22": 66.8,
+  "bols22": 27.0,
+  "margem22_pp": 39.8,
+  "margem26_pp": 32.9,
+  "swing": -3.0,
+  "dmargem_mil": -1897.0,
+  "dmargem_nacional_mil": -8450,
+  "comp22": 80.5,
+  "comp26": 81.5,
+  "dcomp": 1.0,
+  "comp_br22": 79.05,
+  "comp_br26": 78.88,
+  "terceiros_mil": 1766.0,
+  "terceiros_pct": 5.2,
+  "gap_nacional_mil": 2259,
+  "eleitorado_ne_pct": 27.4,
+  "maiores_perdas": [
+   {
+    "uf": "BA",
+    "dmargem_mil": -621.0
+   },
+   {
+    "uf": "CE",
+    "dmargem_mil": -404.0
+   },
+   {
+    "uf": "MA",
+    "dmargem_mil": -297.0
+   }
+  ]
+ },
+ "uf": [
+  {
+   "grupo": "MA",
+   "faixa": null,
+   "munic": 217,
+   "validos26_mil": 4005.0,
+   "lula22": 68.8,
+   "lula26": 64.0,
+   "flavio26": 30.9,
+   "bols22": 26.0,
+   "terc26": 5.1,
+   "swing": -4.9,
+   "swing2p": -5.2,
+   "dvotos_lula_mil": -42.0,
+   "dmargem_mil": -297.0,
+   "comp22": 77.8,
+   "comp26": 80.2,
+   "dcomp": 2.4
+  },
+  {
+   "grupo": "PI",
+   "faixa": null,
+   "munic": 224,
+   "validos26_mil": 2143.0,
+   "lula22": 74.3,
+   "lula26": 71.0,
+   "flavio26": 24.1,
+   "bols22": 19.9,
+   "terc26": 4.9,
+   "swing": -3.3,
+   "swing2p": -4.2,
+   "dvotos_lula_mil": 3.0,
+   "dmargem_mil": -107.0,
+   "comp22": 82.3,
+   "comp26": 82.7,
+   "dcomp": 0.4
+  },
+  {
+   "grupo": "CE",
+   "faixa": null,
+   "munic": 184,
+   "validos26_mil": 5615.0,
+   "lula22": 65.9,
+   "lula26": 63.3,
+   "flavio26": 31.3,
+   "bols22": 25.4,
+   "terc26": 5.4,
+   "swing": -2.6,
+   "swing2p": -5.3,
+   "dvotos_lula_mil": -26.0,
+   "dmargem_mil": -404.0,
+   "comp22": 82.5,
+   "comp26": 84.4,
+   "dcomp": 1.9
+  },
+  {
+   "grupo": "RN",
+   "faixa": null,
+   "munic": 167,
+   "validos26_mil": 2072.0,
+   "lula22": 63.0,
+   "lula26": 59.8,
+   "flavio26": 34.8,
+   "bols22": 31.0,
+   "terc26": 5.5,
+   "swing": -3.2,
+   "swing2p": -3.8,
+   "dvotos_lula_mil": -26.0,
+   "dmargem_mil": -124.0,
+   "comp22": 81.8,
+   "comp26": 81.6,
+   "dcomp": -0.2
+  },
+  {
+   "grupo": "PB",
+   "faixa": null,
+   "munic": 223,
+   "validos26_mil": 2513.0,
+   "lula22": 64.2,
+   "lula26": 61.3,
+   "flavio26": 33.1,
+   "bols22": 29.6,
+   "terc26": 5.6,
+   "swing": -2.9,
+   "swing2p": -3.5,
+   "dvotos_lula_mil": -14.0,
+   "dmargem_mil": -128.0,
+   "comp22": 82.7,
+   "comp26": 82.6,
+   "dcomp": -0.1
+  },
+  {
+   "grupo": "PE",
+   "faixa": null,
+   "munic": 185,
+   "validos26_mil": 5601.0,
+   "lula22": 65.3,
+   "lula26": 63.5,
+   "flavio26": 31.0,
+   "bols22": 29.9,
+   "terc26": 5.5,
+   "swing": -1.8,
+   "swing2p": -1.4,
+   "dvotos_lula_mil": -4.0,
+   "dmargem_mil": -111.0,
+   "comp22": 81.8,
+   "comp26": 81.8,
+   "dcomp": 0.0
+  },
+  {
+   "grupo": "AL",
+   "faixa": null,
+   "munic": 102,
+   "validos26_mil": 1819.0,
+   "lula22": 56.5,
+   "lula26": 54.7,
+   "flavio26": 40.4,
+   "bols22": 36.0,
+   "terc26": 4.8,
+   "swing": -1.8,
+   "swing2p": -3.5,
+   "dvotos_lula_mil": 21.0,
+   "dmargem_mil": -93.0,
+   "comp22": 77.6,
+   "comp26": 79.4,
+   "dcomp": 1.7
+  },
+  {
+   "grupo": "SE",
+   "faixa": null,
+   "munic": 75,
+   "validos26_mil": 1364.0,
+   "lula22": 63.8,
+   "lula26": 62.7,
+   "flavio26": 30.6,
+   "bols22": 29.2,
+   "terc26": 6.6,
+   "swing": -1.1,
+   "swing2p": -1.4,
+   "dvotos_lula_mil": 27.0,
+   "dmargem_mil": -12.0,
+   "comp22": 81.7,
+   "comp26": 82.7,
+   "dcomp": 1.0
+  },
+  {
+   "grupo": "BA",
+   "faixa": null,
+   "munic": 417,
+   "validos26_mil": 8533.0,
+   "lula22": 69.7,
+   "lula26": 66.1,
+   "flavio26": 28.6,
+   "bols22": 24.3,
+   "terc26": 5.3,
+   "swing": -3.6,
+   "swing2p": -4.3,
+   "dvotos_lula_mil": -230.0,
+   "dmargem_mil": -621.0,
+   "comp22": 78.7,
+   "comp26": 79.8,
+   "dcomp": 1.1
+  }
+ ],
+ "tipo": [
+  {
+   "grupo": "Capital",
+   "faixa": null,
+   "munic": 9,
+   "validos26_mil": 6763.0,
+   "lula22": 55.8,
+   "lula26": 55.3,
+   "flavio26": 37.4,
+   "bols22": 34.9,
+   "terc26": 7.4,
+   "swing": -0.6,
+   "swing2p": -1.9,
+   "dvotos_lula_mil": -89.0,
+   "dmargem_mil": -223.0,
+   "comp22": 83.3,
+   "comp26": 83.2,
+   "dcomp": -0.1
+  },
+  {
+   "grupo": "Interior",
+   "faixa": null,
+   "munic": 1785,
+   "validos26_mil": 26902.0,
+   "lula22": 69.7,
+   "lula26": 65.9,
+   "flavio26": 29.2,
+   "bols22": 24.8,
+   "terc26": 4.9,
+   "swing": -3.8,
+   "swing2p": -4.4,
+   "dvotos_lula_mil": -202.0,
+   "dmargem_mil": -1674.0,
+   "comp22": 79.7,
+   "comp26": 81.1,
+   "dcomp": 1.3
+  }
+ ],
+ "porte": [
+  {
+   "grupo": "<10 mil",
+   "faixa": null,
+   "munic": 750,
+   "validos26_mil": 3616.0,
+   "lula22": 76.3,
+   "lula26": 71.9,
+   "flavio26": 24.1,
+   "bols22": 19.0,
+   "terc26": 4.0,
+   "swing": -4.4,
+   "swing2p": -5.2,
+   "dvotos_lula_mil": -17.0,
+   "dmargem_mil": -237.0,
+   "comp22": 79.1,
+   "comp26": 80.7,
+   "dcomp": 1.7
+  },
+  {
+   "grupo": "10-20 mil",
+   "faixa": null,
+   "munic": 573,
+   "validos26_mil": 6249.0,
+   "lula22": 74.5,
+   "lula26": 70.3,
+   "flavio26": 25.6,
+   "bols22": 20.7,
+   "terc26": 4.2,
+   "swing": -4.3,
+   "swing2p": -5.0,
+   "dvotos_lula_mil": -60.0,
+   "dmargem_mil": -423.0,
+   "comp22": 77.7,
+   "comp26": 80.2,
+   "dcomp": 2.5
+  },
+  {
+   "grupo": "20-50 mil",
+   "faixa": null,
+   "munic": 349,
+   "validos26_mil": 7904.0,
+   "lula22": 72.3,
+   "lula26": 68.2,
+   "flavio26": 27.3,
+   "bols22": 22.6,
+   "terc26": 4.5,
+   "swing": -4.1,
+   "swing2p": -4.8,
+   "dvotos_lula_mil": -65.0,
+   "dmargem_mil": -519.0,
+   "comp22": 78.5,
+   "comp26": 80.4,
+   "dcomp": 1.9
+  },
+  {
+   "grupo": "50-100 mil",
+   "faixa": null,
+   "munic": 77,
+   "validos26_mil": 3946.0,
+   "lula22": 65.7,
+   "lula26": 61.7,
+   "flavio26": 32.9,
+   "bols22": 28.5,
+   "terc26": 5.5,
+   "swing": -4.0,
+   "swing2p": -4.5,
+   "dvotos_lula_mil": -36.0,
+   "dmargem_mil": -262.0,
+   "comp22": 82.0,
+   "comp26": 82.3,
+   "dcomp": 0.3
+  },
+  {
+   "grupo": "100-200 mil",
+   "faixa": null,
+   "munic": 25,
+   "validos26_mil": 2671.0,
+   "lula22": 58.4,
+   "lula26": 56.0,
+   "flavio26": 37.6,
+   "bols22": 34.1,
+   "terc26": 6.4,
+   "swing": -2.4,
+   "swing2p": -3.3,
+   "dvotos_lula_mil": 1.0,
+   "dmargem_mil": -130.0,
+   "comp22": 82.1,
+   "comp26": 82.4,
+   "dcomp": 0.3
+  },
+  {
+   "grupo": ">200 mil",
+   "faixa": null,
+   "munic": 20,
+   "validos26_mil": 9279.0,
+   "lula22": 56.5,
+   "lula26": 55.5,
+   "flavio26": 37.3,
+   "bols22": 34.9,
+   "terc26": 7.2,
+   "swing": -1.0,
+   "swing2p": -2.0,
+   "dvotos_lula_mil": -114.0,
+   "dmargem_mil": -326.0,
+   "comp22": 83.6,
+   "comp26": 83.2,
+   "dcomp": -0.4
+  }
+ ],
+ "pbf": [
+  {
+   "grupo": "Q1 (baixo)",
+   "faixa": "9-42",
+   "munic": 359,
+   "validos26_mil": 17946.0,
+   "lula22": 60.3,
+   "lula26": 58.1,
+   "flavio26": 35.4,
+   "bols22": 32.2,
+   "terc26": 6.4,
+   "swing": -2.2,
+   "swing2p": -3.1,
+   "dvotos_lula_mil": -212.0,
+   "dmargem_mil": -894.0,
+   "comp22": 82.4,
+   "comp26": 82.5,
+   "dcomp": 0.1
+  },
+  {
+   "grupo": "Q2",
+   "faixa": "42-48",
+   "munic": 359,
+   "validos26_mil": 4901.0,
+   "lula22": 71.0,
+   "lula26": 67.0,
+   "flavio26": 28.4,
+   "bols22": 23.6,
+   "terc26": 4.5,
+   "swing": -4.0,
+   "swing2p": -4.8,
+   "dvotos_lula_mil": -38.0,
+   "dmargem_mil": -326.0,
+   "comp22": 79.6,
+   "comp26": 81.1,
+   "dcomp": 1.6
+  },
+  {
+   "grupo": "Q3",
+   "faixa": "48-53",
+   "munic": 358,
+   "validos26_mil": 3829.0,
+   "lula22": 75.0,
+   "lula26": 71.0,
+   "flavio26": 24.8,
+   "bols22": 20.2,
+   "terc26": 4.2,
+   "swing": -4.0,
+   "swing2p": -4.7,
+   "dvotos_lula_mil": -33.0,
+   "dmargem_mil": -242.0,
+   "comp22": 78.1,
+   "comp26": 80.2,
+   "dcomp": 2.0
+  },
+  {
+   "grupo": "Q4",
+   "faixa": "53-58",
+   "munic": 359,
+   "validos26_mil": 3662.0,
+   "lula22": 75.5,
+   "lula26": 71.0,
+   "flavio26": 25.0,
+   "bols22": 19.9,
+   "terc26": 4.1,
+   "swing": -4.6,
+   "swing2p": -5.2,
+   "dvotos_lula_mil": -23.0,
+   "dmargem_mil": -247.0,
+   "comp22": 77.8,
+   "comp26": 80.2,
+   "dcomp": 2.4
+  },
+  {
+   "grupo": "Q5 (alto)",
+   "faixa": "58-87",
+   "munic": 359,
+   "validos26_mil": 3327.0,
+   "lula22": 77.2,
+   "lula26": 72.9,
+   "flavio26": 23.3,
+   "bols22": 18.3,
+   "terc26": 3.8,
+   "swing": -4.3,
+   "swing2p": -5.0,
+   "dvotos_lula_mil": 15.0,
+   "dmargem_mil": -187.0,
+   "comp22": 77.2,
+   "comp26": 79.8,
+   "dcomp": 2.6
+  }
+ ],
+ "evang": [
+  {
+   "grupo": "Q1 (baixo)",
+   "faixa": "3-11",
+   "munic": 361,
+   "validos26_mil": 3126.0,
+   "lula22": 78.4,
+   "lula26": 74.2,
+   "flavio26": 21.6,
+   "bols22": 16.5,
+   "terc26": 4.2,
+   "swing": -4.2,
+   "swing2p": -5.2,
+   "dvotos_lula_mil": -13.0,
+   "dmargem_mil": -197.0,
+   "comp22": 78.9,
+   "comp26": 80.5,
+   "dcomp": 1.7
+  },
+  {
+   "grupo": "Q2",
+   "faixa": "11-14",
+   "munic": 357,
+   "validos26_mil": 3817.0,
+   "lula22": 77.2,
+   "lula26": 72.9,
+   "flavio26": 22.8,
+   "bols22": 17.8,
+   "terc26": 4.3,
+   "swing": -4.3,
+   "swing2p": -5.1,
+   "dvotos_lula_mil": -29.0,
+   "dmargem_mil": -251.0,
+   "comp22": 78.7,
+   "comp26": 80.8,
+   "dcomp": 2.1
+  },
+  {
+   "grupo": "Q3",
+   "faixa": "14-18",
+   "munic": 358,
+   "validos26_mil": 4607.0,
+   "lula22": 74.2,
+   "lula26": 70.1,
+   "flavio26": 25.4,
+   "bols22": 20.4,
+   "terc26": 4.4,
+   "swing": -4.1,
+   "swing2p": -5.1,
+   "dvotos_lula_mil": -41.0,
+   "dmargem_mil": -315.0,
+   "comp22": 79.3,
+   "comp26": 81.0,
+   "dcomp": 1.7
+  },
+  {
+   "grupo": "Q4",
+   "faixa": "18-24",
+   "munic": 359,
+   "validos26_mil": 6136.0,
+   "lula22": 69.0,
+   "lula26": 65.4,
+   "flavio26": 29.5,
+   "bols22": 25.1,
+   "terc26": 5.1,
+   "swing": -3.6,
+   "swing2p": -4.4,
+   "dvotos_lula_mil": -49.0,
+   "dmargem_mil": -383.0,
+   "comp22": 79.8,
+   "comp26": 81.4,
+   "dcomp": 1.6
+  },
+  {
+   "grupo": "Q5 (alto)",
+   "faixa": "24-59",
+   "munic": 359,
+   "validos26_mil": 15979.0,
+   "lula22": 59.2,
+   "lula26": 57.0,
+   "flavio26": 36.7,
+   "bols22": 33.6,
+   "terc26": 6.3,
+   "swing": -2.1,
+   "swing2p": -2.9,
+   "dvotos_lula_mil": -160.0,
+   "dmargem_mil": -751.0,
+   "comp22": 81.8,
+   "comp26": 82.1,
+   "dcomp": 0.3
+  }
+ ],
+ "renda": [
+  {
+   "grupo": "Q1 (baixo)",
+   "faixa": "359-644",
+   "munic": 359,
+   "validos26_mil": 3395.0,
+   "lula22": 78.3,
+   "lula26": 74.0,
+   "flavio26": 22.2,
+   "bols22": 17.1,
+   "terc26": 3.7,
+   "swing": -4.3,
+   "swing2p": -5.2,
+   "dvotos_lula_mil": 5.0,
+   "dmargem_mil": -201.0,
+   "comp22": 76.5,
+   "comp26": 79.3,
+   "dcomp": 2.8
+  },
+  {
+   "grupo": "Q2",
+   "faixa": "644-703",
+   "munic": 359,
+   "validos26_mil": 3579.0,
+   "lula22": 75.8,
+   "lula26": 71.7,
+   "flavio26": 24.3,
+   "bols22": 19.5,
+   "terc26": 4.0,
+   "swing": -4.1,
+   "swing2p": -4.9,
+   "dvotos_lula_mil": -17.0,
+   "dmargem_mil": -222.0,
+   "comp22": 78.1,
+   "comp26": 80.3,
+   "dcomp": 2.2
+  },
+  {
+   "grupo": "Q3",
+   "faixa": "703-759",
+   "munic": 358,
+   "validos26_mil": 3891.0,
+   "lula22": 74.0,
+   "lula26": 69.9,
+   "flavio26": 25.9,
+   "bols22": 20.9,
+   "terc26": 4.3,
+   "swing": -4.1,
+   "swing2p": -5.0,
+   "dvotos_lula_mil": -33.0,
+   "dmargem_mil": -264.0,
+   "comp22": 78.4,
+   "comp26": 80.5,
+   "dcomp": 2.1
+  },
+  {
+   "grupo": "Q4",
+   "faixa": "759-840",
+   "munic": 359,
+   "validos26_mil": 4412.0,
+   "lula22": 70.7,
+   "lula26": 66.5,
+   "flavio26": 28.9,
+   "bols22": 24.1,
+   "terc26": 4.6,
+   "swing": -4.2,
+   "swing2p": -4.9,
+   "dvotos_lula_mil": -44.0,
+   "dmargem_mil": -306.0,
+   "comp22": 79.4,
+   "comp26": 81.1,
+   "dcomp": 1.7
+  },
+  {
+   "grupo": "Q5 (alto)",
+   "faixa": "840-2566",
+   "munic": 359,
+   "validos26_mil": 18388.0,
+   "lula22": 60.6,
+   "lula26": 58.4,
+   "flavio26": 35.3,
+   "bols22": 32.1,
+   "terc26": 6.4,
+   "swing": -2.2,
+   "swing2p": -3.1,
+   "dvotos_lula_mil": -202.0,
+   "dmargem_mil": -903.0,
+   "comp22": 82.4,
+   "comp26": 82.5,
+   "dcomp": 0.1
+  }
+ ],
+ "capital_interior": [
+  {
+   "uf": "MA",
+   "capital": "São Luís",
+   "swing_cap": -2.0,
+   "swing_int": -5.4,
+   "dmargem_cap_mil": -27.0,
+   "dmargem_int_mil": -270.0
+  },
+  {
+   "uf": "PI",
+   "capital": "Teresina",
+   "swing_cap": -1.2,
+   "swing_int": -4.1,
+   "dmargem_cap_mil": -19.0,
+   "dmargem_int_mil": -88.0
+  },
+  {
+   "uf": "CE",
+   "capital": "Fortaleza",
+   "swing_cap": 0.3,
+   "swing_int": -3.9,
+   "dmargem_cap_mil": -61.0,
+   "dmargem_int_mil": -343.0
+  },
+  {
+   "uf": "RN",
+   "capital": "Natal",
+   "swing_cap": -1.2,
+   "swing_int": -3.9,
+   "dmargem_cap_mil": -16.0,
+   "dmargem_int_mil": -108.0
+  },
+  {
+   "uf": "PB",
+   "capital": "João Pessoa",
+   "swing_cap": -0.9,
+   "swing_int": -3.5,
+   "dmargem_cap_mil": -9.0,
+   "dmargem_int_mil": -118.0
+  },
+  {
+   "uf": "PE",
+   "capital": "Recife",
+   "swing_cap": 1.3,
+   "swing_int": -2.7,
+   "dmargem_cap_mil": 19.0,
+   "dmargem_int_mil": -130.0
+  },
+  {
+   "uf": "AL",
+   "capital": "Maceió",
+   "swing_cap": 0.7,
+   "swing_int": -2.9,
+   "dmargem_cap_mil": -12.0,
+   "dmargem_int_mil": -81.0
+  },
+  {
+   "uf": "SE",
+   "capital": "Aracaju",
+   "swing_cap": 1.5,
+   "swing_int": -2.2,
+   "dmargem_cap_mil": 4.0,
+   "dmargem_int_mil": -16.0
+  },
+  {
+   "uf": "BA",
+   "capital": "Salvador",
+   "swing_cap": -1.7,
+   "swing_int": -4.1,
+   "dmargem_cap_mil": -102.0,
+   "dmargem_int_mil": -519.0
+  }
+ ],
+ "terceiros_uf": [
+  {
+   "uf": "MA",
+   "caiado_mil": 50.0,
+   "cury_mil": 85.0,
+   "renan_mil": 60.0,
+   "zema_mil": 5.0,
+   "total_mil": 200.0,
+   "pct_validos": 5.0
+  },
+  {
+   "uf": "PI",
+   "caiado_mil": 22.0,
+   "cury_mil": 48.0,
+   "renan_mil": 32.0,
+   "zema_mil": 1.0,
+   "total_mil": 103.0,
+   "pct_validos": 4.8
+  },
+  {
+   "uf": "CE",
+   "caiado_mil": 46.0,
+   "cury_mil": 140.0,
+   "renan_mil": 108.0,
+   "zema_mil": 4.0,
+   "total_mil": 298.0,
+   "pct_validos": 5.3
+  },
+  {
+   "uf": "RN",
+   "caiado_mil": 16.0,
+   "cury_mil": 57.0,
+   "renan_mil": 35.0,
+   "zema_mil": 2.0,
+   "total_mil": 111.0,
+   "pct_validos": 5.3
+  },
+  {
+   "uf": "PB",
+   "caiado_mil": 20.0,
+   "cury_mil": 74.0,
+   "renan_mil": 42.0,
+   "zema_mil": 2.0,
+   "total_mil": 138.0,
+   "pct_validos": 5.5
+  },
+  {
+   "uf": "PE",
+   "caiado_mil": 73.0,
+   "cury_mil": 138.0,
+   "renan_mil": 86.0,
+   "zema_mil": 6.0,
+   "total_mil": 303.0,
+   "pct_validos": 5.4
+  },
+  {
+   "uf": "AL",
+   "caiado_mil": 14.0,
+   "cury_mil": 42.0,
+   "renan_mil": 27.0,
+   "zema_mil": 1.0,
+   "total_mil": 85.0,
+   "pct_validos": 4.7
+  },
+  {
+   "uf": "SE",
+   "caiado_mil": 27.0,
+   "cury_mil": 39.0,
+   "renan_mil": 21.0,
+   "zema_mil": 1.0,
+   "total_mil": 88.0,
+   "pct_validos": 6.5
+  },
+  {
+   "uf": "BA",
+   "caiado_mil": 122.0,
+   "cury_mil": 195.0,
+   "renan_mil": 117.0,
+   "zema_mil": 6.0,
+   "total_mil": 441.0,
+   "pct_validos": 5.2
+  },
+  {
+   "uf": "NE",
+   "caiado_mil": 390.0,
+   "cury_mil": 818.0,
+   "renan_mil": 529.0,
+   "zema_mil": 29.0,
+   "total_mil": 1766.0,
+   "pct_validos": 5.2
+  }
+ ],
+ "comparecimento_1t2t": [
+  {
+   "ano": 2014,
+   "dcomp_pp": -1.6,
+   "dvotantes_mil": -626.0,
+   "dmargem_pt_mil": 34.0,
+   "ufs": {
+    "MA": -3.7,
+    "PI": -2.4,
+    "CE": -1.6,
+    "RN": -0.8,
+    "PB": -0.4,
+    "PE": -1.2,
+    "AL": -0.4,
+    "SE": -1.2,
+    "BA": -1.6
+   }
+  },
+  {
+   "ano": 2018,
+   "dcomp_pp": -1.1,
+   "dvotantes_mil": -436.0,
+   "dmargem_pt_mil": 4335.0,
+   "ufs": {
+    "MA": -2.8,
+    "PI": -2.1,
+    "CE": -1.4,
+    "RN": -1.0,
+    "PB": -1.0,
+    "PE": -0.2,
+    "AL": -2.2,
+    "SE": -1.0,
+    "BA": -0.4
+   }
+  },
+  {
+   "ano": 2022,
+   "dcomp_pp": 0.2,
+   "dvotantes_mil": 92.0,
+   "dmargem_pt_mil": -394.0,
+   "ufs": {
+    "MA": -1.3,
+    "PI": -1.0,
+    "CE": 0.3,
+    "RN": 0.7,
+    "PB": 0.6,
+    "PE": 0.9,
+    "AL": -0.9,
+    "SE": -0.5,
+    "BA": 0.9
+   }
+  }
+ ],
+ "cenarios": [
+  {
+   "cod": "A",
+   "descricao": "Pessimista: transf. pró-Flávio, comparecimento cai como 2018",
+   "transferencia_mil": -974.0,
+   "comparecimento_mil": -156.0,
+   "brancos_nulos_mil": 0.0,
+   "total_mil": -1130.0,
+   "pct_gap": -50.0
+  },
+  {
+   "cod": "A2",
+   "descricao": "Histórico 2022: transf. Quaest, comparecimento como 2022",
+   "transferencia_mil": -430.0,
+   "comparecimento_mil": 33.0,
+   "brancos_nulos_mil": 0.0,
+   "total_mil": -397.0,
+   "pct_gap": -18.0
+  },
+  {
+   "cod": "B",
+   "descricao": "Base: transf. Quaest, comparecimento estável",
+   "transferencia_mil": -430.0,
+   "comparecimento_mil": 0.0,
+   "brancos_nulos_mil": 0.0,
+   "total_mil": -430.0,
+   "pct_gap": -19.0
+  },
+  {
+   "cod": "C",
+   "descricao": "Base + 1 p.p. comparecimento, -10% brancos/nulos",
+   "transferencia_mil": -430.0,
+   "comparecimento_mil": 143.0,
+   "brancos_nulos_mil": 63.0,
+   "total_mil": -224.0,
+   "pct_gap": -10.0
+  },
+  {
+   "cod": "D",
+   "descricao": "Otimista: transf. pró-Lula, +2 p.p. comparecimento, -15% B/N",
+   "transferencia_mil": -68.0,
+   "comparecimento_mil": 287.0,
+   "brancos_nulos_mil": 94.0,
+   "total_mil": 313.0,
+   "pct_gap": 14.0
+  },
+  {
+   "cod": "E",
+   "descricao": "Teto: transf. pró-Lula, +3 p.p., novos +10 p.p. pró-Lula (+10), -20% B/N",
+   "transferencia_mil": -68.0,
+   "comparecimento_mil": 678.0,
+   "brancos_nulos_mil": 197.0,
+   "total_mil": 807.0,
+   "pct_gap": 36.0
+  }
+ ],
+ "cenarios_nota": "Contribuição líquida do NE (Lula − Flávio, mil votos) por três canais: transferência dos votos dos 4 terceiros do NE, variação do comparecimento entre turnos e brancos/nulos que passam a votar válido. São exercícios aritméticos condicionais, não previsões. Matrizes: Quaest nacional (2–3/10 e 24–27/9), \"pró-Lula\" (+10 p.p. para Lula em cada terceiro) e \"pró-Flávio\" (inspirada na inferência ecológica de 2022 no NE).",
+ "opiniao": {
+  "preocupacoes": {
+   "titulo": "Maior problema, segundo eleitores do NE (Quaest)",
+   "colunas": [
+    "abr./2026",
+    "fev./2026"
+   ],
+   "linhas": [
+    [
+     "Violência",
+     34,
+     35
+    ],
+    [
+     "Corrupção",
+     18,
+     9
+    ],
+    [
+     "Questões sociais",
+     15,
+     null
+    ],
+    [
+     "Saúde",
+     14,
+     null
+    ],
+    [
+     "Economia",
+     8,
+     12
+    ],
+    [
+     "Educação",
+     5,
+     null
+    ]
+   ],
+   "fonte": "Quaest, 10–13/04/2026, recorte NE (Jornal da Paraíba, 24/04/2026)",
+   "url": "https://jornaldaparaiba.com.br/politica/preocupacao-com-corrupcao-dobra-no-nordeste-e-chega-a-18-aponta-genialquaest"
+  },
+  "itens": [
+   {
+    "rot": "FATO",
+    "txt": "Custo de vida: 60% dos nordestinos disseram que o poder de compra diminuiu em 12 meses (fev./2026; 21% igual, 18% aumentou). A percepção de alta dos alimentos passou de 58% para 72% entre março e abril.",
+    "fonte": "Quaest, 05–09/02/2026 (Jornal da Paraíba)",
+    "url": "https://jornaldaparaiba.com.br/politica/60-dos-nordestinos-dizem-que-poder-de-compra-diminuiu-em-1-ano-diz-genialquaest"
+   },
+   {
+    "rot": "FATO",
+    "txt": "Aprovação de Lula no NE: 61% aprovam e 36% desaprovam (24–27/09/2026), a única região com saldo positivo (nacional 46 x 49). A desaprovação no NE subiu de 29% para 35% entre julho e setembro.",
+    "fonte": "Quaest (InfoMoney, 28/09/2026)",
+    "url": "https://www.infomoney.com.br/politica/quaest-lula-registra-46-de-aprovacao-e-49-de-desaprovacao/"
+   },
+   {
+    "rot": "FATO",
+    "txt": "Bolsa Família: entre beneficiários, Lula foi de 51% para 64% na semana anterior ao reajuste de 15% e ficou em 64% depois dele. Não aparece efeito adicional do anúncio. O pagamento reajustado começa em 19/10, seis dias antes do 2º turno.",
+    "fonte": "BTG/Nexus, 18–20/09/2026 (Correio); Decreto 13.120/2026 (Metrópoles)",
+    "url": "https://www.correio24horas.com.br/eleicoes/lula-nao-tem-ganho-mas-mantem-64-da-preferencia-de-beneficiarios-do-bolsa-familia-apos-anuncio-de-reajuste-aponta-pesquisa-0926"
+   },
+   {
+    "rot": "FATO",
+    "txt": "Religião: entre católicos do NE, Lula tem vantagem de 29 a 53 p.p. em todos os estados. Entre evangélicos, a disputa empata na PB (35 x 35) e se inverte em AL (Flávio 48 x Lula 25).",
+    "fonte": "Quaest, 24–29/08/2026 (CartaCapital, 05/09/2026)",
+    "url": "https://www.cartacapital.com.br/artigo/lula-lidera-com-folga-no-nordeste-mas-enfrenta-resistencia-entre-evangelicos/"
+   },
+   {
+    "rot": "FATO",
+    "txt": "Pesquisas x urna: na Bahia, a AtlasIntel deu 60,5% a Lula nos válidos; o resultado foi 66,1%. No Piauí, 68,5% previstos contra 71,0%. Base limitada: não generalizar sem as estaduais de outros institutos.",
+    "fonte": "AtlasIntel, 27/09–02/10 (Exame, 03/10/2026)",
+    "url": "https://exame.com/brasil/pesquisa-atlasintel-lula-lidera-com-vantagem-de-307-pontos-no-maior-colegio-do-nordeste/"
+   }
+  ]
+ },
+ "explicacoes": [
+  {
+   "exp": "Custo de vida e alimentos",
+   "quem": "Rogério Marinho (PL), Revista Oeste, Felipe Nunes (Quaest), B. Tadeu César (UFRGS)",
+   "a_favor": "60% perderam poder de compra (Quaest, fev.); cesta básica com maior alta no NE (DIEESE, 1º tri)",
+   "contra": "Aprovação no NE em 61% em setembro; reajuste do Bolsa Família e salário mínimo atenuam"
+  },
+  {
+   "exp": "Segurança e violência",
+   "quem": "Gazeta do Povo; oposições estaduais (ACM Neto, Ciro); CartaCapital",
+   "a_favor": "Violência é o problema nº 1 (34–40%); BA, AL, PE e CE com altas taxas de homicídio (Atlas da Violência 2026)",
+   "contra": "Governadores do PT na BA e no CE reeleitos no 1º turno; punição ao governante \"não é automática\" (Piquet Carneiro)"
+  },
+  {
+   "exp": "Crescimento evangélico e voto por valores",
+   "quem": "Nexo; CartaCapital (Menezes, UFBA); BBC (V. Araújo)",
+   "a_favor": "Empate ou inversão entre evangélicos na PB e em AL; desaprovação de 53–63% entre evangélicos em BA, PB e AL",
+   "contra": "Nos municípios, Lula perdeu menos onde há mais evangélicos [calc]; AD Madureira apoiou Caiado; 83% rejeitam voto indicado pelo pastor"
+  },
+  {
+   "exp": "Ascensão social e nova classe média",
+   "quem": "Edinho Silva (PT) [ALEGAÇÃO]; Priscila Lapa (UFPE); Simone Viscarra (Univasf)",
+   "a_favor": "Erosão urbana de longo prazo nas capitais (−13,5 p.p. de 2006 a 2022); fronteira agrícola virou à direita",
+   "contra": "Em 2026 a queda foi maior no interior pequeno (−3,8 p.p.) que nas capitais (−0,6) [calc]"
+  },
+  {
+   "exp": "Escândalos (INSS, Banco Master)",
+   "quem": "Gazeta do Povo, Revista Oeste, PL (vice Alfredo Gaspar)",
+   "a_favor": "NE é a região mais afetada pela fraude do INSS; corrupção como problema dobrou no NE (9% → 18%)",
+   "contra": "Master atinge os dois lados; no NE o governo foi mais bem avaliado na resposta ao INSS"
+  },
+  {
+   "exp": "Fragmentação: migração para Cury e Caiado",
+   "quem": "Diagnóstico interno da campanha de Lula (CNN, 21/09)",
+   "a_favor": "BTG/Nexus: 5% dos eleitores de Lula em 2022 foram para Cury e 5% para Caiado",
+   "contra": "Os terceiros somaram só 5,2% dos válidos no NE [calc]; parte pode voltar no 2º turno"
+  },
+  {
+   "exp": "Política local e governadores",
+   "quem": "Imprensa regional",
+   "a_favor": "Aliados do governo perderam em PE, AL e MA",
+   "contra": "Voto \"Luquel\" em PE (Lula teve 63,5% no estado); derrota de aliado não é perda de voto presidencial"
+  },
+  {
+   "exp": "Desgaste de 16+ anos e novos canais de comunicação",
+   "quem": "Movimento Econômico (Márcio Didier)",
+   "a_favor": "Desaprovação em paridade técnica em alguns estados no início de 2026",
+   "contra": "Difícil de medir"
+  }
+ ],
+ "estrategias": {
+  "Lula": [
+   {
+    "rot": "FATO",
+    "txt": "Reta final do 1º turno no NE (Recife, Feira de Santana, AL, CE). Temas: Bolsa Família, bets, salário mínimo, fim da escala 6x1."
+   },
+   {
+    "rot": "ALEGAÇÃO",
+    "txt": "Para o 2º turno: caminhadas em vez de comícios, coordenação com Camilo Santana e foco na abstenção de idosos e mais pobres (CNN, 03/10)."
+   },
+   {
+    "rot": "FATO",
+    "txt": "Governadores aliados reeleitos na BA, no CE e no PI; senadores do PT eleitos na BA e em PE."
+   }
+  ],
+  "Flávio": [
+   {
+    "rot": "FATO",
+    "txt": "Giro pelo NE no 1º turno (Maceió, Arapiraca, Fortaleza, Juazeiro do Norte, Recife, Vitória da Conquista, Natal, São Luís) e guinada ao Sudeste a 11 dias do pleito."
+   },
+   {
+    "rot": "ALEGAÇÃO",
+    "txt": "Slogan \"Nordeste é solução\"; foco em segurança, emprego, custo de vida. Vice nordestino Alfredo Gaspar (PL-AL), relator da CPMI do INSS, com a missão de rodar os 9 estados."
+   },
+   {
+    "rot": "ALEGAÇÃO",
+    "txt": "Para o 2º turno: ofensiva no NE para reduzir rejeição, coordenação de Rogério Marinho (PL-RN), mais agendas em igrejas evangélicas (CNN, 03/10)."
+   }
+  ],
+  "fonte": "nordeste_opiniao.md, seções 4–6 (CNN Brasil, InfoMoney, Exame, Metrópoles, Voz da Bahia)",
+  "url": "https://www.cnnbrasil.com.br/blogs/taina-falcao/eleicoes/lula-e-flavio-ajustam-rota-e-desenham-estrategias-para-eventual-2o-turno/"
+ },
+ "monitorar": [
+  {
+   "tit": "Governadores do PSD",
+   "txt": "O PSD declarou neutralidade e liberou os diretórios. Três governadores do NE são do partido: Raquel Lyra (PE), Eduardo Braide (MA) e Fábio Mitidieri (SE). Até 05/10 não havia declaração deles para o 2º turno.",
+   "url": "https://www.cnnbrasil.com.br/eleicoes/psd-de-caiado-adota-neutralidade-e-libera-diretorios-em-2o-turno/"
+  },
+  {
+   "tit": "Assembleia de Deus Madureira",
+   "txt": "A CONAMAD apoiou Caiado no 1º turno e não definiu posição para o 2º. Com Caiado fora, a direção dessa rede (sobretudo em AL, PB e RN) é o principal ponto a observar no voto evangélico.",
+   "url": "https://veronoticias.com/politica/assembleia-de-deus-madureira-se-afasta-de-flavio-bolsonaro-e-apoia-caiado/"
+  },
+  {
+   "tit": "Ciro Gomes",
+   "txt": "Derrotado por Elmano (PT) no CE, mas vencedor em Fortaleza por cerca de 98 mil votos. O PL negociava um apoio de Ciro a Flávio no 2º turno (O Povo, 05/09).",
+   "url": "https://mais.opovo.com.br/colunistas/joao-paulo-biage-politica-brasilia/2026/09/05/pl-articula-apoio-de-ciro-a-flavio-no-2-turno.html"
+  },
+  {
+   "tit": "Comparecimento e Bolsa Família",
+   "txt": "Pagamento reajustado a partir de 19/10. O NE já tem a menor abstenção do país; em 2014, 2018 e 2022 o comparecimento regional não subiu mais de 0,2 p.p. entre os turnos [calc].",
+   "url": null
+  },
+  {
+   "tit": "RN e capitais apertadas",
+   "txt": "2º turno estadual no RN (Allyson Bezerra x Cadu de Lula) casado com o presidencial; Natal e João Pessoa foram as capitais mais disputadas.",
+   "url": null
+  }
+ ]
+}
