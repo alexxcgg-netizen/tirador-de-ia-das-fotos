@@ -322,3 +322,80 @@ o ganho esperado é pequeno e concentrado em eleições em que os eliminados sã
 −1,0 (2014), −0,5 (2018), +1,5 (2022) — compatível com o dp nacional de 1 p.p. Efeito partidário: correlação da
 variação da abstenção com o lean −0,04, −0,04, −0,20 (2022: UFs petistas compareceram relativamente mais, −0,7
 p.p. por unidade de logito); a reponderação das UFs mexe ≤ 0,25 p.p. no PT nacional. Mantido o método atual.
+
+## 2º turno: correção das pesquisas pelo erro de cada instituto no 1º turno e viés 1T → 2T (5/10/2026)
+
+*Seção escrita à mão em 5/10/2026 (1º turno com 99,9% apurado), fora do `backtest.py`; refazer com
+`python simulador/resultado_1t.py --backtest-institutos` (grava `data/backtest_correcao_institutos.json`). Se
+`backtest.py` regenerar este arquivo, recolar esta seção.*
+
+**Método** (`vies_institutos.py`). Erro do instituto no 1º turno = fatia bipartidária do PT na sua última pesquisa
+dos 7 dias finais menos o real. Efeitos aleatórios (DerSimonian-Laird): e_p ~ N(θ_p, v_p), θ_p ~ N(μ, τ²), v_p =
+amostral (n dos que escolheram PT ou adversário; n ausente = 2000) + 1 p.p.² não amostral. Lean encolhido θ_p = μ +
+B_p(e_p − μ), B_p = τ²/(τ² + v_p). Variantes aplicadas às pesquisas de 2º turno do mesmo instituto: **nenhuma**;
+**relativa** (só B_p(e_p − μ)); **indústria** (só μ); **plena** (μ + desvio). Em cada ano o lean usa só o 1º turno
+do próprio ano (é o que se sabe na noite da apuração). Média de 2º turno = o agregador do modelo (house effects
+hierárquicos, recência), refeito com as pesquisas corrigidas.
+
+Pooling do 1º turno: 2014 μ = +7,6 (4 institutos, τ = 0 — movimento de Aécio na última semana); 2018 μ = +0,7
+(τ = 4,0; Veritá −7,7, PoderData +6,6); 2022 μ = +1,3 (τ = 4,4; Brasmarket −12,4); **2026 μ = +1,95 (ep 0,48),
+τ = 1,0, 14 institutos**.
+
+**Erro da média de pesquisas de 2º turno vs 2º turno real (p.p., fatia do PT):**
+
+| Ano | Variante | Pré-1T (véspera do 1º turno) | Pós-1T (véspera do 2º turno) | RMSE por pesquisa, última semana |
+|---|---|---|---|---|
+| 2014 | nenhuma | — | +0,69 | 1,74 |
+| 2014 | relativa | — | +0,69 | 1,74 |
+| 2014 | indústria | — | −6,95 | 7,18 |
+| 2014 | plena | — | −6,95 | 7,18 |
+| 2018 | nenhuma | +3,52 | −1,14 | 2,97 |
+| 2018 | relativa | +2,69 | −1,68 | 3,71 |
+| 2018 | indústria | +2,86 | −1,80 | 3,29 |
+| 2018 | plena | +2,03 | −2,35 | 3,97 |
+| 2022 | nenhuma | +4,71 | +0,10 | 2,08 |
+| 2022 | relativa | +3,28 | +0,27 | 2,79 |
+| 2022 | indústria | +3,42 | −1,18 | 2,43 |
+| 2022 | plena | +1,99 | −1,02 | 2,95 |
+| **RMS** | nenhuma | 4,16 | 0,77 | 2,32 |
+| **RMS** | relativa | 3,00 | 1,06 | 2,86 |
+| **RMS** | indústria | 3,15 | 4,20 | 4,77 |
+| **RMS** | plena | **2,01** | 4,28 | 5,03 |
+
+Usando todas as pesquisas de 1º turno da janela (ponderadas por n) em vez da última: pré-1T plena 1,79, pós-1T
+pior ainda (RMSE por pesquisa pós-1T 7,0) — mantida a última pesquisa (as anteriores misturam viés com movimento).
+
+Persistência do desvio do instituto (1º turno → última pesquisa de 2º turno, em relação à média de cada turno):
+correlação +0,41 (2014, 4 institutos), **−0,30 (2018, 7)**, +0,91 (2022, 11); inclinação −0,38 a +1,02. O
+nível da indústria também não passa: 2014 errou +7,6 no 1º turno e +0,6 na última semana do 2º.
+
+**Projeção 1º turno real → 2º turno** (transferência + pré-1T com peso 0,25; `calibrar_2t`): erros
+nenhuma +2,68 / −0,26 / +2,83 (RMS 2,25); relativa +2,68 / −0,46 / +2,47 (2,12); indústria +2,68 / −0,42 / +2,50
+(2,13); plena +2,68 / −0,62 / +2,15 (**2,01**). Pipeline completo LOEO (`--backtest-2t`, 100 mil simulações,
+variante "regionalizada+correcao"): erro nacional +2,31 / −1,85 / +1,63 (antes +2,04 / −1,59 / +2,20; RMS 1,96 →
+1,95), UF MAE 2,25 → 2,19, UF RMSE 2,86 → 2,78, Brier UF 0,024 → 0,023, cobertura 80% nas UFs 0,94 → 0,90, 95%
+0,99 → 0,975. Neutro no nacional (melhora 2022, piora 2014 — onde só o viés calibrado muda — e 2018).
+
+**Decisão.** Pré-1T: **correção plena adotada** (`PARAM_2T["correcao_institutos_pre_1t"] = "plena"`): melhora a
+média pré-1T nos dois anos testáveis (o mecanismo é direto: são as mesmas entrevistas, com a mesma amostra e
+ponderação, que erraram o 1º turno) e é neutra no pipeline; a calibração histórica do 2º turno passa a usar as
+pesquisas corrigidas do mesmo jeito, para o viés não ser descontado duas vezes. Pós-1T: **não adotada**
+(`"nenhuma"`): toda variante piorou a média da véspera do 2º turno e o erro de cada pesquisa em 2014, 2018 e 2022.
+
+**Viés da indústria 1T → 2T com 2026** (`vies_institutos.vies_industria`). Erro do agregador no 1º turno (fatia
+do PT): +7,62 (2014), +0,48 (2018), +0,63 (2022), +1,83 (2026). τ0 por máxima verossimilhança marginal
+(τ0² = max(0, ē² − s²/n)): 1,71 sem 2026, 2,03 com 2026. Regressão bayesiana do erro da projeção do 2º turno no
+erro do 1º turno: erro_2T = b + κ(e1 − 2,64) + ruído (dp 2,5), b ~ N(0; 2,03²), κ ~ N(0; 0,5²): b = +0,91 ± 1,17,
+**κ = +0,17 ± 0,32** (sem correção: +0,12 ± 0,33). Viés de 2026 = b + κ(1,83 − 2,64) = **+0,78 ± 1,21 p.p.**
+(EB antigo com τ0 = 2: +1,13 sem correção, +0,93 com correção). Com 3 pares (e o de 2014 dominado pela
+transferência genérica, não pelas pesquisas), κ é praticamente o prior; o efeito em 2026 é −0,15 p.p.
+
+**Efeito em 2026** (100 mil simulações, TSE 99,94%):
+
+| Variante | Pesquisas pré-1T (Lula) | Viés | P(Lula) | Lula % | p10–p90 |
+|---|---|---|---|---|---|
+| Antigo | 49,59 | −1,13 | 14,6% | 47,26 | 43,85–50,67 |
+| Só correção por instituto | 47,67 | −0,93 | 11,7% | 46,98 | 43,70–50,25 |
+| Só viés 1T→2T com 2026 | 49,59 | −1,02 | 15,6% | 47,37 | 43,93–50,80 |
+| **Novo (ambos)** | 47,67 | −0,78 | **12,9%** | **47,13** | 43,83–50,43 |
+| Alternativa: correção relativa + viés | 49,63 | −0,89 | 16,3% | 47,50 | 44,14–50,86 |

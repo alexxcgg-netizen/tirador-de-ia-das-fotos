@@ -41,6 +41,9 @@ simulador/
   segmentos.py        prior demográfico por UF, ajuste de comparecimento, voto por segmento (SEGMENTOS.md)
   publicar.py         gera web_publicar/ (página sem <html>/<head>/<body>, para artifact)
   resultado_1t.py     noite da apuração: resultado TSE, avaliação (AVALIACAO_1T.md) e 2º turno condicionado
+  transferencia_regional.py  2º turno: transferência dependente do lean da UF; comparecimento entre turnos
+  vies_institutos.py  2º turno: erro de cada instituto no 1º turno (partial pooling) -> correção das pesquisas
+                      de 2º turno; viés da indústria 1T -> 2T (backtest: --backtest-institutos)
   BACKTEST.md         relatório do backtest (tabelas)
   data/               pesquisas 2026 e históricas, resultados TSE, rejeição, eventos, segmentos
   web/                painel (index.html) + resultados.json
@@ -239,12 +242,38 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   (Cury 28/35/37, Zema 10/80/10), Dirichlet α = 30; par diferente de Lula x Flávio: linha genérica e erro × 1,5;
 - comparecimento: abstenção e brancos/nulos reais do 1º turno + variação média 1º→2º turno da UF em 2014/2018/2022;
 - pesquisas de 2º turno: as de antes do 1º turno com peso 0,25 em logito (em 2018 e 2022 superestimaram o PT em
-  3,5 e 4,7 p.p.); as feitas depois do 1º turno, quando entrarem em `pesquisas_nacionais.csv`, entram por precisão
-  (dp 1,5 p.p. + deriva de 3 p.p. por 21 dias até o 2º turno);
-- erro calibrado em 2014/2018/2022 (1º turno real + o que se sabia na véspera → 2º turno real): erros nacionais
-  da projeção +2,7 / −0,3 / +2,9 p.p. (pró-PT); dp nacional com prior √((2·3² + Σe²)/(2 + n)) = 2,6 p.p. (t5),
-  viés encolhido (τ0 = 2 p.p.; −1,1 p.p. no centro), dp regional ~1,1 e estadual ~1,6 p.p. (resíduos por UF
-  depois do ajuste nacional). A variância nacional que já vem da incerteza da matriz não é contada duas vezes.
+  3,5 e 4,7 p.p.), **corrigidas pelo erro do mesmo instituto no 1º turno** (ver abaixo); as feitas depois do 1º
+  turno, quando entrarem em `pesquisas_nacionais.csv`, entram por precisão (dp 1,5 p.p. + deriva de 3 p.p. por 21
+  dias até o 2º turno) e **sem** correção por instituto (não passou no backtest);
+- erro calibrado em 2014/2018/2022 (1º turno real + o que se sabia na véspera → 2º turno real, com as pesquisas
+  pré-1T corrigidas do mesmo jeito): erros nacionais da projeção +2,7 / −0,6 / +2,1 p.p. (sem a correção: +2,7 /
+  −0,3 / +2,8); dp nacional com prior √((2·3² + Σe²)/(2 + n)) = 2,5 p.p. (t5), viés condicionado ao 1º turno
+  (abaixo; −0,8 p.p. no centro, antes −1,1), dp regional ~1,2 e estadual ~1,7 p.p. (resíduos por UF depois do
+  ajuste nacional). A variância nacional que já vem da incerteza da matriz não é contada duas vezes.
+- **Recalibração com o 1º turno de 2026 (5/10/2026; `vies_institutos.py`, `--backtest-institutos`).**
+  *(1) Correção por instituto.* Erro de cada instituto no 1º turno = fatia bipartidária Lula/(Lula+Flávio) da sua
+  última pesquisa da semana final menos o real (48,98%). *Partial pooling* (efeitos aleatórios, DerSimonian-Laird;
+  variância = amostral pelo n dos que escolheram um dos dois + 1 p.p.² não amostral): média da indústria
+  **μ = +1,95 p.p.** (ep 0,48; 14 institutos, 11 acima de zero), τ entre institutos 1,0 p.p.; correção de cada um =
+  μ + B·(erro − μ), B = 0,27–0,39 (de +0,7 p.p. para Palver a +2,6 para Indexa). Backtest 2014/2018/2022 (lean só
+  com o 1º turno do próprio ano): nas **pesquisas pré-1T** a correção plena reduz o erro da média de 2º turno de
+  +3,5/+4,7 para +2,0/+2,0 p.p. (RMS 4,2 → 2,0; só o desvio relativo: 3,0) — são as mesmas entrevistas que erraram
+  o 1º turno; nas **pesquisas pós-1T** toda correção piora (média da véspera RMS 0,77 → 1,06 relativa, 4,3 plena;
+  erro por pesquisa 2,3 → 2,9–5,0), e o desvio do instituto não persiste (correlação −0,30 em 2018, +0,91 em 2022).
+  Adotado: correção plena só nas pré-1T (Lula nas pesquisas pré-1T 49,6% → 47,7%, dp da correção 0,4 p.p. somado à
+  incerteza); pós-1T sem correção (`PARAM_2T["correcao_institutos_pos_1t"] = "nenhuma"`; código pronto para as
+  variantes). No pipeline LOEO completo o erro nacional fica igual (RMS 1,96 → 1,95; 2022 melhora, 2014 e 2018
+  pioram um pouco), UF MAE 2,25 → 2,19, cobertura de 80% nas UFs 0,94 → 0,90.
+  *(2) Viés da indústria 1T → 2T com 2026.* Erro do agregador no 1º turno (fatia do PT): +7,6 (2014), +0,5 (2018),
+  +0,6 (2022), **+1,8 (2026)**. τ0 (escala do viés persistente) por máxima verossimilhança marginal: 1,7 sem 2026,
+  **2,0 com 2026** (confirma o τ0 = 2 usado). Relação 1º → 2º turno: erro da projeção = b + κ·(e1 − média e1),
+  κ ~ N(0; 0,5²) (prior neutro) → **κ = 0,17 ± 0,32** (fraca; 2014 domina). Como 2026 errou menos que a média
+  histórica no 1º turno, o viés condicionado cai: termo de viés do 2º turno **−1,13 → −0,78 p.p.** (−0,93 só pela
+  calibração com pesquisas corrigidas; −0,15 pelo κ).
+  *Sensibilidade* (`segundo_turno.sensibilidade_recalibracao`, 100 mil simulações, TSE 99,94%): método antigo
+  P(Lula) 14,6%, Lula 47,26% (p10–p90 43,9–50,7); só correção 11,7%, 46,98%; só viés 1T→2T 15,6%, 47,37%; **novo
+  12,9%, 47,13% (43,8–50,4)**; alternativa com correção só relativa 16,3%, 47,50%. Rodada publicada (`--rodar-tudo`, 500 mil):
+  **P(Lula) 13,0%, Lula 47,14% (p10–p90 43,82–50,45)**; antes desta recalibração, 14,7% e 47,27% (TSE 99,89%).
 - Estimativas ecológicas TSE (fração do PT nos votos ganhos entre turnos): 2014 0,40; 2018 0,63; 2022 0,30 —
   mostram quanto a transferência real varia de uma eleição para outra (reportadas em `resultados_2t.json`).
 - **Transferência regionalizada (desde a noite de 4/10/2026; `transferencia_regional.py`).** A matriz Quaest continua

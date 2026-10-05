@@ -28,9 +28,12 @@ c) **2º turno condicionado ao 1º turno real** (500 mil simulações): fatias r
    UF (projetadas se a apuração for parcial), transferência dos votos dos
    eliminados (matriz Quaest + incerteza Dirichlet), variação do comparecimento
    entre turnos por UF (média 2014/2018/2022), pesquisas de 2º turno (as de antes do
-   1º turno com peso reduzido; as feitas depois do 1º turno, quando houver, com peso
-   maior) e erro nacional/regional/estadual calibrado no histórico (1º turno real
-   -> 2º turno real em 2014, 2018 e 2022). Saída: ``web/resultados_2t.json``.
+   1º turno com peso reduzido e corrigidas pelo erro do mesmo instituto no 1º turno
+   real, ``vies_institutos.py``; as feitas depois do 1º turno, quando houver, com peso
+   maior e sem correção, que não passou no backtest) e erro nacional/regional/estadual
+   calibrado no histórico (1º turno real -> 2º turno real em 2014, 2018 e 2022, com as
+   pesquisas corrigidas do mesmo jeito); termo de viés condicionado ao erro da indústria
+   no 1º turno (2014-2026). Saída: ``web/resultados_2t.json``.
 d) Regera a cópia de publicação (``publicar.py``).
 
 Uso:
@@ -42,6 +45,7 @@ Uso:
     python simulador/resultado_1t.py --rodar-tudo --sem-municipios  # só o método antigo de projeção
     python simulador/resultado_1t.py --rodar-tudo --saida /tmp/x    # ensaio a seco: nada em web/ nem data/
     python simulador/resultado_1t.py --backtest-2t                  # matriz única x regionalizada (2014/18/22)
+    python simulador/resultado_1t.py --backtest-institutos          # correção por instituto + viés 1T -> 2T
 """
 from __future__ import annotations
 
@@ -61,6 +65,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
 import modelo as M  # noqa: E402
 import transferencia_regional as TR  # noqa: E402
+import vies_institutos as VI  # noqa: E402
 
 DADOS = AQUI / "data"
 WEB = AQUI / "web"
@@ -127,6 +132,25 @@ PARAM_2T = {
     "dp_bn_pp": {"valor": 0.5, "origem": "inferencia"},
     "fator_par_imprevisto": {"valor": 1.5, "origem": "inferencia",
                              "nota": "Par de 2º turno diferente do previsto: sem matriz de transferência medida; erro x1,5."},
+    "correcao_institutos_pre_1t": {"valor": "plena", "origem": "backtest",
+                                   "nota": "Pesquisas de 2º turno feitas ANTES do 1º turno: fatia do PT corrigida pelo erro do "
+                                           "mesmo instituto no 1º turno (mu da indústria + desvio do instituto encolhido, "
+                                           "vies_institutos.py). Mesma entrevista que errou o 1º turno. Backtest 2018/2022: "
+                                           "erro da média pré-1T 4,2 -> 2,0 p.p. (RMS); a calibração histórica do 2º turno "
+                                           "é refeita com as pesquisas corrigidas do mesmo jeito (BACKTEST.md)."},
+    "correcao_institutos_pos_1t": {"valor": "nenhuma", "origem": "backtest",
+                                   "nota": "Pesquisas de 2º turno feitas DEPOIS do 1º turno: sem correção. No backtest "
+                                           "2014/2018/2022 qualquer correção pelo erro do 1º turno piorou a média da véspera "
+                                           "do 2º turno (RMS 0,77 -> 1,06 relativa, 4,3 plena) e o erro de cada pesquisa; "
+                                           "o desvio do instituto no 1º turno não persistiu (correlação −0,30 em 2018, "
+                                           "+0,91 em 2022, +0,41 em 2014 com 4 institutos)."},
+    "vies_condicionado_1t": {"valor": True, "origem": "backtest",
+                             "nota": "Termo de viés do 2º turno = b + kappa (e1_2026 − média e1): b ~ N(0, tau0²) com "
+                                     "tau0 reestimado (máx. verossimilhança marginal) com o erro do agregador no 1º turno "
+                                     "de 2014, 2018, 2022 e 2026; kappa (1º -> 2º turno) com prior neutro N(0, 0,5²) "
+                                     "(vies_institutos.vies_industria). Desligado: EB com tau0_vies_pp fixo."},
+    "dp_kappa": {"valor": 0.5, "origem": "inferencia",
+                 "nota": "Prior de kappa (relação entre o erro do 1º turno e o da projeção do 2º turno), centrado em 0."},
     "transferencia_regional": {"valor": True, "origem": "backtest",
                                "nota": "Transferência dependente do lean da UF (transferencia_regional.py). Desligada: no "
                                        "backtest leave-one-election-out melhorou 2002/2010/2018/2022 mas piorou 2014 e "
@@ -944,16 +968,22 @@ def _desloc(q, w, alvo):
 _PRE1T = {}
 
 
-def preditores_hist(ano: int, P: dict | None = None) -> dict:
+def preditores_hist(ano: int, P: dict | None = None, corr: str = "nenhuma") -> dict:
     """O que se sabia na véspera do 1º turno de `ano`: linha de transferência implícita (pesquisas pareadas de
-    1º e 2º turno) e média das pesquisas de 2º turno PT x adversário (house effects, recência)."""
-    if ano in _PRE1T:
-        return _PRE1T[ano]
+    1º e 2º turno) e média das pesquisas de 2º turno PT x adversário (house effects, recência).
+    corr: correção das pesquisas de 2º turno pelo erro do instituto no 1º turno do próprio ano (o que se sabe na
+    noite da apuração; vies_institutos.py): 'nenhuma', 'relativa', 'industria' ou 'plena'. A linha de transferência
+    continua a das pesquisas sem correção."""
+    if (ano, corr) in _PRE1T:
+        return _PRE1T[(ano, corr)]
     import backtest as BT
     P = P or M.carregar_premissas()
     b = BT.construir_base_hist(ano, "v1", P)
-    out = {"linha": [float(x) for x in b.e.transf[0]], "q_pesquisas": float(b.q_nat) if b.tem_2t else None}
-    _PRE1T[ano] = out
+    q = float(b.q_nat) if b.tem_2t else None
+    if q is not None and corr != "nenhuma":
+        q = VI._q_agregador(VI._eleicao_corrigida(ano, "v1", P, VI.pool_hist(ano), corr), P)
+    out = {"linha": [float(x) for x in b.e.transf[0]], "q_pesquisas": q, "correcao": corr}
+    _PRE1T[(ano, corr)] = out
     return out
 
 
@@ -976,15 +1006,18 @@ def ecologico(ano: int) -> dict:
             "inclinacao_ganho_pt_por_menores_uf": float(coef[1]), "intercepto_uf": float(coef[0])}
 
 
-def calibrar_2t(anos: tuple, w_pre: float, P: dict | None = None, beta: float | None = None) -> dict:
+def calibrar_2t(anos: tuple, w_pre: float, P: dict | None = None, beta: float | None = None,
+                corr: str | None = None) -> dict:
     """Erros históricos da projeção '1º turno real -> 2º turno' em cada ano de `anos`, com o que se sabia na
     véspera do 1º turno (linha de transferência implícita, pesquisas de 2º turno com peso w_pre).
     Devolve dp nacional (RMS dos erros), dp regional e estadual (resíduos depois do deslocamento nacional).
-    beta: transferência regionalizada (resíduos medidos com o mesmo método usado na simulação)."""
+    beta: transferência regionalizada (resíduos medidos com o mesmo método usado na simulação).
+    corr: correção das pesquisas pré-1T por instituto (None = PARAM_2T['correcao_institutos_pre_1t'])."""
+    corr = PARAM_2T["correcao_institutos_pre_1t"]["valor"] if corr is None else corr
     erros, res_uf, detalhe = [], [], []
     for a in anos:
         d = historico_ano(a)
-        pre = preditores_hist(a, P)
+        pre = preditores_hist(a, P, corr)
         m = np.array([u != "ZZ" for u in d["ufs"]])
         if beta:
             z = TR.lean_z(d["L"], d["F"], d["V1"])
@@ -1021,7 +1054,7 @@ def calibrar_2t(anos: tuple, w_pre: float, P: dict | None = None, beta: float | 
     rms = float(np.sqrt(np.mean(np.square(erros))))
     sd_nat = max(math.sqrt((nu0 * s0 ** 2 + float(np.sum(np.square(erros)))) / (nu0 + len(erros))), piso)
     vies, vies_dp = M.eb_vies(erros, sd_nat, PARAM_2T["tau0_vies_pp"]["valor"])
-    return {"anos": list(anos), "beta_transferencia": beta or 0.0, "dp_nacional_pp": sd_nat, "rms_erros_pp": rms, "vies_pp": vies, "vies_dp_pp": vies_dp,
+    return {"anos": list(anos), "beta_transferencia": beta or 0.0, "correcao_institutos_pre_1t": corr, "dp_nacional_pp": sd_nat, "rms_erros_pp": rms, "vies_pp": vies, "vies_dp_pp": vies_dp,
             "dp_regional_pp": sd_reg, "dp_uf_pp": sd_uf, "erros_pp": erros, "detalhe": detalhe}
 
 
@@ -1084,10 +1117,12 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
     vies = cal.get("vies_pp", 0.0) if par_previsto else 0.0          # erros históricos medidos na fatia do PT (= A)
     q_centro = float(np.clip(q_centro - vies / 100, 0.01, 0.99))     # viés histórico encolhido
     d0 = _desloc(qtr_c, W2c, q_centro)
-    sd_nat = math.sqrt(cal["dp_nacional_pp"] ** 2 + (cal.get("vies_dp_pp", 0.0) if par_previsto else 0.0) ** 2) * fator
+    dp_corr = float((q_pesq or {}).get("dp_correcao_pp") or 0.0)      # incerteza da correção por instituto
+    sd_nat = math.sqrt(cal["dp_nacional_pp"] ** 2 + (cal.get("vies_dp_pp", 0.0) if par_previsto else 0.0) ** 2
+                       + (0.0 if (q_pesq or {}).get("dp_pos_pp") else (w * dp_corr) ** 2)) * fator
     if q_pesq is not None and q_pesq.get("dp_pos_pp"):
         # pesquisas feitas depois do 1º turno: combinação por precisão com a projeção histórica
-        sp = q_pesq["dp_pos_pp"]
+        sp = math.sqrt(q_pesq["dp_pos_pp"] ** 2 + dp_corr ** 2)
         sd_nat = 1 / math.sqrt(1 / sd_nat ** 2 + 1 / sp ** 2)
     rng = np.random.default_rng(seed)
     # parte da variância nacional já vem da incerteza da matriz (Dirichlet): não contar duas vezes
@@ -1163,6 +1198,8 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
         "centro": {"via_transferencia_a_pct": round(qtr_br * 100, 3),
                    "pesquisas_a_pct": None if not q_pesq or q_pesq.get("q") is None else round(q_pesq["q"] * 100, 3),
                    "peso_pesquisas": w, "centro_sem_vies_a_pct": round(q_centro_sem_vies * 100, 3),
+                   "pesquisas_a_pct_sem_correcao": None if not q_pesq or q_pesq.get("q_sem_correcao") is None
+                   else round(q_pesq["q_sem_correcao"] * 100, 3),
                    "vies_historico_pp": round(vies, 3), "centro_a_pct": round(q_centro * 100, 3)},
         "erros": {"dp_nacional_pp": round(sd_nat, 3), "dp_nacional_extra_pp": round(sd_e, 3),
                   "dp_nacional_da_matriz_pp": round(math.sqrt(var_dir), 3), "dp_regional_pp": round(cal["dp_regional_pp"], 3),
@@ -1202,10 +1239,25 @@ def transf_para_par(par: tuple, ano: int, linha_hist: list | None = None) -> dic
 
 
 # ================================================================ pesquisas de 2º turno 2026
-def pesquisas_2t_2026(par: tuple, prem: dict, hoje: pd.Timestamp) -> dict | None:
-    """Média das pesquisas de 2º turno Lula x Flávio: as feitas depois do 1º turno, se houver; senão as da véspera."""
+def pesquisas_2t_2026(par: tuple, prem: dict, hoje: pd.Timestamp, corr_pre: str | None = None,
+                      corr_pos: str | None = None) -> dict | None:
+    """Média das pesquisas de 2º turno Lula x Flávio: as feitas depois do 1º turno, se houver; senão as da véspera.
+    corr_pre / corr_pos: correção de cada instituto pelo seu erro no 1º turno de 2026 (vies_institutos.py;
+    None = PARAM_2T). 'q' é a média corrigida; 'q_sem_correcao', a original; 'dp_correcao_pp', a incerteza."""
     if set(par) != {"Lula", "Flavio"}:
         return None
+    corr_pre = PARAM_2T["correcao_institutos_pre_1t"]["valor"] if corr_pre is None else corr_pre
+    corr_pos = PARAM_2T["correcao_institutos_pos_1t"]["valor"] if corr_pos is None else corr_pos
+    pool, err = VI.pool_2026()
+    info_pool = {"mu_pp": round(pool["_mu"], 3), "se_mu_pp": round(pool["_se_mu"], 3), "tau_pp": round(pool["_tau"], 3),
+                 "n_institutos": pool["_k"],
+                 "institutos": {r.instituto: {"erro_1t_pp": round(r.erro_pp, 3), "n": int(r.n_total),
+                                              "B": round(pool[r.instituto]["B"], 3),
+                                              "relativa_pp": round(pool[r.instituto]["rel_pp"], 3),
+                                              "plena_pp": round(pool[r.instituto]["plena_pp"], 3),
+                                              "dp_plena_pp": round(pool[r.instituto]["dp_plena_pp"], 3)}
+                                for r in err.itertuples()}}
+    sinal = 1 if par[0] == "Lula" else -1
     df = M.carregar_pesquisas_nacionais_2026()[0]
     t1 = pd.Timestamp(DATAS[2026][0])
     pos = df[(df.campo_inicio > t1) & df.t2_lula.notna() & df.t2_flavio.notna() & (df.campo_fim <= hoje)]
@@ -1213,17 +1265,33 @@ def pesquisas_2t_2026(par: tuple, prem: dict, hoje: pd.Timestamp) -> dict | None
         x = pos.sort_values("campo_fim").groupby("instituto").tail(1)
         dias = (hoje - x.campo_fim).dt.days.clip(lower=0)
         w = np.sqrt(x.n.fillna(2000).clip(upper=3000)) * np.exp(-dias / 7)
-        q = float(np.sum(w * M.logit(x.t2_lula / (x.t2_lula + x.t2_flavio))) / w.sum())
-        q = float(M.expit(q))
+
+        def media(xx):
+            return float(M.expit(np.sum(w * M.logit(xx.t2_lula / (xx.t2_lula + xx.t2_flavio))) / w.sum()))
+        q0 = media(x)
+        xc = VI.corrigir(x, pool, corr_pos, "t2_lula", "t2_flavio")
+        q = media(xc)
+        dpc = VI.dp_media_correcao(pool, x.instituto.tolist(), w.values, corr_pos)
         dias_2t = max((pd.Timestamp(DATAS[2026][1]) - hoje).days, 0)
         sp = math.sqrt(PARAM_2T["dp_pesquisas_pos_1t_base_pp"]["valor"] ** 2
                        + (PARAM_2T["deriva_pos_1t_pp_por_21_dias"]["valor"] * dias_2t / 21) ** 2)
-        return {"q": q if par[0] == "Lula" else 1 - q, "peso": 0.5, "dp_pos_pp": sp, "tipo": "pos_1t",
-                "n_pesquisas": int(len(x)), "institutos": sorted(x.instituto.tolist())}
-    b = M.construir_base_2026(prem)
-    q = b.q_nat
-    return {"q": q if par[0] == "Lula" else 1 - q, "peso": PARAM_2T["peso_pesquisas_pre_1t"]["valor"], "tipo": "pre_1t",
-            "n_pesquisas": len(b.agg2["tabela"]) if b.agg2 else 0}
+        return {"q": q if sinal > 0 else 1 - q, "q_sem_correcao": q0 if sinal > 0 else 1 - q0, "peso": 0.5,
+                "dp_pos_pp": sp, "dp_correcao_pp": dpc, "tipo": "pos_1t", "correcao": corr_pos,
+                "n_pesquisas": int(len(x)), "institutos": sorted(x.instituto.tolist()), "erro_1t_institutos": info_pool}
+    e = M.eleicao_2026(prem)
+    b0 = M.construir_base(e, prem)
+    q0 = float(b0.q_nat)
+    q, dpc = q0, 0.0
+    if corr_pre != "nenhuma":
+        e.nac = VI.corrigir(e.nac, pool, corr_pre, "t2a", "t2b", mascara=e.nac.campo_fim < t1)
+        b = M.construir_base(e, prem)
+        q = float(b.q_nat)
+        tab = b.agg2["tabela"]
+        dpc = VI.dp_media_correcao(pool, [r["instituto"] for r in tab], [r["peso_rel"] for r in tab], corr_pre)
+    return {"q": q if sinal > 0 else 1 - q, "q_sem_correcao": q0 if sinal > 0 else 1 - q0,
+            "peso": PARAM_2T["peso_pesquisas_pre_1t"]["valor"], "tipo": "pre_1t", "correcao": corr_pre,
+            "dp_correcao_pp": dpc, "n_pesquisas": len(b0.agg2["tabela"]) if b0.agg2 else 0,
+            "erro_1t_institutos": info_pool}
 
 
 # ================================================================ b) avaliação das previsões
@@ -1568,6 +1636,56 @@ def regional_2026() -> dict:
     return {"mu": eb["mu"], "dp": eb["dp_preditivo"], "estimativa": eb}
 
 
+def calibrar_2t_2026(beta: float | None, corr: str | None = None, vies_cond: bool | None = None,
+                     w_pre: float | None = None) -> dict:
+    """Calibração 1º turno real -> 2º turno (2014/2018/2022) com o método de 2026: pesquisas pré-1T corrigidas por
+    instituto (corr) e termo de viés condicionado ao erro do 1º turno de 2026 (vies_cond; vies_institutos.py)."""
+    corr = PARAM_2T["correcao_institutos_pre_1t"]["valor"] if corr is None else corr
+    vies_cond = PARAM_2T["vies_condicionado_1t"]["valor"] if vies_cond is None else vies_cond
+    w_pre = PARAM_2T["peso_pesquisas_pre_1t"]["valor"] if w_pre is None else w_pre
+    cal = calibrar_2t((2014, 2018, 2022), w_pre, beta=beta, corr=corr)
+    cal["vies_metodo"] = "eb_tau0_fixo"
+    if vies_cond:
+        vi = VI.vies_industria(dict(zip(cal["anos"], cal["erros_pp"])), cal["dp_nacional_pp"],
+                               e1=_erros_industria_1t(), tau0_atual=PARAM_2T["tau0_vies_pp"]["valor"],
+                               dp_kappa=PARAM_2T["dp_kappa"]["valor"])
+        cal["vies_eb_tau0_fixo_pp"], cal["vies_eb_tau0_fixo_dp_pp"] = cal["vies_pp"], cal["vies_dp_pp"]
+        cal["vies_pp"], cal["vies_dp_pp"] = vi["vies_2026_pp"], vi["vies_2026_dp_pp"]
+        cal["vies_industria"] = vi
+        cal["vies_metodo"] = "condicionado_1t_2026"
+    return cal
+
+
+_E1 = {}
+
+
+def _erros_industria_1t() -> dict:
+    if "e1" not in _E1:
+        _E1["e1"] = VI.erros_industria_1t()
+    return _E1["e1"]
+
+
+def sensibilidade_recalibracao(c, par, previsto, reg, regional, d_comp, prem, hoje, n, seed) -> list:
+    """Método antigo x novo do 2º turno e o efeito de cada mudança isolada (mesma semente e n)."""
+    variantes = [("antigo (sem correção; viés EB tau0 = 2)", "nenhuma", False),
+                 ("só correção por instituto (pré-1T, plena)", "plena", False),
+                 ("só viés 1T->2T com 2026", "nenhuma", True),
+                 ("novo (correção plena + viés 1T->2T)", "plena", True),
+                 ("alternativa: correção relativa + viés 1T->2T", "relativa", True)]
+    out = []
+    for nome, corr, vc in variantes:
+        cal = calibrar_2t_2026(reg["mu"] if (regional and reg) else None, corr, vc)
+        qp = pesquisas_2t_2026(par, prem, hoje, corr_pre=corr)
+        sim = simular_2t(c, par, transf_para_par(par, 2026), qp, cal, d_comp, n=n, seed=seed, par_previsto=previsto,
+                         sd_proj=_sd_proj(c), regional=reg if regional else None)
+        out.append({"variante": nome, "correcao_pre_1t": corr, "vies_condicionado_1t": vc,
+                    "pesquisas_a_pct": sim["centro"]["pesquisas_a_pct"], "vies_pp": round(cal["vies_pp"], 3),
+                    "vies_dp_pp": round(cal["vies_dp_pp"], 3), "erros_hist_pp": [round(x, 3) for x in cal["erros_pp"]],
+                    "dp_nacional_pp": sim["erros"]["dp_nacional_pp"], "p_a_vence": sim["p_a_vence"],
+                    "a_media": sim["a_media"], "a_p10": sim["a_quantis"][1], "a_p90": sim["a_quantis"][5]})
+    return out
+
+
 def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bool = True,
                saida_dir: Path | None = None, regional: bool | None = None) -> dict:
     """saida_dir: grava resultados_2t.json, avaliacao_1t.json e AVALIACAO_1T.md lá (ensaio a seco; web/ e data/
@@ -1660,15 +1778,14 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
         _gravar_json(WEB_ / "resultados_2t.json", saida)
         return saida
     reg = regional_2026() if previsto else None
-    w_pre = PARAM_2T["peso_pesquisas_pre_1t"]["valor"]
-    cal = calibrar_2t((2014, 2018, 2022), w_pre, beta=reg["mu"] if (regional and reg) else None)
+    cal = calibrar_2t_2026(reg["mu"] if (regional and reg) else None)
     qp = pesquisas_2t_2026(par, prem, pd.Timestamp(agora.date()))
     d_comp = delta_comparecimento()
     sim = simular_2t(c, par, transf_para_par(par, 2026), qp, cal, d_comp, n=n, seed=seed, par_previsto=previsto,
                      sd_proj=_sd_proj(c), regional=reg if regional else None)
     if reg is not None:
         # sensibilidade: o outro método (regionalizado se o oficial é o nacional, e vice-versa), n menor
-        cal_s = calibrar_2t((2014, 2018, 2022), w_pre, beta=None if regional else reg["mu"])
+        cal_s = calibrar_2t_2026(None if regional else reg["mu"])
         sim_s = simular_2t(c, par, transf_para_par(par, 2026), qp, cal_s, d_comp, n=max(n // 5, 20_000), seed=seed,
                            par_previsto=previsto, sd_proj=_sd_proj(c), regional=None if regional else reg)
         sim_s.pop("_Q", None)
@@ -1677,6 +1794,9 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
             "p_a_vence": sim_s["p_a_vence"], "a_media": sim_s["a_media"], "a_quantis": sim_s["a_quantis"],
             "transferencia_regional": sim_s.get("transferencia_regional"),
             "ufs": {u["uf"]: {"a_media": u["a_media"], "a_q": u["a_q"], "p_a": u["p_a"]} for u in sim_s["ufs"]}}
+    if reg is not None and previsto:
+        sim["sensibilidade_recalibracao"] = sensibilidade_recalibracao(
+            c, par, previsto, reg, regional, d_comp, prem, pd.Timestamp(agora.date()), max(n // 5, 20_000), seed)
     sim["metodo_transferencia"] = "regionalizada" if (regional and reg) else "nacional"
     sim["pesquisas_2t"] = qp
     sim["calibracao"] = {k: v for k, v in cal.items()}
@@ -1816,7 +1936,7 @@ def ensaio(ano: int, n: int = 500_000, seed: int = 20221002, P: dict | None = No
         eb = TR.estimar_beta(tuple(x for x in TR.ANOS_BETA if x != ano))       # beta sem o próprio ano
         reg = {"mu": eb["mu"], "dp": eb["dp_preditivo"]}
     cal = calibrar_2t(outros, w, P, beta=reg["mu"] if reg else None)
-    pre = preditores_hist(ano, P)
+    pre = preditores_hist(ano, P, PARAM_2T["correcao_institutos_pre_1t"]["valor"])
     qp = {"q": pre["q_pesquisas"], "peso": w, "tipo": "pre_1t"} if pre["q_pesquisas"] is not None else None
     d_comp = delta_comparecimento(outros)
     sim = simular_2t(c, par, transf_para_par(par, ano, pre["linha"]), qp, cal, d_comp, n=n, seed=seed,
@@ -1929,8 +2049,9 @@ def _metricas_2t(sim: dict, d: dict) -> dict:
 
 def backtest_2t(anos=(2014, 2018, 2022), n: int = 100_000, seed: int = 20221002, log=print) -> pd.DataFrame:
     """Pipeline do 2º turno (1º turno real + o que se sabia na véspera -> 2º turno), leave-one-election-out:
-    calibração, beta e comparecimento sem o próprio ano. Variantes: 'nacional' (matriz única, método anterior) e
-    'regionalizada' (transferencia_regional.py)."""
+    calibração, beta e comparecimento sem o próprio ano. Variantes: 'nacional' (matriz única, método anterior),
+    'regionalizada' (transferencia_regional.py) e 'regionalizada+correcao' (pesquisas pré-1T corrigidas pelo erro
+    de cada instituto no 1º turno do próprio ano, vies_institutos.py; calibração com a mesma correção)."""
     P = M.carregar_premissas()
     w = PARAM_2T["peso_pesquisas_pre_1t"]["valor"]
     linhas = []
@@ -1938,23 +2059,51 @@ def backtest_2t(anos=(2014, 2018, 2022), n: int = 100_000, seed: int = 20221002,
         c = _c_hist(ano)
         par, _, previsto = definir_par(c)
         outros = tuple(a for a in anos if a != ano)
-        pre = preditores_hist(ano, P)
-        qp = {"q": pre["q_pesquisas"], "peso": w, "tipo": "pre_1t"} if pre["q_pesquisas"] is not None else None
         d_comp = delta_comparecimento(outros)
         eb = TR.estimar_beta(tuple(a for a in TR.ANOS_BETA if a != ano))
         reg = {"mu": eb["mu"], "dp": eb["dp_preditivo"]}
         d = historico_ano(ano)
-        for nome, rg in (("nacional", None), ("regionalizada", reg)):
-            cal = calibrar_2t(outros, w, P, beta=rg["mu"] if rg else None)
+        for nome, rg, corr in (("nacional", None, "nenhuma"), ("regionalizada", reg, "nenhuma"),
+                               ("regionalizada+correcao", reg, "plena")):
+            pre = preditores_hist(ano, P, corr)
+            qp = {"q": pre["q_pesquisas"], "peso": w, "tipo": "pre_1t"} if pre["q_pesquisas"] is not None else None
+            cal = calibrar_2t(outros, w, P, beta=rg["mu"] if rg else None, corr=corr)
             sim = simular_2t(c, par, transf_para_par(par, ano, pre["linha"]), qp, cal, d_comp, n=n, seed=seed,
                              par_previsto=previsto, regional=rg)
             linhas.append({"ano": ano, "variante": nome, "beta": 0.0 if rg is None else round(rg["mu"], 3),
-                           "a_media": sim["a_media"], **_metricas_2t(sim, d)})
+                           "a_media": sim["a_media"], "vies_pp": round(cal["vies_pp"], 3), **_metricas_2t(sim, d)})
     t = pd.DataFrame(linhas)
     with pd.option_context("display.width", 250, "display.max_columns", 30):
         log(t.to_string())
         log(t.groupby("variante")[["uf_mae_pp", "uf_rmse_pp", "uf_cob80", "uf_cob95", "uf_brier"]].mean().round(3))
+        log(t.groupby("variante").erro_nacional_pp.apply(lambda e: float(np.sqrt(np.mean(e ** 2)))).round(3)
+            .rename("rmse_nacional_pp"))
     return t
+
+
+def backtest_institutos(log=print) -> dict:
+    """Item 1 (correção por instituto, 2014/2018/2022) e item 2 (viés da indústria 1T -> 2T com 2026)."""
+    bt = VI.backtest_correcao(log=log)
+    bt_jan = VI.backtest_correcao(so_ultima=False, log=lambda *a: None)
+    w = PARAM_2T["peso_pesquisas_pre_1t"]["valor"]
+    proj = {}
+    for corr in VI.MODOS:
+        cal = calibrar_2t((2014, 2018, 2022), w, corr=corr)
+        proj[corr] = {"erros_projecao_pp": dict(zip(cal["anos"], [round(x, 3) for x in cal["erros_pp"]])),
+                      "rmse_projecao_pp": round(cal["rms_erros_pp"], 3), "vies_eb_pp": round(cal["vies_pp"], 3)}
+    beta = TR.estimar_beta()["mu"] if PARAM_2T["transferencia_regional"]["valor"] else None
+    cal_n = calibrar_2t_2026(beta, corr="plena", vies_cond=True)
+    cal_a = calibrar_2t_2026(beta, corr="nenhuma", vies_cond=True)
+    out = {"gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"), "parametros": VI.PARAM_VI,
+           "correcao": {"tabela": bt["tabela"].to_dict(orient="records"), "agregado": bt["agregado"],
+                        "pools_1t": bt["pools"], "persistencia": bt["persistencia"]["tabela"].to_dict(orient="records"),
+                        "agregado_todas_da_janela": bt_jan["agregado"]},
+           "projecao_1t_para_2t_por_correcao": proj,
+           "vies_industria": {"com_correcao_plena": cal_n["vies_industria"], "sem_correcao": cal_a["vies_industria"]}}
+    _gravar_json(DADOS / "backtest_correcao_institutos.json", out)
+    log(json.dumps(proj, ensure_ascii=False))
+    log(json.dumps({k: v for k, v in cal_n["vies_industria"].items()}, ensure_ascii=False, default=float))
+    return out
 
 
 # ================================================================ CLI
@@ -1972,6 +2121,9 @@ def main():
                     help="transferência regionalizada no 2º turno (padrão: PARAM_2T['transferencia_regional'])")
     ap.add_argument("--backtest-2t", action="store_true",
                     help="matriz nacional única x transferência regionalizada, LOEO 2014/2018/2022 (+ comparecimento)")
+    ap.add_argument("--backtest-institutos", action="store_true",
+                    help="correção das pesquisas de 2º turno pelo erro de cada instituto no 1º turno (2014/2018/2022) e "
+                         "viés da indústria 1T -> 2T; grava data/backtest_correcao_institutos.json")
     ap.add_argument("--sem-municipios", action="store_true",
                     help="não usar a projeção por município (método antigo: válidos / pst por UF)")
     ap.add_argument("--replay-2022", action="store_true",
@@ -1995,6 +2147,8 @@ def main():
         TR.backtest_regional()
         TR.backtest_comparecimento()
         backtest_2t(n=min(a.n, 100_000))
+    if a.backtest_institutos:
+        backtest_institutos()
     if a.replay_2022:
         t = replay_resumo()
         _gravar_json(DADOS / "replay_projecao_2022.json", {"gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -2002,7 +2156,8 @@ def main():
                                                             "tabela": t.reset_index().to_dict(orient="records")})
         with pd.option_context("display.width", 250, "display.max_columns", 30):
             print(t)
-    if not (a.rodar_tudo or a.ensaio_2022 or a.gerar_fixture_2022 or a.replay_2022 or a.backtest_2t):
+    if not (a.rodar_tudo or a.ensaio_2022 or a.gerar_fixture_2022 or a.replay_2022 or a.backtest_2t
+            or a.backtest_institutos):
         ap.print_help()
     print(f"tempo {time.perf_counter() - t0:.1f} s")
 

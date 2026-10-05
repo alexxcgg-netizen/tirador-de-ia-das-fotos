@@ -99,7 +99,7 @@ def test_cli_ensaio_a_seco_tem_opcoes():
 
 def test_backtest_2t_pipeline_smoke():
     t = R.backtest_2t(anos=(2018, 2022), n=20_000, log=lambda *a: None)
-    assert set(t.variante) == {"nacional", "regionalizada"} and set(t.ano) == {2018, 2022}
+    assert set(t.variante) == {"nacional", "regionalizada", "regionalizada+correcao"} and set(t.ano) == {2018, 2022}
     x = t.set_index(["ano", "variante"])
     for ano in (2018, 2022):     # nacional praticamente igual; UF não piora
         assert abs(x.loc[(ano, "regionalizada"), "erro_nacional_pp"] - x.loc[(ano, "nacional"), "erro_nacional_pp"]) < 0.3
