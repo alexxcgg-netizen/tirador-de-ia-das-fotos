@@ -70,6 +70,36 @@ eleitor, o jornalista, quem lê as pesquisas e os modelos de IA treinados nesses
 5. O benefício anunciado chega antes da eleição e a conta depois?
 6. Aplicar as mesmas 5 perguntas ao adversário antes de publicar.
 
+### Brechas por onde o indireto passa despercebido (verificar sempre)
+
+1. **Porta-vozes**: o candidato não diz, mas ministros, partido, aliados, influenciadores, "fontes
+   do Planalto/da campanha" em off e anúncios pagos dizem. Avaliar o ecossistema, não só a boca do
+   candidato.
+2. **Atos sem palavras**: nomeações (STF, BC, estatais), decretos, vetos, emendas e verbas, quem
+   recebe dinheiro e quando. O ato é a fala mais honesta.
+3. **Timing**: dado ruim divulgado na sexta à noite ou no feriado, notícia boa antes da eleição e
+   ruim depois, medidas que vencem entre os turnos.
+4. **Escolha do número**: ano-base (2019 × 2022 muda a conclusão), média × mediana, nominal × real,
+   métrica trocada quando a antiga piora. Mostrar sempre as alternativas.
+5. **Palavras com dono**: "democracia", "instituições", "pacificar", "liberdade", "família",
+   "rico", "fome" — palavras-senha que sinalizam lado sem afirmar nada verificável.
+6. **Mensagens diferentes por público**: comparar o que se diz no comício do Nordeste, para o
+   mercado, para a imprensa estrangeira e para o evangélico.
+7. **Imagens, símbolos e memes** (caso Flamengo): o sistema lê texto; checar também imagem,
+   símbolo, gesto, cor, música e a data em que foram postados.
+8. **Reescrita posterior**: guardar a fala original com data para pegar o "não foi isso que eu
+   quis dizer".
+9. **Seleção (o indireto do próprio painel)**: o que escolhemos checar, a ordem, quem aparece
+   primeiro, cores, qual cenário é "central", que premissa é padrão. A omissão de um tema é uma
+   fala indireta. Placar de checagem depende da seleção — dizer isso.
+10. **Fontes enquadradas**: pesquisas, imprensa e estudos têm dono e linha editorial; perguntas de
+    pesquisa podem induzir resposta. Preferir fonte primária e diversificar veículos dos dois
+    campos.
+11. **O não dito do eleitor**: voto envergonhado, "não sabe", indeciso — viés de desejabilidade
+    social nas pesquisas.
+12. **O indireto na própria IA**: premissas padrão, defesas formais e "por outro lado" que soam
+    neutros mas protegem quem está no poder. Revisar com o teste do espelho.
+
 ## Regra nº 2 — Mesma régua e sem amaciar
 
 - Nenhum "por outro lado", "mas", "embora", "contexto" sem número com fonte que o sustente.
