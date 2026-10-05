@@ -1,5 +1,30 @@
 # Pesquisas empatadas, e o resultado depende da premissa sobre o erro delas
 
+> **Resultado do 1º turno: atualização de 5/10/2026, madrugada; 98,6% das seções totalizadas (TSE, 21:03 de
+> 4/10), números provisórios**
+>
+> - **2º turno em 25/10 entre Flávio Bolsonaro e Lula.** Votos válidos: **Flávio 47,1%, Lula 45,1%**, Cury 2,9%,
+>   Renan 2,3%, Caiado 2,2%, Zema 0,3% e outros 0,2%. A margem é de 2,0 p.p. para Flávio, ~2,8 milhões de votos.
+>   Lula venceu em 12 UFs (Nordeste, PA, AM e AP) e Flávio em 15, incluindo SP, MG e RJ. A abstenção foi de 21,1%,
+>   contra 21,0% em 2022 [calc].
+> - **Melhores previsões do nacional:** a visão calibrada do simulador errou a margem em −0,5 p.p., com erro médio
+>   de 0,5 p.p. nos dois primeiros, o menor entre todos os previsores. Gerp, Futura e Vox Brasil erraram a margem
+>   em ≤ 1,1 p.p. A média simples das pesquisas errou +3,4 p.p. na margem a favor de Lula, porque superestimou os
+>   candidatos menores. A visão neutra errou +2,8 e a pleno −2,8.
+> - **Onde o modelo errou:** a margem de Lula foi subestimada no Nordeste (−4,6 p.p.) e no Norte (−3,5) e
+>   superestimada no Sul (+6,0). Ainda assim, 53 de 54 intervalos estaduais de 80% contiveram o resultado. Os
+>   mercados davam 71–72% para Lula em 1º e acertaram melhor que os modelos que não haveria decisão no 1º turno.
+> - **Projeção do 2º turno com o 1º turno real:** **Flávio 85,5%, Lula 14,5%.** Lula aparece com 47,2% dos válidos
+>   (80%: 43,8–50,7). A Polymarket dá 14% a Lula e a Kalshi 17%. Sem a correção de viés histórico, Lula teria
+>   ~27% [calc]. O que pode mudar o quadro: a divisão dos 7,8% dos eliminados, o comparecimento por região, as
+>   primeiras pesquisas pós-1º turno e os fatos da campanha.
+> - Detalhes, ranking completo, desempenho da projeção ao vivo (com os problemas corrigidos durante a noite) e
+>   limitações: [Avaliação do 1º turno 2026](Avalia%C3%A7%C3%A3o%20do%201%C2%BA%20turno%202026.md).
+>   [Painel do simulador](https://claude.ai/artifact/2jH33uw8DKd8w5vbCEkwB6) (2º turno atualizado) ·
+>   [Comparador de propostas](https://claude.ai/artifact/Qmc7jGPBiikX9SgsBdghEC).
+>
+> *O texto abaixo é a versão da véspera (3–4/10) e foi mantido como registro das previsões.*
+
 *Resumo executivo, 3–4/10/2026, véspera do 1º turno (4/10). Um eventual 2º turno será em 25/10. Este texto não recomenda candidato.*
 
 ## Entregáveis
@@ -9,6 +34,7 @@
 | [Briefing eleição presidencial 2026](Briefing%20elei%C3%A7%C3%A3o%20presidencial%202026.md) | Erros das pesquisas em 2018 e 2022, a corrida de 2026, o contexto (fatos, alegações e versões de todos os lados), a segmentação e as premissas do modelo |
 | [Briefing eleição 2026 – complemento](Briefing%20elei%C3%A7%C3%A3o%202026%20complemento.md) | Pesquisas nas 27 UFs, mercados de previsão verificados na fonte, série do TSE de 2002 a 2022 (lean, swing e correlação), transferência de votos, efeitos de casa e parâmetros finais |
 | [Propostas e viabilidade dos candidatos](Propostas%20e%20viabilidade%20dos%20candidatos.md) | O que cada plano registrado propõe, o que vem só de declarações de campanha, custos, dependências do Congresso e trade-offs |
+| [Avaliação do 1º turno 2026](Avalia%C3%A7%C3%A3o%20do%201%C2%BA%20turno%202026.md) | Resultado, ranking dos previsores, erros regionais, projeção ao vivo, mercados e projeção do 2º turno (5/10) |
 | [Painel do simulador](https://claude.ai/artifact/2jH33uw8DKd8w5vbCEkwB6) | Três visões do modelo principal, o modelo alternativo e os mercados lado a lado; mapa por UF; backtest; linha do tempo de eventos auditada |
 | [Comparador de propostas](https://claude.ai/artifact/Qmc7jGPBiikX9SgsBdghEC) | Comparação interativa das propostas por tema, separando o plano registrado das declarações |
 
