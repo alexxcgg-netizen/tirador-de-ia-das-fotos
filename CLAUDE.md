@@ -44,15 +44,36 @@ eleitor, o jornalista, quem lê as pesquisas e os modelos de IA treinados nesses
   formalmente **não** responde ao alinhamento revelado.
   ATUALIZAÇÃO verificada (mapa_indireto_lula.md): em 1/10/2026, 3 dias antes do 1º turno, Lula disse a
   um podcast que Moraes "deve uma explicação à sociedade brasileira", depois de ministros chamarem o
-  silêncio de "tóxico" em off (24/9; não verificado no original). O mapa registra os dois fatos sem
-  decidir entre convicção e cálculo; o silêncio anterior continua a ser avaliado pelo timing.
+  silêncio de "tóxico" em off (24/9: fonte única anônima de coluna, retirada do mapa; não verificado).
+  O mapa registra a crítica (L29) sem decidir entre convicção e cálculo; o silêncio anterior continua a
+  ser avaliado pelo timing. Fato **disputado**: o contrato do escritório da mulher de Moraes com o Master
+  (R$ 129 mi contratados segundo dados da Receita à CPI, via CNN; contestado pelo escritório e pelo
+  Brasil 247).
 - **"Eu não sabia"** (bets): negar conhecimento como forma de não assumir custo.
-- **Benefício na hora, conta depois**: isenção do IR "compensada" (custo estimado R$ 25,8–31,3 bi
-  conforme a fonte; compensação projetada R$ 10,5 bi, só R$ 4,0 bi arrecadados até ago/2026 — fontes
-  divergem, conferir antes de citar); Bolsa Família +15% pago 6 dias antes do 2T; corte de imposto da
-  gasolina com fim em 5/10 ou 9/10 conforme a fonte (decreto prorrogável; verificar no DOU); crédito subsidiado/Minha Casa Minha Vida pago por FGTS e
-  juros mais altos para quem não tem subsídio. O pobre olha o dinheiro de hoje — o discurso
-  explora isso sem mentir diretamente.
+- **Benefício na hora, conta depois** (sempre com a contra-evidência verificada; ver
+  `research_notes/Indireto 2026/`, casos L09, L10, L11, e FB12/FB13 do outro lado):
+  - **Bolsa Família +15,04%** (decreto 13.120, 17/09/2026; R$ 5,8 bi em 2026 e ~R$ 22 bi em 2027):
+    o 1º pagamento (19/10) é a abertura do calendário padrão (últimos dez dias úteis do mês, por final
+    de NIS; só os NIS 1 a 5 recebem antes do 2T), os 15,04% são o INPC acumulado de mar/2023 a ago/2026
+    (reposição, sem ganho real) e a ação do PL no TSE (art. 73) foi extinta sem julgar o mérito, por
+    ilegitimidade. Escala: o Auxílio de 2022 foi +50% (R$ 400 para R$ 600), R$ 41,25 bi fora do teto,
+    com cláusula de "estado de emergência"; não é "a mesma coisa". O que resta: o pagamento coincide
+    com a campanha e a conta cheia cai em 2027. Leitura: **fraca**, não "o caso mais forte".
+  - **Corte de imposto da gasolina**: R$ 0,63/l de 10/09 a **09/10/2026** (Decreto 13.116; Agência Gov e
+    Fazenda; Agência Brasil e Diário de Pernambuco dizem 05/10, prevalece a fonte oficial), ou seja,
+    termina **entre os turnos**; a subvenção ao diesel (R$ 2,12/l, Portaria MF 2.946) foi estendida até
+    26/10, dia seguinte ao 2T. A LC 235 (27/08) permite compensar com receita extraordinária do petróleo
+    (projetada, não realizada). Prorrogação da gasolina depois de 09/10: não verificada.
+  - **Isenção do IR até R$ 5 mil**: custo de R$ 28,04 bi em 2026 e R$ 4,029 bi arrecadados de jan a
+    ago/2026 com a tributação de lucros e dividendos, com a projeção dessa fonte revisada de R$ 29 bi
+    para R$ 10,5 bi (CNN, com dados da Receita): os números **conferem**. Contra-evidência: a estimativa
+    oficial na sanção era de perda de R$ 25,84 bi contra R$ 25,22 bi do imposto mínimo e R$ 8,9 bi da
+    retenção sobre remessas ao exterior; o governo diz que a isenção é neutra e o imposto mínimo anual só
+    fecha na declaração de 2027, então o número de 2026 pode subestimar o ano cheio. R$ 4,0 bi é a
+    arrecadação de lucros e dividendos, não o imposto mínimo.
+  - Crédito subsidiado/Minha Casa Minha Vida pago por FGTS e juros mais altos para quem não tem
+    subsídio. O pobre olha o dinheiro de hoje: o discurso explora isso sem mentir diretamente, mas
+    cada item precisa de calendário padrão, índice de reposição e escala antes de virar acusação.
 - **Número oficial que parece bom e vida real pior**: renda real "recorde" medida pelo IPCA
   enquanto em comida caiu; gasolina por litro × por km (E30); desemprego mínimo com informalidade
   alta. O dado não é falso; o enquadramento é que engana.
@@ -64,7 +85,8 @@ eleitor, o jornalista, quem lê as pesquisas e os modelos de IA treinados nesses
 - **Do outro lado (mesma régua)**: plano do Flávio diz "de nada adianta baixar imposto hoje se a
   conta volta amanhã" mas financia metade com receitas que não se repetem e não lista cortes
   (vagueza estratégica); emenda que isentaria dividendos de escritórios como o dele, apresentada
-  como medida geral; Bolsonaro e o pacote de 2022 empurrando R$ 146 bi para depois.
+  como medida geral; Bolsonaro e o pacote de 2022: PEC com R$ 41,25 bi fora do teto e Orçamento 2023 enviado
+  com Auxílio de R$ 405 (verificados, FB12/FB13); o "R$ 146 bi para depois" **não foi verificado**.
 
 ### Checklist do indireto (obrigatório em toda análise de discurso)
 
