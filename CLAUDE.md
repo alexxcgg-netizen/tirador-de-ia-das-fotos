@@ -42,10 +42,15 @@ eleitor, o jornalista, quem lê as pesquisas e os modelos de IA treinados nesses
   nome da "democracia" e explica a raiva das pessoas como se fosse só pela prisão de Bolsonaro,
   não pelo abuso de poder (casos Vorcaro/Banco Master, Musk/X). Separar "STF" de "governo"
   formalmente **não** responde ao alinhamento revelado.
+  ATUALIZAÇÃO verificada (mapa_indireto_lula.md): em 1/10/2026, 3 dias antes do 1º turno, Lula disse a
+  um podcast que Moraes "deve uma explicação à sociedade brasileira", depois de ministros chamarem o
+  silêncio de "tóxico" em off (24/9; não verificado no original). O mapa registra os dois fatos sem
+  decidir entre convicção e cálculo; o silêncio anterior continua a ser avaliado pelo timing.
 - **"Eu não sabia"** (bets): negar conhecimento como forma de não assumir custo.
-- **Benefício na hora, conta depois**: isenção do IR "compensada" (custou R$ 28 bi; R$ 4 bi
-  arrecadados até ago/2026); Bolsa Família +15% pago 6 dias antes do 2T; corte de imposto da
-  gasolina terminando entre os turnos; crédito subsidiado/Minha Casa Minha Vida pago por FGTS e
+- **Benefício na hora, conta depois**: isenção do IR "compensada" (custo estimado R$ 25,8–31,3 bi
+  conforme a fonte; compensação projetada R$ 10,5 bi, só R$ 4,0 bi arrecadados até ago/2026 — fontes
+  divergem, conferir antes de citar); Bolsa Família +15% pago 6 dias antes do 2T; corte de imposto da
+  gasolina com fim em 5/10 ou 9/10 conforme a fonte (decreto prorrogável; verificar no DOU); crédito subsidiado/Minha Casa Minha Vida pago por FGTS e
   juros mais altos para quem não tem subsídio. O pobre olha o dinheiro de hoje — o discurso
   explora isso sem mentir diretamente.
 - **Número oficial que parece bom e vida real pior**: renda real "recorde" medida pelo IPCA
