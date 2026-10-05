@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cenários econômicos 2027–2030</title>
+<meta name="description" content="Monte Carlo do poder de compra real das famílias brasileiras em 2027–2030 sob cada vencedor do 2º turno (Lula x Flávio Bolsonaro): distribuições por tipo de família, cesta básica, trajetórias macro, sensibilidade das premissas sem fonte.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --surface: #fcfcfb;
+  --surface-2: #f0efec;
+  --border: #dedcd5;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --text-3: #75736d;
+  --lula: #4a3aa7;
+  --flavio: #b4531a;
+  --lula-soft: rgba(74, 58, 167, .16);
+  --flavio-soft: rgba(180, 83, 26, .16);
+  --mid: #f0efec;
+  --grid: #e6e4de;
+  --accent: #2b2a27;
+  --neutral-bar: #8c8a83;
+  --warn-bg: #fbf3e2;
+  --warn-border: #e8cf96;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211;
+    --surface: #1a1a19;
+    --surface-2: #232321;
+    --border: #34332f;
+    --text: #ffffff;
+    --text-2: #c3c2b7;
+    --text-3: #9a998f;
+    --lula: #9085e9;
+    --flavio: #c86a2e;
+    --lula-soft: rgba(144, 133, 233, .22);
+    --flavio-soft: rgba(200, 106, 46, .22);
+    --mid: #383835;
+    --grid: #2c2c29;
+    --accent: #e9e8e2;
+    --neutral-bar: #8a8981;
+    --warn-bg: #2a2416;
+    --warn-border: #5b4a22;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211;
+  --surface: #1a1a19;
+  --surface-2: #232321;
+  --border: #34332f;
+  --text: #ffffff;
+  --text-2: #c3c2b7;
+  --text-3: #9a998f;
+  --lula: #9085e9;
+  --flavio: #c86a2e;
+  --lula-soft: rgba(144, 133, 233, .22);
+  --flavio-soft: rgba(200, 106, 46, .22);
+  --mid: #383835;
+  --grid: #2c2c29;
+  --accent: #e9e8e2;
+  --neutral-bar: #8a8981;
+  --warn-bg: #2a2416;
+  --warn-border: #5b4a22;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html { overflow-x: hidden; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px 48px; }
+header.top { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--border); padding-top: env(safe-area-inset-top); }
+header.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding-top: 10px; padding-bottom: 10px; }
+h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; }
+.voltar { color: var(--text-2); text-decoration: none; font-size: 14px; border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; background: var(--surface); white-space: nowrap; }
+.voltar:hover { color: var(--text); }
+.spacer { flex: 1; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); max-width: 100%; }
+.seg button { border: 0; background: transparent; color: var(--text-2); padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+.btn-ghost { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+section { margin-top: 32px; }
+h2 { font-size: 17px; margin: 0 0 4px; }
+h3 { font-size: 14px; margin: 0 0 6px; }
+.sub { color: var(--text-2); font-size: 13px; margin: 0 0 12px; max-width: 82ch; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; min-width: 0; }
+.grid { display: grid; gap: 12px; }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 860px) { .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g2, .g3 { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .g4 { grid-template-columns: 1fr; } }
+.lead { font-size: 22px; letter-spacing: -.01em; margin: 24px 0 6px; line-height: 1.25; }
+@media (max-width: 420px) { .lead { font-size: 19px; } }
+.note { background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+.note b { font-weight: 650; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.l { background: var(--lula); } .dot.f { background: var(--flavio); } .dot.n { background: var(--neutral-bar); } .dot.a { background: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--text-2); margin-bottom: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart-box { position: relative; height: 280px; }
+.chart-box.short { height: 210px; }
+.chart-box.tall { height: 520px; }
+.chart-box.dec { height: 300px; }
+@media (max-width: 520px) { .chart-box { height: 240px; } .chart-box.tall { height: 620px; } .chart-box.dec { height: 320px; } }
+.kpi { border-top-width: 4px; }
+.kpi.l { border-top-color: var(--lula); } .kpi.f { border-top-color: var(--flavio); } .kpi.d { border-top-color: var(--accent); }
+.kpi .lab { font-size: 14px; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+.kpi .val { font-size: 34px; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 2px; line-height: 1.15; }
+.kpi .val small { font-size: 14px; font-weight: 500; color: var(--text-2); letter-spacing: 0; }
+.kpi .det { font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.kpi .det b { color: var(--text); font-weight: 650; }
+@media (max-width: 420px) { .kpi .val { font-size: 28px; } }
+.controls { display: grid; gap: 14px; }
+.ctl-row { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.ctl-row > .lbl { font-size: 13px; color: var(--text-2); min-width: 120px; }
+.sliders { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+@media (max-width: 760px) { .sliders { grid-template-columns: 1fr; } }
+.sl { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; font-size: 13px; min-width: 0; }
+.sl label { color: var(--text-2); display: flex; gap: 6px; align-items: center; min-width: 0; }
+.sl output { font-variant-numeric: tabular-nums; font-weight: 650; min-width: 3.2em; text-align: right; }
+.sl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 2px 0 0; }
+.sl .hint { grid-column: 1 / -1; font-size: 11.5px; color: var(--text-3); }
+.sl.l label .dot { background: var(--lula); } .sl.f label .dot { background: var(--flavio); }
+.pill { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-2); white-space: nowrap; }
+.pill.sup { border-style: dashed; border-color: var(--text-2); }
+.pill.fonte { border-color: var(--text-2); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th:first-child, td:first-child, th.l, td.l { text-align: left; }
+th { color: var(--text-2); font-weight: 600; background: var(--surface); }
+td.wrap-txt { white-space: normal; text-align: left; min-width: 180px; }
+.tbl-wrap { overflow-x: auto; max-width: 100%; }
+caption { caption-side: top; text-align: left; color: var(--text-2); font-size: 13px; padding-bottom: 6px; }
+.muted { color: var(--text-3); }
+a { color: inherit; }
+details summary { cursor: pointer; color: var(--text-2); font-size: 13px; margin: 8px 0; }
+ul.lim { padding-left: 20px; font-size: 14px; }
+ul.lim li { margin-bottom: 6px; }
+.src li { overflow-wrap: anywhere; font-size: 13px; color: var(--text-2); margin-bottom: 4px; }
+.drivers { font-size: 14px; margin: 10px 0 0; }
+.drivers p { margin: 4px 0; }
+.chip-l { color: var(--text); border-bottom: 2px solid var(--lula); }
+.chip-f { color: var(--text); border-bottom: 2px solid var(--flavio); }
+.erro { padding: 16px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="voltar" href="index.html">← Voltar ao painel</a>
+    <h1>Cenários econômicos 2027–2030</h1>
+    <span class="spacer"></span>
+    <button class="btn-ghost" id="tema" type="button" aria-label="Alternar tema claro/escuro">Tema</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="lead">Quanto a renda das famílias compraria em 2030, com Lula ou com Flávio Bolsonaro no governo</p>
+  <p class="sub">Simulação Monte Carlo (<span id="m-n">200 mil</span> trajetórias por vencedor) do <b>poder de compra real</b>: renda disponível dividida pelo preço da cesta de consumo de cada tipo de família. Índice 2026 = 100. Os dois cenários usam as mesmas equações e os mesmos choques externos (alimentos, petróleo, PIB). Só mudam os parâmetros que dependem do vencedor, tirados das propostas, das declarações e das projeções de bancos.</p>
+  <div class="note" role="note"><b>Projeção com alta incerteza, não previsão.</b> Nenhuma instituição publicou inflação, PIB ou salário real condicionais ao candidato. Só há projeções condicionais de câmbio e de juros. Todo o resto é derivado de elasticidades com fonte e de <b>premissas sem fonte</b>, marcadas como <span class="pill sup">suposição</span>. Você pode mexer nelas abaixo. A página não diz qual vencedor é “melhor”: mostra as distribuições, o que puxa cada lado e quanto isso depende das premissas.</div>
+
+  <section id="controles">
+    <div class="card controls">
+      <div class="ctl-row"><span class="lbl">Tipo de família</span><div class="seg" id="seg-arq" role="group" aria-label="Tipo de família"></div></div>
+      <div>
+        <h3>Premissas sem fonte <span class="pill sup">suposição</span></h3>
+        <p class="sub" style="margin-bottom:8px">Os controles reponderam as simulações já feitas (mistura exata das combinações de eventos), sem rodar o modelo de novo. As trajetórias anuais, os gráficos macro, a decomposição e o tornado usam as premissas padrão.</p>
+        <div class="sliders" id="sliders"></div>
+      </div>
+      <div class="ctl-row"><span class="lbl">Prêmio de risco por p.p. de dívida (E8, IFI)</span><div class="seg" id="seg-e8" role="group" aria-label="Sensibilidade do prêmio de risco"></div></div>
+      <div class="ctl-row"><button class="btn-ghost" id="reset" type="button">Restaurar premissas padrão</button><span class="muted" style="font-size:12px" id="estado-premissas">Premissas padrão</span></div>
+    </div>
+  </section>
+
+  <section id="resultado">
+    <h2 id="t-arq">Poder de compra em 2030</h2>
+    <p class="sub" id="d-arq"></p>
+    <div class="grid g3">
+      <div class="card kpi l" id="k-L"></div>
+      <div class="card kpi f" id="k-F"></div>
+      <div class="card kpi d" id="k-D"></div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="card">
+        <h3>Distribuição do índice em 2030 (2026 = 100)</h3>
+        <div class="legend"><span><i class="dot l"></i>Lula vence</span><span><i class="dot f"></i>Flávio vence</span><span><i class="dot a" style="border-radius:0;width:2px;height:12px"></i>2026 = 100</span></div>
+        <div class="chart-box"><canvas id="c-dist" aria-label="Distribuição do poder de compra em 2030 por vencedor" role="img"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Diferença Lula − Flávio na mesma simulação (pontos do índice)</h3>
+        <div class="legend"><span><i class="dot l"></i>maior no cenário Lula</span><span><i class="dot f"></i>maior no cenário Flávio</span></div>
+        <div class="chart-box"><canvas id="c-diff" aria-label="Distribuição da diferença Lula menos Flávio" role="img"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="todos">
+    <h2>Todos os tipos de família</h2>
+    <p class="sub">Índice de poder de compra em 2030 (2026 = 100) com as premissas selecionadas acima. A diferença compara o mesmo “mundo” (mesmos choques de alimentos, petróleo e PIB) com vencedores diferentes.</p>
+    <div class="card tbl-wrap"><table id="tab-todos"></table></div>
+  </section>
+
+  <section id="cesta">
+    <h2>Cesta básica e salário mínimo</h2>
+    <p class="sub">Horas de trabalho com o salário mínimo para comprar a cesta (custo da cesta ÷ mínimo × 220 h, fórmula do DIEESE) e cestas compradas por um mínimo. Junho de 2026: <span id="b-horas"></span> e <span id="b-cestas"></span> (27 capitais, DIEESE/Conab). Menos horas é melhor.</p>
+    <div class="grid g4" id="k-cesta"></div>
+    <div class="card" style="margin-top:12px">
+      <h3>Horas de trabalho por cesta, por ano (premissas padrão)</h3>
+      <div class="legend"><span><i class="dot l"></i>Lula: mediana e faixa de 80%</span><span><i class="dot f"></i>Flávio: mediana e faixa de 80%</span></div>
+      <div class="chart-box"><canvas id="c-horas" aria-label="Horas de trabalho por cesta por ano" role="img"></canvas></div>
+    </div>
+  </section>
+
+  <section id="trajetoria">
+    <h2>Trajetória do poder de compra, 2026–2030</h2>
+    <p class="sub" id="d-traj">Mediana e faixa entre os percentis 10 e 90 (premissas padrão).</p>
+    <div class="card">
+      <div class="legend"><span><i class="dot l"></i>Lula</span><span><i class="dot f"></i>Flávio</span></div>
+      <div class="chart-box"><canvas id="c-traj" aria-label="Trajetória anual do poder de compra" role="img"></canvas></div>
+    </div>
+  </section>
+
+  <section id="macro">
+    <h2>Trajetórias macroeconômicas</h2>
+    <p class="sub">Mediana (linha) e faixa de 80% (área) de cada cenário, com as premissas padrão. O ponto de 2026 é o dado observado ou o consenso de fim de ano. Câmbio em média anual.</p>
+    <div class="legend"><span><i class="dot l"></i>Lula vence</span><span><i class="dot f"></i>Flávio vence</span></div>
+    <div class="grid g2" id="macro-grid"></div>
+  </section>
+
+  <section id="motores">
+    <h2>O que move a diferença</h2>
+    <p class="sub">Contribuição de cada grupo de canais para a diferença média Lula − Flávio do tipo de família selecionado. Para medir, troca-se um grupo de parâmetros de um cenário pelo do outro e faz-se a média das duas trocas. O que sobra é interação entre canais. Barras para a direita aumentam o índice no cenário Lula em relação ao de Flávio; para a esquerda, o contrário.</p>
+    <div class="card">
+      <div class="chart-box dec"><canvas id="c-dec" aria-label="Decomposição da diferença por canal" role="img"></canvas></div>
+      <div class="drivers" id="txt-dec"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>O dilema central</h3>
+      <p class="sub" style="margin:0">O canal de <b>câmbio, juros e credibilidade fiscal</b> (dólar e Selic mais baixos esperados pelos bancos se Flávio vencer) reduz a inflação, sobretudo a de alimentos, e o custo do crédito. O canal de <b>renda indexada</b> (ganho real do mínimo garantido e reajuste do Bolsa Família no programa de Lula, contra uma probabilidade de congelamento real no de Flávio) pesa mais para quem vive do piso e de transferências. Qual dos dois domina depende do tipo de família e, sobretudo, de premissas sem fonte: se o choque cambial persiste, se a regra do mínimo é mantida e quanto a Selic reage.</p>
+    </div>
+  </section>
+
+  <section id="sensibilidade">
+    <h2>Sensibilidade às premissas</h2>
+    <p class="sub">Cada linha leva uma premissa ao extremo baixo e ao alto da faixa, mantendo as demais no padrão, e mostra a diferença média Lula − Flávio que resulta (pontos do índice de 2030; <span id="sens-n"></span> simulações por ponto). A linha vertical é o valor padrão. Linhas longas indicam que o resultado depende muito daquela premissa.</p>
+    <div class="card">
+      <div class="legend"><span><i class="dot n"></i>premissa no extremo baixo</span><span><i class="dot a"></i>premissa no extremo alto</span></div>
+      <div class="chart-box tall"><canvas id="c-tornado" aria-label="Gráfico de tornado da sensibilidade" role="img"></canvas></div>
+      <details><summary>Tabela da sensibilidade</summary><div class="tbl-wrap"><table id="tab-tornado"></table></div></details>
+    </div>
+  </section>
+
+  <section id="premissas">
+    <h2>Premissas e fontes</h2>
+    <p class="sub">Numeração da tabela de parâmetros das notas de pesquisa (seção 7). <span class="pill fonte">fonte</span> dado ou estimativa publicada; <span class="pill">projeção</span> previsão de instituição ou declaração de campanha; <span class="pill">calc</span> conta feita a partir de fontes; <span class="pill sup">suposição</span> escolha de modelagem sem fonte (todas entram na sensibilidade).</p>
+    <div class="card tbl-wrap"><table id="tab-param"></table></div>
+  </section>
+
+  <section id="metodologia">
+    <h2>Metodologia</h2>
+    <div class="card">
+      <ul class="lim">
+        <li><b>Estrutura anual (2027–2030).</b> Cada trajetória sorteia: o choque cambial de impacto do vencedor e se ele persiste; a Selic de 2027; o ajuste fiscal; os eventos de política (regra do mínimo, Bolsa Família, IR, IVA, 6x1, PEC 12); e choques comuns aos dois cenários (inflação de consenso, prêmio dos alimentos, PIB, Brent, desemprego, renda real, elasticidades).</li>
+        <li><b>Âncora no consenso.</b> O Focus de 28/09/2026 foi coletado com o mercado dividido entre os candidatos, então é tratado como média dos dois cenários. Os choques do vencedor são desvios em relação a ele.</li>
+        <li><b>Câmbio.</b> O choque de impacto (bancos) persiste com a probabilidade escolhida. Se não persistir, converge em 12 a 18 meses para o consenso ou um pouco acima, com a mesma regra para os dois. Há ainda um ruído cambial comum e a realimentação do prêmio de risco.</li>
+        <li><b>Inflação por componente.</b> A inflação é calculada para alimentação no domicílio, combustíveis, serviços e demais itens, com repasse cambial de 12 e 24 meses (BCB), assimetria, efeito da Selic (BCB), realinhamento de combustíveis (defasagem Abicom × Brent × câmbio), IVA e 6x1. O resultado é agregado com os pesos do IPCA, do INPC ou de uma cesta de baixa renda.</li>
+        <li><b>Credibilidade.</b> Para os dois, o estado “crível” (Lula: depreciação não persiste; Flávio: apreciação persiste) desloca o sorteio da Selic para baixo e o do ajuste fiscal para cima.</li>
+        <li><b>Dívida e prêmio.</b> A dívida evolui com Selic, inflação, PIB e primário, e a taxa implícita é calibrada para reproduzir os 86,4% do PIB da IFI em 2027. O prêmio de risco reage só a <i>surpresas</i> de dívida em relação ao que se esperava do vencedor, porque o choque inicial já embute a expectativa do mercado. O prêmio realimenta câmbio e Selic no ano seguinte.</li>
+        <li><b>Renda.</b> Salário mínimo pela regra (INPC + PIB de t−2, teto de 2,5%) ou só pelo INPC. Bolsa Família corrigido pelo INPC mais um reajuste real. Salário mediano com inflação esperada, repasse parcial da surpresa de inflação e ganho real comum. IR com as tabelas nominais de 2026 congeladas, o que gera arrasto de faixa, e possível revogação da isenção. Desemprego reduz a renda esperada dos trabalhadores. Para o endividado, o comprometimento de renda varia com a Selic.</li>
+        <li><b>Números aleatórios comuns.</b> A simulação <i>i</i> do cenário Lula e a simulação <i>i</i> do cenário Flávio têm os mesmos choques externos. Por isso a diferença é pareada. Os sorteios de política de cada vencedor são independentes.</li>
+        <li><b>Neutralidade verificável.</b> Há uma única função de simulação. Um teste automatizado confirma que trocar todos os parâmetros de um cenário pelos do outro reproduz exatamente o outro cenário.</li>
+      </ul>
+      <h3 style="margin-top:14px">Limitações</h3>
+      <ul class="lim">
+        <li>Nenhuma projeção publicada de inflação, PIB, desemprego ou salário real é condicional ao candidato. O modelo deriva esses efeitos, e a transmissão depende de premissas sem fonte.</li>
+        <li>O prêmio dos alimentos (desvio-padrão de 5,1 p.p. ao ano, IBGE 2003–2025) domina a incerteza da baixa renda e é igual nos dois cenários. Ele alarga as faixas de cada vencedor, mas quase não afeta a diferença pareada.</li>
+        <li>O tipo de família do Bolsa Família considera só o benefício; renda do trabalho informal não entra. O aposentado e o trabalhador de 1 SM usam a mesma cesta INPC.</li>
+        <li>Ficam de fora: tarifas dos EUA, abertura comercial, privatizações e receitas extraordinárias, corte de tributos sobre energia elétrica, efeitos distributivos do IVA dentro da cesta (tratados só como faixa), informalização por causa da 6x1 e efeitos de longo prazo das reformas.</li>
+        <li>Com o fim da 6x1, o salário-hora sobe cerca de 10% para quem está nessa escala. O índice, porém, é mensal, e as horas por cesta usam a jornada legal de 220 h, como o DIEESE.</li>
+        <li>O histórico mostra que choques externos (commodities, câmbio, safras) pesaram mais que o governo no poder de compra (2003–2010, 2019–2022). Este modelo não prevê esses choques; só os sorteia.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="fontes">
+    <h2>Fontes principais</h2>
+    <ul class="src">
+      <li>BCB, RPM mar/2026, boxe de repasse cambial: <a href="https://www.bcb.gov.br/content/ri/relatorioinflacao/202603/rpm202603b8p.pdf">bcb.gov.br</a></li>
+      <li>BCB, RI jun/2024 (Selic → IPCA): <a href="https://www.bcb.gov.br/content/ri/relatorioinflacao/202406/ri202406b12p.pdf">bcb.gov.br</a>; Estudo Especial 118 (Selic → crédito): <a href="https://www.bcb.gov.br/conteudo/relatorioinflacao/EstudosEspeciais/EE118_Repasse_da_taxa_Selic_para_o_mercado_de_credito_bancario.pdf">bcb.gov.br</a></li>
+      <li>IFI, RAF 116 (set/2026): projeções, prêmio de risco e dívida: <a href="https://www12.senado.leg.br/ifi/ultimas-publicacoes/relatorio-de-acompanhamento-fiscal-set-2026">senado.leg.br/ifi</a></li>
+      <li>Focus de 28/09/2026: <a href="https://euqueroinvestir.com/economia/boletim-focus-mercado-projeta-queda-da-selic-so-para-2028">Eu Quero Investir</a></li>
+      <li>Câmbio condicional: Goldman Sachs (<a href="https://www.bloomberglinea.com.br/mercados/dolar-pode-ir-de-r-450-a-r-580-apos-eleicao-e-depende-do-fiscal-segundo-o-goldman/">Bloomberg Línea</a>), JPMorgan (<a href="https://www.mixvale.com.br/2026/09/28/jpmorgan-projeta-dolar-entre-r-490-e-r-550-apos-as-eleicoes/">Mix Vale</a>), BTG (<a href="https://exame.com/invest/mercados/com-eleicao-no-radar-btg-trava-carteira-de-acoes-e-aponta-potenciais-campeas/">Exame</a>); Morgan Stanley (<a href="https://www.seudinheiro.com/2026/economia/a-selic-pode-terminar-2027-em-975-ao-ano-ou-subir-para-155-e-o-que-vai-definir-a-taxa-nao-e-a-economia-mlim/">Seu Dinheiro</a>)</li>
+      <li>DIEESE, Nota Técnica 289 (salário mínimo): <a href="https://www.dieese.org.br/notatecnica/2025/notaTec289salarioMinimo.pdf">dieese.org.br</a>; cesta básica: <a href="https://www.dieese.org.br/analisecestabasica/2026/202604cestabasica/index.html?page=3">dieese.org.br</a></li>
+      <li>IBGE/SIDRA (IPCA, INPC, pesos, PNADC): <a href="https://apisidra.ibge.gov.br/">apisidra.ibge.gov.br</a>; BCB/SGS (endividamento, juros, câmbio): <a href="https://api.bcb.gov.br/">api.bcb.gov.br</a></li>
+      <li>IVA: Bráulio Borges, <a href="https://blogdoibre.fgv.br/posts/reforma-da-tributacao-indireta-no-brasil-transformacao-historica-que-tem-inicio-em-2026">Blog do IBRE</a>; 6x1: Ipea (<a href="https://www.poder360.com.br/poder-economia/fim-da-escala-6-x-1-elevaria-custo-do-trabalho-em-784-diz-ipea/">Poder360</a>); PEC 12: DIEESE (<a href="https://www.condsef.org.br/noticias/dieese-aponta-impactos-pec-12-2026-sobre-jornada-trabalho-direitos-trabalhistas">Condsef</a>)</li>
+      <li>Notas completas: <code>research_notes/Nordeste e cenarios economicos 2026/cenarios_economicos_insumos.md</code>; propostas: <code>reports/Propostas e viabilidade dos candidatos.md</code>; modelo: <code>cenarios/cenarios.py</code></li>
+    </ul>
+  </section>
+  <footer class="sub" style="margin-top:32px" id="rodape"></footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+(function () {
+  if (window.Chart) return;
+  var s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+  s.onload = function () { if (window.__renderCenarios) window.__renderCenarios(); };
+  document.head.appendChild(s);
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var D = null, arq = "sm", grade = "dist", charts = {}, probs = null;
+  var NOME = { L: "Lula", F: "Flávio" };
+  var ANOS = ["2026", "2027", "2028", "2029", "2030"];
+  var fmtN = function (x, d) { return x == null || isNaN(x) ? "–" : Number(x).toLocaleString("pt-BR", { minimumFractionDigits: d == null ? 1 : d, maximumFractionDigits: d == null ? 1 : d }); };
+  var fmtS = function (x, d) { return (x > 0 ? "+" : x < 0 ? "−" : "") + fmtN(Math.abs(x), d); };
+  var fmtP = function (p) { return p > 0.995 ? "&gt;99%" : (p < 0.005 ? "&lt;1%" : Math.round(p * 100) + "%"); };
+  var css = function (v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function tipoPill(t) {
+    var cls = t === "suposição" ? "pill sup" : (t.indexOf("fonte") === 0 ? "pill fonte" : "pill");
+    return "<span class='" + cls + "'>" + esc(t) + "</span>";
+  }
+
+  // ---------- tema (mesma chave do painel)
+  try { var t0 = localStorage.getItem("tema-sim"); if (t0) document.documentElement.setAttribute("data-theme", t0); } catch (e) {}
+  document.getElementById("tema").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var dark = cur ? cur === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var nxt = dark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", nxt);
+    try { localStorage.setItem("tema-sim", nxt); } catch (e) {}
+    renderTudo();
+  });
+  try { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { renderTudo(); }); } catch (e) {}
+
+  // ---------- premissas controláveis
+  var SLIDERS = [
+    { c: "L", e: "persiste", id: "L2", lab: "P(depreciação inicial persiste 12 meses)", hint: "Lula vence: o dólar mais caro esperado pelos bancos (+3% a +15%) se mantém. Senão, há ajuste crível e o câmbio volta ao consenso." },
+    { c: "F", e: "persiste", id: "F2", lab: "P(apreciação inicial persiste 12 meses)", hint: "Flávio vence: o dólar mais barato (−4% a −14%) se mantém porque o ajuste vem antes ou junto dos cortes de impostos. Senão, volta ao consenso." },
+    { c: "F", e: "regra_sm", id: "F6", lab: "P(mantém o ganho real do mínimo)", hint: "Flávio vence. Se não mantiver, o mínimo e os benefícios do piso passam a ser corrigidos só pelo INPC a partir de 2028. No cenário Lula a regra é mantida (P = 1)." },
+    { c: "F", e: "iva", id: "F9", lab: "P(IVA de 20% aprovado até 2030)", hint: "Flávio vence. Baixa preços a partir de 2029 (gradual) e tem custo fiscal de 1,1% a 4,2% do PIB com o sistema pleno." },
+    { c: "L", e: "x6", id: "L12", lab: "P(fim da escala 6x1)", hint: "Lula vence. Preços de serviços sobem 0% a 3% em dois anos; pequeno efeito no PIB." },
+    { c: "F", e: "x6", id: "F12", lab: "P(fim da escala 6x1)", hint: "Flávio vence. Mesmos efeitos do outro cenário." },
+    { c: "F", e: "pec12", id: "F14", lab: "P(PEC 12: contrato por hora)", hint: "Flávio vence. Aumenta a variabilidade da renda de quem ganha 1 SM, sem mudar a média." }
+  ];
+  var E8 = [["dist", "incerto (0,03–0,33)"], ["0.03", "0,03"], ["0.112", "0,112"], ["0.33", "0,33"]];
+
+  function probsPadrao() { return JSON.parse(JSON.stringify(D.probs_padrao)); }
+
+  function montarControles() {
+    var seg = document.getElementById("seg-arq");
+    seg.innerHTML = Object.keys(D.arquetipos).map(function (k) {
+      return "<button type='button' data-arq='" + k + "' aria-pressed='" + (k === arq) + "'>" + esc(rotCurto(k)) + "</button>";
+    }).join("");
+    seg.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        arq = b.dataset.arq;
+        seg.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+        renderTudo();
+      });
+    });
+    var sl = document.getElementById("sliders");
+    sl.innerHTML = SLIDERS.map(function (s, i) {
+      var v = probs[s.c][s.e];
+      return "<div class='sl " + s.c.toLowerCase() + "'><label for='s" + i + "'><i class='dot'></i>" + esc(NOME[s.c]) + " · " + esc(s.lab) + " <span class='muted'>(" + s.id + ")</span></label>" +
+        "<output id='o" + i + "'>" + fmtN(v, 2) + "</output>" +
+        "<input type='range' id='s" + i + "' min='0' max='1' step='0.05' value='" + v + "'>" +
+        "<span class='hint'>" + esc(s.hint) + "</span></div>";
+    }).join("");
+    SLIDERS.forEach(function (s, i) {
+      var inp = document.getElementById("s" + i);
+      inp.addEventListener("input", function () {
+        probs[s.c][s.e] = Number(inp.value);
+        document.getElementById("o" + i).textContent = fmtN(Number(inp.value), 2);
+        renderReponderado();
+      });
+    });
+    var se = document.getElementById("seg-e8");
+    se.innerHTML = E8.map(function (g) { return "<button type='button' data-g='" + g[0] + "' aria-pressed='" + (g[0] === grade) + "'>" + g[1] + "</button>"; }).join("");
+    se.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        grade = b.dataset.g;
+        se.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+        renderReponderado();
+      });
+    });
+    document.getElementById("reset").addEventListener("click", function () {
+      probs = probsPadrao(); grade = "dist";
+      SLIDERS.forEach(function (s, i) { document.getElementById("s" + i).value = probs[s.c][s.e]; document.getElementById("o" + i).textContent = fmtN(probs[s.c][s.e], 2); });
+      se.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x.dataset.g === "dist"); });
+      renderReponderado();
+    });
+  }
+  function rotCurto(k) {
+    return { sm: "1 salário mínimo", aposentado: "Aposentado no piso", bf: "Bolsa Família", mediano: "Mediano (R$ 3.777)", faixa: "R$ 5–10 mil", endividado: "Endividado" }[k] || k;
+  }
+  function ehPadrao() {
+    var p = D.probs_padrao;
+    if (grade !== "dist") return false;
+    return SLIDERS.every(function (s) { return Math.abs(probs[s.c][s.e] - p[s.c][s.e]) < 1e-9; });
+  }
+
+  // ---------- mistura das células
+  function pesoCelula(chave, eventos, pr) {
+    var w = 1;
+    for (var i = 0; i < eventos.length; i++) w *= chave.charAt(i) === "1" ? pr[eventos[i]] : 1 - pr[eventos[i]];
+    return w;
+  }
+  function tipoHist(m, dif) { var b = D.arquetipos[m] ? "pp" : m; return dif ? "d_" + b : b; }
+  function misturar(cels, pesoFn, m, tipo) {
+    var H = D.hist[tipo], nb = Math.round((H[1] - H[0]) / H[2]);
+    var h = new Float64Array(nb), mu = 0, wt = 0;
+    Object.keys(cels).forEach(function (k) {
+      var w = pesoFn(k); if (w <= 0) return;
+      var c = cels[k], e = c.m[m], o = e[1], arr = e[2];
+      mu += w * e[0] / c.n; wt += w;
+      for (var j = 0; j < arr.length; j++) h[o + j] += w * arr[j] / c.n;
+    });
+    for (var j = 0; j < nb; j++) h[j] /= wt;
+    return { h: h, media: mu / wt, lo: H[0], st: H[2] };
+  }
+  function quantil(M, q) {
+    var acc = 0;
+    for (var i = 0; i < M.h.length; i++) {
+      if (acc + M.h[i] >= q && M.h[i] > 0) return M.lo + (i + (q - acc) / M.h[i]) * M.st;
+      acc += M.h[i];
+    }
+    return M.lo + M.h.length * M.st;
+  }
+  function massaAcima(M, x) {
+    var i0 = Math.round((x - M.lo) / M.st), s = 0;
+    for (var i = Math.max(0, i0); i < M.h.length; i++) s += M.h[i];
+    return s;
+  }
+  function calcular(m) {
+    var G = D.grades[grade], ev = D.eventos;
+    var L = misturar(G.L, function (k) { return pesoCelula(k, ev.L, probs.L); }, m, tipoHist(m));
+    var F = misturar(G.F, function (k) { return pesoCelula(k, ev.F, probs.F); }, m, tipoHist(m));
+    var Dd = misturar(G.D, function (k) { var p = k.split("|"); return pesoCelula(p[0], ev.L, probs.L) * pesoCelula(p[1], ev.F, probs.F); }, m, tipoHist(m, true));
+    return { L: L, F: F, D: Dd };
+  }
+  function limiar(m) { return D.arquetipos[m] ? 100 : (m === "horas" ? D.base.horas_cesta : D.base.cestas_por_sm); }
+  function stats(M, m, dif) {
+    var r = { media: M.media, p10: quantil(M, .1), p50: quantil(M, .5), p90: quantil(M, .9) };
+    if (dif) { r.pPos = massaAcima(M, 0); r.pNeg = 1 - r.pPos; }
+    else {
+      var acima = massaAcima(M, limiar(m));
+      r.pMelhor = m === "horas" ? 1 - acima : acima;
+    }
+    return r;
+  }
+
+  // ---------- gráficos
+  function baseOpts(extra) {
+    var o = {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: css("--surface"), titleColor: css("--text"), bodyColor: css("--text-2"), borderColor: css("--border"), borderWidth: 1 } },
+      scales: {
+        x: { grid: { color: css("--grid") }, ticks: { color: css("--text-3"), maxRotation: 0, autoSkipPadding: 8 }, border: { color: css("--border") } },
+        y: { grid: { color: css("--grid") }, ticks: { color: css("--text-3") }, border: { display: false } }
+      }
+    };
+    return deepMerge(o, extra || {});
+  }
+  function deepMerge(a, b) {
+    Object.keys(b).forEach(function (k) {
+      if (b[k] && typeof b[k] === "object" && !Array.isArray(b[k]) && a[k] && typeof a[k] === "object") deepMerge(a[k], b[k]);
+      else a[k] = b[k];
+    });
+    return a;
+  }
+  var refLine = {
+    id: "refLine",
+    afterDatasetsDraw: function (ch, args, opts) {
+      if (!opts || opts.x == null) return;
+      var sc = ch.scales.x, ctx = ch.ctx, ar = ch.chartArea;
+      var px = sc.getPixelForValue(opts.x);
+      if (px < ar.left || px > ar.right) return;
+      ctx.save(); ctx.strokeStyle = opts.color || css("--accent"); ctx.lineWidth = 2;
+      if (opts.dash) ctx.setLineDash(opts.dash);
+      ctx.beginPath(); ctx.moveTo(px, ar.top); ctx.lineTo(px, ar.bottom); ctx.stroke(); ctx.restore();
+    }
+  };
+  function chart(id, cfg) {
+    if (typeof Chart === "undefined") {
+      var c = document.getElementById(id);
+      if (c && !c.dataset.aviso) { c.dataset.aviso = 1; c.insertAdjacentHTML("afterend", "<p class='sub'>Gráfico indisponível: a biblioteca Chart.js não carregou.</p>"); }
+      return;
+    }
+    if (charts[id]) charts[id].destroy();
+    cfg.plugins = (cfg.plugins || []).concat([refLine]);
+    charts[id] = new Chart(document.getElementById(id), cfg);
+  }
+  function rebin(M, k, lo, hi) {
+    var xs = [], ys = [];
+    for (var i = 0; i < M.h.length; i += k) {
+      var x0 = M.lo + i * M.st, s = 0;
+      for (var j = i; j < Math.min(i + k, M.h.length); j++) s += M.h[j];
+      var xc = x0 + k * M.st / 2;
+      if (xc < lo || xc > hi) continue;
+      xs.push(xc); ys.push(s / (k * M.st));
+    }
+    return { x: xs, y: ys };
+  }
+  function fmtM(m) { return m === "cestas" ? 2 : 1; }
+
+  function renderDist(R, m) {
+    var lo = Math.min(quantil(R.L, .002), quantil(R.F, .002)), hi = Math.max(quantil(R.L, .998), quantil(R.F, .998));
+    var pad = (hi - lo) * 0.05; lo -= pad; hi += pad;
+    var k = m === "cestas" ? 2 : 2;
+    var a = rebin(R.L, k, lo, hi), b = rebin(R.F, k, lo, hi);
+    chart("c-dist", {
+      type: "line",
+      data: { datasets: [
+        { label: "Lula", data: a.x.map(function (x, i) { return { x: x, y: a.y[i] }; }), borderColor: css("--lula"), backgroundColor: css("--lula-soft"), fill: "origin", borderWidth: 2, pointRadius: 0, tension: 0.25 },
+        { label: "Flávio", data: b.x.map(function (x, i) { return { x: x, y: b.y[i] }; }), borderColor: css("--flavio"), backgroundColor: css("--flavio-soft"), fill: "origin", borderWidth: 2, pointRadius: 0, tension: 0.25 }
+      ] },
+      options: baseOpts({
+        interaction: { mode: "nearest", intersect: false, axis: "x" },
+        scales: { x: { type: "linear", min: lo, max: hi, ticks: { callback: function (v) { return fmtN(v, m === "cestas" ? 1 : 0); } } }, y: { ticks: { display: false }, title: { display: true, text: "densidade", color: css("--text-3") } } },
+        plugins: { refLine: { x: limiar(m) }, tooltip: { callbacks: { title: function (it) { return fmtN(it[0].parsed.x, fmtM(m)); }, label: function (it) { return it.dataset.label; } } } }
+      })
+    });
+  }
+  function renderDiff(R, m) {
+    var M = R.D, lo = quantil(M, .002), hi = quantil(M, .998);
+    var span = Math.max(Math.abs(lo), Math.abs(hi), m === "cestas" ? 0.05 : 1);
+    var k = m === "cestas" ? 1 : (span > 15 ? 2 : 1);
+    var bins = rebin(M, k, -span * 1.05, span * 1.05);
+    var colL = css("--lula"), colF = css("--flavio");
+    var invert = m === "horas"; // mais horas no cenário Lula = pior para Lula
+    chart("c-diff", {
+      type: "bar",
+      data: { datasets: [{ label: "Diferença", data: bins.x.map(function (x, i) { return { x: x, y: bins.y[i] }; }),
+        backgroundColor: bins.x.map(function (x) { var pos = invert ? x < 0 : x > 0; return x === 0 ? css("--neutral-bar") : (pos ? colL : colF); }),
+        borderRadius: 2, barPercentage: 1.0, categoryPercentage: 1.0, borderWidth: 0 }] },
+      options: baseOpts({
+        interaction: { mode: "nearest", intersect: false, axis: "x" },
+        scales: { x: { type: "linear", min: -span * 1.05, max: span * 1.05, offset: false, ticks: { callback: function (v) { return fmtS(v, m === "cestas" ? 2 : 0); } } }, y: { ticks: { display: false }, title: { display: true, text: "densidade", color: css("--text-3") } } },
+        plugins: { refLine: { x: 0 }, tooltip: { callbacks: { title: function (it) { return "Lula − Flávio ≈ " + fmtS(it[0].parsed.x, fmtM(m)); }, label: function () { return ""; } } } }
+      })
+    });
+  }
+
+  function kpi(el, cand, s, m) {
+    var dot = cand === "L" ? "l" : "f";
+    var unidade = D.arquetipos[m] ? "" : (m === "horas" ? " h" : "");
+    var txtMelhor = m === "horas" ? "P(menos horas que em 2026)" : (m === "cestas" ? "P(mais cestas que em 2026)" : "P(poder de compra maior que em 2026)");
+    el.innerHTML = "<div class='lab'><i class='dot " + dot + "'></i>Se " + esc(D.candidatos[cand]) + " vencer</div>" +
+      "<div class='val'>" + fmtN(s.media, fmtM(m)) + unidade + " <small>média</small></div>" +
+      "<div class='det'>Mediana <b>" + fmtN(s.p50, fmtM(m)) + "</b> · 80% entre <b>" + fmtN(s.p10, fmtM(m)) + "</b> e <b>" + fmtN(s.p90, fmtM(m)) + "</b></div>" +
+      "<div class='det'>" + txtMelhor + ": <b>" + fmtP(s.pMelhor) + "</b></div>";
+  }
+  function kpiD(el, s, m) {
+    var hor = m === "horas";
+    var pL = hor ? s.pNeg : s.pPos, pF = 1 - pL;
+    var unid = D.arquetipos[m] ? " pts" : (hor ? " h" : "");
+    el.innerHTML = "<div class='lab'><i class='dot a'></i>Diferença Lula − Flávio (mesma simulação)</div>" +
+      "<div class='val'>" + fmtS(s.media, fmtM(m) === 2 ? 2 : 1) + unid + " <small>média</small></div>" +
+      "<div class='det'>80% entre <b>" + fmtS(s.p10, fmtM(m)) + "</b> e <b>" + fmtS(s.p90, fmtM(m)) + "</b></div>" +
+      "<div class='det'>" + (hor ? "Menos horas" : "Resultado maior") + " no cenário Lula: <b>" + fmtP(pL) + "</b> · no cenário Flávio: <b>" + fmtP(pF) + "</b></div>";
+  }
+
+  function renderReponderado() {
+    document.getElementById("estado-premissas").textContent = ehPadrao() ? "Premissas padrão" : "Premissas alteradas pelo leitor";
+    var R = calcular(arq);
+    var sL = stats(R.L, arq), sF = stats(R.F, arq), sD = stats(R.D, arq, true);
+    document.getElementById("t-arq").textContent = "Poder de compra em 2030: " + D.arquetipos[arq];
+    document.getElementById("d-arq").innerHTML = descArq(arq);
+    kpi(document.getElementById("k-L"), "L", sL, arq);
+    kpi(document.getElementById("k-F"), "F", sF, arq);
+    kpiD(document.getElementById("k-D"), sD, arq);
+    renderDist(R, arq); renderDiff(R, arq);
+    renderTabela(); renderCesta();
+  }
+  function descArq(m) {
+    var t = {
+      sm: "Renda: salário mínimo líquido do INSS, com risco de desemprego (renda esperada) e, se a PEC 12 passar, mais variabilidade. Cesta com pesos do INPC.",
+      aposentado: "Renda: benefício do piso, vinculado ao salário mínimo. Cesta com pesos do INPC.",
+      bf: "Renda: benefício médio do Bolsa Família (R$ 691 em 2026), corrigido pelo INPC mais o reajuste real de cada cenário. Cesta de baixa renda com 30% em alimentos [suposição].",
+      mediano: "Renda: salário habitual mediano de R$ 3.777, líquido de INSS e IR (isento hoje até R$ 5 mil), com risco de desemprego. Cesta com pesos do IPCA.",
+      faixa: "Renda: R$ 6.500 brutos (isenção parcial do IR), 15% da renda em dívidas [suposição], tabela do IR congelada (arrasto de faixa). Cesta com pesos do IPCA.",
+      endividado: "Renda do trabalhador mediano, com 30% da renda comprometida com dívidas, que variam com a Selic (0,1 a 0,3 p.p. por p.p. de Selic) [suposição]. Cesta com pesos do IPCA."
+    };
+    return esc(t[m] || "") + " Índice: renda disponível ÷ preços, 2026 = 100.";
+  }
+
+  function renderTabela() {
+    var rows = Object.keys(D.arquetipos).map(function (m) {
+      var R = calcular(m), sL = stats(R.L, m), sF = stats(R.F, m), sD = stats(R.D, m, true);
+      return "<tr" + (m === arq ? " style='background:var(--surface-2)'" : "") + "><td class='l'>" + esc(D.arquetipos[m]) + "</td>" +
+        "<td>" + fmtN(sL.media) + "</td><td class='muted'>" + fmtN(sL.p10) + "–" + fmtN(sL.p90) + "</td><td>" + fmtP(sL.pMelhor) + "</td>" +
+        "<td>" + fmtN(sF.media) + "</td><td class='muted'>" + fmtN(sF.p10) + "–" + fmtN(sF.p90) + "</td><td>" + fmtP(sF.pMelhor) + "</td>" +
+        "<td>" + fmtS(sD.media) + "</td><td class='muted'>" + fmtS(sD.p10) + " a " + fmtS(sD.p90) + "</td><td>" + fmtP(sD.pPos) + "</td></tr>";
+    }).join("");
+    document.getElementById("tab-todos").innerHTML =
+      "<thead><tr><th class='l' rowspan='2'>Tipo de família</th><th colspan='3' style='text-align:center'><i class='dot l'></i> Lula vence</th><th colspan='3' style='text-align:center'><i class='dot f'></i> Flávio vence</th><th colspan='3' style='text-align:center'>Lula − Flávio</th></tr>" +
+      "<tr><th>média</th><th>p10–p90</th><th>P(&gt;2026)</th><th>média</th><th>p10–p90</th><th>P(&gt;2026)</th><th>média</th><th>p10 a p90</th><th>P(Lula maior)</th></tr></thead><tbody>" + rows + "</tbody>";
+  }
+
+  function renderCesta() {
+    var html = "";
+    ["horas", "cestas"].forEach(function (m) {
+      var R = calcular(m);
+      ["L", "F"].forEach(function (c) {
+        var s = stats(R[c], m);
+        var lab = m === "horas" ? "Horas por cesta em 2030" : "Cestas por salário mínimo em 2030";
+        html += "<div class='card kpi " + c.toLowerCase() + "'><div class='lab'><i class='dot " + c.toLowerCase() + "'></i>" + lab + " · " + esc(NOME[c]) + "</div>" +
+          "<div class='val'>" + fmtN(s.p50, fmtM(m)) + (m === "horas" ? " h" : "") + " <small>mediana</small></div>" +
+          "<div class='det'>80% entre <b>" + fmtN(s.p10, fmtM(m)) + "</b> e <b>" + fmtN(s.p90, fmtM(m)) + "</b></div>" +
+          "<div class='det'>" + (m === "horas" ? "P(menos horas que em jun/2026)" : "P(mais cestas que em jun/2026)") + ": <b>" + fmtP(s.pMelhor) + "</b></div></div>";
+      });
+    });
+    document.getElementById("k-cesta").innerHTML = html;
+  }
+
+  function fan(id, serie, base, dec, opts) {
+    opts = opts || {};
+    var anos = opts.anos || ANOS, ds = [];
+    ["L", "F"].forEach(function (c) {
+      var s = serie[c], col = css(c === "L" ? "--lula" : "--flavio"), soft = css(c === "L" ? "--lula-soft" : "--flavio-soft");
+      var pre = base == null ? [] : [base];
+      ds.push({ label: NOME[c] + " p10", data: pre.concat(s.p10), borderColor: "transparent", backgroundColor: soft, pointRadius: 0, fill: false, order: 2 });
+      ds.push({ label: NOME[c] + " p90", data: pre.concat(s.p90), borderColor: "transparent", backgroundColor: soft, pointRadius: 0, fill: "-1", order: 2 });
+      ds.push({ label: NOME[c] + " mediana", data: pre.concat(s.p50), borderColor: col, backgroundColor: col, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: false, order: 1 });
+    });
+    chart(id, {
+      type: "line", data: { labels: anos, datasets: ds },
+      options: baseOpts({
+        scales: { y: { ticks: { callback: function (v) { return fmtN(v, dec); } } } },
+        plugins: { tooltip: { filter: function (it) { return /mediana/.test(it.dataset.label); }, callbacks: { label: function (it) {
+          var c = /Lula/.test(it.dataset.label) ? "L" : "F", i = it.dataIndex - (base == null ? 0 : 1);
+          if (i < 0) return NOME[c] + ": " + fmtN(it.parsed.y, dec) + " (2026)";
+          return NOME[c] + ": " + fmtN(it.parsed.y, dec) + " (80%: " + fmtN(serie[c].p10[i], dec) + "–" + fmtN(serie[c].p90[i], dec) + ")";
+        } } } }
+      })
+    });
+  }
+
+  var MACRO = [
+    ["ipca", "IPCA (% no ano)", null, 1], ["alimentos", "Alimentação no domicílio (% no ano)", null, 1],
+    ["selic", "Selic no fim do ano (%)", "selic_fim_2026", 1], ["cambio", "Dólar, média do ano (R$)", "cambio", 2],
+    ["divida", "Dívida bruta (% do PIB)", "divida", 1], ["desemprego", "Desemprego (%)", "desemprego", 1],
+    ["sm_real", "Salário mínimo real (2026 = 100)", 100, 1], ["juros_pf", "Juros médios PF aprox. (% a.a.)", "juros_pf", 1],
+    ["pib", "PIB (% no ano)", null, 1], ["primario", "Resultado primário (% do PIB)", null, 1]
+  ];
+  function renderMacro() {
+    var g = document.getElementById("macro-grid");
+    if (!g.dataset.ok) {
+      g.innerHTML = MACRO.map(function (m) { return "<div class='card'><h3>" + esc(m[1]) + "</h3><div class='chart-box short'><canvas id='mc-" + m[0] + "' role='img' aria-label='" + esc(m[1]) + "'></canvas></div></div>"; }).join("");
+      g.dataset.ok = 1;
+    }
+    MACRO.forEach(function (m) {
+      var base = m[2] == null ? null : (typeof m[2] === "number" ? m[2] : D.base[m[2]]);
+      fan("mc-" + m[0], { L: D.macro[m[0]].L, F: D.macro[m[0]].F }, base, m[3], { anos: base == null ? ANOS.slice(1) : ANOS });
+    });
+  }
+
+  function renderDec() {
+    var dec = D.decomposicao, m = arq, gr = Object.keys(dec.grupos);
+    var vals = gr.map(function (g) { return dec.contrib[g][m]; });
+    var tot = dec.total[m], soma = vals.reduce(function (a, b) { return a + b; }, 0);
+    var labs = gr.map(function (g) { return dec.grupos[g]; }).concat(["Interações (resto)"]);
+    vals = vals.concat([tot - soma]);
+    var colL = css("--lula"), colF = css("--flavio");
+    chart("c-dec", {
+      type: "bar",
+      data: { labels: labs, datasets: [{ label: "Contribuição", data: vals, backgroundColor: vals.map(function (v, i) { return i === vals.length - 1 ? css("--neutral-bar") : (v >= 0 ? colL : colF); }), borderRadius: 4, barPercentage: 0.7 }] },
+      options: baseOpts({
+        indexAxis: "y", interaction: { mode: "nearest", intersect: true, axis: "y" },
+        scales: { x: { ticks: { callback: function (v) { return fmtS(v, 1); } }, title: { display: true, text: "pontos do índice de 2030 (Lula − Flávio)", color: css("--text-3") } }, y: { grid: { display: false }, ticks: { color: css("--text-2"), autoSkip: false, callback: function (v) { var s = this.getLabelForValue(v); return window.innerWidth < 560 && s.length > 24 ? s.slice(0, 23) + "…" : s; } } } },
+        plugins: { refLine: null, tooltip: { callbacks: { label: function (it) { return fmtS(it.parsed.x, 2) + " pts"; } } } }
+      })
+    });
+    var ord = gr.map(function (g, i) { return [dec.grupos[g], dec.contrib[g][m]]; }).sort(function (a, b) { return b[1] - a[1]; });
+    var pos = ord.filter(function (x) { return x[1] > 0.05; }), neg = ord.filter(function (x) { return x[1] < -0.05; }).reverse();
+    var hor = m === "horas";
+    var txt = "<p>Diferença média total: <b>" + fmtS(tot, 2) + " pts</b> (Lula − Flávio).</p>";
+    if (pos.length) txt += "<p><span class='chip-l'>Puxa o índice a favor do cenário Lula</span>: " + pos.map(function (x) { return esc(x[0]) + " (" + fmtS(x[1], 1) + ")"; }).join("; ") + ".</p>";
+    if (neg.length) txt += "<p><span class='chip-f'>Puxa o índice a favor do cenário Flávio</span>: " + neg.map(function (x) { return esc(x[0]) + " (" + fmtS(x[1], 1) + ")"; }).join("; ") + ".</p>";
+    if (!pos.length && !neg.length) txt += "<p>Nenhum canal passa de 0,05 ponto.</p>";
+    document.getElementById("txt-dec").innerHTML = txt;
+  }
+
+  function renderTornado() {
+    var T = D.tornado, m = arq, b = T.base[m].D;
+    var it = T.itens.map(function (x) { return { nome: x.id + " · " + x.nome, tipo: x.tipo, lo: x.baixo[m].D, hi: x.alto[m].D, ext: x.extremos }; })
+      .filter(function (x) { return Math.abs(x.lo - b) > 0.005 || Math.abs(x.hi - b) > 0.005; })
+      .sort(function (a, c) { return Math.max(Math.abs(c.lo - b), Math.abs(c.hi - b)) - Math.max(Math.abs(a.lo - b), Math.abs(a.hi - b)); });
+    var labs = it.map(function (x) { return x.nome; });
+    var curto = window.innerWidth < 560;
+    chart("c-tornado", {
+      type: "bar",
+      data: { labels: labs, datasets: [
+        { label: "extremo baixo", data: it.map(function (x) { return [b, x.lo]; }), backgroundColor: css("--neutral-bar"), borderRadius: 3, barPercentage: 0.8, categoryPercentage: 0.9 },
+        { label: "extremo alto", data: it.map(function (x) { return [b, x.hi]; }), backgroundColor: css("--accent"), borderRadius: 3, barPercentage: 0.8, categoryPercentage: 0.9 }
+      ] },
+      options: baseOpts({
+        indexAxis: "y", interaction: { mode: "index", intersect: false, axis: "y" },
+        scales: { x: { ticks: { callback: function (v) { return fmtS(v, 1); } }, title: { display: true, text: "diferença média Lula − Flávio em 2030 (" + (m === "horas" ? "horas" : m === "cestas" ? "cestas" : "pts") + ")", color: css("--text-3") } },
+          y: { stacked: true, grid: { display: false }, ticks: { color: css("--text-2"), autoSkip: false, font: { size: curto ? 10 : 12 }, callback: function (v) { var s = this.getLabelForValue(v); var L = curto ? 26 : 48; return s.length > L ? s.slice(0, L - 1) + "…" : s; } } } },
+        plugins: { refLine: { x: b, dash: [4, 3], color: css("--text-2") }, tooltip: { callbacks: { title: function (i) { return it[i[0].dataIndex].nome + " (" + it[i[0].dataIndex].tipo + ")"; }, label: function (i) {
+          var x = it[i.dataIndex], lo = i.datasetIndex === 0;
+          return (lo ? "baixo (" + x.ext[0] + "): " : "alto (" + x.ext[1] + "): ") + fmtS(lo ? x.lo : x.hi, 2) + " (padrão " + fmtS(b, 2) + ")";
+        } } } }
+      })
+    });
+    document.getElementById("tab-tornado").innerHTML = "<thead><tr><th class='l'>Premissa</th><th class='l'>Tipo</th><th>Baixo</th><th>L − F</th><th>Alto</th><th>L − F</th><th>Amplitude</th></tr></thead><tbody>" +
+      it.map(function (x) { return "<tr><td class='wrap-txt'>" + esc(x.nome) + "</td><td class='l'>" + tipoPill(x.tipo) + "</td><td>" + esc(x.ext[0]) + "</td><td>" + fmtS(x.lo, 2) + "</td><td>" + esc(x.ext[1]) + "</td><td>" + fmtS(x.hi, 2) + "</td><td>" + fmtN(Math.abs(x.hi - x.lo), 2) + "</td></tr>"; }).join("") +
+      "</tbody>";
+    document.getElementById("sens-n").textContent = fmtN(D.meta.n_sensibilidade, 0);
+  }
+
+  function renderParam() {
+    document.getElementById("tab-param").innerHTML = "<thead><tr><th class='l'>#</th><th class='l'>Premissa</th><th class='l'>Lula / comum</th><th class='l'>Flávio</th><th class='l'>Fonte</th><th class='l'>Tipo</th></tr></thead><tbody>" +
+      D.parametros.map(function (p) {
+        return "<tr><td class='l'>" + esc(p.id) + "</td><td class='wrap-txt'>" + esc(p.nome) + "</td><td class='wrap-txt'>" + esc(p.lula) + "</td><td class='wrap-txt'>" + esc(p.flavio) + "</td><td class='wrap-txt'>" + esc(p.fonte) + "</td><td class='l'>" + tipoPill(p.tipo) + "</td></tr>";
+      }).join("") + "</tbody>";
+  }
+
+  function renderTudo() {
+    if (!D) return;
+    renderReponderado();
+    var tr = D.trajetorias[arq];
+    var horas = arq === "horas";
+    fan("c-traj", { L: tr.L, F: tr.F }, 100, 1);
+    document.getElementById("d-traj").textContent = "Mediana e faixa entre os percentis 10 e 90 (premissas padrão): " + D.arquetipos[arq] + ".";
+    fan("c-horas", { L: D.trajetorias.horas.L, F: D.trajetorias.horas.F }, D.base.horas_cesta, 1);
+    renderMacro(); renderDec(); renderTornado();
+  }
+  window.__renderCenarios = renderTudo;
+
+  fetch("cenarios.json").then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }).then(function (d) {
+    D = d; probs = probsPadrao();
+    document.getElementById("m-n").textContent = fmtN(D.meta.n_por_vencedor / 1000, 0) + " mil";
+    document.getElementById("b-horas").textContent = fmtN(D.base.horas_cesta, 1) + " h";
+    document.getElementById("b-cestas").textContent = fmtN(D.base.cestas_por_sm, 2) + " cestas por mínimo";
+    document.getElementById("rodape").innerHTML = "Gerado em " + esc(D.meta.gerado_em.replace("T", " ").replace("+00:00", " UTC")) + " · " + fmtN(D.meta.n_por_vencedor, 0) + " simulações por vencedor (semente " + D.meta.semente + ") · sensibilidade e decomposição com " + fmtN(D.meta.n_sensibilidade, 0) + " · <a href='index.html'>voltar ao painel</a>";
+    montarControles(); renderParam(); renderTudo();
+  }).catch(function (e) {
+    document.getElementById("resultado").insertAdjacentHTML("afterbegin", "<div class='card erro note'>Não foi possível carregar <code>cenarios.json</code> (" + esc(e.message) + ").</div>");
+  });
+})();
+</script>
+</body>
+</html>
