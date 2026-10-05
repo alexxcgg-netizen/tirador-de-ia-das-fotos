@@ -28,3 +28,12 @@ def test_index_tem_paineis_ao_vivo():
     for alvo in ('id="sec-mercado"', 'id="sec-apur"', "mercado_ao_vivo.json", "benchmarks.json"):
         assert alvo in out
     assert "<html" not in out.lower() and "<body" not in out.lower()
+
+
+def test_index_tem_secao_segundo_turno():
+    html = (publicar.ORIG / "index.html").read_text(encoding="utf-8")
+    out = publicar.converter(html)
+    for alvo in ('id="segundo-turno"', 'href="#segundo-turno"', "resultados_alt_2t.json", 'id="c-transf"', 'id="st-uf"'):
+        assert alvo in out
+    # a seção do 2º turno vem antes das demais seções do painel
+    assert out.index('id="segundo-turno"') < out.index('id="cards"')

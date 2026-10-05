@@ -63,6 +63,10 @@ def main():
     if alt.exists():                      # comparação com o modelo alternativo (lida relativamente pelo painel)
         shutil.copyfile(alt, ORIG / "resultados_alt.json")
         shutil.copyfile(alt, DEST / "resultados_alt.json")
+    # 2º turno do modelo alternativo (comparação na seção "2º turno — 25/10"; ausente = linha omitida)
+    alt2 = AQUI.parent / "modelo_alternativo" / "resultados_alt_2t.json"
+    if copiar_opcional(alt2, ORIG / "resultados_alt_2t.json"):
+        copiar_opcional(ORIG / "resultados_alt_2t.json", DEST / "resultados_alt_2t.json")
     print("gravado:", DEST)
 
 

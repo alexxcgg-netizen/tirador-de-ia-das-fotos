@@ -1,6 +1,6 @@
 # Avaliação das previsões do 1º turno de 2026
 
-Gerado por `resultado_1t.py` em 2026-10-05 01:43 UTC. Seções totalizadas no Brasil: 99,94% (TSE, 04/10/2026 22:41:16). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
+Gerado por `resultado_1t.py` em 2026-10-05 01:55 UTC. Seções totalizadas no Brasil: 99,96% (TSE, 04/10/2026 22:54:25). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
 
 ## Resultado (votos válidos, %)
 
@@ -16,7 +16,7 @@ Erro = previsto − real (p.p. de votos válidos; positivo = previsão acima do 
 
 | Fonte | Lula prev. | erro | Flavio prev. | erro | Erro na margem | MAE 2 primeiros | PIT Lula | PIT Flavio | Em 80% (Lula/Flavio) | CRPS Lula/Flavio |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Modelo principal: neutro | 46,1 | 0,9 | 45,2 | -1,9 | 2,8 | 1,4 | 0,38 | 0,73 | sim/sim | 0,73/0,87 |
+| Modelo principal: neutro | 46,1 | 0,9 | 45,2 | -1,8 | 2,8 | 1,4 | 0,38 | 0,73 | sim/sim | 0,73/0,87 |
 | Modelo principal: calibrado | 44,4 | -0,7 | 46,8 | -0,2 | -0,5 | 0,5 | 0,59 | 0,52 | sim/sim | 0,74/0,68 |
 | Modelo principal: viés pleno | 43,3 | -1,8 | 48,1 | 1,1 | -2,9 | 1,5 | 0,70 | 0,38 | sim/sim | 0,95/0,86 |
 | Modelo alternativo: neutro | 46,6 | 1,4 | 45,3 | -1,8 | 3,2 | 1,6 | 0,34 | 0,65 | sim/sim | 1,19/1,20 |
@@ -96,7 +96,7 @@ Exterior fora das métricas por UF. Viés positivo = previsão acima do resultad
 | UF | Lula | Flavio | Situação |
 |---|---|---|---|
 | AC | 28,7 | 64,6 | apurado |
-| AL | 54,7 | 40,5 | parcial |
+| AL | 54,7 | 40,5 | apurado |
 | AM | 48,2 | 45,0 | parcial |
 | AP | 45,7 | 45,7 | apurado |
 | BA | 66,2 | 28,6 | parcial |
@@ -114,13 +114,13 @@ Exterior fora das métricas por UF. Viés positivo = previsão acima do resultad
 | PI | 71,0 | 24,1 | parcial |
 | PR | 31,2 | 59,9 | apurado |
 | RJ | 39,4 | 53,0 | apurado |
-| RN | 59,8 | 34,8 | parcial |
+| RN | 59,8 | 34,8 | apurado |
 | RO | 25,9 | 67,5 | apurado |
 | RR | 22,9 | 71,1 | apurado |
 | RS | 35,7 | 55,6 | apurado |
 | SC | 25,0 | 66,7 | apurado |
 | SE | 62,8 | 30,6 | apurado |
-| SP | 38,2 | 51,9 | parcial |
+| SP | 38,2 | 51,9 | apurado |
 | TO | 43,4 | 50,4 | apurado |
 | ZZ | 47,2 | 43,9 | parcial |
 

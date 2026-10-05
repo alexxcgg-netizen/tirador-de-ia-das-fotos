@@ -155,6 +155,62 @@ code { font-size: 12px; }
 .stat .val.duo { font-size: 26px; display: flex; flex-wrap: wrap; gap: 0 14px; align-items: baseline; }
 .stat .val.duo small { font-size: 13px; font-weight: 500; color: var(--text-2); margin-right: 4px; }
 @media (max-width: 420px) { .stat .val.duo { font-size: 22px; } }
+/* 2º turno (#segundo-turno) */
+#segundo-turno { scroll-margin-top: 64px; }
+#segundo-turno [id^="st-"] { scroll-margin-top: 64px; }
+@media (max-width: 700px) { #segundo-turno, #segundo-turno [id^="st-"] { scroll-margin-top: 8px; } }
+.st-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.st-h2 { font-size: 22px; letter-spacing: -.01em; }
+.st-nav { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; }
+.st-nav a { color: var(--text-2); text-decoration: none; border-bottom: 1px dotted var(--text-3); }
+.st-h3 { font-size: 16px; margin: 28px 0 6px; }
+.st-aviso { font-size: 13px; }
+.st-cand { border-top-width: 4px; }
+.st-cand.l { border-top-color: var(--lula); } .st-cand.f { border-top-color: var(--flavio); }
+.st-cand .lab { font-size: 14px; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+.st-big { font-size: 44px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.1; margin-top: 4px; }
+.st-big small, .st-votos small { font-size: 14px; font-weight: 500; color: var(--text-2); letter-spacing: 0; }
+.st-votos { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.st-faixa { font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums; margin-top: 6px; }
+.st-p { margin-top: 10px; font-size: 14px; }
+.st-p b { font-size: 20px; font-variant-numeric: tabular-nums; }
+@media (max-width: 420px) { .st-big { font-size: 36px; } .st-votos { font-size: 22px; } .st-h2 { font-size: 19px; } }
+.st-bar { position: relative; display: flex; gap: 2px; height: 18px; margin: 8px 0 6px; }
+.st-bar > span { display: block; height: 100%; }
+.st-bar > .a { background: var(--lula); border-radius: 4px 0 0 4px; }
+.st-bar > .b { background: var(--flavio); border-radius: 0 4px 4px 0; flex: 1; }
+.st-bar > .meio { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 0; border-left: 2px solid var(--text); }
+.st-bar-leg { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums; gap: 8px; flex-wrap: wrap; }
+.st-pb { display: flex; align-items: center; gap: 8px; }
+.st-pb i { display: block; height: 10px; border-radius: 0 3px 3px 0; min-width: 1px; }
+.st-pb i.l { background: var(--lula); } .st-pb i.f { background: var(--flavio); }
+.st-strip-wrap { position: relative; padding-top: 18px; }
+.st-strip { display: flex; gap: 1px; height: 34px; }
+.st-strip > div { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 650; overflow: hidden; cursor: default; min-width: 0; }
+.st-strip > div:first-child { border-radius: 4px 0 0 4px; } .st-strip > div:last-child { border-radius: 0 4px 4px 0; }
+.st-strip > div.tp { outline: 2px solid var(--text); outline-offset: -2px; }
+.st-strip-mid { position: absolute; left: 50%; top: 0; bottom: -4px; border-left: 2px dashed var(--text); pointer-events: none; }
+.st-strip-mid span { position: absolute; top: 0; left: 4px; font-size: 11px; color: var(--text-2); white-space: nowrap; line-height: 14px; }
+.st-fl { margin-bottom: 12px; }
+.st-fl-top { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; flex-wrap: wrap; }
+.st-fl-top b { font-weight: 650; }
+.st-fl-bar { display: flex; gap: 2px; height: 14px; margin-top: 4px; }
+.st-fl-bar > span { display: block; height: 100%; min-width: 0; }
+.st-fl-bar > span:first-child { border-radius: 4px 0 0 4px; } .st-fl-bar > span:last-child { border-radius: 0 4px 4px 0; }
+.st-fl-bar .l { background: var(--lula); } .st-fl-bar .f { background: var(--flavio); } .st-fl-bar .n { background: var(--text-3); }
+.st-fl-num { font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.st-calc { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 860px) { .st-calc { grid-template-columns: 1fr; } }
+.st-ctrl { display: block; margin-bottom: 14px; font-size: 13px; color: var(--text-2); }
+.st-ctrl b { color: var(--text); font-variant-numeric: tabular-nums; margin-left: 4px; white-space: nowrap; }
+.st-ctrl input[type=range] { width: 100%; margin-top: 6px; accent-color: var(--accent); }
+.st-chk { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--text-2); margin-bottom: 12px; }
+.st-calc-out { background: var(--surface-2); border-radius: 10px; padding: 14px; font-size: 13px; color: var(--text-2); min-width: 0; }
+.st-calc-out .st-res { font-size: 28px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.st-calc-out .st-res small { font-size: 13px; font-weight: 500; color: var(--text-2); }
+.st-k { font-size: 13px; color: var(--text-2); }
+.st-k .kpi-mini { color: var(--text); }
+td.num-l { color: var(--text); }
 td.pos { font-weight: 650; }
 .ap-veredito { font-size: 14px; margin: 0 0 8px; }
 </style>
@@ -162,6 +218,7 @@ td.pos { font-weight: 650; }
   <div class="wrap">
     <h1>Simulador presidencial 2026</h1>
     <span class="meta" id="meta">carregando…</span>
+    <a class="btn-ghost" href="#segundo-turno" style="text-decoration:none;font-weight:650;color:var(--text)">2º turno — 25/10</a>
     <span class="spacer"></span>
     <div class="seg" role="group" aria-label="Visão do modelo">
       <button data-vis="calibrado" aria-pressed="true">Calibrado</button>
@@ -173,6 +230,82 @@ td.pos { font-weight: 650; }
 </header>
 
 <main class="wrap">
+  <section id="segundo-turno" style="display:none">
+    <div class="st-head">
+      <h2 class="st-h2">2º turno — 25/10: <span class="st-nome-a">Lula</span> x <span class="st-nome-b">Flávio Bolsonaro</span></h2>
+      <nav class="st-nav" aria-label="Partes do 2º turno"><a href="#st-dist">Distribuição</a><a href="#st-virada">Ponto de virada</a><a href="#st-fluxo">De onde vêm os votos</a><a href="#st-calc">O que precisaria mudar</a><a href="#st-bast">Bastidores</a></nav>
+    </div>
+    <p class="sub" id="st-status"></p>
+    <div id="st-corpo">
+      <div class="note st-aviso" id="st-aviso"></div>
+      <div class="grid g2" id="st-cands" style="margin-top:12px"></div>
+      <div class="card" style="margin-top:12px" id="st-split"></div>
+      <div class="grid g4" id="st-tiles" style="margin-top:12px"></div>
+
+      <h3 class="st-h3" id="st-dist">Quão apertado? A distribuição das simulações</h3>
+      <div class="grid g2">
+        <div class="card">
+          <div class="legend"><span><i class="dot l"></i><span class="st-nome-a">Lula</span> vence</span><span><i class="dot f"></i><span class="st-nome-b">Flávio</span> vence</span><span class="muted">linha: 50% dos válidos</span></div>
+          <div class="chart-box"><canvas id="ch-st-hist" aria-label="Histograma da fatia de Lula nos votos válidos do 2º turno"></canvas></div>
+          <p class="sub" id="st-hist-txt" style="margin:8px 0 0"></p>
+        </div>
+        <div class="card tbl-wrap" style="max-height:none"><table id="st-faixas"></table></div>
+      </div>
+
+      <h3 class="st-h3" id="st-virada">Ponto de virada: a geografia do voto e o eleitor mediano</h3>
+      <p class="sub">No 2º turno vale o voto nacional: não há colégio eleitoral e nenhuma UF decide sozinha. A faixa enfileira as UFs da maior para a menor fatia de <span class="st-nome-a">Lula</span>, com largura proporcional aos votos válidos projetados e cor pela probabilidade de <span class="st-nome-a">Lula</span> vencer na UF. A UF em que a soma passa de 50% contém o eleitor mediano e mostra como os votos estão distribuídos; o que vira a eleição é a soma nacional, calculada abaixo.</p>
+      <div class="card">
+        <div class="st-strip-wrap"><div class="st-strip" id="st-strip"></div><div class="st-strip-mid" aria-hidden="true"><span>50% dos válidos</span></div></div>
+        <div class="scale"><span>Flávio vence a UF</span><span class="ramp" id="st-ramp"></span><span>Lula vence a UF</span></div>
+        <p class="sub" id="st-virada-txt" style="margin:10px 0 0"></p>
+      </div>
+      <div class="card tbl-wrap" style="margin-top:12px"><table id="st-uf"></table></div>
+
+      <h3 class="st-h3" id="st-fluxo">De onde vêm os votos</h3>
+      <p class="sub" id="st-fluxo-sub"></p>
+      <div class="grid g2">
+        <div class="card" id="st-fluxo-barras"></div>
+        <div class="card tbl-wrap" style="max-height:none"><table id="st-fluxo-tab"></table><p class="sub" id="st-fluxo-rec" style="margin:10px 0 0"></p></div>
+      </div>
+
+      <h3 class="st-h3" id="st-calc">O que precisaria mudar</h3>
+      <div class="grid g3" id="st-precisa"></div>
+      <div class="card" style="margin-top:12px">
+        <h3>Calculadora simplificada</h3>
+        <p class="sub">Ilustração, <b>não é o modelo</b>: parte dos votos reais do 1º turno por UF, aplica uma única regra nacional de transferência e soma. Sem incerteza, sem pesquisas, sem transferência regionalizada. Com os controles na posição inicial ela reproduz o centro do modelo.</p>
+        <div class="st-calc">
+          <div class="st-ctrls">
+            <label class="st-ctrl"><span>Dos eleitores dos eliminados que escolhem um lado, % que vai para <span class="st-nome-a">Lula</span> <b id="v-transf"></b></span><input type="range" id="c-transf" min="0" max="100" step="1"></label>
+            <label class="st-ctrl"><span>Eleitores dos eliminados que votam branco/nulo ou não vão votar <b id="v-fora"></b></span><input type="range" id="c-fora" min="0" max="80" step="1"></label>
+            <label class="st-ctrl"><span>Comparecimento extra no Nordeste (p.p. do eleitorado; os novos eleitores votam como a UF votou no 1º turno) <b id="v-ne"></b></span><input type="range" id="c-ne" min="0" max="10" step="0.5"></label>
+            <label class="st-ctrl"><span>Eleitores que trocam de lado (milhões; positivo = de Flávio para Lula) <b id="v-troca"></b></span><input type="range" id="c-troca" min="-5" max="5" step="0.1"></label>
+            <label class="st-chk"><input type="checkbox" id="c-ajuste" checked> <span id="c-ajuste-txt">Aplicar o ajuste do modelo (pesquisas de 2º turno e viés histórico)</span></label>
+            <button type="button" class="btn-ghost" id="c-reset">Voltar ao centro do modelo</button>
+          </div>
+          <div class="st-calc-out" id="st-calc-out" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <h3 class="st-h3" id="st-bast">Bastidores do modelo</h3>
+      <p class="sub">Para quem quer ver as engrenagens. O 1º turno real (TSE) entra por UF; o 2º turno é simulado transferindo os votos dos eliminados, ajustando o comparecimento entre turnos por UF, dando peso pequeno às pesquisas de 2º turno feitas antes do 1º turno e somando erros nacional, regional e estadual calibrados em 2014, 2018 e 2022. Gerado por <code>resultado_1t.py --rodar-tudo</code>.</p>
+      <div class="grid g3" id="st-mc"></div>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="card tbl-wrap" style="max-height:none"><table id="st-centro"></table></div>
+        <div class="card tbl-wrap" style="max-height:none"><table id="st-erros"></table></div>
+      </div>
+      <div class="card tbl-wrap" style="margin-top:12px;max-height:none"><table id="st-comp"></table></div>
+      <div class="card tbl-wrap" style="margin-top:12px;max-height:none"><table id="st-sens"></table></div>
+      <div class="card tbl-wrap" style="margin-top:12px;max-height:none"><table id="st-hist"></table></div>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="card tbl-wrap" style="max-height:none"><table id="st-ensaio"></table></div>
+        <div class="card"><h3>Notas de calibração (BACKTEST.md)</h3><ul class="lim sub" id="st-calib" style="margin:0;padding-left:18px"></ul></div>
+      </div>
+      <details style="margin-top:12px"><summary>Parâmetros do 2º turno, com origem</summary>
+        <div class="card tbl-wrap"><table id="st-param"></table></div>
+      </details>
+    </div>
+  </section>
+
   <section>
     <p class="sub" id="vis-desc"></p>
     <div class="grid g4" id="cards"></div>
@@ -200,23 +333,6 @@ td.pos { font-weight: 650; }
       <div class="card tbl-wrap" style="max-height:none"><h3 id="ap-ordem-t"></h3><table id="ap-ordem"></table><p class="sub" id="ap-ordem-n" style="margin:8px 0 0"></p></div>
     </div>
     <div class="card tbl-wrap" style="margin-top:12px"><h3 id="ap-uf-t"></h3><table id="ap-uf"></table><p class="sub" id="ap-uf-n" style="margin:8px 0 0"></p></div>
-  </section>
-
-  <section id="sec-2t" style="display:none">
-    <h2>2º turno: previsão com o 1º turno apurado</h2>
-    <p class="sub">Depois da apuração, o 1º turno simulado é trocado pelo resultado oficial do TSE por UF (UFs ainda em apuração são projetadas, com incerteza proporcional ao que falta apurar). O 2º turno parte dessas fatias reais e transfere os votos dos eliminados pela matriz Quaest (com incerteza), aplica a variação histórica do comparecimento entre turnos por UF, dá peso reduzido às pesquisas de 2º turno feitas antes do 1º turno e usa o erro nacional, regional e estadual calibrado em 2014, 2018 e 2022 (1º turno real → 2º turno real). Gerado por <code>resultado_1t.py --rodar-tudo</code>.</p>
-    <div class="note" id="t2-status" style="margin-bottom:12px"></div>
-    <div id="t2-corpo">
-    <div class="grid g4" id="t2-cards"></div>
-    <div class="grid g2" style="margin-top:12px">
-      <div class="card tbl-wrap"><table id="t2-1t"></table></div>
-      <div class="card tbl-wrap"><table id="t2-transf"></table></div>
-    </div>
-    <details style="margin-top:12px"><summary>2º turno por UF</summary>
-      <div class="card tbl-wrap"><table id="t2-uf"></table></div>
-    </details>
-    </div>
-    <p class="sub" id="t2-ensaio" style="margin-top:10px"></p>
   </section>
 
   <section>
@@ -432,7 +548,9 @@ td.pos { font-weight: 650; }
       .catch(function () { var el = document.getElementById("sec-alt"); if (el) el.style.display = "none"; });
     fetch("resultados_2t.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (a) { T2 = a; safe(render2T); safe(renderApuracao); })
-      .catch(function () { var el = document.getElementById("sec-2t"); if (el) el.style.display = "none"; });
+      .catch(function () { var el = document.getElementById("segundo-turno"); if (el) el.style.display = "none"; });
+    fetch("resultados_alt_2t.json", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (a) { ALT2 = a; safe(render2T); }).catch(function () { ALT2 = null; });
   }).catch(function (e) {
     document.getElementById("meta").textContent = "Erro ao carregar resultados.json: " + e.message + " (abra via servidor estático, ex.: python -m http.server)";
   });
@@ -759,53 +877,391 @@ td.pos { font-weight: 650; }
   }
 
 
-  // ---------- 2º turno com o 1º turno apurado (resultados_2t.json, gerado por resultado_1t.py)
+  // ---------- 2º turno — 25/10 (#segundo-turno; resultados_2t.json, gerado por resultado_1t.py)
   var NOMEC = { Lula: "Lula", Flavio: "Flávio Bolsonaro", Caiado: "Caiado", Cury: "Cury", Zema: "Zema", Renan: "Renan Santos", Outros: "Outros", Bolsonaro: "Bolsonaro" };
+  var CURTO = { Lula: "Lula", Flavio: "Flávio" };
   function nomeC(c) { return NOMEC[c] || c; }
+  function curto(c) { return CURTO[c] || nomeC(c); }
   function dotC(c) { return c === "Lula" ? "l" : (c === "Flavio" ? "f" : "n"); }
+  function varC(c) { return c === "Lula" ? "--lula" : (c === "Flavio" ? "--flavio" : "--text-3"); }
+  function fmtMi(x, d) { return fmtN(x / 1e6, d == null ? 1 : d) + " mi"; }
+  function fmtVot(x) { var a = Math.abs(x); return a >= 1e6 ? fmtMi(x, a >= 1e7 ? 1 : 2) : fmtN(x / 1e3, 0) + " mil"; }
+  function chance(p) {
+    var lo = Math.min(p, 1 - p);
+    if (lo < 0.01) return p < 0.5 ? "menos de 1 em 100" : "mais de 99 em 100";
+    var n = Math.round(1 / lo);
+    return p < 0.5 ? "1 em " + n : (n - 1) + " em " + n;
+  }
+  function lider(m, A, B, fmt) { return (m >= 0 ? curto(A) : curto(B)) + " +" + fmt(Math.abs(m)); }
+  var ALT2 = null, ST = null;
+  function P1A_tot(V) { return V.primeiro_turno.validos; }
+
   function render2T() {
-    var X = T2, sec = document.getElementById("sec-2t");
+    var X = T2, sec = document.getElementById("segundo-turno");
     if (!X || !sec) return;
     sec.style.display = "";
-    var m = X.meta || {}, st = document.getElementById("t2-status");
-    var ens = X.ensaio_2022 && X.ensaio_2022.anos ? X.ensaio_2022 : null;
-    var txtEns = "";
-    if (ens) {
-      var e22 = ens.anos["2022"] || {}, ag = ens.agregado || {};
-      txtEns = "<b>Ensaio com 2022</b> (1º turno de 2022 como se fosse hoje, erros calibrados só com 2014 e 2018): previsão de " + fmtN(e22.previsto_a_media, 1) + "% para Lula no 2º turno (p10–p90 " + fmtN(e22.previsto_a_quantis[1], 1) + "–" + fmtN(e22.previsto_a_quantis[5], 1) + "), P(Lula vence) " + fmtPct(e22.p_a_vence, 0) + "; resultado real " + fmtN(e22.real_a_pct, 1) + "%. Nos três ensaios (2014, 2018, 2022, cada um sem o próprio ano na calibração): erro médio absoluto nacional " + fmtN(ag.mae_nacional_pp, 1) + " p.p.; resultado nacional dentro do intervalo de 80% em " + fmtPct(ag.cobertura_80_nacional, 0) + " dos casos; UFs dentro do intervalo de 80% em " + fmtPct(ag.uf_cobertura_80, 0) + ". Detalhes em <code>data/ensaio_2022/</code>.";
-    }
-    document.getElementById("t2-ensaio").innerHTML = txtEns;
+    var m = X.meta || {}, st = document.getElementById("st-status");
     if (m.status === "aguardando" || !X.segundo_turno) {
-      st.innerHTML = X.decidido_1t ? "<b>" + esc(X.mensagem || "Eleição decidida no 1º turno.") + "</b>" : "<b>Aguardando a apuração.</b> " + esc(m.mensagem || "") + (m.gerado_em ? " Última verificação: " + esc(m.gerado_em) + "." : "");
-      document.getElementById("t2-corpo").style.display = "none";
+      st.innerHTML = X.decidido_1t ? "<b>" + esc(X.mensagem || "Eleição decidida no 1º turno.") + "</b>" : "<b>Aguardando a apuração do 1º turno.</b> " + esc(m.mensagem || "") + (m.gerado_em ? " Última verificação: " + esc(m.gerado_em) + "." : "");
+      document.getElementById("st-corpo").style.display = "none";
       return;
     }
-    document.getElementById("t2-corpo").style.display = "";
+    document.getElementById("st-corpo").style.display = "";
     var S = X.segundo_turno, A = S.par[0], B = S.par[1];
-    st.innerHTML = (m.status === "final" ? "<b>Apuração do 1º turno concluída</b>" : "<b>Apuração parcial: " + fmtN(m.pst_nacional, 2) + "% das seções totalizadas.</b> UFs em apuração são projetadas; os números mudam a cada atualização") +
-      " · fonte: " + esc(m.fonte || "TSE") + (m.atualizado_tse ? " (" + esc(m.atualizado_tse) + ")" : "") + " · gerado em " + esc(m.gerado_em) + " · " + fmtN(S.n) + " simulações." +
-      (S.erros && S.erros.par_previsto === false ? " <b>Par de 2º turno diferente do previsto:</b> sem matriz de transferência medida; incerteza ampliada." : "");
-    var bar = '<div class="bar2" aria-hidden="true"><span style="width:' + (S.p_a_vence * 100) + '%"></span></div>';
-    var q = S.a_quantis;
-    document.getElementById("t2-cards").innerHTML =
-      card(nomeC(A) + " vence o 2º turno", dotC(A), { p: S.p_a_vence }, "≈ " + emDez(S.p_a_vence) + " · e.p. MC " + fmtPct(S.ep_mc, 2), A === "Lula" ? bar : "") +
-      card(nomeC(B) + " vence o 2º turno", dotC(B), { p: S.p_b_vence }, "≈ " + emDez(S.p_b_vence)) +
-      '<div class="card stat"><div class="lab"><i class="dot ' + dotC(A) + '"></i>' + esc(nomeC(A)) + ', % válidos no 2º turno</div><div class="val">' + fmtN(q[3], 1) + '%</div><div class="det">p10–p90: ' + fmtN(q[1], 1) + "–" + fmtN(q[5], 1) + " · p2,5–p97,5: " + fmtN(q[0], 1) + "–" + fmtN(q[6], 1) + "</div></div>" +
-      '<div class="card stat"><div class="lab"><i class="dot n"></i>Centro da projeção</div><div class="val">' + fmtN(S.centro.centro_a_pct, 1) + '%</div><div class="det">transferência ' + fmtN(S.centro.via_transferencia_a_pct, 1) + "% · pesquisas " + (S.centro.pesquisas_a_pct == null ? "–" : fmtN(S.centro.pesquisas_a_pct, 1) + "% (peso " + fmtN(S.centro.peso_pesquisas, 2) + ")") + " · viés histórico " + fmtS(-S.centro.vies_historico_pp, 1) + " p.p.</div></div>";
-    var R1 = (X.primeiro_turno_real || {}).nacional || {};
-    var ks = Object.keys(R1).sort(function (a, b) { return R1[b] - R1[a]; });
-    document.getElementById("t2-1t").innerHTML = "<caption>1º turno " + (m.status === "final" ? "apurado" : "projetado") + " (votos válidos)</caption><thead><tr><th>Candidato</th><th>% válidos</th></tr></thead><tbody>" +
-      ks.map(function (k) { return "<tr><td><i class='dot " + dotC(k) + "'></i> " + esc(nomeC(k)) + "</td><td>" + fmtN(R1[k], 2) + "%</td></tr>"; }).join("") + "</tbody>";
-    var T = S.transferencia || {};
-    document.getElementById("t2-transf").innerHTML = "<caption>Para onde vão os votos dos eliminados (centro da matriz)</caption><thead><tr><th>Eleitor de</th><th>" + esc(nomeC(A)) + "</th><th>" + esc(nomeC(B)) + "</th><th>Branco/nulo/abstenção</th></tr></thead><tbody>" +
-      Object.keys(T).map(function (k) { return "<tr><td>" + esc(nomeC(k)) + "</td><td>" + fmtPct(T[k][0], 0) + "</td><td>" + fmtPct(T[k][1], 0) + "</td><td>" + fmtPct(T[k][2], 0) + "</td></tr>"; }).join("") +
-      "</tbody><caption style='caption-side:bottom;padding-top:8px'>" + esc(m.transferencia_fonte || "") + ". Erro nacional " + fmtN(S.erros.dp_nacional_pp, 1) + " p.p. (t, " + S.erros.gl_t + " gl), regional " + fmtN(S.erros.dp_regional_pp, 1) + ", estadual " + fmtN(S.erros.dp_uf_pp, 1) + ".</caption>";
-    var ufs = S.ufs.slice().sort(function (x, y) { return Math.abs(x.p_a - 0.5) - Math.abs(y.p_a - 0.5); });
-    var h = "<thead><tr><th>UF</th><th>Apurado</th><th>" + esc(nomeC(A)) + " 1º t.</th><th>" + esc(nomeC(B)) + " 1º t.</th><th>" + esc(nomeC(A)) + " 2º t. (p10–p90)</th><th>P(" + esc(nomeC(A)) + " vence na UF)</th></tr></thead><tbody>";
-    ufs.forEach(function (u) {
-      h += "<tr><td>" + (u.uf === "ZZ" ? "Exterior" : esc(u.uf)) + "</td><td>" + fmtN(u.pst, 1) + "%" + (u.fonte === "previsão" ? " (prev.)" : "") + "</td><td>" + fmtN(u.a_1t, 1) + "%</td><td>" + fmtN(u.b_1t, 1) + "%</td><td>" + fmtN(u.a_q[1], 1) + "% <span class='muted'>(" + fmtN(u.a_q[0], 1) + "–" + fmtN(u.a_q[2], 1) + ")</span></td><td>" + fmtPct(u.p_a, 0) + "</td></tr>";
+    document.querySelectorAll(".st-nome-a").forEach(function (e) { e.textContent = curto(A); });
+    document.querySelectorAll(".st-nome-b").forEach(function (e) { e.textContent = curto(B); });
+    st.innerHTML = (m.status === "final" ? "1º turno apurado (TSE)" : "1º turno com " + fmtN(m.pst_nacional, 2) + "% das seções totalizadas; o restante é projetado") +
+      (m.atualizado_tse ? " · TSE " + esc(m.atualizado_tse) : "") + " · gerado em " + esc(String(m.gerado_em || "").replace("T", " ").replace("+00:00", " UTC")) + " · " + fmtN(S.n) + " simulações" +
+      (S.erros && S.erros.par_previsto === false ? " · <b>par de 2º turno diferente do previsto: incerteza ampliada</b>" : "") + ".";
+    var ctx = { X: X, S: S, A: A, B: B, V: S.votos || null, m: m };
+    [stHero, stDist, stVirada, stFluxo, stPrecisa, stBastidores].forEach(function (f) { safe(function () { f(ctx); }); });
+  }
+
+  // 1. hero
+  function stHero(c) {
+    var S = c.S, V = c.V, A = c.A, B = c.B, q = S.a_quantis;
+    var pa = S.p_a_vence, pb = S.p_b_vence, sa = S.a_media, sb = 100 - S.a_media;
+    var bq = [100 - q[5], 100 - q[1]];
+    var cand = function (who, cls, share, rng, vm, vq, p) {
+      return "<div class='card st-cand " + cls + "'><div class='lab'><i class='dot " + cls + "'></i>" + esc(nomeC(who)) + "</div>" +
+        "<div class='st-big'>" + fmtN(share, 1) + "%<small> dos votos válidos</small></div>" +
+        (V ? "<div class='st-votos'>" + fmtN(vm / 1e6, 1) + " milhões<small> de votos</small></div>" : "") +
+        "<div class='st-faixa'>Faixa provável (80% das simulações): " + fmtN(rng[0], 1) + "–" + fmtN(rng[1], 1) + "%" + (V ? " · " + fmtN(vq[0] / 1e6, 1) + "–" + fmtN(vq[1] / 1e6, 1) + " mi" : "") + "</div>" +
+        "<div class='st-p'>Chance de vencer: <b>" + fmtPct(p, 0) + "</b> <span class='muted'>(≈ " + chance(p) + ")</span></div></div>";
+    };
+    document.getElementById("st-cands").innerHTML =
+      cand(A, dotC(A), sa, [q[1], q[5]], V && V.a_media, V && [V.a_quantis[1], V.a_quantis[5]], pa) +
+      cand(B, dotC(B), sb, bq, V && V.b_media, V && [V.b_quantis[1], V.b_quantis[5]], pb);
+    var fav = pa >= pb ? A : B, favP = Math.max(pa, pb), und = pa >= pb ? B : A;
+    document.getElementById("st-aviso").innerHTML = "<b>Estimativa, não certeza.</b> Em 10 disputas como esta, " + esc(curto(fav)) + " venceria em cerca de " + Math.round(favP * 10) + " e " + esc(curto(und)) + " em cerca de " + (10 - Math.round(favP * 10)) + ". " +
+      "Os números grandes são a média de " + fmtN(S.n) + " simulações; as faixas mostram onde caem 80% delas. Debates, apoios e pesquisas de 2º turno publicadas depois desta rodada não estão aqui até a próxima atualização.";
+    var Ab = c.A === "Lula" ? "a" : "a";
+    document.getElementById("st-split").innerHTML =
+      "<div class='st-bar-leg'><span><i class='dot " + dotC(A) + "'></i> " + esc(curto(A)) + " " + fmtN(sa, 1) + "%" + (V ? " · " + fmtMi(V.a_media) : "") + "</span><span>" + esc(curto(B)) + " " + fmtN(sb, 1) + "%" + (V ? " · " + fmtMi(V.b_media) : "") + " <i class='dot " + dotC(B) + "'></i></span></div>" +
+      "<div class='st-bar' role='img' aria-label='" + esc(curto(A)) + " " + fmtN(sa, 1) + "%, " + esc(curto(B)) + " " + fmtN(sb, 1) + "%'><span class='" + Ab + "' style='width:calc(" + sa + "% - 1px);background:var(" + varC(A) + ")'></span><span class='b' style='background:var(" + varC(B) + ")'></span><i class='meio'></i></div>" +
+      "<div class='st-bar-leg'><span class='muted'>linha: 50% dos válidos</span><span class='muted'>" + (V ? "Votos válidos projetados: " + fmtMi(V.validos_media) + " (80%: " + fmtN(V.validos_quantis[1] / 1e6, 1) + "–" + fmtN(V.validos_quantis[5] / 1e6, 1) + " mi)" : "") + "</span></div>";
+    var mq = S.margem_quantis, mpp = 2 * S.a_media - 100;
+    var tile = function (lab, val, det) { return "<div class='card stat'><div class='lab'>" + lab + "</div><div class='val' style='font-size:26px'>" + val + "</div><div class='det'>" + det + "</div></div>"; };
+    var ladoV = function (x) { return lider(x, A, B, function (v) { return fmtMi(v); }); };
+    var ladoP = function (x) { return lider(x, A, B, function (v) { return fmtN(v, 1) + " p.p."; }); };
+    var h = "";
+    if (V) {
+      var P1 = V.primeiro_turno || {};
+      h += tile("Margem projetada", ladoV(V.margem_media), ladoP(mpp) + " dos válidos · 80%: " + ladoV(V.margem_quantis[1]) + " a " + ladoV(V.margem_quantis[5]));
+      h += tile("Comparecimento", fmtMi(V.comparecimento_media), fmtN(100 - V.abstencao_pct_media, 1) + "% de " + fmtMi(V.eleitores) + " de eleitores · 1º turno: " + fmtMi(P1.comparecimento) + " (" + fmtN(100 - P1.abstencao_pct, 1) + "%)");
+      h += tile("Abstenção", fmtMi(V.abstencao_media), fmtN(V.abstencao_pct_media, 1) + "% do eleitorado · 80%: " + fmtN(V.abstencao_pct_quantis[1], 1) + "–" + fmtN(V.abstencao_pct_quantis[5], 1) + "% · 1º turno " + fmtN(P1.abstencao_pct, 1) + "%");
+      h += tile("Brancos e nulos", fmtMi(V.bn_media), fmtN(V.bn_pct_comp_media, 1) + "% de quem vota · 80%: " + fmtN(V.bn_quantis[1] / 1e6, 1) + "–" + fmtN(V.bn_quantis[5] / 1e6, 1) + " mi · 1º turno " + fmtN(P1.bn_pct_comp, 1) + "%");
+    } else {
+      h += tile("Margem projetada", ladoP(mpp), "80%: " + ladoP(mq[1]) + " a " + ladoP(mq[5]));
+    }
+    document.getElementById("st-tiles").innerHTML = h;
+  }
+
+  // 2. distribuição + faixas de margem
+  function stDist(c) {
+    var S = c.S, A = c.A, B = c.B, V = c.V, h = S.hist_margem, n = S.n;
+    var pts = h.contagens.map(function (k, i) { return { x: 50 + (h.inicio + h.passo * (i + 0.5)) / 2, y: k / n * 100 }; });
+    var q = S.a_quantis, lo = Math.floor(Math.min(q[0], 47) - 2), hi = Math.ceil(Math.max(q[6], 53) + 2);
+    var o = baseOpts("% dos votos válidos de " + curto(A) + " no 2º turno", "% das simulações");
+    o.scales.x.min = lo; o.scales.x.max = hi; o.scales.x.offset = false; o.scales.x.ticks.callback = function (v) { return v + "%"; };
+    o.plugins.vline = { lines: [{ x: 50, color: css("--text"), dash: [], label: "50%" }] };
+    o.plugins.tooltip.callbacks = { title: function (it) { var x = it[0].parsed.x; return curto(A) + " " + fmtN(x - 0.125, 2) + "–" + fmtN(x + 0.125, 2) + "%"; }, label: function (it) { return fmtN(it.parsed.y, 2) + "% das simulações"; } };
+    var cA = css(varC(A)), cB = css(varC(B));
+    mk("ch-st-hist", { type: "bar", plugins: [vline], data: { datasets: [{ data: pts, backgroundColor: pts.map(function (p) { return p.x >= 50 ? cA : cB; }), barPercentage: 1, categoryPercentage: 1, borderRadius: 2, borderWidth: 0 }] }, options: o });
+    document.getElementById("st-hist-txt").innerHTML = "Mediana: " + esc(curto(A)) + " " + fmtN(q[3], 1) + "%. Metade das simulações entre " + fmtN(q[2], 1) + "% e " + fmtN(q[4], 1) + "%; 80% entre " + fmtN(q[1], 1) + "% e " + fmtN(q[5], 1) + "%; 95% entre " + fmtN(q[0], 1) + "% e " + fmtN(q[6], 1) + "%. Cada barra = 0,25 p.p.";
+    var F = S.faixas_margem;
+    if (!F) { document.getElementById("st-faixas").innerHTML = ""; return; }
+    var vv = V ? V.validos_media : null;
+    var nome = function (f) {
+      var who = f.de >= 0 ? A : B, a = Math.abs(f.de), b = Math.abs(f.ate);
+      var lo2 = Math.min(a, b), hi2 = Math.max(a, b);
+      var txt = hi2 >= 100 ? "mais de " + fmtN(lo2, 0) : (lo2 === 0 ? "até " + fmtN(hi2, 0) : fmtN(lo2, 0) + " a " + fmtN(hi2, 0));
+      var vt = vv ? (hi2 >= 100 ? "> " + fmtN(lo2 * vv / 1e8, 1) + " mi" : (lo2 === 0 ? "até " : fmtN(lo2 * vv / 1e8, 1) + "–") + fmtN(hi2 * vv / 1e8, 1) + " mi") : "";
+      return "<i class='dot " + dotC(who) + "'></i> " + esc(curto(who)) + " vence por " + txt + " p.p." + (vt ? " <span class='muted'>(" + vt + " votos)</span>" : "");
+    };
+    var mx = Math.max.apply(null, F.map(function (f) { return f.p; }));
+    var hh = "<caption>Faixas de margem (p.p. dos válidos) e chance de cada uma</caption><thead><tr><th>Resultado</th><th>Chance</th><th class='l' style='width:35%'></th></tr></thead><tbody>";
+    F.forEach(function (f) {
+      var who = f.de >= 0 ? A : B;
+      hh += "<tr><td class='l' style='white-space:normal'>" + nome(f) + "</td><td>" + fmtPct(f.p, 1) + "</td><td class='l'><div class='st-pb'><i class='" + dotC(who) + "' style='width:" + (f.p / mx * 100) + "%'></i></div></td></tr>";
     });
-    document.getElementById("t2-uf").innerHTML = h + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Ordenado da UF mais disputada para a menos disputada.</caption>";
+    var pPerto = F.filter(function (f) { return Math.abs(f.de) <= 2 && Math.abs(f.ate) <= 2; }).reduce(function (s, f) { return s + f.p; }, 0);
+    document.getElementById("st-faixas").innerHTML = hh + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Chance de uma disputa apertada (margem de até 2 p.p." + (vv ? ", ≈ " + fmtN(2 * vv / 1e8, 1) + " mi de votos" : "") + "): <b>" + fmtPct(pPerto, 0) + "</b>.</caption>";
+  }
+
+  // 3. ponto de virada
+  function uf2022(uf) {
+    if (!D || !D.visoes) return null;
+    var u = D.visoes.calibrado.ufs.filter(function (x) { return x.uf === uf; })[0];
+    return u ? u.lula_2t_2022 : null;
+  }
+  function stVirada(c) {
+    var S = c.S, A = c.A, B = c.B, tip = document.getElementById("tip");
+    var ufs = S.ufs.slice().sort(function (x, y) { return y.a_media - x.a_media; });
+    var peso = function (u) { return u.validos_2t_media != null ? u.validos_2t_media : (u.validos_1t || 1); };
+    var tot = ufs.reduce(function (s, u) { return s + peso(u); }, 0), acc = 0, tp = null;
+    ufs.forEach(function (u) { u._ini = acc / tot; acc += peso(u); u._cum = acc / tot; if (tp == null && u._cum >= 0.5) tp = u.uf; });
+    document.getElementById("st-ramp").style.background = "linear-gradient(90deg," + css("--flavio") + "," + css("--mid") + "," + css("--lula") + ")";
+    var strip = document.getElementById("st-strip");
+    strip.innerHTML = "";
+    ufs.forEach(function (u) {
+      var d = document.createElement("div"), w = peso(u) / tot * 100;
+      d.style.flex = "0 0 calc(" + w + "% - 1px)"; d.style.background = corDiv(u.p_a); d.style.color = txtOn(u.p_a);
+      if (u.uf === tp) d.className = "tp";
+      d.textContent = w / 100 * strip.clientWidth > 26 ? (u.uf === "ZZ" ? "EXT" : u.uf) : "";
+      d.setAttribute("aria-label", (u.nome || u.uf) + ": " + curto(A) + " " + fmtN(u.a_media, 1) + "%");
+      var html = "<b>" + esc(u.nome || u.uf) + "</b><br>" + esc(curto(A)) + " " + fmtN(u.a_media, 1) + "% · P(vence na UF) " + fmtPct(u.p_a, 0) + "<br>Válidos projetados: " + fmtVot(peso(u)) + "<br>Acumulado: " + fmtN(u._ini * 100, 1) + "% → " + fmtN(u._cum * 100, 1) + "%";
+      d.addEventListener("mousemove", function (ev) { tip.innerHTML = html; tip.style.display = "block"; tip.style.left = Math.max(4, Math.min(ev.clientX + 12, window.innerWidth - 270)) + "px"; tip.style.top = Math.min(ev.clientY + 12, window.innerHeight - 120) + "px"; });
+      d.addEventListener("mouseleave", function () { tip.style.display = "none"; });
+      strip.appendChild(d);
+    });
+    var U = ufs.filter(function (u) { return u.uf === tp; })[0];
+    var fr = (S.uf_virada || {}).freq || {};
+    var top = Object.keys(fr).sort(function (a, b) { return fr[b] - fr[a]; }).slice(0, 4).map(function (k) { return (k === "ZZ" ? "Exterior" : k) + " " + fmtPct(fr[k], 0); });
+    var need = 50 - S.a_media, quem = need > 0 ? A : B;
+    var flips = ufs.filter(function (u) { return need > 0 ? (u.a_media < 50 && u.a_media + need >= 50) : (u.a_media >= 50 && u.a_media + need < 50); }).map(function (u) { return u.uf === "ZZ" ? "Exterior" : u.uf; });
+    document.getElementById("st-virada-txt").innerHTML = U ? "<b>UF do eleitor mediano na projeção central: " + esc(U.nome || U.uf) + "</b>, onde " + esc(curto(A)) + " tem " + fmtN(U.a_media, 1) + "%; as UFs à esquerda dela somam " + fmtN(U._ini * 100, 1) + "% dos válidos. Ela fica " + (U.a_media < S.a_media ? "abaixo" : "acima") + " da média nacional de " + esc(curto(A)) + " (" + fmtN(S.a_media, 1) + "%) porque as vantagens de " + esc(curto(U.a_media < S.a_media ? A : B)) + " são mais concentradas (" + (U.a_media < S.a_media ? "Nordeste com 60–73%" : "UFs com vantagens largas") + "). " +
+      "<b>O que vira a eleição:</b> um deslocamento uniforme de " + fmtN(Math.abs(need), 1) + " p.p. para " + esc(curto(quem)) + " em todas as UFs" + (flips.length ? ", que também viraria " + flips.join(", ") : "") + ". " +
+      (top.length ? "Nas simulações, a UF do eleitor mediano foi " + top.join(", ") + "." : "") : "";
+    var h = "<caption>2º turno por UF, da maior para a menor fatia de " + esc(curto(A)) + ". Votos = média das simulações; Δ em p.p. da fatia de " + esc(curto(A)) + " nos válidos.</caption><thead><tr><th class='l'>UF</th><th>" + esc(curto(A)) + " % (p10–p90)</th><th>" + esc(curto(B)) + " %</th><th>Votos " + esc(curto(A)) + "</th><th>Votos " + esc(curto(B)) + "</th><th>Válidos acum.</th><th>P(" + esc(curto(A)) + " vence na UF)</th><th>Δ vs 1º turno</th><th>Δ vs 2º t. 2022</th></tr></thead><tbody>";
+    ufs.forEach(function (u) {
+      var u22 = uf2022(u.uf);
+      h += "<tr" + (u.uf === tp ? " class='destaque'" : "") + "><td class='l'>" + (u.uf === "ZZ" ? "Exterior" : esc(u.uf)) + (u.uf === tp ? " ◆" : "") + "</td><td>" + fmtN(u.a_media, 1) + " <span class='muted'>(" + fmtN(u.a_q[0], 1) + "–" + fmtN(u.a_q[2], 1) + ")</span></td><td>" + fmtN(100 - u.a_media, 1) + "</td><td>" +
+        (u.votos_a_media != null ? fmtVot(u.votos_a_media) : "–") + "</td><td>" + (u.votos_b_media != null ? fmtVot(u.votos_b_media) : "–") + "</td><td>" + fmtN(u._cum * 100, 1) + "%</td><td><i class='dot' style='background:" + corDiv(u.p_a) + ";margin-right:6px'></i>" + pc(u.p_a) + "%</td><td>" + fmtS(u.a_media - u.a_1t) + "</td><td>" + (u22 == null ? "–" : fmtS(u.a_media - u22)) + "</td></tr>";
+    });
+    document.getElementById("st-uf").innerHTML = h + "</tbody><caption style='caption-side:bottom;padding-top:8px'>◆ UF do eleitor mediano. Δ vs 1º turno = fatia de " + esc(curto(A)) + " no 2º turno projetado menos a do 1º turno real (a parte dos eliminados que ele herda). \"2022\" = Lula no 2º turno de 2022 (TSE).</caption>";
+  }
+
+  // 4. de onde vêm os votos
+  function stFluxo(c) {
+    var S = c.S, V = c.V, A = c.A, B = c.B, m = c.m;
+    if (!V || !V.fluxo_eliminados) { document.getElementById("st-fluxo-barras").innerHTML = "<p class='sub'>Fluxo indisponível nesta rodada.</p>"; return; }
+    var P1 = V.primeiro_turno.por_candidato, Fx = V.fluxo_eliminados;
+    var elim = Object.keys(Fx).sort(function (a, b) { return P1[b] - P1[a]; });
+    var totE = elim.reduce(function (s, k) { return s + P1[k]; }, 0);
+    var sumF = [0, 0, 0]; elim.forEach(function (k) { for (var j = 0; j < 3; j++) sumF[j] += Fx[k][j]; });
+    document.getElementById("st-fluxo-sub").innerHTML = "Votos reais do 1º turno (TSE" + (m.status === "final" ? "" : "; UFs ainda em apuração completadas pela projeção") + ") e o destino que o modelo atribui aos eleitores dos " + elim.length + " grupos eliminados: " + fmtMi(totE, 2) + " de votos. Quem votou em " + esc(curto(A)) + " ou " + esc(curto(B)) + " no 1º turno fica com o mesmo candidato. A matriz vem da " + esc(m.transferencia_fonte || "pesquisa Quaest") + "; a parte de cada eliminado que escolhe um lado varia por UF conforme a inclinação política do estado (transferência regionalizada).";
+    var row = function (lab, votos, parts, nota) {
+      var t = parts[0] + parts[1] + parts[2] || 1;
+      return "<div class='st-fl'><div class='st-fl-top'><span><b>" + esc(lab) + "</b></span><span class='muted'>" + fmtMi(votos, 2) + " no 1º turno</span></div>" +
+        "<div class='st-fl-bar' role='img' aria-label='" + esc(lab) + ": " + fmtPct(parts[0] / t, 0) + " " + curto(A) + ", " + fmtPct(parts[1] / t, 0) + " " + curto(B) + ", " + fmtPct(parts[2] / t, 0) + " branco/nulo/abstenção'>" +
+        [[0, dotC(A)], [1, dotC(B)], [2, "n"]].filter(function (x) { return parts[x[0]] > 0; }).map(function (x) { return "<span class='" + x[1] + "' style='flex:" + parts[x[0]] / t + " 1 0'></span>"; }).join("") + "</div>" +
+        "<div class='st-fl-num'>" + (nota || ("→ " + esc(curto(A)) + " " + fmtPct(parts[0] / t, 0) + " (" + fmtVot(parts[0]) + ") · " + esc(curto(B)) + " " + fmtPct(parts[1] / t, 0) + " (" + fmtVot(parts[1]) + ") · branco/nulo/abst. " + fmtPct(parts[2] / t, 0) + " (" + fmtVot(parts[2]) + ")")) + "</div></div>";
+    };
+    var h = "<div class='legend'><span><i class='dot " + dotC(A) + "'></i>→ " + esc(curto(A)) + "</span><span><i class='dot " + dotC(B) + "'></i>→ " + esc(curto(B)) + "</span><span><i class='dot n'></i>→ branco, nulo ou abstenção</span></div>";
+    h += row(nomeC(A), P1[A], [P1[A], 0, 0], "permanecem com " + esc(curto(A)) + " (premissa do modelo)");
+    h += row(nomeC(B), P1[B], [0, P1[B], 0], "permanecem com " + esc(curto(B)) + " (premissa do modelo)");
+    elim.forEach(function (k) { h += row(nomeC(k), P1[k], Fx[k]); });
+    h += row("Todos os eliminados", totE, sumF);
+    document.getElementById("st-fluxo-barras").innerHTML = h;
+    var dirA = P1[A] + sumF[0], dirB = P1[B] + sumF[1], CT = V.central_transferencia || {};
+    var t = "<caption>Do 1º ao 2º turno, em milhões de votos (todas as linhas somam até a projeção final)</caption><thead><tr><th class='l'>Etapa</th><th>" + esc(curto(A)) + "</th><th>" + esc(curto(B)) + "</th><th>Válidos</th><th>" + esc(curto(A)) + " %</th></tr></thead><tbody>";
+    var lin = function (lab, a, b, cls, sinal) { var f = function (x) { return (sinal && x > 0 ? "+" : "") + fmtN(x / 1e6, 2); };
+      return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td class='l' style='white-space:normal'>" + lab + "</td><td>" + f(a) + "</td><td>" + f(b) + "</td><td>" + f(a + b) + "</td><td>" + (sinal ? "" : fmtN(100 * a / (a + b), 1) + "%") + "</td></tr>"; };
+    t += lin("1º turno real", P1[A], P1[B]);
+    t += lin("herdados dos eliminados (matriz; " + fmtMi(sumF[2], 2) + " deles vão para branco, nulo ou abstenção)", sumF[0], sumF[1], "", true);
+    t += lin("= soma direta", dirA, dirB);
+    if (CT.a) {
+      t += lin("saldo do comparecimento do 2º turno por UF: eleitores que no 1º turno votaram branco/nulo ou não votaram e agora escolhem um lado (menos os que deixam de votar), na proporção de cada UF", CT.a - dirA, CT.b - dirB, "", true);
+      t += lin("= projeção pela transferência", CT.a, CT.b);
+    }
+    t += lin("ajuste por pesquisas de 2º turno e viés histórico (e média das simulações)", V.a_media - (CT.a || dirA), V.b_media - (CT.b || dirB), "", true);
+    t += lin("<b>Projeção final</b> (média)", V.a_media, V.b_media, "destaque");
+    document.getElementById("st-fluxo-tab").innerHTML = t + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Por que o saldo do comparecimento? A matriz manda " + fmtMi(sumF[2], 2) + " de eleitores dos eliminados para fora, mas o modelo de comparecimento (variação 1T→2T por UF em 2014/2018/2022) projeta " + fmtMi(V.validos_media) + " de válidos no 2º turno, perto dos " + fmtMi(P1A_tot(V)) + " do 1º turno — como em 2022 (118,2 → 118,6 mi). A diferença é coberta por eleitores que entram ou voltam a escolher um lado. O modelo usa a matriz só para as <i>fatias</i> de cada UF e o modelo de comparecimento para o <i>total</i>; esta tabela mostra as duas coisas juntas.</caption>";
+    var TRg = S.transferencia_regional, rec = "";
+    if (TRg && TRg.fatia_pt_decididos_uf) {
+      var fu = TRg.fatia_pt_decididos_uf, ks = Object.keys(fu).filter(function (u) { return u !== "ZZ"; });
+      rec = elim.filter(function (k) { return k !== "Outros"; }).map(function (k) {
+        var v = ks.map(function (u) { return [u, fu[u][k]]; }).sort(function (x, y) { return x[1] - y[1]; });
+        return esc(nomeC(k)) + " " + fmtPct(v[0][1], 0) + " (" + v[0][0] + ") a " + fmtPct(v[v.length - 1][1], 0) + " (" + v[v.length - 1][0] + ")";
+      }).join("; ");
+      rec = "<b>Transferência regionalizada.</b> Entre os eleitores de cada eliminado que escolhem um lado, a parte que vai para " + esc(curto(A)) + " varia por UF: " + rec + ". Inclinação β = " + fmtN(TRg.beta_media, 2) + " ± " + fmtN(TRg.beta_dp, 2) + " (estimada em 2002–2022). ";
+    }
+    var Tm = S.transferencia || {};
+    rec += "<b>Matriz nacional</b> (" + esc(curto(A)) + " / " + esc(curto(B)) + " / fora): " + Object.keys(Tm).map(function (k) { return esc(nomeC(k)) + " " + Tm[k].map(function (x) { return fmtN(x * 100, 0); }).join("/"); }).join(" · ") + ". Cada linha é sorteada com incerteza (Dirichlet, α = " + fmtN(((c.m.parametros || {}).alfa_dirichlet || {}).valor || 30) + ").";
+    document.getElementById("st-fluxo-rec").innerHTML = rec;
+  }
+
+  // 5. o que precisaria mudar + calculadora
+  function calcBase(c) {
+    var S = c.S, V = c.V, A = c.A;
+    var b = { A0: 0, B0: 0, E: 0, NEel: 0, NEa: 0, NEabst: 0 };
+    S.ufs.forEach(function (u) {
+      if (u.votos_a_1t == null) return;
+      b.A0 += u.votos_a_1t; b.B0 += u.votos_b_1t; b.E += u.validos_1t - u.votos_a_1t - u.votos_b_1t;
+      if (u.regiao === "NE") { var s = u.votos_a_1t / Math.max(u.votos_a_1t + u.votos_b_1t, 1); b.NEel += u.eleitores; b.NEa += u.eleitores * s; b.NEabst += u.eleitores * (u.abst_1t_pct || 0) / 100; }
+    });
+    var F = V.fluxo_eliminados, sA = 0, sB = 0, sO = 0;
+    Object.keys(F).forEach(function (k) { sA += F[k][0]; sB += F[k][1]; sO += F[k][2]; });
+    b.transf0 = sA / Math.max(sA + sB, 1); b.fora0 = sO / Math.max(sA + sB + sO, 1);
+    b.sNE = b.NEa / Math.max(b.NEel, 1);
+    b.ajuste = S.centro ? (S.centro.centro_a_pct - S.centro.via_transferencia_a_pct) : 0;
+    var d0 = b.A0 + b.B0 + b.E * (1 - b.fora0);
+    b.k = V.validos_media / d0;
+    return b;
+  }
+  function calcRun(b, p) {
+    var esc_ = b.E * (1 - p.fora);
+    var neN = b.NEel * p.ne / 100;
+    var va = b.A0 + esc_ * p.transf + neN * b.sNE, vb = b.B0 + esc_ * (1 - p.transf) + neN * (1 - b.sNE);
+    va *= b.k; vb *= b.k;
+    va += p.troca * 1e6; vb -= p.troca * 1e6;
+    var tot = va + vb, s = va / tot + (p.ajuste ? b.ajuste / 100 : 0);
+    return { s: s, va: s * tot, vb: (1 - s) * tot, tot: tot };
+  }
+  function resolver(f, lo, hi) {   // f crescente; raiz de f(x) = 0.5 por bisseção
+    if (f(hi) < 0.5 || f(lo) > 0.5) return null;
+    for (var i = 0; i < 50; i++) { var mid = (lo + hi) / 2; if (f(mid) < 0.5) lo = mid; else hi = mid; }
+    return (lo + hi) / 2;
+  }
+  function stPrecisa(c) {
+    var V = c.V, A = c.A, B = c.B, S = c.S;
+    if (!V || !V.fluxo_eliminados) { document.getElementById("st-calc").parentNode && (document.getElementById("st-precisa").innerHTML = ""); return; }
+    var b = calcBase(c);
+    var p0 = { transf: b.transf0, fora: b.fora0, ne: 0, troca: 0, ajuste: true };
+    var r0 = calcRun(b, p0);
+    var atras = r0.s < 0.5 ? A : B, sinal = r0.s < 0.5 ? 1 : -1;
+    var gap = Math.abs(r0.va - r0.vb);
+    var tN = resolver(function (x) { return calcRun(b, Object.assign({}, p0, { transf: x })).s; }, 0, 1);
+    var neN = resolver(function (x) { return calcRun(b, Object.assign({}, p0, { ne: x })).s; }, 0, 60);
+    var kp = function (lab, val, det) { return "<div class='card st-k'><div>" + lab + "</div><div class='kpi-mini'>" + val + "</div><div>" + det + "</div></div>"; };
+    var h = kp("Eleitores que precisariam trocar de lado", fmtMi(gap / 2), "metade da margem projetada (" + fmtMi(gap) + "): cada eleitor que troca de " + esc(curto(sinal > 0 ? B : A)) + " para " + esc(curto(atras)) + " vale 2 votos de diferença. ≈ " + fmtPct(gap / 2 / V.primeiro_turno.por_candidato[sinal > 0 ? B : A], 1) + " de quem votou em " + esc(curto(sinal > 0 ? B : A)) + " no 1º turno.");
+    if (atras === A) {
+      h += kp("Parte dos eliminados que " + esc(curto(A)) + " precisaria", tN == null ? "nem 100% basta" : fmtPct(tN, 0), "entre os eleitores dos eliminados que escolhem um lado (hoje o modelo dá " + fmtPct(b.transf0, 0) + " a " + esc(curto(A)) + "). Os eliminados somam " + fmtMi(b.E) + " de votos, dos quais ≈ " + fmtPct(b.fora0, 0) + " não escolhem ninguém.");
+      h += kp("Comparecimento extra no Nordeste", neN == null ? "> 60 p.p." : "+" + fmtN(neN, 1) + " p.p.", "do eleitorado do NE (≈ " + (neN == null ? "–" : fmtMi(b.NEel * neN / 100)) + " de novos eleitores votando como o NE votou no 1º turno, " + fmtPct(b.sNE, 0) + " " + esc(curto(A)) + "). " + (neN != null && b.NEel * neN / 100 > b.NEabst ? "Mais do que os " + fmtMi(b.NEabst) + " de eleitores do NE que não votaram no 1º turno: o comparecimento sozinho não basta." : "No 1º turno, " + fmtMi(b.NEabst) + " de eleitores do NE não votaram."));
+    } else {
+      h += kp("Parte dos eliminados que " + esc(curto(B)) + " precisaria", tN == null ? "nem 100% basta" : fmtPct(1 - tN, 0), "entre os eleitores dos eliminados que escolhem um lado (hoje: " + fmtPct(1 - b.transf0, 0) + ").");
+      h += kp("Margem atual", fmtMi(gap), "a favor de " + esc(curto(A)) + " na projeção central.");
+    }
+    document.getElementById("st-precisa").innerHTML = h;
+    // calculadora
+    ST = { b: b, c: c };
+    var el = function (id) { return document.getElementById(id); };
+    if (!el("c-transf").dataset.ok) {
+      el("c-transf").dataset.ok = 1;
+      ["c-transf", "c-fora", "c-ne", "c-troca", "c-ajuste"].forEach(function (id) { el(id).addEventListener("input", calcRender); el(id).addEventListener("change", calcRender); });
+      el("c-reset").addEventListener("click", function () { calcReset(); calcRender(); });
+      calcReset();
+    }
+    el("c-ajuste-txt").textContent = "Aplicar o ajuste do modelo (pesquisas de 2º turno e viés histórico: " + fmtS(b.ajuste, 2) + " p.p. para " + curto(A) + ")";
+    calcRender();
+  }
+  function calcReset() {
+    if (!ST) return;
+    var b = ST.b, el = function (id) { return document.getElementById(id); };
+    el("c-transf").value = Math.round(b.transf0 * 100); el("c-fora").value = Math.round(b.fora0 * 100);
+    el("c-ne").value = 0; el("c-troca").value = 0; el("c-ajuste").checked = true;
+  }
+  function calcRender() {
+    if (!ST) return;
+    var b = ST.b, c = ST.c, A = c.A, B = c.B, el = function (id) { return document.getElementById(id); };
+    var p = { transf: +el("c-transf").value / 100, fora: +el("c-fora").value / 100, ne: +el("c-ne").value, troca: +el("c-troca").value, ajuste: el("c-ajuste").checked };
+    el("v-transf").textContent = fmtN(p.transf * 100, 0) + "%";
+    el("v-fora").textContent = fmtN(p.fora * 100, 0) + "%";
+    el("v-ne").textContent = "+" + fmtN(p.ne, 1) + " p.p. (" + fmtMi(b.NEel * p.ne / 100) + ")";
+    el("v-troca").textContent = (p.troca > 0 ? "+" : "") + fmtN(p.troca, 1) + " mi";
+    var r = calcRun(b, p), sa = r.s * 100, mg = r.va - r.vb;
+    var vence = r.s > 0.5 ? A : (r.s < 0.5 ? B : null);
+    var modelo = c.S.a_media;
+    el("st-calc-out").innerHTML =
+      "<div class='st-bar-leg'><span><i class='dot " + dotC(A) + "'></i> " + esc(curto(A)) + "</span><span>" + esc(curto(B)) + " <i class='dot " + dotC(B) + "'></i></span></div>" +
+      "<div class='st-res'>" + fmtN(sa, 1) + "% <small>x</small> " + fmtN(100 - sa, 1) + "%</div>" +
+      "<div class='st-bar' role='img' aria-label='" + esc(curto(A)) + " " + fmtN(sa, 1) + "%'><span class='a' style='width:calc(" + Math.max(0, Math.min(100, sa)) + "% - 1px);background:var(" + varC(A) + ")'></span><span class='b' style='background:var(" + varC(B) + ")'></span><i class='meio'></i></div>" +
+      "<p style='margin:6px 0'>" + fmtMi(r.va) + " x " + fmtMi(r.vb) + " · margem <b>" + lider(mg, A, B, function (v) { return fmtMi(v); }) + "</b> (" + lider(2 * sa - 100, A, B, function (v) { return fmtN(v, 1) + " p.p."; }) + ")</p>" +
+      "<p style='margin:6px 0'><b>" + (vence ? esc(curto(vence)) + " vence nesta conta." : "Empate nesta conta.") + "</b> Centro do modelo: " + esc(curto(A)) + " " + fmtN(modelo, 1) + "% (diferença " + fmtS(Math.round((sa - modelo) * 10) / 10 || 0, 1) + " p.p.).</p>" +
+      "<p class='muted' style='margin:6px 0 0'>Votos escalados para os " + fmtMi(c.V.validos_media) + " de válidos projetados no 2º turno. Uma conta sem incerteza: mesmo um resultado acima de 50% aqui não significa vitória garantida.</p>";
+  }
+
+  // 6. bastidores
+  var ORIG_TXT = { backtest: "backtest", inferencia: "inferência", replay_2022: "replay 2022", fonte: "fonte" };
+  function stBastidores(c) {
+    var X = c.X, S = c.S, m = c.m, A = c.A, B = c.B, V = c.V;
+    var kp = function (lab, val, det) { return "<div class='card st-k'><div>" + lab + "</div><div class='kpi-mini'>" + val + "</div><div>" + det + "</div></div>"; };
+    document.getElementById("st-mc").innerHTML =
+      kp("Simulações", fmtN(S.n), "semente " + esc(S.semente) + " · reprodutível") +
+      kp("Erro de Monte Carlo de P(vencer)", "± " + fmtN(S.ep_mc * 100, 2) + " p.p.", "1 erro-padrão; a incerteza que importa está nas premissas, não no número de simulações") +
+      kp("Apuração usada", fmtN(m.pst_nacional, 2) + "%", "das seções; UFs incompletas projetadas por município (" + Object.keys((m.projecao_parcial || {}).swing_uf || {}).length + " UFs)");
+    var Cn = S.centro || {}, P2 = S.pesquisas_2t || {};
+    var tc = "<caption>Como se forma o centro da projeção (fatia de " + esc(curto(A)) + ", % dos válidos)</caption><tbody>";
+    var lc = function (a, b) { return "<tr><td class='l' style='white-space:normal'>" + a + "</td><td>" + b + "</td></tr>"; };
+    tc += lc("Via transferência (1º turno real + matriz regionalizada + comparecimento por UF)", fmtN(Cn.via_transferencia_a_pct, 2) + "%");
+    if (Cn.pesquisas_a_pct != null) {
+      tc += lc("Pesquisas de 2º turno feitas antes do 1º turno, sem correção (" + fmtN(P2.n_pesquisas) + " institutos)", fmtN(Cn.pesquisas_a_pct_sem_correcao, 2) + "%");
+      tc += lc("… corrigidas pelo erro de cada instituto no 1º turno (média do erro: " + fmtS(((P2.erro_1t_institutos || {}).mu_pp), 2) + " p.p. pró-" + esc(curto(A)) + ")", fmtN(Cn.pesquisas_a_pct, 2) + "%");
+      tc += lc("Combinação em logito com peso " + fmtN(Cn.peso_pesquisas, 2) + " para as pesquisas", fmtN(Cn.centro_sem_vies_a_pct, 2) + "%");
+    }
+    tc += lc("− viés histórico da projeção 1T→2T (encolhido; b + κ·erro do 1º turno)", fmtS(-Cn.vies_historico_pp, 2) + " p.p.");
+    tc += "<tr class='destaque'><td class='l'>Centro</td><td>" + fmtN(Cn.centro_a_pct, 2) + "%</td></tr>";
+    document.getElementById("st-centro").innerHTML = tc + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Média final das simulações: " + fmtN(S.a_media, 2) + "% (o erro t e o logito deslocam um pouco a média em relação ao centro).</caption>";
+    var E = S.erros || {}, Cal = S.calibracao || {};
+    var te = "<caption>Erros sorteados em cada simulação (p.p. da fatia de " + esc(curto(A)) + ")</caption><thead><tr><th class='l'>Componente</th><th>dp</th><th class='l'>De onde vem</th></tr></thead><tbody>";
+    var le = function (a, b, o) { return "<tr><td class='l'>" + a + "</td><td>" + b + "</td><td class='l' style='white-space:normal'>" + o + "</td></tr>"; };
+    te += le("Nacional total", fmtN(E.dp_nacional_pp, 2), "erros 1T real → 2T de 2014/2018/2022 (" + (Cal.erros_pp || []).map(function (x) { return fmtS(x, 1); }).join(", ") + ") com prior; caudas t com " + E.gl_t + " gl");
+    te += le("… da incerteza da matriz", fmtN(E.dp_nacional_da_matriz_pp, 2), "Dirichlet nas linhas de transferência (não contado duas vezes)");
+    te += le("… extra (sorteado à parte)", fmtN(E.dp_nacional_extra_pp, 2), "restante do erro nacional");
+    te += le("Regional (6 regiões)", fmtN(E.dp_regional_pp, 2), "backtest 2014/2018/2022");
+    te += le("Estadual", fmtN(E.dp_uf_pp, 2), "backtest; exterior × 3");
+    te += le("Viés: incerteza", fmtN(Cal.vies_dp_pp, 2), "dp posterior do viés 1T→2T");
+    te += le("Abstenção (nacional / UF)", fmtN((m.parametros.dp_abst_nacional_pp || {}).valor, 1) + " / " + fmtN((m.parametros.dp_abst_uf_pp || {}).valor, 1), "inferência; variação 1T→2T por UF = média de 2014/2018/2022");
+    document.getElementById("st-erros").innerHTML = te + "</tbody>";
+    // comparação com mercados e modelo alternativo
+    var rows = [["<b>Este modelo</b> (transferência regionalizada, correção por instituto)", S.p_a_vence, S.a_media, [S.a_quantis[1], S.a_quantis[5]], "destaque"]];
+    var SR = S.sensibilidade_regional;
+    if (SR) rows.push(["Sensibilidade: " + esc(SR.metodo), SR.p_a_vence, SR.a_media, [SR.a_quantis[1], SR.a_quantis[5]]]);
+    if (ALT2) {
+      var pr = ALT2.principal_regressao, vp = ALT2.variante_pesquisas || {};
+      if (pr && pr.nacional) rows.push(["Modelo alternativo: regressão 1T→2T por UF (2002–2022)", pr.p_lula, pr.nacional.media, [pr.nacional.p10, pr.nacional.p90]]);
+      if (vp.so_pesquisas && vp.so_pesquisas.nacional) rows.push(["Modelo alternativo: só pesquisas de 2º turno corrigidas", vp.so_pesquisas.p_lula, vp.so_pesquisas.nacional.media, [vp.so_pesquisas.nacional.p10, vp.so_pesquisas.nacional.p90]]);
+      if (vp.mistura && vp.mistura.nacional) rows.push(["Modelo alternativo: mistura (peso " + fmtN(vp.peso_pesquisas, 2) + " nas pesquisas)", vp.mistura.p_lula, vp.mistura.nacional.media, [vp.mistura.nacional.p10, vp.mistura.nacional.p90]]);
+    }
+    var dst = (MV && MV.destaques) || {};
+    ["Polymarket", "Kalshi"].forEach(function (pl) { var d = dst[pl]; if (d && d.vencedor_lula != null) rows.push([pl + " (preço normalizado" + (MV.gerado_utc ? ", " + esc(String(MV.gerado_utc).replace("T", " ").replace("Z", " UTC")) : "") + ")", d.vencedor_lula, null, null]); });
+    var tq = "<caption>P(" + esc(curto(A)) + " vence) e fatia nos válidos: este modelo, o modelo alternativo e mercados de previsão</caption><thead><tr><th class='l'>Fonte</th><th>P(" + esc(curto(A)) + ")</th><th>" + esc(curto(A)) + " % (média)</th><th>p10–p90</th></tr></thead><tbody>";
+    rows.forEach(function (r) { tq += "<tr" + (r[4] ? " class='" + r[4] + "'" : "") + "><td class='l' style='white-space:normal'>" + r[0] + "</td><td>" + fmtPct(r[1], 1) + "</td><td>" + (r[2] == null ? "–" : fmtN(r[2], 1) + "%") + "</td><td>" + (r[3] ? fmtN(r[3][0], 1) + "–" + fmtN(r[3][1], 1) : "–") + "</td></tr>"; });
+    document.getElementById("st-comp").innerHTML = tq + "</tbody><caption style='caption-side:bottom;padding-top:8px'>" + (ALT2 ? "Modelo alternativo (<code>modelo_alternativo/</code>, independente): " + esc((ALT2.meta || {}).metodo || "") + ". A regressão histórica não usa pesquisas e erra ±5–6 p.p. no backtest; a mistura dá peso às pesquisas. " : "Modelo alternativo do 2º turno indisponível nesta publicação. ") + "Mercados: apostas, não pesquisas; só para comparação.</caption>";
+    // sensibilidade
+    var RC = S.sensibilidade_recalibracao || [];
+    var ts = "<caption>Sensibilidade a escolhas de método (P(" + esc(curto(A)) + ") e fatia média; variantes com " + fmtN(Math.max(Math.floor(S.n / 5), 20000)) + " simulações)</caption><thead><tr><th class='l'>Variante</th><th>Pesquisas pré-1T</th><th>Viés descontado</th><th>dp nacional</th><th>P(" + esc(curto(A)) + ")</th><th>" + esc(curto(A)) + " %</th><th>p10–p90</th></tr></thead><tbody>";
+    RC.forEach(function (r) {
+      ts += "<tr><td class='l' style='white-space:normal'>" + esc(r.variante) + "</td><td>" + fmtN(r.pesquisas_a_pct, 2) + "%</td><td>" + fmtS(-r.vies_pp, 2) + " ± " + fmtN(r.vies_dp_pp, 2) + "</td><td>" + fmtN(r.dp_nacional_pp, 2) + "</td><td>" + fmtPct(r.p_a_vence, 1) + "</td><td>" + fmtN(r.a_media, 2) + "</td><td>" + fmtN(r.a_p10, 1) + "–" + fmtN(r.a_p90, 1) + "</td></tr>";
+    });
+    if (SR) ts += "<tr><td class='l' style='white-space:normal'>Transferência: " + esc(SR.metodo) + " (em vez da regionalizada)</td><td>–</td><td>–</td><td>–</td><td>" + fmtPct(SR.p_a_vence, 1) + "</td><td>" + fmtN(SR.a_media, 2) + "</td><td>" + fmtN(SR.a_quantis[1], 1) + "–" + fmtN(SR.a_quantis[5], 1) + "</td></tr>";
+    ts += "<tr class='destaque'><td class='l'>Resultado principal</td><td>" + (Cn.pesquisas_a_pct == null ? "–" : fmtN(Cn.pesquisas_a_pct, 2) + "%") + "</td><td>" + fmtS(-Cn.vies_historico_pp, 2) + " ± " + fmtN(Cal.vies_dp_pp, 2) + "</td><td>" + fmtN(E.dp_nacional_pp, 2) + "</td><td>" + fmtPct(S.p_a_vence, 1) + "</td><td>" + fmtN(S.a_media, 2) + "</td><td>" + fmtN(S.a_quantis[1], 1) + "–" + fmtN(S.a_quantis[5], 1) + "</td></tr>";
+    document.getElementById("st-sens").innerHTML = ts + "</tbody>";
+    // histórico 1T -> 2T
+    var H = S.historico_turnos || [], EC = {};
+    (S.ecologico || []).forEach(function (e) { EC[e.ano] = e.fracao_pt_dos_ganhos; });
+    var th = "<caption>Do 1º para o 2º turno: eleições anteriores (Brasil, TSE) e a projeção de 2026</caption><thead><tr><th class='l'>Ano</th><th class='l'>PT x adversário</th><th>PT 1º t.</th><th>Adv. 1º t.</th><th>Demais 1º t.</th><th>PT 2º t.</th><th>Δ PT</th><th>Parte dos ganhos que foi ao PT</th><th>Abstenção 1º→2º</th><th>Brancos+nulos 1º→2º</th><th>Válidos 1º→2º (mi)</th></tr></thead><tbody>";
+    H.forEach(function (h) {
+      th += "<tr><td class='l'>" + h.ano + "</td><td class='l'>" + esc(h.pt) + " x " + esc(h.adversario) + "</td><td>" + fmtN(h.pt_1t_pct, 1) + "%</td><td>" + fmtN(h.adv_1t_pct, 1) + "%</td><td>" + fmtN(h.demais_1t_pct, 1) + "%</td><td>" + fmtN(h.pt_2t_pct, 1) + "%</td><td>" + fmtS(h.pt_2t_pct - h.pt_1t_pct) + "</td><td>" + (EC[h.ano] == null ? "–" : fmtPct(EC[h.ano], 0)) + "</td><td>" + fmtN(h.abst_1t_pct, 1) + " → " + fmtN(h.abst_2t_pct, 1) + "%</td><td>" + fmtN(h.bn_1t_pct, 1) + " → " + fmtN(h.bn_2t_pct, 1) + "%</td><td>" + fmtN(h.validos_1t / 1e6, 1) + " → " + fmtN(h.validos_2t / 1e6, 1) + "</td></tr>";
+    });
+    var R1 = (X.primeiro_turno_real || {}).nacional || {};
+    if (R1[A] != null && V) {
+      var dem = 100 - R1[A] - R1[B], P1 = V.primeiro_turno;
+      var ganhoA = S.a_media / 100 * V.validos_media - P1.por_candidato[A], ganhoB = (1 - S.a_media / 100) * V.validos_media - P1.por_candidato[B];
+      th += "<tr class='destaque'><td class='l'>2026 (projeção)</td><td class='l'>" + esc(curto(A)) + " x " + esc(curto(B)) + "</td><td>" + fmtN(R1[A], 1) + "%</td><td>" + fmtN(R1[B], 1) + "%</td><td>" + fmtN(dem, 1) + "%</td><td>" + fmtN(S.a_media, 1) + "%</td><td>" + fmtS(S.a_media - R1[A]) + "</td><td>" + fmtPct(ganhoA / Math.max(ganhoA + ganhoB, 1), 0) + "</td><td>" + fmtN(P1.abstencao_pct, 1) + " → " + fmtN(V.abstencao_pct_media, 1) + "%</td><td>" + fmtN(P1.bn_pct_comp, 1) + " → " + fmtN(V.bn_pct_comp_media, 1) + "%</td><td>" + fmtN(P1.validos / 1e6, 1) + " → " + fmtN(V.validos_media / 1e6, 1) + "</td></tr>";
+    }
+    document.getElementById("st-hist").innerHTML = th + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Parte dos ganhos = dos votos novos que os dois finalistas somaram no 2º turno, a fração que foi para o PT (agregado nacional). O PT cresceu entre os turnos nas três eleições; em 2026 os eliminados são, em sua maioria, de candidatos de direita e centro-direita, e a matriz da Quaest manda a maior parte deles para Flávio.</caption>";
+    // ensaios
+    var EN = (X.ensaio_2022 || {}).anos || {}, ag = (X.ensaio_2022 || {}).agregado || {};
+    var tn = "<caption>Ensaios: o mesmo pipeline rodado com o 1º turno real de cada ano (calibração sem o próprio ano)</caption><thead><tr><th class='l'>Ano</th><th>Previsto PT</th><th>p10–p90</th><th>Real</th><th>Erro</th><th>P(PT vence)</th><th>UF: erro médio</th></tr></thead><tbody>";
+    Object.keys(EN).sort().forEach(function (k) { var e = EN[k];
+      tn += "<tr><td class='l'>" + k + " (" + esc((e.par || [])[0]) + ")</td><td>" + fmtN(e.previsto_a_media, 1) + "%</td><td>" + fmtN(e.previsto_a_quantis[1], 1) + "–" + fmtN(e.previsto_a_quantis[5], 1) + "</td><td>" + fmtN(e.real_a_pct, 1) + "%</td><td>" + fmtS(e.erro_pp) + "</td><td>" + fmtPct(e.p_a_vence, 0) + (e.a_venceu ? " ✓" : " ✗") + "</td><td>" + fmtN(e.uf_mae_pp, 1) + " p.p.</td></tr>"; });
+    document.getElementById("st-ensaio").innerHTML = tn + "</tbody><caption style='caption-side:bottom;padding-top:8px'>Erro médio absoluto nacional " + fmtN(ag.mae_nacional_pp, 1) + " p.p.; resultado nacional dentro do intervalo de 80% em " + fmtPct(ag.cobertura_80_nacional, 0) + " dos anos; UFs dentro do intervalo de 80% em " + fmtPct(ag.uf_cobertura_80, 0) + " e de 95% em " + fmtPct(ag.uf_cobertura_95, 0) + ". ✓/✗ = o PT venceu ou não.</caption>";
+    var VI = Cal.vies_industria || {};
+    document.getElementById("st-calib").innerHTML = [
+      "<b>Três eleições só.</b> Erros da projeção 1T real → 2T em 2014/2018/2022: " + (Cal.erros_pp || []).map(function (x) { return fmtS(x, 1); }).join(", ") + " p.p. (positivo = pró-PT). Com tão poucos pontos, o dp nacional usa um prior (qui-quadrado inverso) e um piso de " + fmtN((m.parametros.dp_nacional_piso_pp || {}).valor, 1) + " p.p.",
+      "<b>Transferência regionalizada adotada</b>: erro médio por UF 2,19 → 1,80 p.p. (2018) e 2,11 → 2,10 (2022), nacional igual por construção; em 2014 piora (o voto de Marina não seguiu a inclinação do estado).",
+      "<b>Correção das pesquisas pré-1T pelo erro do próprio instituto no 1º turno</b> (plena): erro RMS da média pré-1T 4,16 → 2,01 p.p. em 2018/2022. Pesquisas feitas depois do 1º turno não são corrigidas: toda variante piorou no backtest.",
+      "<b>Viés 1T→2T</b>: b + κ(e1 − média) com o erro do 1º turno de 2026 (" + fmtS((VI.erros_1t_pp || {})["2026"], 2) + " p.p.): " + fmtS(VI.vies_2026_pp, 2) + " ± " + fmtN(VI.vies_2026_dp_pp, 2) + " p.p. descontados de " + esc(curto(A)) + "; κ = " + fmtN(VI.kappa_media, 2) + " ± " + fmtN(VI.kappa_dp, 2) + " (praticamente o prior).",
+      "<b>Comparecimento</b>: variação 1T→2T da abstenção por UF = média de 2014/2018/2022 (erro médio por UF 1,29 p.p.; só o nacional daria 1,80).",
+      "<b>Projeção da apuração parcial</b>: UFs incompletas são completadas por município (swing em relação a 2022), validado reapurando 2022 em ordem não aleatória."
+    ].map(function (s) { return "<li>" + s + "</li>"; }).join("");
+    var PP = m.parametros || {};
+    var tp = "<thead><tr><th class='l'>Parâmetro</th><th>Valor</th><th class='l'>Origem</th><th class='l'>Nota</th></tr></thead><tbody>";
+    Object.keys(PP).forEach(function (k) { var p = PP[k] || {};
+      tp += "<tr><td class='l'><code>" + esc(k) + "</code></td><td>" + esc(typeof p.valor === "number" ? fmtN(p.valor, p.valor % 1 ? 2 : 0) : String(p.valor)) + "</td><td class='l'><span class='pill " + esc(p.origem) + "'>" + esc(ORIG_TXT[p.origem] || p.origem) + "</span></td><td class='wrap-txt'>" + esc(p.nota || "") + "</td></tr>"; });
+    document.getElementById("st-param").innerHTML = tp + "</tbody>";
   }
 
   // ---------- pesquisas
