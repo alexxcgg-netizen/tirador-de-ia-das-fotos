@@ -108,9 +108,13 @@ def test_realidade_json_contagem_e_fontes():
     itens = rd["checagem"]["itens"]
     conta = lambda lado, v: sum(1 for i in itens if i["lado"] == lado and i["v"] == v)
     # balanço da nota de checagem (seção 0.4): mesma régua para os dois lados
-    assert [conta("lula", v) for v in ("correto", "hoje_exagerado", "enganoso", "exagerado", "falso", "sem_base")] == [3, 1, 5, 2, 3, 0]
-    assert [conta("flavio", v) for v in ("correto", "hoje_exagerado", "enganoso", "exagerado", "falso", "sem_base")] == [2, 0, 3, 1, 3, 5]
-    assert sum(1 for i in itens if i["lado"] == "mercado") == 6
+    # revisado após a auditoria de neutralidade (05/10/2026): promessas de Lula na mesma escala "conta que feche",
+    # PLOA 2027 (governo) e Revista Oeste fora de "mercado", F13 reclassificado e duas falas novas de cada lado
+    assert [conta("lula", v) for v in ("correto", "hoje_exagerado", "enganoso", "exagerado", "falso", "sem_base")] == [3, 1, 6, 5, 3, 3]
+    assert [conta("flavio", v) for v in ("correto", "hoje_exagerado", "enganoso", "exagerado", "falso", "sem_base")] == [2, 0, 5, 3, 3, 4]
+    assert sum(1 for i in itens if i["lado"] == "mercado") == 4
+    assert not any(i["lado"] == "mercado" and ("MPO" in i["quem"] or "Oeste" in i["quem"]) for i in itens)
+    assert any(i["lado"] == "lula" and i["v"] == "sem_base" and "tarifa zero" in i["afirmacao"].lower() for i in itens)
     escala = {e[0] for e in rd["checagem"]["escala"]}
     assert all(i["v"] in escala and i["fontes"] and all(f[1].startswith("https://") for f in i["fontes"]) for i in itens)
     assert all(c["fontes"] and c["tipo"] and set(c["tipo"]) <= {"a", "b", "c", "d"} for c in rd["indicadores"])
@@ -121,3 +125,45 @@ def test_realidade_json_contagem_e_fontes():
     assert len(d) == 1 and "Sem evidência" in d[0]["gap"]
     divida = next(c for c in rd["indicadores"] if c["id"] == "divida")
     assert "28,72%" in divida["gap_det"] and "29034" in divida["gap_det"] and "29265" in divida["verif"]
+
+
+def test_realidade_conta_completa():
+    rd = json.loads((publicar.ORIG / "realidade.json").read_text(encoding="utf-8"))
+    cc = rd["conta_completa"]
+    assert {g["gov"].split()[0] for g in cc["veredito"]} == {"Lula", "Bolsonaro", "Flávio"}
+    assert all(len(l) == 5 for g in cc["veredito"] for l in g["linhas"])
+    assert "não má-fé" in cc["engana"]
+    assert {p["gov"] for p in cc["politicas"]} == {"Lula", "Bolsonaro", "Flávio"}
+    assert all(p["visivel"] and p["paga"] and p["quando"] and p["P"] and p["M"] and p["T"] for p in cc["politicas"])
+    assert len(cc["divida"]["linhas"]) == 2 and cc["excecoes"]["linhas"]
+    assert "meia-entrada" in cc["credito"]["titulo"] and len(cc["credito"]["blocos"]) == 5
+    assert any("ICMS" in l[0] for l in cc["divergencias"]["linhas"])
+    txt = json.dumps(cc, ensure_ascii=False)
+    assert "~R$ 25 bi" not in txt and "26,6" in txt  # outorga da Eletrobras conferida
+    assert "não reverificado" not in txt and "de memória" not in txt
+
+
+def test_cada_aba_termina_com_resumo():
+    """Toda seção ("assunto") de toda aba termina com um quadro Resumo, e toda aba com "Resumo da aba"."""
+    import re
+    html = (publicar.ORIG / "index.html").read_text(encoding="utf-8")
+    paineis = re.findall(r'<div role="tabpanel"[^>]*data-painel="([^"]+)"[^>]*>([\s\S]*?)(?=\n  <div role="tabpanel"|\n  <footer)', html)
+    assert len(paineis) == 9
+    chaves_js = set(re.findall(r'^    "([a-z0-9-]+)": function', html, re.M))
+    for nome, corpo in paineis:
+        corpo = corpo.rstrip()
+        assert corpo.endswith("</div>")
+        ultimo = corpo[:-len("</div>")].rstrip().splitlines()[-1]
+        assert f'data-resumo-aba="{nome}"' in ultimo, nome
+        assert f'"{nome}": function' in html, nome
+        for sec in re.findall(r"<section[\s\S]*?</section>", corpo):
+            if 'id="segundo-turno"' in sec:   # seção única: cada parte (h3) tem o seu resumo
+                partes = re.findall(r'data-resumo="(st-[a-z]+)"', sec)
+                assert partes == ["st-hero", "st-dist", "st-virada", "st-fluxo", "st-calc", "st-bast"]
+                assert all(p in chaves_js for p in partes)
+                continue
+            fim = sec[:-len("</section>")].rstrip().splitlines()[-1]
+            m = re.search(r'<aside class="resumo" data-resumo="([^"]+)"', fim)
+            assert m, (nome, sec[:80])
+            assert m.group(1) in chaves_js, m.group(1)
+    assert ".resumo {" in html and ".resumo.aba" in html

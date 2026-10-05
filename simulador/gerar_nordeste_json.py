@@ -129,7 +129,7 @@ OPINIAO = {
 EXPLICACOES = [
     {"exp": "Custo de vida e alimentos", "quem": "Rogério Marinho (PL), Revista Oeste, Felipe Nunes (Quaest), B. Tadeu César (UFRGS)",
      "a_favor": "60% perderam poder de compra (Quaest, fev.); cesta básica com maior alta no NE (DIEESE, 1º tri)",
-     "contra": "Aprovação no NE em 61% em setembro; reajuste do Bolsa Família e salário mínimo atenuam"},
+     "contra": "Aprovação no NE de 61% em setembro (Quaest), mas a desaprovação subiu de 29% para 35% entre julho e setembro. Entre beneficiários do Bolsa Família, Lula ficou em 64% antes e depois do reajuste (BTG/Nexus), sem efeito adicional medido"},
     {"exp": "Segurança e violência", "quem": "Gazeta do Povo; oposições estaduais (ACM Neto, Ciro); CartaCapital",
      "a_favor": "Violência é o problema nº 1 (34–40%); BA, AL, PE e CE com altas taxas de homicídio (Atlas da Violência 2026)",
      "contra": "Governadores do PT na BA e no CE reeleitos no 1º turno; punição ao governante \"não é automática\" (Piquet Carneiro)"},
@@ -141,7 +141,7 @@ EXPLICACOES = [
      "contra": "Em 2026 a queda foi maior no interior pequeno (−3,8 p.p.) que nas capitais (−0,6) [calc]"},
     {"exp": "Escândalos (INSS, Banco Master)", "quem": "Gazeta do Povo, Revista Oeste, PL (vice Alfredo Gaspar)",
      "a_favor": "NE é a região mais afetada pela fraude do INSS; corrupção como problema dobrou no NE (9% → 18%)",
-     "contra": "Master atinge os dois lados; no NE o governo foi mais bem avaliado na resposta ao INSS"},
+     "contra": "Master atinge políticos dos dois campos e do centro; em 2025, 31% no NE acharam satisfatória a resposta do governo ao INSS, contra 16–18% no Sul e no Sudeste (Quaest, via busca; não confirmado na fonte primária)"},
     {"exp": "Fragmentação: migração para Cury e Caiado", "quem": "Diagnóstico interno da campanha de Lula (CNN, 21/09)",
      "a_favor": "BTG/Nexus: 5% dos eleitores de Lula em 2022 foram para Cury e 5% para Caiado",
      "contra": "Os terceiros somaram só 5,2% dos válidos no NE [calc]; parte pode voltar no 2º turno"},

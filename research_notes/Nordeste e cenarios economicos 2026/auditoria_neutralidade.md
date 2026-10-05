@@ -304,8 +304,8 @@ C = [
  ("C02 F5: ressalva 'parte vem da base' sem número", lambda: "Parte" in I["F5"]["fora"] and not re.search(r"\d", I["F5"]["fora"])),
  ("C03 percepção: 'memória ancora em 2019' sem itens que subiram em 12m (feijão/café)", lambda: "ancora" in rd["meta"]["percepcao"] and not re.search(r"feij|caf[eé]", rd["meta"]["percepcao"])),
  ("C04 F13 classificado como 'sem base' (categoria de promessa)", lambda: I["F13"]["v"] == "sem_base"),
- ("C05 M1 (Revista Oeste) contado como 'mercado'", lambda: I["M1"]["lado"] == "mercado" and "Oeste" in I["M1"]["quem"]),
- ("C06 M6 (projeção do governo/MPO) contado como 'mercado'", lambda: I["M6"]["lado"] == "mercado" and "MPO" in I["M6"]["quem"]),
+ ("C05 M1 (Revista Oeste) contado como 'mercado'", lambda: any(i["lado"] == "mercado" and "Oeste" in i["quem"] for i in rd["checagem"]["itens"])),
+ ("C06 M6 (projeção do governo/MPO) contado como 'mercado'", lambda: any(i["lado"] == "mercado" and "MPO" in i["quem"] for i in rd["checagem"]["itens"])),
  ("C07 nenhuma promessa de Lula 2027–30 checada (tarifa zero, 6x1, mínimo)", lambda: not any(i["lado"] == "lula" and re.search(r"tarifa zero|6x1|promet|vamos|2027", i["afirmacao"], re.I) for i in rd["checagem"]["itens"])),
  ("C08 NE custo de vida: 'atenuam' sem dado (BTG/Nexus mostra efeito nulo)", lambda: "atenua" in EX["Custo de vida e alimentos"]["contra"]),
  ("C09 NE escândalos: 'mais bem avaliado' sem número", lambda: "avaliado" in txt(EX[[k for k in EX if "INSS" in k][0]]) and not re.search(r"\d", EX[[k for k in EX if "INSS" in k][0]]["contra"])),
@@ -369,3 +369,59 @@ print(f"\n{pend} de {len(C)} pendentes")
 | F8, F12, F14; E5, E6; padrao[1] | F | − | S |
 | E7 (defesa com IVA menor) | F | + | S |
 | E8 | F | + | 0 |
+
+## Contagem após correções (05/10/2026, depois da aplicação das correções)
+
+> Versão auditada: `simulador/web/realidade.json`, `simulador/web/nordeste.json` (gerado por `simulador/gerar_nordeste_json.py`), `simulador/web/index.html` e `reports/*.md` depois do commit "Neutralidade: correções da auditoria…". Os dois scripts da seção 8 foram rodados de novo a partir da raiz do repositório.
+
+### Scripts
+
+- `checks.py`: **0 de 20 pendentes, 20 de 20 "ok"**. Como M1 e M6 mudaram de identificador (agora F15 e L19), C05 e C06 passaram a procurar pelo conteúdo ("Oeste" ou "MPO" num item de lado "mercado") em vez do identificador; a versão da seção 8 já está atualizada. Com o script original, C05 e C06 dão "n/d (estrutura mudou)" e os outros 18 dão "ok".
+- `audit.py`: **208 candidatas** (eram 187). O aumento vem do texto novo: 7 afirmações de Lula, 3 de Flávio e a seção "Conta completa". No painel (`realidade.json` + `nordeste.json`), 41 candidatas têm número depois do marcador e 7 não. Revistas uma a uma, as 7 não suavizam crítica sem número: são definições da escala ("correto mas enganoso"), fatos ("a frase existiu", "também fora do plano"), texto anterior sem efeito avaliativo ("comida não desinflaciona para trás") ou ressalvas que já têm o número na mesma unidade (F5, F14, EC 136). Três ressalvas novas que estavam sem número ganharam número antes do commit (F13, tarifa social, captura do subsídio do MCMV).
+
+### 3.1 refeita: painel
+
+| | Lula / PT / governo 2023–26 | Flávio / PL / Bolsonaro 2019–22 |
+|---|---|---|
+| **Críticas** | **42** (eram 36) | **24** (eram 22) |
+| sem ressalva | 20 | 10 |
+| com ressalva apoiada em número | 16 | 12 |
+| com ressalva sem número | 6 | 2 |
+| % das ressalvas sem número | 27% (eram 48%) | 14% (eram 46%) |
+| **Elogios / defesas** | **10** (eram 11) | **2** |
+| sem ressalva | 3 | 1 |
+| com ressalva apoiada em número | 4 | 0 |
+| com ressalva sem número | 3 | 1 |
+
+**O que mudou na matriz do apêndice:**
+
+- Lula, críticas: entraram L15, L17, L18 e L20 (sem ressalva) e L16 e L21 (ressalva com número: o imposto mínimo só é apurado em 2027; pandemia e câmbio acima de R$ 5). F5, bandeira verde (Itaipu e como_ler d) e "Escândalos" no NE passaram de S para N; o card do IBGE passou de S para 0 (o corte de 2021 virou frase própria, atribuída ao Congresso).
+- Flávio, críticas: F8, F12, F14 e E5 passaram de S para N; entraram F15 (ex-M1, ressalva com número), F16 e F17 (sem ressalva); saiu o "corte do Censo de 2021", que não era do governo Bolsonaro, e sim do Congresso.
+- Elogios a Lula: M1 saiu (virou F15, crítica ao veículo de oposição); erros de 2003 passou de N para 0 (a queda de 7,4% da renda virou dado na coluna "o que aconteceu", no mesmo formato de 2019); E1 e como_ler d passaram de S para N.
+- Ressalvas sem número que continuam: Lula (L7, L12, E4, padrão[0], NE "segurança", NE "desgaste") e Flávio (E6, padrão[1]); elogios: L9, M4 e E3 (Lula) e E7 (Flávio).
+
+**Recorte só da checagem (21 + 17 afirmações, 4 de mercado):**
+
+| | Lula/PT e governo | Flávio/PL e aliados |
+|---|---|---|
+| Vereditos críticos | 18 | 15 |
+| com ressalva | 6 (L4, L6, L16, L21 com número; L7, L12 sem) | 10, todas com número (F1, F2, F3, F4, F6, F8, F12, F13, F14, F15) |
+| Vereditos "correto" | 3 (L1, L3, L9) | 2 (F5, F7) |
+| ressalva do "correto" | caveats contra o próprio Lula, 2 de 3 com número | F5 com a lista de tributos e "divisão não medida"; F7 com Galípolo e a Selic de 15% |
+
+**Placar da escala (contado pelo painel a partir dos itens):** Lula/PT e governo, 3 corretas, 1 correta quando dita mas hoje exagerada, 6 corretas mas enganosas, 5 exageradas, 3 falsas e 3 sem base (21). Flávio/PL e aliados, 2 corretas, 5 corretas mas enganosas, 3 exageradas, 3 falsas e 4 sem base (17). Mercado, 4.
+
+### Status das correções
+
+- **10 prioritárias:** todas aplicadas.
+- **H1–H14:** todas aplicadas. H5 manteve a marca "via busca; não confirmado na fonte primária" no texto. H7 com a base confirmada: 528 mil de 774 mil novos ocupados sem carteira nem CNPJ, **na comparação com o trimestre até maio de 2026** (Jornal de Brasília/IBGE, 30/09/2026). H6 confirmado: o Congresso aprovou o orçamento de 2021 com o Censo cortado de ~R$ 2 bi para R$ 71 mi (relator Márcio Bittar), e a presidente do IBGE pediu demissão em 26/03/2021 (Poder360). H11 corrigido na atribuição: o 72% é do G1 (26 de 36 compromissos, jan/2023–jun/2026, via Bahia Econômica e outros que citam o G1) e o 28% de meio de mandato é da **Folha** (29 de 103 promessas, jan/2025, via InfoMoney), não do Estadão como dizia `planos_governabilidade_historico.md`.
+- **S1–S10:** S1 a S9 aplicadas (S9: o padrão agora fala em "erros" para os dois lados); S10 sem correção, como previsto.
+- **Omissões:** as 11 contra o governo e as 6 contra Flávio/Bolsonaro entraram no painel ou nos relatórios. Das 4 "para equilíbrio", 3 entraram (dívida 86,9% → 71,7% em F12; Liberdade Econômica e autonomia do BC em E5; proibição das bets em F14). O erro do Focus de ~1,4 p.p. no IPCA de 2025 não entrou, porque o número não foi conferido.
+- **Fora do escopo desta rodada:** `medido_vs_vivido.md:19` ("isso explica boa parte do pessimismo") continua na nota; o painel já não repete a frase causal.
+
+### Seções novas e o que foi conferido antes de publicar
+
+- Aba "Realidade × discurso", seção "Conta completa: o que aparece agora × o que volta depois", com veredito por horizonte (Lula, Bolsonaro, Flávio), 14 cartões de política, decomposição da dívida, exceções fiscais, o bloco "Crédito barato: quem paga a meia-entrada" e uma tabela de divergências entre as notas (ICMS de R$ 45 bi x R$ 54,5 bi; precatórios de R$ 60,1 bi x R$ 27,2 bi; consignado do Auxílio de ~R$ 5 bi x R$ 7,6 bi; exceções de Lula de R$ 336,9 bi x R$ 495,7 bi; jabutis da Eletrobras de R$ 52 bi x R$ 84 bi; e outras).
+- Valores que as notas traziam sem conferência, verificados: composição da EC 123 (CNN, 30/06/2022: R$ 26 bi de Auxílio, R$ 5,4 bi caminhoneiros, R$ 3,8 bi etanol, R$ 2,5 bi idosos, R$ 2 bi taxistas, R$ 1,05 bi vale-gás, R$ 0,5 bi Alimenta Brasil); bônus de outorga da Eletrobras de **R$ 26,6 bi** (CanalEnergia; a nota dizia ~R$ 25 bi); Auxílio Gás de 50% do botijão a cada dois meses para 5,5 mi de famílias (Senado); saques do FGTS de R$ 500/R$ 998 (2019), R$ 1.045 (2020) e R$ 1.000 (2022, R$ 23,6 bi pagos); déficit primário de 2019 de R$ 95,1 bi contra meta de R$ 139 bi (Ministério da Economia). Retirados por não confirmação: custo anual do Auxílio Gás (~R$ 1,9 bi), volumes previstos dos saques de 2019 e 2020, liberação de ~R$ 12 bi do saque-aniversário em 2025, contrapartida da União nos descontos do MCMV e FipeZap de 2024. Marcados "não confirmado": gasto tributário de 2019 e tabela de deduções de 2026 da IFI (via busca).
+- Todas as seções de todas as abas do painel (exceto a página de cenários, de outro agente) terminam com um quadro "Resumo", e cada aba com "Resumo da aba", montados a partir dos JSON. Os resumos da aba "Realidade × discurso" passaram pela mesma triagem: nenhuma ressalva sem número.
+

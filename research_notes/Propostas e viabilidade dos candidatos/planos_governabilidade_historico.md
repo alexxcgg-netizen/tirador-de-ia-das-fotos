@@ -109,7 +109,7 @@ Todas as projeções apontam Congresso de centro-direita: Centrão dominante na 
 ## 4. Histórico: promessas cumpridas e desempenho no poder
 
 ### Takeaway
-Lula 3 tem taxa alta de cumprimento segundo o G1 (26 de 36, 72%), mas metodologias variam (Estadão/Infomoney apontaram 28% na metade do mandato). Bolsonaro 2019–2022 cumpriu 33% das promessas de campanha (G1) e 15% do plano registrado (Lupa). Flávio teve 1–2 projetos próprios convertidos em lei em 7 anos de Senado. Caiado tem indicadores de segurança favoráveis atestados pelo FBSP; Zema não conseguiu privatizar a Cemig e a dívida de MG cresceu.
+Lula 3 tem taxa alta de cumprimento segundo o G1 (26 de 36, 72%), mas metodologias variam (a Folha, via InfoMoney, apontou 28% na metade do mandato: 29 de 103 promessas, jan/2025; conferido em 05/10/2026). Bolsonaro 2019–2022 cumpriu 33% das promessas de campanha (G1) e 15% do plano registrado (Lupa). Flávio teve 1–2 projetos próprios convertidos em lei em 7 anos de Senado. Caiado tem indicadores de segurança favoráveis atestados pelo FBSP; Zema não conseguiu privatizar a Cemig e a dívida de MG cresceu.
 
 ### Cited Findings
 
