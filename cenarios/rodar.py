@@ -99,6 +99,9 @@ def stats_familia(RL, RF, h, rho):
     out["ce"] = {c: r([ce(x["idx"][:, t], rho) for t in range(len(ANOS))], 2) for c, x in (("L", l), ("F", f))}
     out["pobreza"] = {c: r((x["pc_real"] < lin).mean(0)) for c, x in (("L", l), ("F", f))}
     out["extrema"] = {c: r((x["pc_real"] < ext).mean(0)) for c, x in (("L", l), ("F", f))}
+    out["renda0"] = r(float(l["renda0"]), 1)
+    hl, hf = l["idx_hora"], f["idx_hora"]
+    out["hora"] = {"L": r(hl.mean(0), 2), "F": r(hf.mean(0), 2), "D": r((hl - hf).mean(0), 2)}
     out["pobreza_2026"] = r(float(l["renda0"]) / PR.TIPOS[h]["tam"] < lin)
     out["in_natura"] = {c: r(np.asarray(x["inkind"]).mean(0), 2) for c, x in (("L", l), ("F", f))}
     if l["comida2019"] is not None:
@@ -108,11 +111,9 @@ def stats_familia(RL, RF, h, rho):
     for c, x in (("L", l["idx"]), ("F", f["idx"]), ("D", d)):
         sus[c] = {p: r((x[:, ix] - (0 if c == "D" else 100)).mean(), 2) for p, ix in PERIODOS.items()}
     d12, d58 = d[:, [0, 1]].mean(1), d[:, 4:].mean(1)
-    sus["p_L_lidera_e_perde"] = r(((d12 > 0) & (d58 < 0)).mean())
-    sus["p_F_lidera_e_perde"] = r(((d12 < 0) & (d58 > 0)).mean())
-    m12, m58 = float(d12.mean()), float(d58.mean())
-    sus["vantagem_inicial_revertida"] = r(max(0.0, (m12 - m58) / m12)) if abs(m12) > 0.05 else None
-    sus["lider_inicial"] = "L" if m12 > 0.05 else ("F" if m12 < -0.05 else None)
+    # M6 da revisão v2: rótulo neutro — só a mudança da diferença entre os anos 1–2 e 5–8
+    sus["mudanca_D"] = r(float(d58.mean() - d12.mean()), 2)
+    sus["p_sinal_muda"] = r((np.sign(d12) != np.sign(d58)).mean())
     out["sustentabilidade"] = sus
     return out
 
@@ -188,7 +189,7 @@ def sanduiche(RL, RF):
                               for c, x in (("L", l), ("F", f), ("D", l - f))},
                   "p_L_maior_2030": r(((l - f)[:, I2030] > 0).mean())}
     teste = {}
-    for tr in PR.TIPOS_RENDA:
+    for tr in ("clt", "pj"):   # capital fora do teste (C2: renda + reavaliação, sinal sensível à Selic)
         teste[tr] = {}
         for c in ("L", "F"):
             teste[tr][c] = {}
@@ -196,9 +197,19 @@ def sanduiche(RL, RF):
                 v = {fx: cel[f"s_{fx}_{tr}"]["periodo"][c][pp] for fx, *_ in PR.FAIXAS_SANDUICHE}
                 meio = float(np.mean([v[x] for x in MEIO]))
                 pontas = [v[x] for x in PONTAS]
+                folga = meio - min(pontas)
+                veredito_s = "sim" if folga < -LIMIAR_PONTOS else ("não" if meio - max(pontas) > -LIMIAR_PONTOS and folga >= 0 else "indistinguível")
+                if veredito_s == "não" and folga < LIMIAR_PONTOS:
+                    veredito_s = "indistinguível"
                 teste[tr][c][pp] = {"meio": round(meio, 2), "ate2": v["ate2"], "50mais": v["50mais"],
-                                    "aperto": round(meio - float(np.mean(pontas)), 2), "comprimido": bool(meio < min(pontas))}
+                                    "aperto": round(meio - float(np.mean(pontas)), 2), "veredito": veredito_s}
     return {"celulas": cel, "teste": teste}
+
+
+def _estacionaria(P):
+    w, v = np.linalg.eig(P.T)
+    x = np.real(v[:, np.argmin(np.abs(w - 1))])
+    return x / x.sum()
 
 
 def veredito(por_conj, h, t):
@@ -212,8 +223,11 @@ def veredito(por_conj, h, t):
         rot, cod = "inconclusivo", "inconclusivo"
     elif min(abs(v) for v in ds.values()) >= LIMIAR_PONTOS and p_lado >= LIMIAR_P:
         rot, cod = f"robusto: favorece {'Lula' if lado == 'L' else 'Flávio'}", "robusto_" + lado
-    else:
+    elif abs(ds["central"]) > LIMIAR_PONTOS and not (0.35 <= p_lado <= 0.65):
         rot, cod = f"frágil: inclina para {'Lula' if lado == 'L' else 'Flávio'}", "fragil_" + lado
+    else:
+        # M6: sem rótulo narrativo quando a diferença é menor que 1 ponto ou P está entre 0,35 e 0,65
+        rot, cod = "sem diferença detectável", "nula"
     return {"rotulo": rot, "codigo": cod, "dif_por_conjunto": {c: round(v, 2) for c, v in ds.items()},
             "vira_em": [c for c in CONJ if sinais[c] != sinais["central"]]}
 
@@ -268,7 +282,7 @@ def _avaliar(args):
     on = {c: bool(mask >> i & 1) for i, c in enumerate(canais)}
     for c in PR.CANAIS:
         on.setdefault(c, True)
-    R = C.rodar_par(n, seed, specs, comum, on, slots=slots)
+    R = C.rodar_par(n, seed, specs, {**(comum or {}), "desemprego_binario": False}, on, slots=slots)
     if tipo_saida == "dif":
         return mask, np.stack([(R["L"]["familias"][h]["idx"] - R["F"]["familias"][h]["idx"]).mean(0) for h in TIPOS])
     return mask, np.stack([(R["L"]["familias"][h]["idx"] - R["F"]["familias"][h]["idx"]).mean(0) for h in TIPOS])
@@ -302,30 +316,43 @@ def _sp(c, path, v):
     return ("spec", c, path, v)
 
 
-TORNADO = [
-    ("R5", "Prior de credibilidade de Lula: P(crível)", [_sp("L", "regime.pi0", [0.3, 0.45, 0.25])], [_sp("L", "regime.pi0", [0.7, 0.25, 0.05])], ("0,30", "0,70")),
-    ("R5", "Prior de credibilidade de Flávio: P(crível)", [_sp("F", "regime.pi0", [0.3, 0.45, 0.25])], [_sp("F", "regime.pi0", [0.7, 0.25, 0.05])], ("0,30", "0,70")),
-    ("L1/F1", "Choque de impacto do câmbio (os dois)", [_sp("L", "regime.impacto_cambio", 0.03), _sp("F", "regime.impacto_cambio", -0.04)],
-     [_sp("L", "regime.impacto_cambio", 0.15), _sp("F", "regime.impacto_cambio", -0.14)], ("fraco", "forte")),
-    ("F6", "Intenção de Flávio de manter a regra do mínimo", [_sp("F", "minimo.p_intencao", 0.5)], [_sp("F", "minimo.p_intencao", 1.0)], ("0,5", "1,0")),
-    ("R4", "Corte acima do cortável força quebra (fechamento)", [("comum", "fechamento_k", 0.15)], [("comum", "fechamento_k", 0.5)], ("0,15", "0,5")),
-    ("R1", "Reajuste do Bolsa Família (os dois)", [_sp("L", "bolsa.p_reajuste", 0.3), _sp("F", "bolsa.p_reajuste", 0.3)],
-     [_sp("L", "bolsa.p_reajuste", 0.9), _sp("F", "bolsa.p_reajuste", 0.9)], ("0,3", "0,9")),
-    ("R1b", "Bolsa Família só para Lula alto (assimetria)", [], [_sp("L", "bolsa.p_reajuste", 0.9), _sp("F", "bolsa.p_reajuste", 0.3)], ("igual", "0,9 x 0,3")),
-    ("F9", "P(IVA de 20%)", [_sp("F", "iva.p", 0.05)], [_sp("F", "iva.p", 0.4)], ("0,05", "0,4")),
-    ("F8", "P(reverter impostos sobre o topo)", [_sp("F", "ir.p_reverte_topo", 0.0)], [_sp("F", "ir.p_reverte_topo", 0.7)], ("0", "0,7")),
-    ("E8", "Prêmio por p.p. de dívida", [("comum", "premio_divida", 0.03)], [("comum", "premio_divida", 0.33)], ("0,03", "0,33")),
-    ("M1", "Repasse do mínimo a preços", [("comum", "sm_repasse_escala", 0.4)], [("comum", "sm_repasse_escala", 2.0)], ("baixo", "alto")),
-    ("M10", "Efeito farol (informais)", [("comum", "farol_informal", 0.3)], [("comum", "farol_informal", 0.8)], ("0,3", "0,8")),
-    ("M17", "Emprego formal ao mínimo no NE", [("comum", "emprego_sm_ne", 0.0)], [("comum", "emprego_sm_ne", -0.4)], ("0", "−0,4")),
-    ("MF22", "Multiplicador de transferências", [("comum", "mult_transferencia", 0.5)], [("comum", "mult_transferencia", 1.5)], ("0,5", "1,5")),
-    ("MF21", "Multiplicador da discricionária", [("comum", "mult_discricionaria", 0.2)], [("comum", "mult_discricionaria", 1.0)], ("0,2", "1,0")),
-    ("R4b", "Abono no corte de obrigatórias", [("comum", "obrig_abono", 0.1)], [("comum", "obrig_abono", 0.5)], ("10%", "50%")),
-    ("MF30", "Tributo sobre lucro → salários", [("comum", "incidencia_lucro_salario", 0.3)], [("comum", "incidencia_lucro_salario", 0.5)], ("0,3", "0,5")),
-    ("R14", "Reação da Selic à inflação", [("comum", "taylor_pi", 0.6)], [("comum", "taylor_pi", 1.3)], ("0,6", "1,3")),
-    ("R5b", "Câmbio no regime de crise", [("comum", "fx_crise", 0.10)], [("comum", "fx_crise", 0.35)], ("+10%", "+35%")),
-    ("R4c", "Parte das promessas sem fonte que vira dívida", [("comum", "financiado_divida", 0.5)], [("comum", "financiado_divida", 0.9)], ("50%", "90%")),
-]
+def _tornado_itens():
+    itens = []
+    nomes = {"regime.pi0": ("R5", "Prior de credibilidade", ("crise mais provável", "crível mais provável")),
+             "minimo.p_intencao": ("C1", "Intenção de manter a regra do mínimo", ("0,6–0,8", "0,9–1,0")),
+             "bolsa.p_reajuste": ("R1", "Reajuste do Bolsa Família", ("0,2–0,6", "0,6–0,95")),
+             "ir.p_correcao": ("M2", "Correção da tabela do IR", ("0–0,3/ano", "0,4–0,8/ano")),
+             "fiscal.composicao": ("R4", "Composição do ajuste", ("50% obrigatórias", "5% obrigatórias")),
+             "fiscal.receita_unica": ("CC45", "Parte do ajuste em receita única", ("70%", "10%")),
+             "credito.direcionado_dfatia": ("C7", "Expansão do crédito direcionado", ("+2 p.p./ano", "−0,5 p.p./ano"))}
+    for path, fav, desf in PR.EXECUCAO_DISPUTADA:
+        cod, nome, ext = nomes[path]
+        for cand, nm in (("L", "Lula"), ("F", "Flávio")):
+            itens.append((cod, f"{nome} — {nm}", [_sp(cand, path, desf)], [_sp(cand, path, fav)], ext))
+    itens += [
+        ("L1/F1", "Choque de impacto do câmbio (os dois)", [_sp("L", "regime.impacto_cambio", 0.03), _sp("F", "regime.impacto_cambio", -0.04)],
+         [_sp("L", "regime.impacto_cambio", 0.15), _sp("F", "regime.impacto_cambio", -0.14)], ("fraco", "forte")),
+        ("F9", "P(IVA de 20%) — Flávio", [_sp("F", "iva.p", 0.05)], [_sp("F", "iva.p", 0.4)], ("0,05", "0,4")),
+        ("F8", "P(reverter impostos sobre o topo) — Flávio", [_sp("F", "ir.p_reverte_topo", 0.1)], [_sp("F", "ir.p_reverte_topo", 0.5)], ("0,1", "0,5")),
+        ("CC17", "Subsídio a combustíveis em 2027 — Lula", [_sp("L", "combustivel.subsidio_2027", 0.15)], [_sp("L", "combustivel.subsidio_2027", 0.6)], ("0,15% PIB", "0,6% PIB")),
+        ("F14", "P(PEC 12) — Flávio", [_sp("F", "trabalho.p_pec12", 0.1)], [_sp("F", "trabalho.p_pec12", 0.5)], ("0,1", "0,5")),
+    ]
+    for k, rot in [("premio_divida", "Prêmio por p.p. de dívida"), ("sm_repasse_escala", "Repasse do mínimo a preços"),
+                   ("farol_informal", "Efeito farol (informais)"), ("emprego_sm_ne", "Emprego formal ao mínimo no NE"),
+                   ("mult_transferencia", "Multiplicador de transferências"), ("mult_discricionaria", "Multiplicador da discricionária"),
+                   ("obrig_abono", "Abono no corte de obrigatórias"), ("incidencia_lucro_salario", "Tributo sobre lucro → salários"),
+                   ("taylor_pi", "Reação da Selic à inflação"), ("fx_crise", "Câmbio no regime de crise"),
+                   ("financiado_divida", "Promessa sem fonte que vira dívida"), ("topo_decil_parcela", "Parte da receita do topo paga pelo décimo"),
+                   ("cambio_renda", "Câmbio → renda (comerciáveis)"), ("achatamento_psi", "Achatamento (custo não repassado)"),
+                   ("fechamento_k", "Fechamento fiscal: P de estouro"), ("fechamento_sm", "Fechamento: sai pela regra do mínimo"),
+                   ("beta_acoes_premio", "Ações x prêmio de risco"), ("crise_aperto_p", "Pacote de emergência na crise")]:
+        sp = PR.COMUM[k]
+        lo, hi = PR._ponta(sp, "lo"), PR._ponta(sp, "hi")
+        itens.append(("comum", rot, [("comum", k, lo)], [("comum", k, hi)], (f"{lo:g}".replace(".", ","), f"{hi:g}".replace(".", ","))))
+    return itens
+
+
+TORNADO = None
 
 
 def _aplicar(ajustes, base_specs):
@@ -348,21 +375,25 @@ def _aplicar(ajustes, base_specs):
 def _tornado_job(args):
     i, lado, ajustes, n, seed = args
     com, specs = _aplicar(ajustes, PR.CANDIDATOS)
+    com["desemprego_binario"] = False
     R = C.rodar_par(n, seed, specs, com)
     return i, lado, {h: [r((R["L"]["familias"][h]["idx"][:, t] - R["F"]["familias"][h]["idx"][:, t]).mean(), 3)
                          for t in (I2030, len(ANOS) - 1)] for h in TIPOS}
 
 
 def tornado(n, seed, procs=None):
+    global TORNADO
+    TORNADO = _tornado_itens()
     jobs = []
     for i, (_, _, lo, hi, _) in enumerate(TORNADO):
         jobs += [(i, "baixo", lo, n, seed), (i, "alto", hi, n, seed)]
     with Pool(procs or min(4, os.cpu_count() or 1)) as pool:
         res = pool.map(_tornado_job, jobs)
+    base = _tornado_job((-1, "base", [], n, seed))[2]
     out = [{"id": t[0], "nome": t[1], "extremos": list(t[4])} for t in TORNADO]
     for i, lado, v in res:
         out[i][lado] = v
-    return out
+    return {"base": base, "itens": out}
 
 
 # ---------------------------------------------------------------------------
@@ -392,7 +423,11 @@ def main(argv=None):
         }
         if cj == "central":
             por_conj[cj]["faixas"] = faixas(RL, RF)
-            por_conj[cj]["sobol"] = {h: {"2030": sobol(RL, RF, h, I2030), "2034": sobol(RL, RF, h, len(ANOS) - 1)} for h in TIPOS}
+            # m1: Sobol sobre E[D | sorteios de política e macro] (sem a loteria do emprego da família)
+            RE = C.rodar_par(min(a.n, 60_000), a.seed + 5, specs, {**com, "desemprego_binario": False})
+            por_conj[cj]["sobol"] = {h: {"2030": sobol(RE["L"], RE["F"], h, I2030), "2034": sobol(RE["L"], RE["F"], h, len(ANOS) - 1)} for h in TIPOS}
+            por_conj[cj]["d_esperado"] = {h: r((RE["L"]["familias"][h]["idx"] - RE["F"]["familias"][h]["idx"]).mean(0), 3) for h in TIPOS}
+            del RE
         del R, RL, RF
         print(f"{cj}: {time.time() - t0:.1f}s", flush=True)
 
@@ -444,6 +479,9 @@ def main(argv=None):
         "shapley": shap,
         "experimento_sm": exp_sm, "canais_sm": can_sm,
         "tornado": torn,
+        "canais_premissa": ["fiscal", "sm_direto", "trabalho", "impostos", "credito"],
+        "canais_longo": ["longo_prazo"],
+        "regime_estacionario": r(_estacionaria(PR.TRANSICAO)),
         "parametros": [dict(zip(["id", "nome", "lula", "flavio", "fonte", "tipo"], p)) for p in PR.PARAMETROS],
     }
     a.saida.parent.mkdir(parents=True, exist_ok=True)

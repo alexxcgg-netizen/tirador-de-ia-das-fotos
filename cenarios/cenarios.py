@@ -84,7 +84,6 @@ CUSTO_SM = DD.custo_sm()
 SM_PP_POR_REAL = (CUSTO_SM["despesa_mi"] - CUSTO_SM["receita_mi"]) / 1000.0 / PIB_BI * 100  # p.p. do PIB por R$ 1
 MASSA_PISO = DD.massa_salarial_perto_do_piso()
 F_NE_PISO = DD.fracao_ne_no_piso_formal()
-TOPO_POR_PP = 0.3 * PIB_BI / 1000 / 3.6 * 100 / 100   # % da renda do décimo do topo por p.p. do PIB de receita sobre o topo [suposição]
 MASSA_SOBRE_PIB = 13.4 / 5.0                           # PIB / massa de rendimentos anual (~R$ 5 tri) [calc]
 
 # ---------------------------------------------------------------------------
@@ -304,6 +303,11 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
     fx_reg = np.stack([c("fx_credivel"), c("fx_meio"), c("fx_crise")], 1)
     pr_reg = np.stack([c("premio_credivel"), np.zeros(n), c("premio_crise")], 1)
     crise_div = c("crise_por_divida")
+    cas_ne, topo_parc = c("cascata_ne"), c("topo_decil_parcela")
+    dur_t, beta_eq = c("duracao_titulos"), c("beta_acoes_premio")
+    cr_p, cr_tam = c("crise_aperto_p"), c("crise_aperto_tam")
+    u_crp = np.stack([pol_u(f"crisepac_{a}") for a in ANOS], 1)
+    prem_estoque = np.zeros(n); estourou_arc = np.zeros(n, bool)
     encolh, alu_mud, plano_col = c("encolhimento"), c("aluguel_mudanca"), c("plano_coletivo")
     af_lim, af_passo = c("ajuste_forcado_limiar"), c("ajuste_forcado_passo")
     dir_sel, cr_imp, cr_res = c("direcionado_selic"), c("credito_impulso"), c("credito_ressaca")
@@ -330,7 +334,8 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
     antecip = c("antecipacao_receita")
     lacuna_ir = c("lacuna_compensacao_ir")
     unica_acum = np.zeros(n)
-    intencao = evento("regra_intencao", spec["minimo"]["p_intencao"])
+    p_int = amostrar(spec["minimo"]["p_intencao"], pol_u("p_intencao"))
+    intencao = evento("regra_intencao", p_int)
     p_bf = amostrar(spec["bolsa"]["p_reajuste"], pol_u("p_bf"))
     p_ir = amostrar(spec["ir"]["p_correcao"], pol_u("p_ir"))
     rev_topo = evento("reverte_topo", spec["ir"]["p_reverte_topo"])
@@ -409,6 +414,10 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
         if not mandato and on_f:
             gatilho = (d_prev - DIVIDA_CONS[t - 1] > af_lim) | (s_prev == 2)
             forc = np.where(gatilho, np.minimum(forc_prev + af_passo, 2.5), forc_prev)
+        elif on_f:
+            # M5: num ano de crise, qualquer vencedor pode ser forçado a um pacote de emergência
+            pacote = (st == 2) & (u_crp[:, t] < cr_p)
+            forc = np.where(pacote, np.minimum(forc_prev + cr_tam, 2.5), forc_prev)
         else:
             forc = forc_prev
         forcado[:, t] = forc
@@ -422,7 +431,10 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
         rt = rec_t * w_topo
         tet = rec_t * w_te
         # 3. regra do mínimo e fechamento (comum: corte acima do cortável força a quebra)
-        excesso_corte = np.maximum(0.0, xd + P["vegetativo"] * (t + 1) - cortavel) + xo_alvo
+        # M3: só o corte de discricionárias acima do cortável pode "estourar"; o corte planejado de obrigatórias
+        # é a composição sorteada e não é contado duas vezes
+        espaco = np.maximum(cortavel - P["vegetativo"] * (t + 1), 0.0)
+        excesso_corte = np.maximum(0.0, xd - espaco)
         rompe = np.zeros(n, bool)
         if t >= 1:
             p_estouro = np.clip(fech_k * excesso_corte, 0, 0.9)
@@ -434,6 +446,14 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
                 quebra_forcada |= pela_regra
                 regra_ok = regra_ok & ~pela_regra
         rompe_prev_bump = rompe
+        estourou_arc |= rompe
+        # depois de estourar: a discricionária fica no cortável; o excesso ou é coberto pelo fim do ganho real do
+        # mínimo (vai para obrigatórias, onde a economia do mínimo o substitui) ou não é entregue (vira dívida)
+        estourou = estourou_arc | quebra_forcada
+        exc = np.where(estourou, np.maximum(0.0, xd - espaco), 0.0)
+        xd = xd - exc
+        nao_entregue = np.where(estourou_arc, exc, 0.0)
+        xo_alvo = xo_alvo + np.where(estourou_arc, 0.0, exc)
         if "regra" in fixos:
             regra_ok = np.full(n, bool(fixos["regra"]))
         regra[:, t] = regra_ok
@@ -481,10 +501,12 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
         # conta adiada: antecipação de receitas (royalties, dívida ativa) falta em 2031–34
         dif_t = dif_t + (antecip * unica_acum / 4.0 if not mandato else 0.0)
         subs_t = (subsid27 if (t == 0 and on_i) else np.zeros(n))
+        if not on_f:
+            nao_entregue = np.zeros(n)
         if on_f:
             # ajuste entregue + forçado; economia do mínimo além da meta de obrigatórias; custos de medidas;
             # promessas sem fonte: parte vira dívida (phi), parte é coberta por cortes (já em xd/xo)
-            prim_med = (rec_t + unica_t - (lacuna_ir if ano <= 2028 else 0.0) + forc + np.maximum(0.0, sm_econ - xo_alvo) - np.maximum(sm_custo, 0.0) - bf_custo
+            prim_med = (rec_t - nao_entregue + unica_t - (lacuna_ir if ano <= 2028 else 0.0) + forc + np.maximum(0.0, sm_econ - xo_alvo) - np.maximum(sm_custo, 0.0) - bf_custo
                         - ir_custo - phi_debt * sem_fonte - subs_t - dif_t)
         else:
             prim_med = np.zeros(n)
@@ -543,6 +565,14 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
             gap_d = 2.02 * (brent / 100) * (fx[:, 0] / BASE["cambio"]) - 1
             need_g = 100 * fbg * np.maximum(gap_g, 0.0)
             need_d = 100 * fbd * np.maximum(gap_d, 0.0)
+        if t == 0:
+            fx_c = CONS["cambio"][0] / BASE["cambio"]
+            ng_c = 100 * fbg * np.maximum(1.32 * (brent / 100) * fx_c - 1, 0.0)
+            nd_c = 100 * fbd * np.maximum(2.02 * (brent / 100) * fx_c - 1, 0.0)
+            # [suposição] o Focus já embute metade do realinhamento esperado (comum aos dois)
+            focus_ja = 0.5 * (W_IPCA[IX["COMB"]] * ng_c + 0.5 * W_IPCA[IX["GLP"]] * ng_c
+                              + P["diesel_alimentos"] * W_IPCA[IX["A"]] * nd_c + P["diesel_onibus"] * W_IPCA[IX["ONI"]] * nd_c)
+            pi_s -= focus_ja[:, None]
         frac27 = cb["frac_2027"] if on_i else 1.0
         frac = frac27 if t == 0 else (1 - frac27 if t == 1 else 0.0)
         pi_s[:, IX["COMB"]] += frac * need_g
@@ -582,7 +612,7 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
         else:
             imp = np.zeros(n)
         x6g = np.where(x6, x6_g * 0.5, 0.0) * (t < 2) if on["trabalho"] else 0.0
-        juro_g = beta_r * (0.5 * dev_avg + 0.5 * dev_avg_prev) if on["juros"] else 0.0
+        juro_g = beta_r * (0.5 * (dev_avg - surp) + 0.5 * (dev_avg_prev - surp_prev)) if on["juros"] else 0.0
         # crédito às famílias: impulso no ano, ressaca defasada (1–3 anos depois)
         cr_t = expcr if (on["credito"] and mandato) else np.zeros(n)
         ressaca = sum(cred_hist[-k] for k in (1, 2, 3) if len(cred_hist) >= k) if cred_hist else 0.0
@@ -598,7 +628,8 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
         # 11. dívida
         pibn = pibn_prev * (1 + pib[:, t] / 100) * (1 + ipca[:, t] / 100)
         prim_t = CONS["primario"][t] + prim_med + P["receita_ciclica"] * tot_gap
-        i_ef = PARCELA_SELIC * sa / 100 + (1 - PARCELA_SELIC) * (ipca[:, t] / 100 + K_JURO_REAL)
+        prem_estoque = (1 - P["rolagem_premio"]) * prem_estoque + P["rolagem_premio"] * pr
+        i_ef = PARCELA_SELIC * sa / 100 + (1 - PARCELA_SELIC) * (ipca[:, t] / 100 + K_JURO_REAL + prem_estoque / 100)
         gn = pibn / pibn_prev - 1
         d_t = d_prev * (1 + i_ef) / (1 + gn) - prim_t + P["fx_divida"] * 100 * dx * (1 if on["cambio"] else 0)
         if t == 0 and on_f:
@@ -625,6 +656,22 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
 
     # salário de mercado (real-alvo com correção de erro) — comum a todos os salários fora do piso
     lw_star = np.cumsum(rr_c - phi_u[:, None] * (des - u_c) * (1 if on["emprego"] else 0), axis=1) / 100
+    # canal de longo prazo: investimento responde ao juro real longo (Selic real + prêmio) em relação ao consenso
+    if on["longo_prazo"]:
+        k_inv = c("invest_juro")
+        juro_longo = 0.5 * (dev - (ipca - CONS["ipca"][None, :])) + prem
+        inv_dev = -k_inv[:, None] * juro_longo                                   # p.p. de FBCF/PIB
+        lag = int(P["invest_defasagem"])
+        cap = np.cumsum(inv_dev, axis=1) / P["capital_produto"]                  # % do estoque de capital
+        pot = np.zeros((n, T))
+        pot[:, lag:] = P["elasticidade_capital"] * cap[:, :-lag]                 # % do PIB potencial (nível)
+        if on["impostos"]:
+            ef = c("eficiencia_iva_sem_excecoes")
+            fase_ef = np.array([max(0.0, (a - 2029) / 5.0) for a in ANOS])
+            pot = pot + np.where((iva & ~iva_unif)[:, None], ef[:, None] * fase_ef[None, :], 0.0)
+        lw_star = lw_star + pot / 100
+    else:
+        inv_dev = pot = np.zeros((n, T))
     z = np.zeros(n); zs = Z()
     for t in range(T):
         z = (1 - kappa) * z - (1 - theta) * (ipca[:, t] - CONS["ipca"][t]) / 100
@@ -648,7 +695,7 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
             if m <= 1.0:
                 wf = sm_dir * m
             else:
-                sp = _spill(m, cas50, cas23)[:, None] if on["achatamento"] else 0.0
+                sp = _spill(m, cas_ne if reg == "NE" else cas50, cas23)[:, None] if on["achatamento"] else 0.0
                 comp = (psi * (1 - cons_paga) * MASSA_PISO)[:, None] * cum_dg if (on["achatamento"] and m > 1.5) else 0.0
                 wf = m * BASE["salario_minimo"] * w_merc * np.exp((sp * cum_dg - comp) / 100)
             if m <= 2.0 and on["emprego"]:
@@ -668,12 +715,13 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
                           cons_paga, des, b_baixa, b_alta, eps_br, eps_ne, qualif, f2i, x6, x6_inf, pec12, pec_s,
                           pec_h, pec_f, bf, bf_linha, nivel_set, nivel_ssm_ne, ir_corr, idx_inss, sel_avg, ipca,
                           rev_banco, rep_banco, spread_livre, x, fx_renda, x_disc, x_obr, r_topo, rev_topo, cred_cum,
-                          fgts_desc, ob_abono, encolh, alu_mud, plano_col, nivel_ipca, ipca26)
+                          fgts_desc, ob_abono, encolh, alu_mud, plano_col, nivel_ipca, ipca26,
+                          dict(topo_parc=topo_parc, dur=dur_t, beta_eq=beta_eq, prem=prem, dev=dev))
     cesta = BASE["cesta"] * nivel_set[:, :, IX["A"]]
     regimes_p = np.stack([(s == k).mean(0) for k in range(3)], 0)
     return {
         "familias": res,
-        "macro": {"ipca": ipca, "alimentos": infl[:, :, IX["A"]], "servicos_sm": infl[:, :, IX["SSM"]], "inpc": inpc,
+        "macro": {"investimento": inv_dev, "potencial": pot, "ipca": ipca, "alimentos": infl[:, :, IX["A"]], "servicos_sm": infl[:, :, IX["SSM"]], "inpc": inpc,
                   "selic": sel, "cambio": fx, "divida": divida, "desemprego": des, "pib": pib, "primario": prim,
                   "premio": prem, "sm_real": 100 * sm / BASE["salario_minimo"] / nivel_inpc,
                   "horas_cesta": cesta / sm * BASE["horas_mes"], "ajuste_entregue": entregue,
@@ -691,7 +739,7 @@ def simular(spec: dict, n: int, seed: int, slot: str, comum: dict | None = None,
 def _familia(h, tp, n, seed, P, on, sm_dir, sm, w_merc, cum_dg, cdg, far_i, far_a, cas50, cas23, psi, cons_paga,
              des, b_baixa, b_alta, eps_br, eps_ne, qualif, f2i, x6, x6_inf, pec12, pec_s, pec_h, pec_f, bf, bf_linha,
              nivel_set, nivel_ssm_ne, ir_corr, idx_inss, sel_avg, ipca, rev_banco, rep_banco, spread_livre, x, fx_renda,
-             x_disc, x_obr, r_topo, rev_topo, cred_cum, fgts_desc, ob_abono, encolh, alu_mud, plano_col, nivel_ipca, ipca26):
+             x_disc, x_obr, r_topo, rev_topo, cred_cum, fgts_desc, ob_abono, encolh, alu_mud, plano_col, nivel_ipca, ipca26, ex):
     SM0 = BASE["salario_minimo"]
     Tn = sm.shape[1]
     cexp = np.exp(fx_renda[:, None] * tp.get("exposto_cambio", 0.0) * x) if on["cambio"] else 1.0
@@ -743,7 +791,9 @@ def _familia(h, tp, n, seed, P, on, sm_dir, sm, w_merc, cum_dg, cdg, far_i, far_
         status_desemp = U < p
         frac_sm = np.clip(np.where(p > 0, np.maximum(p_sm, 0) / p, 0), 0, 1)
         rr = tp["rr"]
-        perda = np.where(status_desemp, 1 - (frac_sm * (f2i[:, None] * 0.7 + (1 - f2i[:, None]) * rr) + (1 - frac_sm) * rr), 0.0)
+        perda_se = 1 - (frac_sm * (f2i[:, None] * 0.7 + (1 - f2i[:, None]) * rr) + (1 - frac_sm) * rr)
+        # binário (padrão: loteria do emprego da família) ou esperado (Shapley e Sobol: tira o ruído idiossincrático)
+        perda = np.where(status_desemp, perda_se, 0.0) if P.get("desemprego_binario", True) else p * perda_se
     else:
         perda = np.zeros((n, Tn))
     base_emp = (1 - tp.get("u0", 0.0) * (1 - tp.get("rr", 1.0))) if eh_trab else 1.0
@@ -769,7 +819,12 @@ def _familia(h, tp, n, seed, P, on, sm_dir, sm, w_merc, cum_dg, cdg, far_i, far_
     renda0 = (renda0_trab + liq0_formal) * base_emp
     # abono salarial (formal até 2 SM): 1 SM/ano
     if tp.get("abono"):
-        corte_ab = np.clip(ob_abono[:, None] * x_obr / 0.22, 0, 1) if on["fiscal"] else 0.0
+        # C1 da revisão v2: corte do abono por restrição de elegibilidade a partir do topo (precedente de 2024).
+        # Beneficiários: ~metade em 1 SM, o resto entre 1 e 2 SM [suposição]. Quem ganha 1 SM só perde quando o
+        # corte passa de metade do programa.
+        s_ab = np.clip(ob_abono[:, None] * x_obr / 0.22, 0, 1) if on["fiscal"] else np.zeros((n, Tn))
+        m_ab = tp.get("formal", 1.0)
+        corte_ab = np.clip((s_ab - 0.5) / 0.5, 0, 1) if m_ab <= 1.0 else (m_ab > 2 - 2 * s_ab).astype(float)
         renda = renda + sm_dir / 12 * (1 - corte_ab) * (1 - perda)
         renda0 += SM0 / 12 * base_emp
     # --- aposentadorias
@@ -794,15 +849,29 @@ def _familia(h, tp, n, seed, P, on, sm_dir, sm, w_merc, cum_dg, cdg, far_i, far_
         renda0 += 100.0
     # --- topo: perde com receita sobre o topo; ganha se a reversão vier
     if tp.get("reverte_topo") is not None and on["impostos"]:
-        topo_perda = TOPO_POR_PP * np.maximum(r_topo, 0) / 100
+        # 1 p.p. do PIB ≈ R$ 134 bi; renda anual do décimo do topo ≈ R$ 2 tri [calc]; parcela paga por ele: parâmetro
+        topo_perda = ex["topo_parc"][:, None] * PIB_BI * 0.01 / 2000.0 * np.maximum(r_topo, 0)
         renda = renda * (1 - topo_perda) * (1 + tp["reverte_topo"] * rev_topo.astype(float)[:, None] * (np.arange(Tn) >= 1)[None])
+    # --- C2 da revisão v2: marcação a mercado. Prefixados/IPCA+ perdem com alta do prêmio e da Selic (duração);
+    # ações perdem com o prêmio (beta). Entra como renda do ano (renda + reavaliação), simétrica nos dois sentidos.
+    if on["juros"]:
+        prem_, dev_ = ex["prem"], ex["dev"]
+        dprem = np.diff(np.column_stack([np.zeros(n), prem_]), axis=1)
+        ddev = np.diff(np.column_stack([np.zeros(n), dev_]), axis=1)
+        dy = dprem + 0.5 * ddev
+    else:
+        dprem = dy = np.zeros((n, Tn))
+
+    def reaval(sp_):
+        return -(1 - sp_) * 0.5 * ex["dur"][:, None] * dy / 100 - (1 - sp_) * 0.5 * ex["beta_eq"][:, None] * dprem
     # --- célula de capital: a renda é o retorno real das aplicações (pós-fixado + resto), depois do IR
     if "capital" in tp:
         sa_c = sel_avg if on["juros"] else (np.array([[(CONS["selic_fim"][t] + (BASE["selic_fim_2026"] if t == 0 else CONS["selic_fim"][t - 1])) / 2 for t in range(Tn)]]) + 0 * sel_avg)
         sp_ = tp["pos_fixado"]
         ret_c = sp_ * (sa_c * 0.85 - ipca) + (1 - sp_) * ((ipca + 5.5) * 0.85 - ipca)
         ret_c0 = sp_ * (BASE["selic_media_2026"] * 0.85 - 5.0) + (1 - sp_) * ((5.0 + 5.5) * 0.85 - 5.0)
-        renda = renda + tp["capital"] * SM0 * nivel_ipca * ret_c / ret_c0 * cexp
+        riqueza = tp["capital"] * SM0 * 12 / (ret_c0 / 100)
+        renda = renda + riqueza * nivel_ipca * (ret_c / 100 + reaval(sp_)) / 12
         renda0 += tp["capital"] * SM0
     # --- Lei 15.270 (imposto mínimo e retenção de dividendos): vigente para os dois; a carga efetiva é a
     # estatutária vezes (1 − adaptação); se a reversão vier (programa), a carga some a partir de 2028
@@ -819,7 +888,7 @@ def _familia(h, tp, n, seed, P, on, sm_dir, sm, w_merc, cum_dg, cdg, far_i, far_
         sa = sel_avg if on["juros"] else (np.array([[(CONS["selic_fim"][t] + (BASE["selic_fim_2026"] if t == 0 else CONS["selic_fim"][t - 1])) / 2 for t in range(Tn)]]) + 0 * sel_avg)
         ret = 0.6 * (sa * 0.85 - ipca) + 0.4 * ((ipca + 5.5) * 0.85 - ipca)
         ret0 = 0.6 * (BASE["selic_media_2026"] * 0.85 - 5.0) + 0.4 * ((5.0 + 5.5) * 0.85 - 5.0)
-        fin_r = ativos * nivel_ipca * ret / 100 / 12
+        fin_r = ativos * nivel_ipca * (ret / 100 + reaval(0.6)) / 12
         renda = renda + fin_r
         renda0 += ativos * ret0 / 100 / 12
     # --- serviço da dívida: variação por Selic, spread e repactuação
@@ -883,7 +952,14 @@ def _familia(h, tp, n, seed, P, on, sm_dir, sm, w_merc, cum_dg, cdg, far_i, far_
     comida2019 = None
     if ("aposentadoria_piso" in tp) or (tp.get("formal") == 1.0):
         comida2019 = 100 * (sm_dir / BASE["sm_2019"]) / (BASE["alim_2019_2026"] * nivel_set[:, :, IX["A"]])
-    return {"idx": idx, "idx_vivido": idx_viv, "pc_real": pc_real, "inkind": inkind, "renda0": renda0,
+    # índice por hora trabalhada (R15): fim da 6x1 (44 → 40 h, mesma renda) e contrato por hora (menos horas)
+    horas = np.ones((n, Tn))
+    if tp.get("x6") and on["trabalho"]:
+        horas = horas * np.where(x6[:, None], np.where(np.arange(Tn)[None] >= 1, 40 / 44, 42 / 44), 1.0)
+    if isinstance(fator_pec, np.ndarray):
+        horas = horas * fator_pec
+    idx_hora = idx / horas
+    return {"idx": idx, "idx_vivido": idx_viv, "idx_hora": idx_hora, "pc_real": pc_real, "inkind": inkind, "renda0": renda0,
             "comida2019": comida2019}
 
 

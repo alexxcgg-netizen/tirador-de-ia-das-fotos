@@ -149,6 +149,11 @@ ul.lim li { margin-bottom: 6px; }
 .chip-l { color: var(--text); border-bottom: 2px solid var(--lula); }
 .chip-f { color: var(--text); border-bottom: 2px solid var(--flavio); }
 .erro { padding: 16px; }
+@media (max-width: 560px) { header.top { position: static; } }
+.veredito-geral { font-size: 16px; font-weight: 650; margin: 10px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--warn-bg); border: 1px solid var(--warn-border); }
+@media (max-width: 760px) { .tbl-wrap.card::before { content: "← deslize para ver mais colunas →"; display: block; font-size: 11px; color: var(--text-3); margin-bottom: 4px; } }
+.pill.prem { border-style: dashed; border-color: var(--warn-border); background: var(--warn-bg); color: var(--text); }
+.badge.nula { color: var(--text-2); }
 .banner { border: 2px solid var(--warn-border); background: var(--warn-bg); border-radius: 12px; padding: 14px 16px; margin-top: 16px; }
 .banner h2 { font-size: 16px; margin: 0 0 6px; }
 .banner p { margin: 4px 0; font-size: 14px; }
@@ -195,7 +200,7 @@ ul.lim li { margin-bottom: 6px; }
 @media (max-width: 760px) { .expl { grid-template-columns: 1fr; } }
 .expl .card p { margin: 4px 0; font-size: 13.5px; }
 .expl .card h3 { font-size: 14px; }
-.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
 @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .kp { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; min-width: 0; }
 .kp .t { font-size: 12px; color: var(--text-2); }
@@ -223,10 +228,11 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
   <p class="lead">Com Lula ou com Flávio Bolsonaro, quanto a renda de cada tipo de família compraria, ano a ano, até 2034?</p>
   <p class="sub">Simulação Monte Carlo (<span id="m-n">200 mil</span> trajetórias por vencedor e por conjunto de hipóteses) do <b>poder de compra real</b>: renda disponível (depois de impostos e da variação do serviço da dívida) dividida pelo preço da cesta de consumo daquela família (POF). Índice 2026 = 100. Os dois vencedores passam pelas <b>mesmas equações e pelos mesmos choques externos</b>; só muda o programa de cada um e a probabilidade de executá-lo.</p>
 
+  <p class="veredito-geral" id="veredito-geral" role="status">Carregando o veredito…</p>
   <div class="banner" role="note">
     <h2>São cenários de modelo, não previsões</h2>
     <p>Nenhuma instituição publicou inflação, renda ou emprego condicionais ao vencedor. Tudo aqui é derivado de elasticidades publicadas e de hipóteses explícitas, várias sem fonte direta. O objetivo é separar o que os dados sustentam do que é narrativa, com <b>a mesma régua para os dois lados</b>. Quando o sinal da diferença muda conforme hipóteses razoáveis, a página diz <span class="badge inc">inconclusivo</span>.</p>
-    <details open><summary><b>O que mudou da v1 para a v2</b> (a partir da revisão cética da v1)</summary>
+    <details><summary><b>O que mudou da v1 para a v2</b> (a partir da revisão cética da v1)</summary>
       <ul>
         <li><b>Salário mínimo em equilíbrio geral</b>: além do ganho direto, entram repasse a preços (serviços intensivos em mínimo), efeito farol nos informais, cascata e achatamento acima do piso, perda de emprego formal onde o mínimo "morde" mais (Nordeste) e custo fiscal de R$ 413,2 mi por R$ 1.</li>
         <li><b>Bug corrigido</b>: a regra do mínimo usava o PIB de t−1; agora usa o de t−2 (Lei 14.663), com piso de 0,6% e teto de 2,5% até 2030.</li>
@@ -237,6 +243,8 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
         <li><b>Efeito sanduíche</b>: matriz de 6 faixas × 3 tipos de renda (CLT, PJ/lucros, capital) com imposto direto, serviços públicos, cesta, exposição e capacidade de adaptação.</li>
         <li><b>Crédito e contas adiadas</b>: crédito direcionado (Selic mais alta para o crédito livre), ressaca do crédito às famílias, tributo implícito do FGTS, receitas únicas que somem depois de 2028.</li>
         <li><b>Horizonte até 2034</b> e resultados <b>ano a ano</b>, para separar o que melhora nos 2 primeiros anos do que se sustenta (e o que é conta adiada).</li>
+        <li><b>Canal de longo prazo</b> (premissa, faixa larga): ajuste crível → prêmio e juro real menores → mais investimento → produto potencial e salários, com defasagem de 3 anos ou mais; numa crise, o contrário. O mesmo mapa vale para os dois.</li>
+        <li><b>Revisão independente da v2 incorporada</b>: mesma intenção de manter a regra do mínimo para os dois (o próprio governo mudou a regra em 2024); corte do abono por restrição a partir do topo; marcação a mercado da riqueza (topo e capital perdem numa crise); conjuntos pró-Lula e pró-Flávio espelhados; mesma probabilidade de corrigir a tabela do IR; fechamento fiscal sem dupla contagem; prêmio também na dívida não-Selic e pacote de emergência na crise; rótulos só acima de 1 ponto.</li>
         <li><b>Robustez</b>: quatro conjuntos de hipóteses, decomposição de Shapley por canal, tornado, índices de Sobol e veredito por família. Nova camada <b>medido × vivido</b>.</li>
       </ul>
     </details>
@@ -313,7 +321,7 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
 
   <section id="sustentabilidade">
     <h2>Sustentabilidade: o ganho dos 2 primeiros anos se mantém?</h2>
-    <p class="sub">Ganho médio do índice (pontos acima de 2026) nos anos 1–2 (2027–28), 3–4 (2029–30) e 5–8 (2031–34), no conjunto escolhido com o prior padrão. Depois de 2030 quem governa é desconhecido: valem as leis e dívidas herdadas e uma regra comum de ajuste forçado se a dívida passar do limiar. "Vantagem inicial devolvida" é quanto da vantagem média dos anos 1–2 some nos anos 5–8 (100% = some toda).</p>
+    <p class="sub">Ganho médio do índice (pontos acima de 2026) nos anos 1–2 (2027–28), 3–4 (2029–30) e 5–8 (2031–34), no conjunto escolhido com o prior padrão. Depois de 2030 quem governa é desconhecido: valem as leis e dívidas herdadas e uma regra comum de ajuste forçado se a dívida passar do limiar. "Mudança da diferença" é a diferença L − F média dos anos 5–8 menos a dos anos 1–2: mostra se a distância entre os cenários cresce ou diminui com o tempo. Ela mistura efeitos que se dissipam (o choque de câmbio precificado pelo mercado no início) com contas adiadas (receitas únicas, ressaca do crédito); não é, sozinha, prova de "ganho falso" de nenhum lado.</p>
     <div class="card tbl-wrap"><table id="tab-sus"></table></div>
     <div class="card tbl-wrap" style="margin-top:12px"><table id="tab-ev"></table></div>
   </section>
@@ -332,7 +340,7 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
     </div>
     <div class="card tbl-wrap" style="margin-top:12px"><table id="tab-sand"></table></div>
     <div class="grid g2" style="margin-top:12px">
-      <div class="card"><h3>Aperto econômico (o que o modelo mede)</h3><p class="sub" style="margin:0">O mecanismo mais claro de aperto do meio é o <b>arrasto de faixa do IR</b>: a isenção de R$ 5 mil e a tabela não são indexadas, então a renda nominal que só acompanha a inflação paga mais imposto (R$ 10 mil/mês: alíquota efetiva de 10,8% em 2016, 15,7% em 2026 e ~17,2% em 2030 sem correção). Quem está perto de R$ 5–7,35 mil perde o desconto da Lei 15.270 aos poucos. A Lei 15.270 não aumentou o IR de nenhum CLT puro, e o imposto mínimo atinge ~141 mil pessoas, quase todas com renda de dividendos, com repasse a preços estimado em ~0 (no máximo 0,01–0,03 p.p. de IPCA). No modelo, a correção da tabela é um evento sorteado com prior por posição declarada (Lula: política de correção do art. 6º, P ~0,3 até 2027; Flávio: nenhuma proposta de correção integral encontrada). As diferenças entre faixas ficam abaixo de 1 ponto: há aperto, mas pequeno perto da incerteza.</p></div>
+      <div class="card"><h3>Aperto econômico (o que o modelo mede)</h3><p class="sub" style="margin:0">O mecanismo mais claro de aperto do meio é o <b>arrasto de faixa do IR</b>: a isenção de R$ 5 mil e a tabela não são indexadas, então a renda nominal que só acompanha a inflação paga mais imposto (R$ 10 mil/mês: alíquota efetiva de 10,8% em 2016, 15,7% em 2026 e ~17,2% em 2030 sem correção). Quem está perto de R$ 5–7,35 mil perde o desconto da Lei 15.270 aos poucos. A Lei 15.270 não aumentou o IR de nenhum CLT puro, e o imposto mínimo atinge ~141 mil pessoas, quase todas com renda de dividendos, com repasse a preços estimado em ~0 (no máximo 0,01–0,03 p.p. de IPCA). No modelo, a correção da tabela é um evento sorteado com <b>o mesmo prior para os dois</b> (5–40% por ano): nenhum dos dois propôs indexar as faixas acima de R$ 7.350, e nenhum governo corrigiu a tabela inteira desde 2015. A assimetria fica só nos conjuntos pró-Lula e pró-Flávio. As diferenças entre faixas ficam abaixo de 1 ponto: há aperto, mas pequeno perto da incerteza.</p></div>
       <div class="card"><h3>Sanduíche eleitoral (o que as pesquisas mostram)</h3><p class="sub" style="margin:0"><b>Evidência fraca ou ausente até agora.</b> Nas pesquisas por renda, o swing contra Lula de 2022 para 2026 é maior <i>acima</i> de 5 SM, e não na faixa de 2–5 SM; nessa faixa, a desaprovação caiu de 47% para 39% depois da isenção do IR. A faixa de 5–10 SM não é identificável nas pesquisas (aparece somada a outras), embora a aprovação ali tenha sido a mais fraca em dez/2025. Ou seja: o aperto econômico do meio existe no modelo, mas a "assinatura" eleitoral do sanduíche não aparece nos dados. Fonte: <code>sanduiche_eleitoral.md</code>. Nada disso muda a previsão eleitoral calibrada do painel.</p></div>
     </div>
     <details><summary>Premissas da matriz (suposições a calibrar com as notas de incidência)</summary><div class="tbl-wrap"><table id="tab-sand-par"></table></div></details>
@@ -385,7 +393,7 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
     <p class="sub" id="d-torn"></p>
     <div class="grid g2">
       <div class="card"><h3>Tornado (uma hipótese por vez, conjunto central)</h3><div class="legend"><span><i class="dot n"></i>hipótese no extremo baixo</span><span><i class="dot a"></i>no extremo alto</span></div><div class="bars" id="torn"></div></div>
-      <div class="card"><h3>Índices de Sobol de 1ª ordem (variância da diferença)</h3><p class="sub" style="margin:0 0 6px">Fração da variância da diferença pareada explicada por cada sorteio sozinho (estimador por partição sobre a simulação principal). O resto é choque idiossincrático (desemprego da família), comum a quase tudo, e interações.</p><div class="bars" id="sobol"></div></div>
+      <div class="card"><h3>Índices de Sobol de 1ª ordem (variância da diferença)</h3><p class="sub" style="margin:0 0 6px">Fração da variância da diferença esperada (sem a loteria do emprego da família) explicada por cada sorteio sozinho (estimador por partição, 60 mil simulações). O resto são choques comuns e interações.</p><div class="bars" id="sobol"></div></div>
     </div>
   </section>
 
@@ -395,6 +403,7 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
     <div class="legend"><span><i class="dot l"></i>Lula vence</span><span><i class="dot f"></i>Flávio vence</span></div>
     <div class="grid g2" id="macro-grid"></div>
     <div class="card" style="margin-top:12px"><h3>Probabilidade de cada regime, por ano</h3>
+      <p class="sub" id="d-reg" style="margin:0 0 6px"></p>
       <div class="legend"><span><i class="dot" style="background:#3f8f5f"></i>crível</span><span><i class="dot n"></i>meio-termo</span><span><i class="dot" style="background:#b8452f"></i>crise</span></div>
       <div class="grid g2"><div class="chart-box short"><canvas id="c-reg-L" role="img" aria-label="Regimes, Lula"></canvas></div><div class="chart-box short"><canvas id="c-reg-F" role="img" aria-label="Regimes, Flávio"></canvas></div></div>
     </div>
@@ -418,7 +427,7 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
         <li><b>Famílias.</b> Arquétipos ancorados na PNADC, POF e SCR, não microdados: valores ilustrativos, marcados como suposição. Desemprego binário (cíclico por grupo e pelo mínimo), equivalente-certeza CRRA (ρ = 1,5) e P(pobreza) com linha de R$ 700 per capita.</li>
         <li><b>Limitações.</b> Sem efeitos de longo prazo das reformas (produtividade), sem patrimônio (bolsa, imóveis), sem BPC como família separada, sem tarifas dos EUA nem acordo com a UE, sem composição exata dos cortes (nenhum dos planos detalha). Depois de 2030 o governo é desconhecido. As probabilidades valem dentro das hipóteses.</li>
         <li><b>Confiança baixa, usada só como faixa larga.</b> Prêmio da Selic causado pelo crédito direcionado (~1,1 p.p. no nível, 0,5–1,9; um estudo acha ~0); fração "receita única" do ajuste de cada um; lacuna da compensação do IR (R$ 10,5 bi arrecadados contra R$ 28 bi de renúncia em 2026, número que muda com a declaração de 2027); defasagem dos combustíveis (Abicom, entidade interessada); itens marcados "de memória" ou "não reverificado" nas notas (histórico de 2019–22) não entram como número no modelo.</li>
-        <li><b>Matriz sanduíche.</b> Células representativas (renda no meio de cada faixa), não microdados. A renda "de capital" é o retorno real das aplicações: cai nos dois cenários quando a Selic se normaliza e sobe com Selic alta. Faixa de até 2 SM com renda de capital é rara (mostrada por completude). Carga do imposto mínimo e capacidade de adaptação são suposições até a nota de incidência do IR.</li>
+        <li><b>Matriz sanduíche.</b> Células representativas (renda no meio de cada faixa), não microdados. A renda "de capital" é o retorno real das aplicações: cai nos dois cenários quando a Selic se normaliza e sobe com Selic alta. Faixa de até 2 SM com renda de capital é rara (mostrada por completude). A coluna de capital inclui a reavaliação do patrimônio (marcação a mercado) e fica fora do teste do sanduíche. Carga do imposto mínimo e capacidade de adaptação são suposições até a nota de incidência do IR.</li>
         <li><b>Ilusão fiscal (mesma régua).</b> O primário do modelo é o efetivo, não o "para a meta": as deduções (R$ 64,7–87 bi em 2027, IFI) não somem. Receitas únicas melhoram 2027–28 e faltam depois; antecipação de royalties e dívida ativa vira custo em 2031–34. Vale para os dois programas, com fração diferente para cada um.</li>
       </ul>
     </div>
@@ -536,9 +545,19 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
     if (!todos) return { cod: "inc", txt: "inconclusivo", vira: vira, ds: ds };
     var minAbs = Math.min.apply(null, ordem.map(function (c) { return Math.abs(ds[c]); }));
     if (minAbs >= D.meta.limiar_pontos && p >= D.meta.limiar_p) return { cod: "rob-" + lado, txt: "robusto: favorece " + NOME[lado], vira: vira, ds: ds };
-    return { cod: "fra-" + lado, txt: "frágil: inclina para " + NOME[lado], vira: vira, ds: ds };
+    if (Math.abs(ds.central) > D.meta.limiar_pontos && (p < 0.35 || p > 0.65)) return { cod: "fra-" + lado, txt: "frágil: inclina para " + NOME[lado], vira: vira, ds: ds };
+    return { cod: "nula", txt: "sem diferença detectável", vira: vira, ds: ds };
   }
   function badge(v) { return "<span class='badge " + (v.cod === "inc" ? "inc" : v.cod) + "'>" + esc(v.txt) + "</span>"; }
+  function rs(h, d) { var r0 = D.resultados[conj].familias[h].renda0; return r0 ? "≈ R$ " + fmtS(d / 100 * r0, 0) + "/mês" : ""; }
+  function renderVeredito() {
+    var t = ti(), tipos = Object.keys(D.tipos), cont = {};
+    tipos.forEach(function (h) { var v = veredito(h, t).txt; cont[v] = (cont[v] || 0) + 1; });
+    var ks = Object.keys(cont);
+    document.getElementById("veredito-geral").innerHTML = "Veredito em " + ano + " (" + esc(D.conjuntos[conj].nome) + "): " +
+      (ks.length === 1 ? "todos os " + tipos.length + " tipos de família: <b>" + esc(ks[0]) + "</b>" : ks.map(function (k) { return cont[k] + " × " + esc(k); }).join(" · ")) +
+      ". Nenhum tipo de família fica melhor com um dos dois de forma que resista às hipóteses razoáveis.";
+  }
 
   // ---------- controles
   function seg(id, itens, atual, cb) {
@@ -644,9 +663,10 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
       var r0 = res(h, t), F = R().familias[h], v = veredito(h, t);
       var faixa = function (b) { return b[0] == null ? "" : "<span class='sub2'>[" + fmtN(b[0]) + "; " + fmtN(b[1]) + "]</span>"; };
       var faixaS = function (b) { return b[0] == null ? "" : "<span class='sub2'>[" + fmtS(b[0]) + "; " + fmtS(b[1]) + "]</span>"; };
-      return "<tr" + (h === tipo ? " class='sel'" : "") + "><td class='l'>" + esc(D.tipos[h].nome) + "</td>" +
+      var nota = (h === "topo") ? "<span class='sub2'>renda + reavaliação do patrimônio (marcação a mercado)</span>" : "";
+      return "<tr" + (h === tipo ? " class='sel'" : "") + "><td class='l'>" + esc(D.tipos[h].nome) + nota + "</td>" +
         "<td>" + fmtN(r0.L) + faixa(r0.Lb) + "</td><td>" + fmtN(r0.F) + faixa(r0.Fb) + "</td>" +
-        "<td><b>" + fmtS(r0.D, 2) + "</b>" + faixaS(r0.Db) + "</td><td>" + fmtP(r0.pL) + "</td>" +
+        "<td><b>" + fmtS(r0.D, 2) + "</b><span class='sub2'>" + rs(h, r0.D) + "</span>" + faixaS(r0.Db) + "</td><td>" + fmtP(r0.pL) + "</td>" +
         "<td>" + fmtN(F.ce.L[t]) + " / " + fmtN(F.ce.F[t]) + "</td>" +
         "<td>" + fmtP(F.pobreza.L[t]) + " / " + fmtP(F.pobreza.F[t]) + "</td>" +
         "<td class='l'>" + badge(v) + (v.vira.length ? "<span class='sub2'>vira em: " + v.vira.map(function (c) { return esc(D.conjuntos[c].nome); }).join(", ") + "</span>" : "") + "</td></tr>";
@@ -658,13 +678,14 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
     document.getElementById("t-fam").textContent = D.tipos[tipo].nome;
     var v = veredito(tipo, t);
     var sh = D.shapley[tipo].canais, top = Object.keys(sh).sort(function (a, b) { return Math.abs(sh[b][t]) - Math.abs(sh[a][t]); }).slice(0, 2);
-    document.getElementById("d-fam").innerHTML = "Em " + ano + ": diferença média " + fmtS(r0.D, 2) + " ponto(s), conjunto " + esc(D.conjuntos[conj].nome) + ". " + badge(v) +
+    document.getElementById("d-fam").innerHTML = "Em " + ano + ": diferença média " + fmtS(r0.D, 2) + " ponto(s) (" + rs(tipo, r0.D) + " em reais de 2026), conjunto " + esc(D.conjuntos[conj].nome) + ". " + badge(v) +
       ". Canais que mais pesam (conjunto central): " + top.map(function (c) { return esc(D.canal_nome[c]) + " (" + fmtS(sh[c][t], 2) + ")"; }).join("; ") + "." +
       (F.pobreza_2026 ? " Esta família já está abaixo da linha de pobreza em 2026." : "");
     var k = [
       ["Índice " + ano + " — Lula", fmtN(r0.L), "faixa " + (r0.Lb[0] == null ? "–" : fmtN(r0.Lb[0]) + "–" + fmtN(r0.Lb[1]))],
       ["Índice " + ano + " — Flávio", fmtN(r0.F), "faixa " + (r0.Fb[0] == null ? "–" : fmtN(r0.Fb[0]) + "–" + fmtN(r0.Fb[1]))],
       ["Medido × vivido " + ano + " (L / F)", fmtN(F.vivido.L.media[t]) + " / " + fmtN(F.vivido.F.media[t]), "renda livre depois da dívida"],
+      ["Por hora trabalhada " + ano + " (L / F)", fmtN(F.hora.L[t]) + " / " + fmtN(F.hora.F[t]), "6x1 e contrato por hora mudam as horas"],
       ["Serviços públicos perdidos " + ano, fmtN(F.in_natura.L[t], 2) + "% / " + fmtN(F.in_natura.F[t], 2) + "%", "da renda, por cortes (L / F)"]
     ];
     document.getElementById("kpis").innerHTML = k.map(function (x) { return "<div class='kp'><div class='t'>" + esc(x[0]) + "</div><div class='v'>" + x[1] + "</div><div class='t'>" + esc(x[2]) + "</div></div>"; }).join("");
@@ -692,16 +713,14 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
     var per = [["anos_1_2", "anos 1–2"], ["anos_3_4", "anos 3–4"], ["anos_5_8", "anos 5–8"]];
     var rows = Object.keys(D.tipos).map(function (h) {
       var s = R().familias[h].sustentabilidade;
-      var lid = s.lider_inicial ? NOME[s.lider_inicial] : "—";
       return "<tr" + (h === tipo ? " class='sel'" : "") + "><td class='l'>" + esc(D.tipos[h].curto) + "</td>" +
         per.map(function (p) { return "<td>" + fmtS(s.L[p[0]]) + " / " + fmtS(s.F[p[0]]) + "</td>"; }).join("") +
         per.map(function (p) { return "<td><b>" + fmtS(s.D[p[0]], 2) + "</b></td>"; }).join("") +
-        "<td>" + esc(lid) + "</td><td>" + (s.vantagem_inicial_revertida == null ? "–" : (s.vantagem_inicial_revertida > 1 ? "toda, e inverte" : Math.round(s.vantagem_inicial_revertida * 100) + "%")) + "</td>" +
-        "<td>" + fmtP(s.p_L_lidera_e_perde) + " / " + fmtP(s.p_F_lidera_e_perde) + "</td></tr>";
+        "<td>" + fmtS(s.mudanca_D, 2) + "</td><td>" + fmtP(s.p_sinal_muda) + "</td></tr>";
     }).join("");
     document.getElementById("tab-sus").innerHTML = "<caption>Ganho médio do índice por período (Lula / Flávio) e diferença L − F</caption><thead><tr><th>Família</th>" +
       per.map(function (p) { return "<th>" + p[1] + "<br><span class='muted'>L / F</span></th>"; }).join("") + per.map(function (p) { return "<th>L − F<br><span class='muted'>" + p[1] + "</span></th>"; }).join("") +
-      "<th>Lidera nos anos 1–2</th><th>Vantagem inicial devolvida</th><th>P(lidera cedo e perde depois)<br><span class='muted'>Lula / Flávio</span></th></tr></thead><tbody>" + rows + "</tbody>";
+      "<th>Mudança da diferença<br><span class='muted'>(5–8) − (1–2)</span></th><th>P(sinal da diferença muda)</th></tr></thead><tbody>" + rows + "</tbody>";
     var E = R().macro.eventos;
     var ev = [["crise_ate_2030", "P(algum ano de crise de credibilidade até 2030)"], ["arcabouco_rompido_2030", "P(romper o arcabouço até 2030 por falta de espaço)"],
       ["quebra_forcada", "P(fechamento fiscal derruba a regra do mínimo até 2034)"], ["regra_sm_2030", "P(regra do mínimo vigente em 2030)"],
@@ -738,10 +757,12 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
       options: { scales: { y: { ticks: { callback: function (v) { return fmtS(v, 1); } }, title: { display: true, text: "pontos acima de 2026", color: css("--text-3") } } },
         plugins: { tooltip: { callbacks: { label: function (it) { return it.dataset.label + ": " + fmtS(it.parsed.y, 2); } } } } } });
     var te = S.teste[trSel];
-    var frase = function (c) { var x = te[c][per]; return "<p><span class='chip-" + c.toLowerCase() + "'>" + NOME[c] + " vence</span>: meio (2–20 SM) " + fmtS(x.meio, 2) + "; até 2 SM " + fmtS(x.ate2, 2) + "; 50+ SM " + fmtS(x["50mais"], 2) + ". " + (x.comprimido ? "<b>O meio fica abaixo das duas pontas.</b>" : "O meio não fica abaixo das duas pontas.") + "</p>"; };
-    document.getElementById("txt-sand").innerHTML = frase("L") + frase("F") + "<p class='muted' style='font-size:12.5px'>Comparação entre faixas do mesmo vencedor (não entre vencedores). Diferenças de menos de 1 ponto entre faixas estão dentro da incerteza do modelo.</p>";
-    document.getElementById("tab-sand-conj").innerHTML = "<caption>Meio abaixo das duas pontas? (" + esc(def.tipos_renda[trSel]) + ", " + PER_NOME[per] + ")</caption><thead><tr><th>Conjunto</th><th>Lula vence</th><th>Flávio vence</th></tr></thead><tbody>" +
-      D.ordem_conjuntos.map(function (cj) { var t2 = D.resultados[cj].sanduiche.teste[trSel]; var f = function (c) { var x = t2[c][per]; return (x.comprimido ? "<b>sim</b>" : "não") + " <span class='muted'>(" + fmtS(x.aperto, 1) + ")</span>"; };
+    if (!te) { document.getElementById("txt-sand").innerHTML = "<p>A renda de capital fica fora do teste do sanduíche: ela é renda + reavaliação do patrimônio, dominada pela Selic e pelo prêmio de risco, e não pelo IR e pelos preços.</p>"; document.getElementById("tab-sand-conj").innerHTML = ""; }
+    var VS = { "sim": "<b>sim: o meio fica mais de 1 ponto abaixo das duas pontas</b>", "não": "não: o meio fica acima das pontas", "indistinguível": "indistinguível (menos de 1 ponto de distância)" };
+    var frase = function (c) { var x = te[c][per]; return "<p><span class='chip-" + c.toLowerCase() + "'>" + NOME[c] + " vence</span>: meio (2–20 SM) " + fmtS(x.meio, 2) + "; até 2 SM " + fmtS(x.ate2, 2) + "; 50+ SM " + fmtS(x["50mais"], 2) + ". Meio espremido? " + VS[x.veredito] + ".</p>"; };
+    if (te) document.getElementById("txt-sand").innerHTML = frase("L") + frase("F") + "<p class='muted' style='font-size:12.5px'>Comparação entre faixas do mesmo vencedor (não entre vencedores). Diferenças de menos de 1 ponto entre faixas estão dentro da incerteza do modelo.</p>";
+    if (te) document.getElementById("tab-sand-conj").innerHTML = "<caption>Meio abaixo das duas pontas? (" + esc(def.tipos_renda[trSel]) + ", " + PER_NOME[per] + ")</caption><thead><tr><th>Conjunto</th><th>Lula vence</th><th>Flávio vence</th></tr></thead><tbody>" +
+      D.ordem_conjuntos.map(function (cj) { var t2 = D.resultados[cj].sanduiche.teste[trSel]; var f = function (c) { var x = t2[c][per]; return (x.veredito === "sim" ? "<b>sim</b>" : x.veredito) + " <span class='muted'>(" + fmtS(x.aperto, 1) + ")</span>"; };
         return "<tr><td class='l'>" + esc(D.conjuntos[cj].nome) + "</td><td>" + f("L") + "</td><td>" + f("F") + "</td></tr>"; }).join("") + "</tbody>";
     var trs = Object.keys(def.tipos_renda);
     document.getElementById("tab-sand").innerHTML = "<caption>Variação média (pontos) no período: Lula / Flávio e diferença L − F</caption><thead><tr><th>Faixa</th>" +
@@ -752,13 +773,14 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
   }
   function renderShapley() {
     var t = ti(), S = D.shapley[tipo], tot = S.total[t];
-    document.getElementById("d-shap").innerHTML = "Decomposição de Shapley da diferença média Lula − Flávio de <b>" + esc(D.tipos[tipo].curto) + "</b> em " + ano + " (conjunto central, " + fmtN(D.meta.n_shapley, 0) + " simulações por coalizão, todas as 2<sup>" + D.canais.length + "</sup> combinações de canais ligados/desligados). Cada canal recebe sua contribuição média, com as interações repartidas de forma justa; a soma é exatamente a diferença total (" + fmtS(tot, 2) + "). Barra para a direita: o canal deixa a renda maior no cenário Lula; para a esquerda, no cenário Flávio. Nenhum canal tem sinal fixo: o sinal sai dos programas e das hipóteses.";
-    var it = D.canais.map(function (c) { return { nome: esc(D.canal_nome[c]), v: S.canais[c][t] }; }).sort(function (a, b) { return Math.abs(b.v) - Math.abs(a.v); });
+    document.getElementById("d-shap").innerHTML = "Decomposição de Shapley da diferença média Lula − Flávio de <b>" + esc(D.tipos[tipo].curto) + "</b> em " + ano + " (conjunto central, " + fmtN(D.meta.n_shapley, 0) + " simulações por coalizão, todas as 2<sup>" + D.canais.length + "</sup> combinações de canais ligados/desligados). Cada canal recebe sua contribuição média, com as interações repartidas de forma justa; a soma é exatamente a diferença total da decomposição (" + fmtS(tot, 2) + "). Ela usa o risco de desemprego esperado (sem a loteria do emprego da família) e menos simulações; por isso pode diferir um pouco da média da tabela (" + fmtS(R().familias[tipo].D.media[t], 2) + "). Barras marcadas <span class='pill prem'>premissa de execução</span> dependem de suposições sobre como cada programa seria executado (composição dos cortes, receitas únicas, aprovação de promessas), não de um mecanismo econômico medido. Barra para a direita: o canal deixa a renda maior no cenário Lula; para a esquerda, no cenário Flávio. Nenhum canal tem sinal fixo: o sinal sai dos programas e das hipóteses.";
+    var prem = D.canais_premissa || [];
+    var it = D.canais.map(function (c) { return { nome: esc(D.canal_nome[c]) + (prem.indexOf(c) >= 0 && Math.abs(S.canais[c][t]) > 0.1 ? " <span class='pill prem'>premissa de execução</span>" : "") + ((D.canais_longo || []).indexOf(c) >= 0 ? " <span class='pill prem'>premissa de longo prazo</span>" : ""), v: S.canais[c][t] }; }).sort(function (a, b) { return Math.abs(b.v) - Math.abs(a.v); });
     barras("shap", it);
-    var pos = it.filter(function (x) { return x.v > 0.05; }), neg = it.filter(function (x) { return x.v < -0.05; });
+    var pos = it.filter(function (x) { return x.v > 0.25; }), neg = it.filter(function (x) { return x.v < -0.25; });
     document.getElementById("txt-shap").innerHTML = (pos.length ? "<p><span class='chip-l'>A favor do cenário Lula</span>: " + pos.map(function (x) { return x.nome + " (" + fmtS(x.v, 2) + ")"; }).join("; ") + ".</p>" : "") +
       (neg.length ? "<p><span class='chip-f'>A favor do cenário Flávio</span>: " + neg.map(function (x) { return x.nome + " (" + fmtS(x.v, 2) + ")"; }).join("; ") + ".</p>" : "") +
-      (!pos.length && !neg.length ? "<p>Nenhum canal passa de 0,05 ponto.</p>" : "");
+      (!pos.length && !neg.length ? "<p>Nenhum canal passa de 0,25 ponto: diferenças desse tamanho estão dentro da incerteza.</p>" : "<p class='muted'>Só canais acima de 0,25 ponto são citados. Nenhum deles, sozinho, é uma conclusão: a diferença total desta família é inconclusiva entre os conjuntos de hipóteses.</p>");
   }
   function renderSM() {
     var t = D.meta.anos.indexOf(2030), cs = D.canais_sm;
@@ -791,9 +813,9 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
       com.map(function (h) { var c = R().familias[h].comida2019; return "<tr><td class='l'>" + esc(D.tipos[h].curto) + "</td><td>" + fmtN(base2026) + "</td>" + [1, 3, 7].map(function (i) { return "<td>" + fmtN(c.L[i]) + " / " + fmtN(c.F[i]) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody>";
   }
   function renderSens() {
-    var t2030 = D.meta.anos.indexOf(2030), base = D.resultados.central.familias[tipo].D.media[t2030];
-    document.getElementById("d-torn").innerHTML = "Para <b>" + esc(D.tipos[tipo].curto) + "</b> em 2030: diferença média no central " + fmtS(base, 2) + ". Tornado com " + fmtN(D.meta.n_sensibilidade, 0) + " simulações por ponto.";
-    var it = D.tornado.map(function (x) { return { nome: esc(x.id + " · " + x.nome) + " <span class='muted'>(" + esc(x.extremos[0]) + " → " + esc(x.extremos[1]) + ")</span>", lo: x.baixo[tipo][0] - base, hi: x.alto[tipo][0] - base, v: 0 }; })
+    var t2030 = D.meta.anos.indexOf(2030), base = D.tornado.base[tipo][0];
+    document.getElementById("d-torn").innerHTML = "Para <b>" + esc(D.tipos[tipo].curto) + "</b> em 2030: diferença média no central " + fmtS(base, 2) + " (risco de desemprego esperado). As hipóteses de execução aparecem para os dois candidatos, em espelho. Tornado com " + fmtN(D.meta.n_sensibilidade, 0) + " simulações por ponto.";
+    var it = D.tornado.itens.map(function (x) { return { nome: esc(x.id + " · " + x.nome) + " <span class='muted'>(" + esc(x.extremos[0]) + " → " + esc(x.extremos[1]) + ")</span>", lo: x.baixo[tipo][0] - base, hi: x.alto[tipo][0] - base, v: 0 }; })
       .sort(function (a, b) { return Math.max(Math.abs(b.lo), Math.abs(b.hi)) - Math.max(Math.abs(a.lo), Math.abs(a.hi)); }).slice(0, 12);
     barras("torn", it, function (x) { return fmtS(x.lo + base, 1) + " / " + fmtS(x.hi + base, 1); });
     var sb = D.resultados.central.sobol[tipo]["2030"];
@@ -802,13 +824,14 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
       financiado_divida: "Promessa sem fonte que vira dívida", receita_unica: "Parte do ajuste que é receita única", reverte_topo: "Reverter impostos sobre o topo",
       corte_comb: "Corte de tributo da gasolina", x6: "Fim da 6x1", premio_divida: "Prêmio por p.p. de dívida", fx_crise: "Câmbio no regime de crise",
       farol_informal: "Efeito farol", sm_repasse_escala: "Repasse do mínimo a preços", emprego_sm_ne: "Emprego ao mínimo (NE)", fechamento_k: "Fechamento fiscal",
-      fechamento_sm: "Fechamento sai pela regra do mínimo", taylor_pi: "Reação da Selic à inflação", repasse_cambio_ipca: "Repasse cambial", premio_alimentos: "Choque de alimentos" };
+      fechamento_sm: "Fechamento sai pela regra do mínimo", p_intencao: "Intenção de manter a regra", topo_decil_parcela: "Parte da receita do topo paga pelo décimo",
+      beta_acoes_premio: "Ações x prêmio", duracao_titulos: "Duração dos títulos", crise_aperto_p: "Pacote de emergência", cambio_renda: "Câmbio → renda", taylor_pi: "Reação da Selic à inflação", repasse_cambio_ipca: "Repasse cambial", premio_alimentos: "Choque de alimentos" };
     var rot = function (k) { var p = k.split("|"); return (ROT[p[0]] || p[0]) + (p[1] ? " (" + NOME[p[1]] + ")" : ""); };
     barras("sobol", sb.map(function (x) { return { nome: esc(rot(x.param)), v: x.s1 * 100, uni: true }; }), function (x) { return fmtN(x.v, 1) + "%"; });
   }
   var MACRO = [["ipca", "IPCA (% no ano)", 1], ["alimentos", "Alimentação no domicílio (% no ano)", 1], ["selic", "Selic no fim do ano (%)", 1], ["cambio", "Dólar (R$, média do ano)", 2],
     ["divida", "Dívida bruta (% do PIB)", 0], ["desemprego", "Desemprego (%)", 1], ["pib", "PIB (% no ano)", 1], ["primario", "Resultado primário (% do PIB)", 1],
-    ["sm_real", "Salário mínimo real (2026 = 100)", 0], ["horas_cesta", "Horas de trabalho no mínimo por cesta básica", 0]];
+    ["sm_real", "Salário mínimo real (2026 = 100)", 0], ["potencial", "Produto potencial: desvio do consenso (%, canal de longo prazo)", 2], ["investimento", "Investimento (FBCF): desvio do consenso (p.p. do PIB)", 2], ["horas_cesta", "Horas de trabalho no mínimo por cesta básica", 0]];
   function renderMacro() {
     var g = document.getElementById("macro-grid");
     if (!g.dataset.ok) {
@@ -822,6 +845,8 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
         { nome: "Lula", lo: s.L.p10, hi: s.L.p90, mid: s.L.p50, cor: css("--lula"), soft: css("--lula-soft") },
         { nome: "Flávio", lo: s.F.p10, hi: s.F.p90, mid: s.F.p50, cor: css("--flavio"), soft: css("--flavio-soft") }], m[2], m[0] === "divida" ? null : null);
     });
+    var est = D.regime_estacionario;
+    document.getElementById("d-reg").innerHTML = "Prior comum de crise: a matriz de transição é a mesma para os dois e, sozinha, leva a P(crise) de longo prazo de " + fmtP(est[2]) + " (crível " + fmtP(est[0]) + ", meio-termo " + fmtP(est[1]) + "); a dívida acima do consenso aumenta esse risco para qualquer vencedor. É uma hipótese de nível grande e comum, não um resultado. O regime crível dá o mesmo câmbio (cerca de −8% do consenso) a quem quer que governe, por neutralidade, embora os bancos tenham citado esse nível para Flávio.";
     ["L", "F"].forEach(function (c) {
       var rg = M.regimes[c], cores = ["#3f8f5f", css("--neutral-bar"), "#b8452f"];
       chart("c-reg-" + c, { type: "bar", data: { labels: labs, datasets: [0, 1, 2].map(function (k) { return { label: D.regimes[k], data: rg[k].map(function (v) { return v * 100; }), backgroundColor: cores[k] }; }) },
@@ -834,11 +859,11 @@ td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
     document.getElementById("tab-param").innerHTML = "<thead><tr><th>Id</th><th class='l'>Parâmetro</th><th class='l'>Lula</th><th class='l'>Flávio / comum</th><th class='l'>Fonte</th><th class='l'>Tipo</th></tr></thead><tbody>" +
       D.parametros.map(function (p) { return "<tr><td>" + esc(p.id) + "</td><td class='wrap-txt'>" + esc(p.nome) + "</td><td class='wrap-txt'>" + esc(p.lula) + "</td><td class='wrap-txt'>" + esc(p.flavio) + "</td><td class='wrap-txt'>" + esc(p.fonte) + "</td><td class='l'>" + pill(p.tipo) + "</td></tr>"; }).join("") + "</tbody>";
   }
-  function renderReponderavel() { renderForest(); renderTabela(); renderFamilia(); }
+  function renderReponderavel() { renderVeredito(); renderForest(); renderTabela(); renderFamilia(); }
   function renderTudo() {
     if (!D) return;
     document.getElementById("d-conj").textContent = D.conjuntos[conj].descricao;
-    renderForest(); renderTabela(); renderFamilia(); renderSus(); renderSanduiche(); renderShapley(); renderSM(); renderFaixas(); renderVivido(); renderSens(); renderMacro();
+    renderVeredito(); renderForest(); renderTabela(); renderFamilia(); renderSus(); renderSanduiche(); renderShapley(); renderSM(); renderFaixas(); renderVivido(); renderSens(); renderMacro();
   }
   window.__renderCenarios = renderTudo;
 

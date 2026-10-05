@@ -63,7 +63,7 @@ PARCELA_SELIC = 0.527   # MF13: DPF atrelada à Selic (Tesouro ago/2026)
 # Mecanismos (canais) — usados como chaves liga/desliga na decomposição de Shapley
 # ---------------------------------------------------------------------------
 CANAIS = ["sm_direto", "repasse", "farol", "achatamento", "emprego", "juros", "cambio", "fiscal",
-          "impostos", "trabalho", "credito"]
+          "impostos", "trabalho", "credito", "longo_prazo"]
 CANAL_NOME = {
     "sm_direto": "Salário mínimo (efeito direto na renda)",
     "repasse": "Repasse do mínimo a preços",
@@ -76,6 +76,7 @@ CANAL_NOME = {
     "impostos": "Impostos e combustíveis",
     "trabalho": "6x1 e contrato por hora",
     "credito": "Crédito direcionado e ciclo da dívida das famílias",
+    "longo_prazo": "Investimento e produto potencial (longo prazo)",
 }
 
 # ---------------------------------------------------------------------------
@@ -123,10 +124,10 @@ COMUM = {
     "correcao_erro": ("U", 0.3, 0.7),                # R13: κ
     "salario_desemprego": ("U", 0.3, 0.8),           # w* cai φ% por p.p. de desemprego acima do consenso
     # multiplicadores (MF21–26; R3)
-    "mult_transferencia": ("tri", 0.5, 0.9, 1.5),
+    "mult_transferencia": ("tri", 0.8, 1.5, 1.8),       # MF22 1,5 (0,8–1,8); C30 1,78
     "mult_beneficio_sm": ("tri", 0.4, 0.7, 1.2),
     "mult_discricionaria": ("tri", 0.2, 0.5, 1.0),
-    "mult_imposto_consumo": ("tri", 0.2, 0.4, 0.8),
+    "mult_imposto_consumo": ("tri", 0.1, 0.25, 0.4),   # MF26 0,25 (0,1–0,4)
     "mult_imposto_topo": ("tri", 0.05, 0.2, 0.4),
     "mult_subsidio": ("tri", 0.0, 0.1, 0.3),
     # salário mínimo em equilíbrio geral (salario_minimo_equilibrio_geral.md §9)
@@ -137,11 +138,12 @@ COMUM = {
     "farol_autonomo": ("tri", 0.0, 0.2, 0.4),        # M11
     "cascata_p50": ("tri", 0.05, 0.10, 0.25),        # M12 (~1,5 SM)
     "cascata_2a3": ("tri", 0.0, 0.03, 0.10),         # M13
+    "cascata_ne": ("tri", 0.6, 0.8, 1.0),            # M14: transbordamento até a mediana do Nordeste (≈ 1 SM)
     "consumidor_paga": ("U", 0.5, 1.0),              # M7
     "achatamento_psi": ("U", 0.0, 0.5),              # fração do custo não repassado que sai dos salários acima [suposição]
     "emprego_sm_br": ("tri", -0.20, -0.05, 0.0),     # M16
     "emprego_sm_ne": ("tri", -0.40, -0.15, 0.0),     # M17
-    "emprego_pouca_qualif": ("U", 1.0, 2.5),          # M18 (aplicado ao piso)
+    "emprego_pouca_qualif": ("tri", 1.5, 2.5, 4.0),   # M18 2,5 (1,5–4)
     "formal_para_informal": ("U", 0.0, 0.5),         # M19
     "beta_desemprego_baixa": ("U", 1.5, 2.0),        # R9
     "beta_desemprego_alta": ("U", 0.4, 0.7),
@@ -154,7 +156,7 @@ COMUM = {
     "fechamento_sm": ("U", 0.3, 0.7),               # se estourar: P(sai pela regra do mínimo); senão, rompe o arcabouço (+crise) [suposição]
     "vegetativo": 0.10,                              # crescimento vegetativo da obrigatória acima do teto (p.p./ano) [suposição]
     "financiado_divida": ("U", 0.5, 0.9),
-    "obrig_abono": ("U", 0.1, 0.5),                  # fração do corte de obrigatórias que cai no abono salarial (R$ 30 bi ≈ 0,22% PIB) [suposição]            # parte de promessa sem fonte que vira dívida (resto: cortes)
+    "obrig_abono": ("U", 0.0, 0.3),                  # fração do corte de obrigatórias que cai no abono salarial (R$ 30 bi ≈ 0,22% PIB) [suposição]            # parte de promessa sem fonte que vira dívida (resto: cortes)
     "incidencia_lucro_salario": ("U", 0.3, 0.5),     # MF30
     "incidencia_fase": ("U", 0.25, 0.75),            # quanto da incidência de longo prazo aparece até 2030
     "repasse_banco_spread": ("U", 0.4, 1.0),         # MF31
@@ -172,7 +174,20 @@ COMUM = {
     "pec12_horas": ("U", 0.6, 0.9),
     "pec12_formaliza": ("U", 0.0, 0.05),
     # câmbio → renda (R6, M35) e regime
-    "cambio_renda": ("U", 0.0, 0.10),
+    "cambio_renda": ("U", 0.0, 0.10),                # M35 (agro e comerciáveis), escalado pela exposição da família [suposição]
+    "topo_decil_parcela": ("U", 0.1, 0.4),           # parte da receita nova sobre altas rendas paga pelo décimo do topo (o resto é 1%/0,1%) [suposição]
+    "duracao_titulos": ("U", 4.0, 6.0),              # C2 da revisão v2: marcação a mercado de prefixados e IPCA+
+    "beta_acoes_premio": ("U", 0.05, 0.10),          # Ibovespa −5 a −10% por +1 p.p. de prêmio (2015, 2024)
+    "crise_aperto_p": ("U", 0.3, 0.6),               # M5 da revisão: P(pacote de emergência num ano de crise), qualquer vencedor
+    "crise_aperto_tam": ("U", 0.5, 1.0),             # tamanho do pacote (p.p. do PIB)
+    "rolagem_premio": 0.2,
+    # canal de longo prazo (macro_fiscal_dinamica.md §6: potencial 1,2–3,0%; FBCF 16%; PTF ~0,3%/ano):
+    # juro real longo (Selic real + prêmio) abaixo do consenso → mais investimento → capital → potencial e salários,
+    # com defasagem de 3+ anos; na crise, o contrário. Mesmo mapa para os dois [suposição, faixa larga]
+    "invest_juro": ("U", 0.2, 1.0),                  # p.p. de FBCF/PIB por p.p. de juro real longo
+    "invest_defasagem": 3,                           # anos até o capital novo virar produto
+    "elasticidade_capital": 0.35, "capital_produto": 3.0,
+    "eficiencia_iva_sem_excecoes": ("U", 0.0, 0.5),  # % do PIB (nível) até 2034 se o IVA vier pela rota "menos exceções" (Ferreira et al.: 6 p.p. em 15 anos)                           # fração da dívida não-Selic que rola por ano ao juro com prêmio
     "conv_meses": ("U", 12.0, 18.0),
     "fx_credivel": ("tri", -0.14, -0.08, -0.03),     # Goldman R$ 4,50–4,80; JPM 4,80–4,90
     "fx_meio": ("tri", -0.02, 0.02, 0.06),           # Goldman moderado R$ 5,40
@@ -180,8 +195,7 @@ COMUM = {
     "premio_credivel": ("tri", -1.2, -0.8, -0.3),    # Goldman: ~80 bps eliminados
     "premio_crise": ("tri", 1.0, 2.0, 4.0),          # 2015, dez/2024
     "crise_por_divida": ("U", 0.05, 0.20),           # +P(crise)/ano por 10 p.p. de dívida acima do consenso [suposição]
-    # crédito e custos ocultos (plug-in; valores entram quando as notas custos_ocultos_credito_subsidios.md
-    # e conta_completa_politicas.md forem publicadas — até lá ficam em zero e o canal não move nada)
+    # crédito e custos ocultos (custos_ocultos_credito_subsidios.md, C1–C33)
     "direcionado_selic": ("U", 0.02, 0.07),          # C7: +p.p. de Selic por +1 p.p. de fatia do direcionado (C6 ~1,1 p.p. no nível; Castro 2019 ~0)
     "credito_impulso": ("U", 0.2, 0.5),              # p.p. de hiato no ano por p.p. do PIB de crédito novo [suposição]
     "credito_ressaca": ("tri", 0.15, 0.34, 0.45),    # C22: −p.p. de PIB acumulado em 3 anos (defasado) por p.p. de dívida/PIB
@@ -230,12 +244,14 @@ CANDIDATOS = {
             # receitas não recorrentes e deduções da meta (IFI; conta_completa_politicas.md §4.1, CC24–25) [suposição]
             "receita_unica": ("tri", 0.05, 0.15, 0.30),
         },
-        "minimo": {"p_intencao": 1.0, "ganho_extra": 0.0},
+        # C1 da revisão v2: o próprio governo Lula mudou a regra em dez/2024 (teto de 2,5%); Flávio declarou manter (03/10)
+        # e a nota F6 dá 0,65 → mesmo prior para os dois
+        "minimo": {"p_intencao": ("U", 0.8, 1.0), "ganho_extra": 0.0},
         "bolsa": {"p_reajuste": ("U", 0.3, 0.9), "real_extra": 0.0},  # R1: mesmo prior
         # IR25: política de correção (art. 6º da Lei 15.270) com P ~0,3 até 2027; correções parciais em 2023–25
-        "ir": {"p_correcao": ("U", 0.15, 0.55), "p_reverte_topo": 0.0, "p_reverte_bancos": 0.0},
+        "ir": {"p_correcao": ("U", 0.05, 0.40), "p_reverte_topo": 0.0, "p_reverte_bancos": 0.0},
         "iva": {"p": 0.0},
-        "combustivel": {"frac_2027": 0.5, "subsidio_2027": ("tri", 0.1, 0.3, 0.6),  # CC17: R$ 7 bi/mês ≈ 0,6% PIB anualizado
+        "combustivel": {"frac_2027": 0.5, "subsidio_2027": ("tri", 0.15, 0.35, 0.6),  # CC17: R$ 7 bi/mês ≈ 0,6% PIB anualizado; Brent de 2027 menor reduz
                         "p_corte_trib": 0.0, "custo_corte": 0.0},
         "trabalho": {"p_6x1": 0.5, "p_pec12": 0.0},     # R15: 6x1 votada antes da posse → mesmo P
         "credito": {  # custos_ocultos_credito_subsidios.md — sem números nos planos: tratado como cenário [suposição]
@@ -262,7 +278,7 @@ CANDIDATOS = {
             # ativos (CC43, CC45; conta_completa_politicas.md §5) [suposição sobre a fração]
             "receita_unica": ("tri", 0.30, 0.50, 0.70),
         },
-        "minimo": {"p_intencao": 0.85, "ganho_extra": 0.0},  # declarou manter (03/10); revisão defendida por aliados
+        "minimo": {"p_intencao": ("U", 0.8, 1.0), "ganho_extra": 0.0},
         "bolsa": {"p_reajuste": ("U", 0.3, 0.9), "real_extra": 0.0},
         # isencao_ir_incidencia.md §3.3: nenhuma proposta de correção da tabela inteira; Bolsonaro não corrigiu em
         # 2019–22; IR28: revogar a compensação e manter a isenção, P = 0,3 (0,1–0,5)
@@ -296,18 +312,18 @@ TIPOS = {
         formal=1.0, tam=2, pof="47558", ne=False, regiao_emprego="piso_formal",
         u0=0.06, beta="baixa", rr=0.45, abono=True, x6=True, pec12=True, in_kind=0.20,
         divida=dict(estoque=0.45, servico=0.22, mix=dict(cartao=0.26, cheque=0.04, pessoal=0.15, consignado=0.38, veiculo=0.05, habitacional=0.12)),
-        exposto_cambio=0.15),
+        exposto_cambio=0.05),
     "informal_sm": dict(
         nome="Trabalhador informal perto de 1 SM", curto="Informal ~1 SM",
         informal=1.0, tam=2, pof="47558", ne=False, u0=0.09, beta="baixa", rr=0.25, in_kind=0.22,
         divida=dict(estoque=0.25, servico=0.15, mix=dict(cartao=0.45, cheque=0.05, pessoal=0.35, consignado=0.0, veiculo=0.10, habitacional=0.05)),
-        exposto_cambio=0.10, pec12_formaliza=True),
+        exposto_cambio=0.03, pec12_formaliza=True),
     "autonomo": dict(
         nome="Conta própria (inclui aplicativo), 1,3 SM", curto="Conta própria",
         autonomo=1.3, tam=2, pof="47558", ne=False, u0=0.07, beta="baixa", rr=0.3, in_kind=0.18,
         aplicativo=0.3,
         divida=dict(estoque=0.35, servico=0.18, mix=dict(cartao=0.30, cheque=0.05, pessoal=0.20, consignado=0.10, veiculo=0.20, habitacional=0.15)),
-        exposto_cambio=0.10),
+        exposto_cambio=0.03),
     "bf_ne": dict(
         nome="Família no Bolsa Família, Nordeste (4 pessoas)", curto="Bolsa Família NE",
         informal=0.40, bf=900.0, tam=4, pof="47558", ne=True, u0=0.15, beta="baixa", rr=0.2, in_kind=0.40,
@@ -331,18 +347,18 @@ TIPOS = {
         formal=2.5, tam=3, pof="47560", ne=False, u0=0.04, beta="media", rr=0.5, x6=True, in_kind=0.08, ir=True,
         plano_coletivo=True, inquilino=True, financeiro=0.3,
         divida=dict(estoque=0.80, servico=0.25, mix=dict(cartao=0.16, cheque=0.03, pessoal=0.07, consignado=0.19, veiculo=0.09, habitacional=0.46)),
-        exposto_cambio=0.20),
+        exposto_cambio=0.05),
     "endividado": dict(
         nome="Família endividada no rotativo (formal 1,8 SM)", curto="Endividado (rotativo)",
         formal=1.8, tam=3, pof="47559", ne=False, u0=0.06, beta="baixa", rr=0.45, x6=True, in_kind=0.15, inquilino=True,
         divida=dict(estoque=0.90, servico=0.40, mix=dict(cartao=0.45, cheque=0.15, pessoal=0.25, consignado=0.10, veiculo=0.05, habitacional=0.0)),
-        exposto_cambio=0.15),
+        exposto_cambio=0.05),
     "topo": dict(
         nome="Décimo mais rico com aplicações (15 SM + ativos)", curto="Topo 10%",
         formal=15.0, tam=3, pof="47563", ne=False, u0=0.025, beta="alta", rr=0.6, in_kind=0.01, ir=True,
         plano_coletivo=True, financeiro=4.0, reverte_topo=0.003,
         divida=dict(estoque=1.2, servico=0.15, mix=dict(cartao=0.15, cheque=0.02, pessoal=0.03, consignado=0.05, veiculo=0.15, habitacional=0.60)),
-        exposto_cambio=0.30),
+        exposto_cambio=0.03),
 }
 
 # ---------------------------------------------------------------------------
@@ -382,7 +398,7 @@ def _celulas_sanduiche():
         for tr, nome_tr in TIPOS_RENDA.items():
             d = dict(nome=f"{rot} · {nome_tr}", curto=f"{rot} {tr.upper()}", tam=1.0, pof=pof, ne=False, in_kind=ink,
                      faixa=fid, tipo_renda=tr, adapt=ADAPT[tr][i], l15270=L15270[tr][i], topo_peso=TOPO_PESO[i],
-                     exposto_cambio=fx * (1.0 if tr == "clt" else 1.3),
+                     exposto_cambio=fx * (0.3 if tr == "clt" else 0.5),
                      divida=dict(estoque=est * (1.0 if tr == "clt" else 0.7), servico=serv * (1.0 if tr == "clt" else 0.7), mix=mix))
             if tr == "clt":
                 d.update(formal=m, u0=u0, beta="baixa" if m <= 2 else ("media" if m <= 10 else "alta"), rr=0.45 if m <= 2 else 0.5,
@@ -418,6 +434,69 @@ CONJUNTOS = {
 }
 
 
+# M1 da revisão v2: os conjuntos pró-Lula e pró-Flávio são espelhos exatos.
+# (a) parâmetros comuns disputados: cada conjunto leva o parâmetro a uma ponta da própria faixa
+#     ("lo"/"hi" = ponta que costuma ser defendida por quem apoia Lula);
+COMUNS_DISPUTADOS = [
+    ("emprego_sm_br", "hi"), ("emprego_sm_ne", "hi"), ("farol_informal", "hi"), ("farol_autonomo", "hi"),
+    ("sm_repasse_escala", "lo"), ("mult_transferencia", "hi"), ("mult_beneficio_sm", "hi"),
+    ("mult_discricionaria", "hi"), ("premio_divida", "lo"), ("conv_meses", "lo"), ("consumidor_paga", "lo"),
+    ("cascata_p50", "hi"), ("cascata_2a3", "hi"), ("incidencia_lucro_salario", "lo"),
+]
+# (b) hipóteses de execução de cada programa: (caminho, valor favorável ao próprio, valor desfavorável).
+#     No conjunto pró-X, X recebe o favorável e o outro o desfavorável.
+EXECUCAO_DISPUTADA = [
+    ("regime.pi0", [0.65, 0.30, 0.05], [0.35, 0.40, 0.25]),
+    ("minimo.p_intencao", ("U", 0.9, 1.0), ("U", 0.6, 0.8)),
+    ("bolsa.p_reajuste", ("U", 0.6, 0.95), ("U", 0.2, 0.6)),
+    ("ir.p_correcao", ("U", 0.4, 0.8), ("U", 0.0, 0.3)),
+    ("fiscal.composicao", [0.35, 0.30, 0.30, 0.05], [0.0, 0.10, 0.40, 0.50]),
+    ("fiscal.receita_unica", ("tri", 0.05, 0.1, 0.2), ("tri", 0.5, 0.7, 0.9)),
+    ("credito.direcionado_dfatia", ("tri", -1.0, -0.5, 0.0), ("tri", 1.0, 2.0, 3.0)),
+]
+# Assimetrias do conjunto central (L ≠ F), cada uma com a nota que a sustenta. Um teste garante que
+# não há outra diferença entre os programas além destas.
+ASSIMETRIAS_CENTRAIS = {
+    "regime.impacto_cambio": "cenarios_economicos_insumos.md L1/F1 (bancos)",
+    "fiscal.ajuste_total": "L16/F16 (declarações)",
+    "fiscal.ajuste_meses": "L16/F16",
+    "fiscal.composicao": "planos + checagem F9 (R$ 190 bi x R$ 222 bi) [suposição sinalizada]",
+    "fiscal.privatizacao": "plano de Flávio (PND, securitização)",
+    "fiscal.receita_unica": "conta_completa_politicas.md §4.1 e §5 (CC43–45) [suposição sinalizada]",
+    "ir.p_reverte_topo": "plano de Flávio ('reverter impostos'); IR28",
+    "ir.p_reverte_bancos": "plano de Flávio",
+    "iva.p": "F9",
+    "combustivel.frac_2027": "L15/F15",
+    "combustivel.subsidio_2027": "MP 1.340; CC17",
+    "combustivel.p_corte_trib": "plano de Flávio",
+    "combustivel.custo_corte": "plano de Flávio",
+    "trabalho.p_pec12": "F14 (PEC 12 apoiada pela campanha de Flávio)",
+    "credito.direcionado_dfatia": "custos_ocultos_credito_subsidios.md (NIB/BNDES x CVA) [cenário]",
+    "credito.expansao_credito": "C28 (pacote parafiscal) [cenário]",
+}
+
+
+def _get(d, path):
+    for k in path.split("."):
+        d = d[k]
+    return d
+
+
+def _set(d, path, v):
+    ks = path.split(".")
+    for k in ks[:-1]:
+        d = d[k]
+    d[ks[-1]] = deepcopy(v)
+
+
+def _ponta(spec, lado):
+    if isinstance(spec, (int, float)):
+        return spec
+    if spec[0] in ("tri", "U"):
+        return spec[1] if lado == "lo" else spec[-1]
+    return spec[3] if lado == "lo" else spec[4]
+
+
 def aplicar_conjunto(nome: str):
     """Retorna (comum_override, specs) para o conjunto."""
     specs = {k: deepcopy(v) for k, v in CANDIDATOS.items()}
@@ -426,40 +505,18 @@ def aplicar_conjunto(nome: str):
         pass
     elif nome == "neutro":
         for k in specs:
-            specs[k]["ir"]["p_correcao"] = ("U", 0.1, 0.5)
             specs[k]["regime"]["impacto_cambio"] = 0.0
             specs[k]["regime"]["pi0"] = [0.45, 0.40, 0.15]
-            specs[k]["minimo"]["p_intencao"] = 1.0
-    elif nome == "pro_lula":
-        specs["L"]["regime"]["pi0"] = [0.65, 0.30, 0.05]
-        specs["F"]["regime"]["pi0"] = [0.35, 0.40, 0.25]
-        specs["F"]["minimo"]["p_intencao"] = 0.6
-        specs["F"]["iva"]["p"] = 0.4
-        specs["F"]["ir"]["p_reverte_topo"] = 0.6
-        specs["F"]["fiscal"]["composicao"] = [0.0, 0.10, 0.40, 0.50]
-        specs["L"]["bolsa"]["p_reajuste"] = ("U", 0.6, 0.95)
-        specs["F"]["bolsa"]["p_reajuste"] = ("U", 0.2, 0.6)
-        specs["L"]["ir"]["p_correcao"] = ("U", 0.4, 0.8)
-        specs["F"]["ir"]["p_correcao"] = ("U", 0.0, 0.3)
-        com.update({"emprego_sm_br": 0.0, "emprego_sm_ne": -0.02, "farol_informal": 0.8, "farol_autonomo": 0.4,
-                    "sm_repasse_escala": 0.4, "mult_transferencia": 1.5, "mult_beneficio_sm": 1.2,
-                    "mult_discricionaria": 1.0, "premio_divida": 0.03, "conv_meses": 12.0,
-                    "consumidor_paga": 0.5, "cascata_p50": 0.25, "cascata_2a3": 0.10})
-    elif nome == "pro_flavio":
-        specs["F"]["regime"]["pi0"] = [0.70, 0.25, 0.05]
-        specs["L"]["regime"]["pi0"] = [0.30, 0.45, 0.25]
-        specs["F"]["minimo"]["p_intencao"] = 0.95
-        specs["F"]["iva"]["p"] = 0.1
-        specs["F"]["ir"]["p_reverte_topo"] = 0.2
-        specs["F"]["fiscal"]["composicao"] = [0.05, 0.35, 0.50, 0.10]
-        specs["L"]["fiscal"]["composicao"] = [0.60, 0.10, 0.25, 0.05]
-        specs["L"]["ir"]["p_correcao"] = ("U", 0.1, 0.4)
-        specs["F"]["ir"]["p_correcao"] = ("U", 0.2, 0.6)
-        com.update({"emprego_sm_br": -0.15, "emprego_sm_ne": -0.40, "farol_informal": 0.3, "farol_autonomo": 0.0,
-                    "sm_repasse_escala": 1.8, "mult_transferencia": 0.5, "mult_beneficio_sm": 0.4,
-                    "mult_discricionaria": 0.2, "premio_divida": 0.33, "conv_meses": 18.0,
-                    "consumidor_paga": 1.0, "cascata_p50": 0.05, "cascata_2a3": 0.0,
-                    "incidencia_lucro_salario": 0.5})
+            specs[k]["fiscal"]["receita_unica"] = ("tri", 0.1, 0.3, 0.5)
+            specs[k]["fiscal"]["composicao"] = [0.25, 0.20, 0.35, 0.20]
+    elif nome in ("pro_lula", "pro_flavio"):
+        favorecido, outro = ("L", "F") if nome == "pro_lula" else ("F", "L")
+        for path, fav, desf in EXECUCAO_DISPUTADA:
+            _set(specs[favorecido], path, fav)
+            _set(specs[outro], path, desf)
+        for k, lado_lula in COMUNS_DISPUTADOS:
+            lado = lado_lula if nome == "pro_lula" else ("lo" if lado_lula == "hi" else "hi")
+            com[k] = _ponta(COMUM[k], lado)
     else:
         raise KeyError(nome)
     return com, specs
@@ -469,7 +526,7 @@ def aplicar_conjunto(nome: str):
 # Catálogo para a página (id, nome, Lula, Flávio/comum, fonte, tipo)
 # ---------------------------------------------------------------------------
 PARAMETROS = [
-    ("R5/L2/F2", "Regime de credibilidade: P inicial (crível / meio-termo / crise)", "0,50 / 0,35 / 0,15", "0,50 / 0,35 / 0,15",
+    ("R5/L2/F2", "Regime de credibilidade: P inicial (crível / meio-termo / crise) — prior comum", "0,50 / 0,35 / 0,15", "0,50 / 0,35 / 0,15",
      "persistência ~50/50 do choque para os dois (insumos L2/F2; MF §8.4); P(crise) 0,05–0,25 (revisão R5)", "suposição"),
     ("R5", "Transição anual do regime (crível→crível, meio→meio, crise→crise)", "0,80 / 0,70 / 0,50", "comum",
      "MF29 (reversão ≤12 meses ~0,6); crise sobe com a dívida acima do consenso", "suposição"),
@@ -481,8 +538,11 @@ PARAMETROS = [
     ("L16/F16", "Ajuste primário anunciado (p.p. do PIB)", "1,7 (0,5–2,5) até 2030", "1,5 (0,5–3,0) em 18 meses", "declarações (Forbes, GloboNews)", "projeção"),
     ("R4", "Entrega do ajuste por regime", "crível 75–100%; meio 25–65%; crise 0–30%", "comum", "promessa sem lista de cortes não entra pelo valor de face", "suposição"),
     ("R4", "Composição do ajuste: topo / gasto tributário / discricionária / obrigatória", "45 / 15 / 30 / 10%", "5 / 20 / 45 / 30%", "planos; checagem F9 (R$ 190 bi x R$ 222 bi discricionárias)", "suposição"),
+    ("C1", "Abono no corte de obrigatórias; corte por restrição a partir do topo (precedente de 2024)", "0–30%", "comum", "pacote de dez/2024; sem fonte para a fração", "suposição"),
+    ("C2", "Marcação a mercado da riqueza: duração 4–6 de prefixados/IPCA+; ações −5 a −10% por p.p. de prêmio", "—", "comum", "episódios de 2015 e 2024", "suposição"),
+    ("M5", "Prêmio chega à dívida não-Selic (rolagem de 20%/ano); pacote de emergência na crise (P 0,3–0,6; 0,5–1 p.p.)", "—", "comum", "revisão v2; 2003, 2015", "suposição"),
     ("R4", "Fechamento: P(quebrar a regra do mínimo) por p.p. de corte de gasto acima do cortável", "0,3–0,8 por p.p.", "comum", "IFI (contingenciamento R$ 35,7 bi); M22", "suposição"),
-    ("L6/F6", "Intenção de manter a regra do mínimo", "1,0", "0,85", "Lei 14.663; declaração de 03/10; Mansueto/Itaú", "suposição"),
+    ("C1/F6", "Intenção de manter a regra do mínimo (mesmo prior)", "U(0,8; 1,0)", "U(0,8; 1,0)", "Lula mudou a regra em dez/2024 (Lei 15.077); Flávio declarou manter (03/10); nota F6 = 0,65", "suposição"),
     ("M25", "Regra do mínimo", "INPC(t−1) + PIB(t−2), entre 0,6% e 2,5%", "idem", "Lei 14.663/2023; Lei 15.077/2024 (piso 0,6% a verificar)", "fonte"),
     ("R1", "Bolsa Família: P(reajuste no ano) — repõe o INPC acumulado", "U(0,3; 0,9)", "U(0,3; 0,9)", "histórico 2019–2026 (sem indexação automática; reajuste de 15,04% em set/2026)", "suposição"),
     ("F8", "Reverter impostos de Lula sobre o topo (IRPFM/dividendos) e bancos", "—", "P = 0,35", "plano: 'reverter impostos criados'", "suposição"),
@@ -492,17 +552,18 @@ PARAMETROS = [
      "conta_completa_politicas.md: deduções e receitas extraordinárias (Lula); securitização e royalties antecipados (Flávio)", "suposição"),
     ("CC06–07", "Lacuna da compensação da isenção do IR (comum: lei vigente)", "0–0,13% do PIB/ano", "comum",
      "Receita via CNN: R$ 10,5 bi arrecadados x R$ 28 bi de renúncia em 2026 (confiança baixa; muda com a declaração de 2027)", "calc"),
-    ("R10/IR25", "Correção da tabela inteira do IR (P por ano); sem ela, arrasto de faixa (R$ 10 mil: 15,7% → ~17,2% em 2030)", "U(0,15; 0,55)", "U(0,05; 0,40)",
-     "isencao_ir_incidencia.md: política do art. 6º P ~0,3 até 2027; Flávio sem proposta de correção integral; Bolsonaro não corrigiu em 2019–22", "suposição"),
+    ("R10/IR25", "Correção da tabela inteira do IR (P por ano); sem ela, arrasto de faixa (R$ 10 mil: 15,7% → ~17,2% em 2030)", "U(0,05; 0,40)", "U(0,05; 0,40)",
+     "isencao_ir_incidencia.md §3.3: nenhum dos dois propôs indexar as faixas acima de R$ 7.350; mesmo prior (assimetria só nos conjuntos pró)", "suposição"),
     ("IR26", "Índice de adaptação por faixa (≤2 / 2–5 / 5–10 / 10–20 / 20–50 / 50+ SM)", "12 / 9 / 13 / 21 / 34 / 52–68", "comum", "DIRPF 2025 [calc]", "calc"),
     ("IR18/IR21", "Imposto mínimo: repasse a preços ~0 (≤0,03 p.p. de IPCA); efeito em salários 0 a −0,5%", "—", "comum", "isencao_ir_incidencia.md §4", "calc"),
     ("R15", "Fim da 6x1 / PEC 12", "P 0,5 / —", "P 0,5 / P 0,25", "Senado vota antes da posse; DIEESE (intermitentes)", "suposição"),
     ("M1–M9", "Repasse do mínimo a preços (serviços intensivos em SM 0,25; IPCA ≈ 0,03)", "escala 0,4–2,0", "comum", "BCB RI mar/2013; Lemos; Harasztosi e Lindner", "fonte"),
     ("M10–M11", "Efeito farol: informal / conta própria", "0,5 (0,3–0,8) / 0,2 (0–0,4)", "comum", "Neri et al.; Fajnzylber; Boeri et al.", "fonte"),
     ("M12–M13", "Cascata: 1,5 SM / 2–3 SM", "0,10 / 0,03", "comum", "Engbom e Moser (2022)", "fonte"),
-    ("M16–M19", "Emprego formal ao mínimo: Brasil / NE; migração ao informal", "−0,05 / −0,15; 0–50%", "comum", "Saltiel e Urzúa; Jales; E&M", "fonte"),
+    ("M16–M19", "Emprego formal ao mínimo: Brasil / NE; pouca qualificação ×2,5 (1,5–4); migração ao informal", "−0,05 / −0,15; 0–50%", "comum", "Saltiel e Urzúa; Jales; E&M", "fonte"),
+    ("M14", "Cascata até a mediana do Nordeste (≈ 1 SM)", "0,8 (0,6–1,0)", "comum", "IMDS 2026; DGLM 2021", "fonte"),
     ("M21", "Custo de R$ 1 no mínimo", "R$ 413,2 mi/ano (−R$ 8,2 mi de receita)", "comum", "PLDO 2027, Anexo V", "fonte"),
-    ("MF21–26", "Multiplicadores: transferência / benefício do piso / discricionária / imposto de consumo / topo / subsídio", "0,9 / 0,7 / 0,5 / 0,4 / 0,2 / 0,1", "comum", "Orair et al.; Sanches; Matheson e Pereira", "fonte"),
+    ("MF21–26", "Multiplicadores: transferência / benefício do piso / discricionária / imposto de consumo / topo / subsídio", "1,5 / 0,7 / 0,5 / 0,25 / 0,2 / 0,1", "comum", "Orair et al.; Sanches; Matheson e Pereira; transferência MF22 = 1,5 (0,8–1,8); imposto de consumo MF26 = 0,25 (0,1–0,4)", "fonte"),
     ("MF30–31", "Incidência: tributo sobre lucro → salários; tributo bancário → spread", "0,3–0,5; 0,4–1,0", "comum", "Fuest et al.; Suárez Serrato e Zidar; BC (spread)", "fonte"),
     ("R7", "Selic → serviço da dívida por linha (repasse; repactuação/ano)", "cartão 0,3; cheque 1,5; pessoal 1,73; consignado 0,8; veículo 0,75; imobiliário 0,43", "comum", "BC EE 118; rotativo quase insensível", "fonte"),
     ("R9", "Ciclicidade do desemprego: baixa / alta renda", "1,5–2,0 / 0,4–0,7", "comum", "revisão R9; PNADC", "suposição"),
@@ -511,5 +572,7 @@ PARAMETROS = [
     ("C20–C23", "Expansão do crédito às famílias: impulso agora, ressaca depois (−0,34 p.p. de PIB em 3 anos por p.p.)", "+0,5 p.p. PIB/ano (0–1)", "+0,4 (0–1)",
      "Mian-Sufi-Verner; Drehmann-Juselius-Korinek; pacote parafiscal de 2026 (C28)", "suposição"),
     ("C13–C16", "FGTS: tributo implícito contra o CDI (camada vivida), desconto do MCMV", "1,9 p.p.", "1,9 p.p.", "C15–C16 (saldo médio suposto ±50%)", "calc"),
+    ("MF §6", "Longo prazo: juro real longo → FBCF (0,2–1,0 p.p. do PIB por p.p.) → capital (α 0,35; K/Y 3) → potencial e salários, defasagem de 3 anos; IVA sem exceções +0–0,5% do PIB", "—", "comum",
+     "macro_fiscal_dinamica.md §6 (potencial 1,2–3,0%; FBCF 16%; reforma tributária +2,4% a +20% do PIB em 15 anos)", "suposição"),
     ("V", "Camada medido × vivido: reduflação; aluguel de quem muda; plano coletivo; dívida", "0,1–0,5 p.p.; +3–5 p.p.; +3–7 p.p.; serviço total", "comum", "medido_vs_vivido.md §1, §3.3, §3.4, §5.1", "calc"),
 ]

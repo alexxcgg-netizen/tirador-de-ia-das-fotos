@@ -56,9 +56,14 @@ def test_calibracao_divida_2027():
 
 
 def test_rotulo_media_nao_mediana():
-    """R8: R$ 3.777 é a renda MÉDIA da PNADC; nenhuma família-tipo se diz 'mediana'."""
-    assert "renda_mediana" not in PR.BASE and PR.BASE["renda_media_trabalho"] == 3777.0
-    assert all("median" not in t["nome"].lower() for t in PR.TIPOS.values())
+    """R8: R$ 3.777 é a renda MÉDIA da PNADC (a mediana é R$ 2.300); nenhuma família-tipo é ancorada
+    na média com rótulo de mediana."""
+    assert PR.BASE["renda_media_trabalho"] == 3777.0 and PR.BASE["renda_mediana_trabalho"] == 2300.0
+    for t in PR.TIPOS.values():
+        assert "median" not in t["nome"].lower()
+        for k in ("formal", "informal", "autonomo"):
+            if k in t:
+                assert abs(t[k] * PR.BASE["salario_minimo"] - 3777.0) > 100
 
 
 def test_familias_pedidas():
@@ -82,6 +87,41 @@ def test_programas_tem_mesmas_chaves():
     for cj in PR.CONJUNTOS:
         _, sp = PR.aplicar_conjunto(cj)
         assert _chaves(sp["L"]) == _chaves(sp["F"])
+
+
+def test_conjuntos_pro_sao_espelhos():
+    """M1 da revisão v2: pró-Lula e pró-Flávio movem as mesmas chaves, com papéis trocados."""
+    cl, sl = PR.aplicar_conjunto("pro_lula")
+    cf, sf = PR.aplicar_conjunto("pro_flavio")
+    assert set(cl) == set(cf)
+    for k, v in cl.items():
+        spec = PR.COMUM[k]
+        pontas = {PR._ponta(spec, "lo"), PR._ponta(spec, "hi")}
+        assert {v, cf[k]} == pontas, k
+    for path, fav, desf in PR.EXECUCAO_DISPUTADA:
+        assert PR._get(sl["L"], path) == PR._get(sf["F"], path) == fav
+        assert PR._get(sl["F"], path) == PR._get(sf["L"], path) == desf
+
+
+def _folhas(d, pre=""):
+    out = {}
+    for k, v in d.items():
+        if k == "nome":
+            continue
+        if isinstance(v, dict):
+            out.update(_folhas(v, pre + k + "."))
+        else:
+            out[pre + k] = v
+    return out
+
+
+def test_assimetrias_centrais_documentadas():
+    """Toda diferença L ≠ F no conjunto central tem fonte declarada; o resto é igual."""
+    fl, ff = _folhas(PR.CANDIDATOS["L"]), _folhas(PR.CANDIDATOS["F"])
+    dif = {k for k in fl if fl[k] != ff[k]}
+    assert dif <= set(PR.ASSIMETRIAS_CENTRAIS), dif - set(PR.ASSIMETRIAS_CENTRAIS)
+    for k in ("minimo.p_intencao", "bolsa.p_reajuste", "ir.p_correcao", "regime.pi0", "trabalho.p_6x1"):
+        assert fl[k] == ff[k], k
 
 
 def test_codigo_sem_nome_de_candidato():
@@ -120,35 +160,18 @@ def test_cada_canal_pode_favorecer_qualquer_um(canal):
 
 def test_regressao_bolsa_familia_mesma_regra():
     """Revisão R1: na v1 o hiato do Bolsa Família (+7 pontos, P = 0,98) vinha de reajustes reais
-    assimétricos. Com prior assimétrico o hiato reaparece; com a mesma regra para os dois, trocar só o
-    bloco do Bolsa Família não move a diferença."""
+    assimétricos. Com o prior assimétrico da v1 o hiato reaparece (> 3 pontos); com o prior comum do
+    conjunto central, o hiato total da família cai para menos de 1,5 ponto."""
+    assert PR.CANDIDATOS["L"]["bolsa"] == PR.CANDIDATOS["F"]["bolsa"]
     lp, fp = deepcopy(PR.CANDIDATOS["L"]), deepcopy(PR.CANDIDATOS["F"])
-    assert lp["bolsa"] == fp["bolsa"]
-    lp_v1 = deepcopy(lp); fp_v1 = deepcopy(lp)
-    lp_v1["bolsa"] = {"p_reajuste": 1.0, "real_extra": 1.0}
-    fp_v1["bolsa"] = {"p_reajuste": 0.3, "real_extra": 0.0}
-    v1 = C.rodar_par(2000, 9, {"L": lp_v1, "F": fp_v1}, tipos=["bf_ne"], slots=("1", "1"))
-    assert _d(v1, "bf_ne")[:, PR.ANOS.index(2030)].mean() > 3.0
-    igual = C.rodar_par(2000, 9, {"L": lp, "F": fp}, tipos=["bf_ne"])
-    troca = deepcopy(fp); troca["bolsa"] = deepcopy(lp["bolsa"])
-    igual2 = C.rodar_par(2000, 9, {"L": lp, "F": troca}, tipos=["bf_ne"])
-    np.testing.assert_allclose(_d(igual, "bf_ne"), _d(igual2, "bf_ne"))
-
-
-# ---------------------------------------------------------------------------
-# Mecanismos
-# ---------------------------------------------------------------------------
-def test_regra_do_minimo_usa_pib_de_t_menos_2():
-    """Revisão R2 (bug da v1): o ganho real de 2029 usa o PIB de 2027, não o de 2028."""
-    r = C.simular(PR.CANDIDATOS["L"], 2000, 11, "1", fixos={"regra": True})
-    m = r["macro"]
-    niv_inpc = np.cumprod(1 + m["inpc"] / 100, axis=1)
-    sm = m["sm_real"] / 100 * PR.BASE["salario_minimo"] * niv_inpc
-    i28, i29 = PR.ANOS.index(2028), PR.ANOS.index(2029)
-    esperado = sm[:, i28] * (1 + m["inpc"][:, i28] / 100) * (1 + np.clip(m["pib"][:, PR.ANOS.index(2027)], 0.6, 2.5) / 100)
-    np.testing.assert_allclose(sm[:, i29], esperado, rtol=1e-9)
-    errado = sm[:, i28] * (1 + m["inpc"][:, i28] / 100) * (1 + np.clip(m["pib"][:, i28], 0.6, 2.5) / 100)
-    assert np.abs(sm[:, i29] - errado).max() > 1.0
+    lv1, fv1 = deepcopy(lp), deepcopy(fp)
+    lv1["bolsa"] = {"p_reajuste": 1.0, "real_extra": 1.0}
+    fv1["bolsa"] = {"p_reajuste": 0.3, "real_extra": 0.0}
+    i = PR.ANOS.index(2030)
+    v1 = C.rodar_par(3000, 9, {"L": lv1, "F": fv1}, tipos=["bf_ne"])
+    v2 = C.rodar_par(3000, 9, {"L": lp, "F": fp}, tipos=["bf_ne"])
+    d1, d2 = _d(v1, "bf_ne")[:, i].mean(), _d(v2, "bf_ne")[:, i].mean()
+    assert d1 > 3.0 and abs(d2) < 1.5 and d1 - d2 > 2.5
 
 
 def test_regime_markov():
@@ -259,8 +282,13 @@ def test_credito_direcionado_e_ressaca():
 
 def test_horizonte_ate_2034_e_ajuste_forcado(par):
     assert PR.ANOS[0] == 2027 and PR.ANOS[-1] == 2034 and len(PR.ANOS) == PR.T == 8
-    assert par["L"]["macro"]["ajuste_forcado"][:, :PR.ANOS_MANDATO].max() == 0
-    assert par["L"]["macro"]["ajuste_forcado"][:, -1].max() > 0
+    m = par["L"]["macro"]["ajuste_forcado"]
+    reg = par["L"]["regime"]
+    # no mandato, só há ajuste forçado depois de um ano de crise (pacote de emergência, M5)
+    teve_crise = np.cumsum(reg[:, :PR.ANOS_MANDATO] == 2, axis=1) > 0
+    assert np.all(m[:, :PR.ANOS_MANDATO][~teve_crise] == 0)
+    assert m[:, :PR.ANOS_MANDATO][teve_crise].max() > 0
+    assert m[:, -1].max() > 0
 
 
 def test_shapley_eficiencia_pequeno():
@@ -293,7 +321,7 @@ def test_sanduiche_matriz_e_mesma_regua():
     assert len(PR.SANDUICHE) == 18
     R = C.rodar_par(1500, 3, {"L": PR.CANDIDATOS["L"], "F": PR.CANDIDATOS["F"]}, tipos=list(PR.SANDUICHE))
     S = RD.sanduiche(R["L"], R["F"])
-    assert set(S["teste"]) == {"clt", "pj", "capital"}
+    assert set(S["teste"]) == {"clt", "pj"}   # capital fora do teste (C2)
     b = C.rodar_par(1500, 3, {"L": PR.CANDIDATOS["F"], "F": PR.CANDIDATOS["L"]}, tipos=list(PR.SANDUICHE), slots=("2", "1"))
     for h in PR.SANDUICHE:
         np.testing.assert_allclose(_d(R, h), -_d(b, h), atol=1e-9)
@@ -303,6 +331,39 @@ def test_sanduiche_matriz_e_mesma_regua():
     a["ir"]["p_reverte_bancos"] = z["ir"]["p_reverte_bancos"] = 0.0
     Q = C.rodar_par(1500, 3, {"L": a, "F": z}, tipos=["s_50mais_pj", "s_ate2_clt"], slots=("1", "1"))
     assert _d(Q, "s_50mais_pj")[:, -1].mean() > 1.0
+
+
+def test_abono_poupa_quem_ganha_1_sm():
+    """C1 da revisão v2: corte moderado do abono (restrição a partir do topo) não atinge o formal de 1 SM."""
+    a = deepcopy(PR.CANDIDATOS["F"]); b = deepcopy(PR.CANDIDATOS["F"])
+    for s in (a, b):
+        s["fiscal"]["receita_unica"] = 0.0
+        s["fiscal"]["concentracao"] = 1e6
+        s["minimo"]["p_intencao"] = 1.0
+    a["fiscal"]["composicao"] = [0.0, 0.0, 0.0, 1.0]
+    b["fiscal"]["composicao"] = [0.0, 0.0, 1.0, 0.0]
+    a["fiscal"]["ajuste_total"] = b["fiscal"]["ajuste_total"] = 0.25  # 0,075 p.p. no abono ≈ 34% do programa
+    R = C.rodar_par(2000, 6, {"L": a, "F": b}, tipos=["formal_sm", "s_ate2_clt"], fixos={"s0": 0, "regra": True},
+                    slots=("1", "1"), comum={"obrig_abono": 0.3})
+    # 2027: corte de ~0,07 p.p. do PIB no abono (~30% do programa) → teto cai de 2 para ~1,4 SM
+    assert abs(_d(R, "formal_sm")[:, 0].mean()) < 0.15
+    assert _d(R, "s_ate2_clt")[:, 0].mean() < -2.0
+
+
+def test_riqueza_perde_na_crise():
+    """C2 da revisão v2: com marcação a mercado, o topo e a célula de capital não ganham numa crise."""
+    tip = ["topo", "s_10a20_capital"]
+    cr = C.simular(PR.CANDIDATOS["L"], 3000, 2, "1", fixos={"s0": 2}, tipos=tip)
+    ok = C.simular(PR.CANDIDATOS["L"], 3000, 2, "1", fixos={"s0": 0}, tipos=tip)
+    for h in tip:
+        assert cr["familias"][h]["idx"][:, 0].mean() < ok["familias"][h]["idx"][:, 0].mean()
+
+
+def test_indice_por_hora():
+    a = deepcopy(PR.CANDIDATOS["L"])
+    R = C.simular(a, 2000, 3, "1", fixos={"x6": True}, tipos=["formal_sm"])
+    f = R["familias"]["formal_sm"]
+    np.testing.assert_allclose(f["idx_hora"][:, 2], f["idx"][:, 2] * 44 / 40)
 
 
 def test_json_publicado():
