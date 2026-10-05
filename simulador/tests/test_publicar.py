@@ -37,3 +37,21 @@ def test_index_tem_secao_segundo_turno():
         assert alvo in out
     # a seção do 2º turno vem antes das demais seções do painel
     assert out.index('id="segundo-turno"') < out.index('id="cards"')
+
+
+def test_documento_comparador_tem_esqueleto_e_volta():
+    frag = "<title>Comparador</title>\n<style>:root{--bg:#fff}</style>\n<link rel=\"stylesheet\" href=\"x.css\">\n<div class=\"wrap\">oi</div>\n"
+    doc = publicar.documento_comparador(frag)
+    assert doc.startswith("<!doctype html>") and "<body>" in doc and doc.rstrip().endswith("</html>")
+    assert "viewport-fit=cover" in doc and 'charset="utf-8"' in doc
+    assert 'href="index.html"' in doc and '<div class="wrap">oi</div>' in doc
+    head = doc.split("</head>")[0]
+    assert "<title>Comparador</title>" in head and 'href="x.css"' in head
+
+
+def test_link_cenarios_so_se_existir():
+    html = '<a class="tab-link" id="link-cenarios" href="cenarios.html" hidden>Cenários</a>'
+    assert "hidden" in publicar.link_cenarios(html, False)
+    assert "hidden" not in publicar.link_cenarios(html, True)
+    idx = (publicar.ORIG / "index.html").read_text(encoding="utf-8")
+    assert 'id="link-cenarios" href="cenarios.html" hidden' in idx and 'href="comparador.html"' in idx

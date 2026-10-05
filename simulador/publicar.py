@@ -32,6 +32,42 @@ def converter(html: str) -> str:
     return out.strip() + "\n"
 
 
+def link_cenarios(html: str, existe: bool) -> str:
+    """Mostra o item de menu "Cenários econômicos" só se a página cenarios.html for publicada junto."""
+    alvo = 'id="link-cenarios" href="cenarios.html" hidden'
+    return html.replace(alvo, 'id="link-cenarios" href="cenarios.html"') if existe else html
+
+
+VOLTAR = """<style>
+.voltar-painel { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; display: flex; justify-content: center;
+  background: var(--surface); border-bottom: 1px solid var(--line); }
+.voltar-painel a { display: inline-block; max-width: 1120px; width: 100%; padding: 10px 16px; color: var(--accent);
+  font: 600 0.92rem var(--font-body); text-decoration: none; }
+.voltar-painel a:hover { text-decoration: underline; }
+.voltar-painel a:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+</style>
+<nav class="voltar-painel" aria-label="Voltar"><a href="index.html">← Voltar ao painel da eleição</a></nav>
+"""
+
+
+def documento_comparador(fragmento: str) -> str:
+    """comparador/index.html é um fragmento (sem doctype/html/head/body); como página extra do artifact ele precisa
+    do próprio esqueleto. Injeta só o link de volta ao painel; o conteúdo do comparador não muda."""
+    frag = fragmento.strip()
+    m = re.search(r"<title>.*?</title>", frag, flags=re.S)
+    titulo = m.group(0) if m else "<title>Comparador de propostas 2026</title>"
+    if m:
+        frag = frag[:m.start()] + frag[m.end():]
+    corte = frag.find("</style>")
+    cab, corpo = (frag[:corte + len("</style>")], frag[corte + len("</style>"):]) if corte >= 0 else ("", frag)
+    links = re.findall(r"\s*<link[^>]*>", corpo)
+    for l in links:
+        corpo = corpo.replace(l, "", 1)
+    return ("<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\">\n"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
+            + titulo + "\n" + cab + "".join(links) + "\n</head>\n<body>\n" + VOLTAR + corpo.strip() + "\n</body>\n</html>\n")
+
+
 def copiar_opcional(origem: Path, destino: Path) -> bool:
     """Copia se existir; arquivo ausente ou ilegível não interrompe a publicação (o painel esconde o card).
     Escreve num temporário e renomeia, para não publicar um JSON pela metade se outro processo estiver
@@ -53,7 +89,14 @@ def copiar_opcional(origem: Path, destino: Path) -> bool:
 def main():
     DEST.mkdir(exist_ok=True)
     html = (ORIG / "index.html").read_text(encoding="utf-8")
-    (DEST / "index.html").write_text(converter(html), encoding="utf-8")
+    (DEST / "index.html").write_text(link_cenarios(converter(html), (DEST / "cenarios.html").exists()), encoding="utf-8")
+    comp = AQUI.parent / "comparador" / "index.html"
+    if comp.exists():                     # "Propostas dos candidatos": página extra do mesmo artifact
+        doc = documento_comparador(comp.read_text(encoding="utf-8"))
+        for d in (ORIG, DEST):
+            (d / "comparador.html").write_text(doc, encoding="utf-8")
+    else:
+        print("ausente (pulado): comparador/index.html")
     shutil.copyfile(ORIG / "resultados.json", DEST / "resultados.json")
     if (ORIG / "resultados_2t.json").exists():     # 2º turno com o 1º turno apurado (resultado_1t.py)
         shutil.copyfile(ORIG / "resultados_2t.json", DEST / "resultados_2t.json")
@@ -67,6 +110,10 @@ def main():
     alt2 = AQUI.parent / "modelo_alternativo" / "resultados_alt_2t.json"
     if copiar_opcional(alt2, ORIG / "resultados_alt_2t.json"):
         copiar_opcional(ORIG / "resultados_alt_2t.json", DEST / "resultados_alt_2t.json")
+    # modelo municipal do 2º turno (aba "Modelos e comparação"; ausente = linha omitida)
+    mun = AQUI.parent / "modelo_municipal" / "resultados_municipal_2t.json"
+    if copiar_opcional(mun, ORIG / "resultados_municipal_2t.json"):
+        copiar_opcional(ORIG / "resultados_municipal_2t.json", DEST / "resultados_municipal_2t.json")
     print("gravado:", DEST)
 
 
