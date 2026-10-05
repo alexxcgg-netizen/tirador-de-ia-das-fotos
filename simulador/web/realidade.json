@@ -1,0 +1,348 @@
+{
+  "meta": {
+    "atualizado": "2026-10-05",
+    "intro": "O foco desta aba é separar o que acontece do que é dito sobre o que acontece. Número oficial, discurso do governo, discurso da oposição e discurso do mercado podem, cada um, se afastar da vida real. A régua é a mesma para todos os lados.",
+    "regra": "Só se fala em manipulação de dado quando há documento. Nesta pesquisa não apareceu nenhuma evidência de manipulação de números do IBGE.",
+    "percepcao": "Exemplo de por que isso importa: 67% dos entrevistados disseram que o preço dos alimentos subiu no último mês (Quaest, 30/08–01/09/2026), num trimestre em que o IPCA de alimentação e bebidas caiu em junho, julho e agosto. A memória ancora no nível de 2019 (+76% em comida), não na taxa do mês. As duas coisas são verdadeiras ao mesmo tempo.",
+    "percepcao_fontes": [["Quaest via Forbes, set/2026", "https://forbes.com.br/forbes-money/2026/09/pressao-do-custo-de-vida-desafia-projeto-de-reeleicao-de-lula/"]],
+    "verificacao": "Conferido em 05/10/2026 nas fontes oficiais: IPCA e alimentação no domicílio acumulados (API SIDRA, tabelas 1737 e 7060/1419); comprometimento de renda (SGS 29034 com ajuste e 29265 sem ajuste); inadimplência PF (SGS 21084), rotativo (SGS 22022), endividamento (SGS 29037), DBGG (SGS 13762), PIB anual (SGS 7326) e déficit nominal (SGS 5727). Por busca: carta aberta do BC de 10/07/2025 (meta descumprida), Leis 14.754/2023, 14.789/2023, 14.871/2024 e 14.973/2024 e a demissão de Jean Paul Prates da Petrobras (14/05/2024). Itens que não puderam ser confirmados foram retirados ou estão marcados como “não confirmado”.",
+    "fontes_notas": "Notas de pesquisa: research_notes/Nordeste e cenarios economicos 2026/ (medido_vs_vivido.md, checagem_promessas_discursos.md, macro_fiscal_dinamica.md §8, salario_minimo_equilibrio_geral.md)."
+  },
+  "tipos": [
+    {"k": "a", "nome": "Limite de medição", "def": "O número é honesto, mas por construção mede outra coisa que não aquilo que a pessoa sente (taxa x nível, litro x km, contrato antigo x aluguel novo). Inclui escolhas metodológicas defensáveis que outro especialista faria diferente."},
+    {"k": "b", "nome": "Enquadramento seletivo", "def": "O número confere, mas a escolha do período, da base, da métrica ou do que se omite leva a uma conclusão enganosa."},
+    {"k": "c", "nome": "Afirmação falsa", "def": "O dado citado não existe ou contradiz a fonte oficial. Aqui também entram promessas sem conta que feche (“sem base”), registradas à parte."},
+    {"k": "d", "nome": "Manipulação de dados", "def": "Adulteração do próprio número. Só se afirma com documento. Nada encontrado nesta pesquisa."}
+  ],
+  "niveis": {
+    "titulo": "Quanto subiu cada preço de jan/2019 a ago/2026",
+    "nota": "Variação acumulada no IPCA (Brasil), em %. O índice geral é a referência; o salário mínimo nominal e a cesta DIEESE de São Paulo vêm de outras fontes e aparecem só para comparação.",
+    "ref": 49.7,
+    "itens": [
+      ["Óleo diesel", 94.6, "ipca"],
+      ["Cesta básica DIEESE (São Paulo)", 92.6, "outra"],
+      ["Alimentação no domicílio", 76.3, "ipca"],
+      ["Gás de botijão", 69.0, "ipca"],
+      ["Salário mínimo (nominal)", 62.4, "outra"],
+      ["Plano de saúde", 61.1, "ipca"],
+      ["Alimentação fora do domicílio", 55.5, "ipca"],
+      ["Cursos regulares", 54.0, "ipca"],
+      ["IPCA (índice geral)", 49.7, "ref"],
+      ["Gasolina", 48.5, "ipca"],
+      ["Aluguel residencial", 44.2, "ipca"],
+      ["Energia elétrica residencial", 36.0, "ipca"]
+    ],
+    "fontes": [["IBGE/SIDRA, tabelas 1419 e 7060 (conta própria)", "https://sidra.ibge.gov.br/tabela/7060"], ["DIEESE, cesta jan/2019", "https://www.dieese.org.br/analisecestabasica/2019/201901cestabasica.pdf"], ["Poder360, cesta ago/2026", "https://www.poder360.com.br/poder-economia/preco-da-cesta-basica-cai-em-25-de-27-capitais-em-agosto-de-2026/"]]
+  },
+  "indicadores": [
+    {
+      "id": "alimentos",
+      "titulo": "Comida: a taxa caiu, o preço não voltou",
+      "tipo": ["a"],
+      "oficial": "IPCA de 4,22% em 12 meses (ago/2026); alimentação no domicílio +2,77% em 12 meses.",
+      "nao_capta": "O nível acumulado. A família compara o preço de hoje com o que lembra de 2019, não com o mês passado.",
+      "gap": "+26,6 p.p.",
+      "gap_det": "Alimentação no domicílio +76,3% contra IPCA +49,7% de jan/2019 a ago/2026. Quase todo o descolamento veio em 2019–2022 (+56,1% contra +26,9%). De jan/2023 a ago/2026 a comida subiu menos que o IPCA (12,9% contra 17,9%), mas preço de comida não “desinflaciona” para trás.",
+      "verif": "Recalculado na API SIDRA em 05/10/2026.",
+      "fontes": [["SIDRA 7060", "https://sidra.ibge.gov.br/tabela/7060"], ["SIDRA 1737", "https://sidra.ibge.gov.br/tabela/1737"]]
+    },
+    {
+      "id": "renda-comida",
+      "titulo": "Renda real recorde que compra menos comida que em 2019",
+      "tipo": ["a"],
+      "oficial": "Rendimento médio real habitual de R$ 3.777 (jun–ago/2026), +13,3% sobre jun–ago/2019 pelo deflator oficial.",
+      "nao_capta": "O poder de compra em alimentos, que pesam 22,9% do consumo das famílias com até 2 salários mínimos e 6,8% acima de 25 SM (POF 2017–18).",
+      "gap": "≈17 p.p.",
+      "gap_det": "Deflacionada pela alimentação no domicílio (+71,6% de set/2019 a ago/2026), a mesma renda fica 3,6% abaixo de 2019. “Renda real recorde” e “minha renda compra menos comida que antes da pandemia” são frases verdadeiras ao mesmo tempo.",
+      "fontes": [["IBGE/SIDRA 6390", "https://sidra.ibge.gov.br/tabela/6390"], ["SIDRA 7060", "https://sidra.ibge.gov.br/tabela/7060"]]
+    },
+    {
+      "id": "minimo-cestas",
+      "titulo": "Salário mínimo medido em cestas: depende do ano-base",
+      "tipo": ["a", "b"],
+      "oficial": "Mínimo de R$ 998 (2019) para R$ 1.621 (2026): +62,4% nominal e +8,5% real pelo IPCA.",
+      "nao_capta": "Quanta comida o mínimo compra. A cesta DIEESE é uma cesta fixa de 13 itens (Decreto-Lei 399/1938), com muito peso em carne e só de capitais: é custo de cesta, não índice de inflação.",
+      "gap": "2,13 → 1,80 cesta",
+      "gap_det": "Cesta DIEESE de São Paulo: R$ 467,65 (jan/2019) e R$ 900,59 (ago/2026), +92,6%. Contra 2019 o mínimo compra 16% menos cestas. Contra 2022 (1,59 cesta) compra mais: 1,93 em jan/2026 (DIEESE NT 289). Cada lado tende a citar só o ano-base que o favorece.",
+      "fontes": [["DIEESE jan/2019", "https://www.dieese.org.br/analisecestabasica/2019/201901cestabasica.pdf"], ["Poder360, ago/2026", "https://www.poder360.com.br/poder-economia/preco-da-cesta-basica-cai-em-25-de-27-capitais-em-agosto-de-2026/"], ["DIEESE NT 289", "https://www.dieese.org.br/notatecnica/2025/notaTec289salarioMinimo.pdf"]]
+    },
+    {
+      "id": "gasolina-km",
+      "titulo": "Gasolina: o IPCA mede o litro, o motorista paga o km",
+      "tipo": ["a"],
+      "oficial": "Gasolina +1,86% no IPCA de 2025 (preço por litro).",
+      "nao_capta": "A troca da mistura E27 para E30 (01/08/2025) reduziu a energia por litro em ~1,1%. Testes do Instituto Mauá apontam 1% a 2% a menos de km/l.",
+      "gap": "+1 a 2 p.p., uma vez",
+      "gap_det": "Em custo por km, a alta de 2025 foi de ~2,9% a 3,9%. O índice segue corretamente a definição do produto: não é erro nem manipulação, é limite do que o índice mede.",
+      "fontes": [["Fecombustíveis", "https://www.fecombustiveis.org.br/noticia/gasolina-e30-com-mais-etanol-chega-as-bombas-em-1-de-agosto-veja-o-impacto-nos-carros/261265"], ["O Tempo (testes Mauá)", "https://www.otempo.com.br/autotempo/2025/3/19/gasolina-e30-no-brasil-vai-aumentar-consumo-dos-carros"]]
+    },
+    {
+      "id": "combustivel-represado",
+      "titulo": "Combustível represado: inflação adiada, não sumida",
+      "tipo": ["a"],
+      "oficial": "Gasolina +4,29% e diesel +13,35% no IPCA de jan–ago/2026, com o petróleo acima de US$ 100.",
+      "nao_capta": "O custo do choque transferido ao Tesouro e à Petrobras: MP 1.340 (16/03; zera PIS/Cofins do diesel e cria subvenção; até R$ 30 bi em 2026), MP 1.363 (30/05; R$ 1,12/l) e MP 1.391 (11/09; R$ 1,00/l). A Petrobras já recebeu R$ 9,9 bi em subvenções.",
+      "gap": "Diesel ~100% abaixo da paridade",
+      "gap_det": "Defasagem estimada pela Abicom em 28/09/2026: R$ 3,34/l no diesel (102%) e R$ 0,95/l na gasolina (32%). Cautela com a fonte: a Abicom representa importadores, e “paridade de importação” é métrica contestada (a Petrobras deixou de segui-la em 2023). A direção não é contestada; o tamanho é. A conta chega depois, por tributo, dívida ou dividendo menor, ganhe quem ganhar.",
+      "fontes": [["Câmara, MP 1.340", "https://www.camara.leg.br/noticias/1253765-medida-provisoria-reduz-preco-do-diesel-para-enfrentar-alta-do-petroleo/"], ["Agência Petrobras, MP 1.363", "https://agencia.petrobras.com.br/w/negocio/petrobras-aprova-ades%C3%A3o-%C3%A0-nova-subven%C3%A7%C3%A3o-econ%C3%B4mica-e-ajusta-pre%C3%A7os-do-diesel"], ["O Povo, MP 1.391 e R$ 9,9 bi", "https://www.opovo.com.br/noticias/economia/2026/09/19/petrobras-aprova-adesao-a-subvencao-ao-oleo-diesel.html"], ["Brasil Postos (Abicom)", "https://www.brasilpostos.com.br/noticias/mercado/precos-reajustes-de-combustiveis/defasagem-combustiveis-petrobras-abicom-2026/"]]
+    },
+    {
+      "id": "itaipu",
+      "titulo": "A “deflação” de agosto foi o bônus de Itaipu",
+      "tipo": ["a"],
+      "oficial": "IPCA de −0,32% em ago/2026, com energia elétrica −7,63% no mês.",
+      "nao_capta": "O bônus de Itaipu (R$ 767,2 mi abatidos na conta de agosto de quem consumiu menos de 350 kWh em algum mês) é pontual e se desfaz no mês seguinte.",
+      "gap": "Efeito de 1 mês",
+      "gap_det": "No IPCA-15 de setembro a energia já subiu 7,42%. Ler a deflação de agosto como tendência é erro; ler a alta de setembro como “disparada” também. A bandeira verde para outubro, definida 9 dias antes do 1º turno, chama atenção pelo momento, mas segue regra paramétrica e não há evidência de decisão política.",
+      "fontes": [["Agência iNFRA", "https://agenciainfra.com/blog/itaipu-bonus-de-r-767-mi-vai-abater-conta-de-luz-em-agosto/"], ["JB, IPCA ago/2026", "https://www.jb.com.br/economia/2026/09/1060876-ipca-cai-032-em-agosto-com-queda-da-energia-eletrica.html"], ["Agência Brasil, IPCA-15 set", "https://agenciabrasil.ebc.com.br/economia/noticia/2026-09/previa-da-inflacao-oficial-de-setembro-fica-em-070-mostra-ibge"], ["eixos, bandeira", "https://eixos.com.br/politica/eleicoes/eleicoes-2026/as-vesperas-da-eleicao-aneel-determina-bandeira-verde-para-energia-em-outubro/"]]
+    },
+    {
+      "id": "aluguel",
+      "titulo": "Aluguel: quem fica x quem muda de casa",
+      "tipo": ["a"],
+      "oficial": "Aluguel residencial +4,98% em 12 meses no IPCA (ago/2026).",
+      "nao_capta": "O IPCA mede o estoque de contratos, reajustados uma vez por ano. Quem muda de casa (jovens, migrantes, despejados) paga o preço dos anúncios novos.",
+      "gap": "~4 p.p. ao ano",
+      "gap_det": "FipeZap (preço pedido em anúncios novos, ~36 cidades): +9,16% em 12 meses até ago/2026.",
+      "fontes": [["SpaceMoney (FipeZap)", "https://www.spacemoney.com.br/economia/indicadores-economicos/aluguel-residencial-desacelera-fipezap-agosto-2026/"]]
+    },
+    {
+      "id": "plano-saude",
+      "titulo": "Plano de saúde: o IPCA segue os planos individuais",
+      "tipo": ["a"],
+      "oficial": "Plano de saúde +6,44% no IPCA de 2025 (teto da ANS para individuais: 6,06%).",
+      "nao_capta": "Os planos coletivos (empresariais e por adesão), cerca de 84% dos beneficiários, sem teto da ANS.",
+      "gap": "~5 p.p.",
+      "gap_det": "Reajuste médio dos coletivos de 11,15% em 2025; adesão e PME com frequência acima de 15%–20%. É escolha metodológica defensável (o preço regulado é observável; o coletivo é negociado), não erro, mas subestima o custo de quem tem plano pela empresa.",
+      "fontes": [["Futuro da Saúde", "https://futurodasaude.com.br/reajuste-medio-planos-de-saude/"], ["Agência Brasil, teto ANS 2026", "https://agenciabrasil.ebc.com.br/saude/noticia/2026-05/plano-de-saude-individual-tera-reajuste-maximo-de-511-decide-ans"]]
+    },
+    {
+      "id": "divida",
+      "titulo": "Renda bruta x renda que sobra: a dívida",
+      "tipo": ["a"],
+      "oficial": "Massa de rendimento do trabalho recorde: R$ 385,6 bi (jun–ago/2026).",
+      "nao_capta": "A fatia da renda que vai para juros e amortização. Um aumento real de 3,7% no salário bruto vira bem menos para quem rola dívida cara.",
+      "gap": "28,7% da renda",
+      "gap_det": "Comprometimento da renda das famílias com o serviço da dívida: 28,72% em jul/2026, máximo da série iniciada em 2005, contra 22,75% em jan/2019 e 27,57% em dez/2022 (SGS 29034, com ajuste sazonal). Inadimplência PF de 6,03% em ago/2026 (3,94% em dez/2022). 83,9 milhões de inadimplentes (Serasa, jul/2026). Rotativo do cartão a 444,9% ao ano e cheque especial a 136,4% (ago/2026).",
+      "verif": "Conferido na API SGS em 05/10/2026. Os 29,3%–29,7% noticiados para fev–mar/2026 não batem com nenhuma das séries atuais: com ajuste sazonal (29034), fev–mar ficam em 28,2%–28,3%; sem ajuste (29265), o pico é 29,48% em mar/2026 e o valor de jul/2026 é 27,75%. Provavelmente são versões anteriores da série. Usamos a série com ajuste, que permite comparar meses.",
+      "fontes": [["BCB SGS 29034", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.29034/dados?formato=json"], ["BCB SGS 29265 (sem ajuste)", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.29265/dados?formato=json"], ["BCB SGS 21084", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.21084/dados/ultimos/12?formato=json"], ["Serasa", "https://www.serasa.com.br/imprensa/inadimplencia-segundo-semestre-serasa/"]]
+    },
+    {
+      "id": "emprego",
+      "titulo": "Desemprego mínimo é verdade, mas é metade da história",
+      "tipo": ["a"],
+      "oficial": "Desocupação de 5,3% (jun–ago/2026), a menor da série iniciada em 2012; 103,5 milhões de ocupados.",
+      "nao_capta": "A qualidade do trabalho: informalidade, horas insuficientes, desalento e trabalho por aplicativo.",
+      "gap": "13,1% subutilizados",
+      "gap_det": "Informalidade de 37,5% (38,8 mi); 4,3 mi subocupados por insuficiência de horas; 2,4 mi desalentados. Os ~2 mi de trabalhadores por plataforma ganham por mês o mesmo que a média, mas com jornada 5,4 h maior, renda por hora 12% menor, 72% de informalidade e só 34% contribuindo para a Previdência. Em sentido contrário: a maior parte dos 10,4 mi de ocupados a mais desde 2019 tem carteira.",
+      "fontes": [["Agência Gov, PNADC 29/09/2026", "https://agenciagov.ebc.com.br/noticias/202609/desemprego-cai-no-trimestre-e-numero-de-pessoas-ocupadas-e-o-maior-da-serie-historica"], ["IBGE, plataformas digitais 2025", "https://biblioteca.ibge.gov.br/visualizacao/livros/liv102309_informativo.pdf"]]
+    },
+    {
+      "id": "caged",
+      "titulo": "Caged x PNADC: “recorde” e “desaceleração” ao mesmo tempo",
+      "tipo": ["a"],
+      "oficial": "PNADC: desocupação na mínima. Novo Caged: +1,134 mi vagas formais em jan–ago/2026.",
+      "nao_capta": "Cada pesquisa mede um universo: o Caged conta vínculos celetistas (uma pessoa pode ter dois); a PNADC conta pessoas.",
+      "gap": "−25% no saldo do Caged",
+      "gap_det": "O saldo de jan–ago/2026 ficou 25,2% abaixo do mesmo período de 2025. As duas leituras podem ser verdade juntas: menos criação líquida com força de trabalho estável. Quem cita só uma delas faz enquadramento seletivo. Em 2020–21, a transição para o eSocial inflou o Caged (declarações fora do prazo); foi problema de transição reconhecido, não manipulação.",
+      "fontes": [["MTE, Caged ago/2026", "https://www.gov.br/trabalho-e-emprego/pt-br/noticias-e-conteudo/2026/setembro/novo-caged-emprego-formal-gera-165-8-mil-vagas-em-agosto-e-acumula-1-13-milhao-de-postos-no-ano"], ["Gazeta do Povo, 2021", "https://www.gazetadopovo.com.br/economia/emprego-carteira-crescendo-encolhendo-pnad-caged-cenarios-opostos/"]]
+    },
+    {
+      "id": "reduflacao",
+      "titulo": "Reduflação: existe, mas o número que circula é fraco",
+      "tipo": ["a", "b"],
+      "oficial": "O IPCA mede o preço do produto especificado (o manual do IBGE trata 200 g e 500 g como produtos distintos).",
+      "nao_capta": "Embalagem menor pelo mesmo preço, se não houver ajuste por quantidade. O IBGE não publica regra explícita para esse caso.",
+      "gap": "< 0,1–0,2 p.p. ao ano",
+      "gap_det": "Estimativa por analogia com os EUA (GAO, 2025): a reduflação respondeu por menos de 0,1 p.p. dos 34,5% de inflação de 2019–2024 e por ~0,3 p.p. da inflação de alimentos de 2022. Pequena no agregado e muito visível no carrinho, o que explica a irritação.",
+      "alerta": "Número fraco: os “3,78% de perda de poder de compra em 2023” do IBPT vêm de notas fiscais de um aplicativo próprio, sem amostra probabilística nem método publicado. Seriam maiores que toda a inflação de alimentos no domicílio de 2023 (−0,52%). Não usar como medida.",
+      "fontes": [["GAO-25-107451", "https://www.gao.gov/assets/gao-25-107451.pdf"], ["IBPT via Diário do Comércio", "https://dcomercio.com.br/publicacao/s/reduflacao-faz-poder-de-compra-do-brasileiro-cair-em-3-8-diz-ibpt"], ["IBGE, Métodos de cálculo do SNIPC", "https://biblioteca.ibge.gov.br/visualizacao/livros/liv65477.pdf"]]
+    },
+    {
+      "id": "apostas",
+      "titulo": "Apostas: perda que não aparece em preço nem em renda",
+      "tipo": ["a"],
+      "oficial": "Fora do IPCA (que mede preço, não gasto) e da renda (que é bruta).",
+      "nao_capta": "A perda líquida das famílias com bets, concentrada em jovens e baixa renda.",
+      "gap": "R$ 36,9 bi em 2025",
+      "gap_det": "Mercado regulado em 2025: R$ 220,6 bi depositados e R$ 183,7 bi devolvidos em prêmios, perda líquida de R$ 36,9 bi (~R$ 1.460 por apostador; ordem de 0,4%–0,5% do consumo das famílias, estimativa). O “R$ 20 bi por mês” de 2024 (nota do BC) era fluxo bruto, não perda.",
+      "fontes": [["Poder360 (SPA/MF)", "https://www.poder360.com.br/poder-sportsmkt/bets-tiveram-receita-de-r-37-bilhoes-em-2025/"], ["Poder360, estudo do BC 2024", "https://www.poder360.com.br/poder-economia/estudo-do-bc-sobre-bets-e-bolsa-familia-deixa-duvidas-sobre-fraude/"]]
+    },
+    {
+      "id": "ibge",
+      "titulo": "Integridade do IBGE: crise administrativa, sem manipulação",
+      "tipo": ["d"],
+      "oficial": "Calendário de divulgação mantido apesar da greve iniciada em ago/2026.",
+      "nao_capta": "Nada indica que algum número tenha sido adulterado.",
+      "gap": "Sem evidência de manipulação",
+      "gap_det": "A crise é real: greve contra a gestão Pochmann, fundação IBGE+ considerada irregular pelo TCU, e, no governo anterior, o corte do orçamento do Censo em 2021. Nenhuma denúncia interna ou do sindicato aponta interferência técnica nos números. As mudanças de método recentes (reponderação da PNADC com o Censo 2022; pesos do IPCA em jan/2027) saíram com nota técnica. Risco a monitorar: a qualidade da coleta, se a greve se prolongar.",
+      "fontes": [["Aos Fatos, 24/02/2026", "https://www.aosfatos.org/noticias/bolsonaristas-usam-desinformacao-desacreditar-dados-economicos-ibge/"], ["Jornal de Brasília, greve", "https://jornaldebrasilia.com.br/noticias/economia/servidores-do-ibge-iniciam-greve-em-oposicao-a-medidas-da-gestao-pochmann/"], ["IBGE, reponderação da PNADC", "https://www.ibge.gov.br/novo-portal-destaques/44067-pnad-continua-reponderacao-em-2025.html"]]
+    }
+  ],
+  "checagem": {
+    "escala": [
+      ["correto", "Correto"],
+      ["hoje_exagerado", "Correto quando dito, hoje exagerado"],
+      ["enganoso", "Correto mas enganoso"],
+      ["exagerado", "Exagerado"],
+      ["falso", "Falso"],
+      ["sem_base", "Sem base (sem conta que feche)"]
+    ],
+    "lados": [["lula", "Lula/PT"], ["flavio", "Flávio/PL"], ["mercado", "Mercado"]],
+    "nota": "Veredito do checador quando ele é citado; marcado “nosso” quando é desta pesquisa. Os checadores têm linhas editoriais; veículos à direita e à esquerda foram usados só como fonte de alegações, nunca de veredito. As 14 afirmações de cada campanha foram escolhidas por relevância econômica e social, não por sorteio: a contagem descreve esta seleção, não mede a honestidade de ninguém.",
+    "padrao": [
+      "Lula/PT: os números de desempenho atual em geral conferem (emprego, renda, isenção do IR). Os erros se concentram na comparação com o passado (PIB antes de 2023, “herança” de déficit de 2,8%) e na omissão do custo fiscal e da trajetória da dívida. Cinco das 14 afirmações são corretas mas enganosas.",
+      "Flávio/PL: os diagnósticos de custo de vida e juros em geral conferem (carga tributária recorde, maior juro real do mundo, endividamento). Os problemas se concentram nas promessas: corte de R$ 190 bi, IVA de 20%, crescimento de 4% ao ano e juros caindo “na reunião seguinte do Copom”, nenhuma com conta que feche. Cinco das 14 são sem base.",
+      "Mercado e analistas: acertam o diagnóstico fiscal, mas projeções condicionais (“se houver ajuste…”) circulam como previsão ou promessa de campanha.",
+      "Os dois lados têm 3 afirmações falsas nesta seleção. A diferença está no tipo de erro, não numa contagem de quem “mente mais”."
+    ],
+    "itens": [
+      {"id": "L1", "lado": "lula", "v": "correto", "por": "nosso", "afirmacao": "“Menor desemprego da história”", "quem": "PT e Lula, dez/2025 a set/2026", "dado": "5,1% em out–dez/2025, mínima da PNADC; 5,3% em jun–ago/2026.", "fora": "A série só começa em 2012. Informalidade de 37,5%. Desemprego baixo não significa orçamento folgado.", "fontes": [["PT, dez/2025", "https://pt.org.br/brasil-no-rumo-certo-com-lula-desemprego-cai-a-52-o-menor-da-historia/"], ["Correio Braziliense, 30/09/2026", "https://www.correiobraziliense.com.br/economia/2026/09/7510442-desemprego-cai-para-53-e-populacao-ocupada-atinge-recorde-em-agosto.html"]]},
+      {"id": "L2", "lado": "lula", "v": "enganoso", "por": "nosso (Lupa: verdadeiro)", "afirmacao": "“10,1 milhões de empregos formais desde 2023”", "quem": "Lula e Luiz Marinho, 13/08/2026", "dado": "O número existe na RAIS, que conta vínculos (inclui estatutários). O Novo Caged (celetistas) soma ~5,4 mi de jan/2023 a jul/2026.", "fora": "Vínculo não é pessoa. Apresentado como “empregos”, sugere o dobro do que o Caged mostra.", "fontes": [["Lupa, 01/10/2026", "https://www.agencialupa.org/noticias/2026/10/01/erros-e-acertos-dos-candidatos-que-disputam-a-presidencia-do-brasil-em-2026/"]]},
+      {"id": "L3", "lado": "lula", "v": "correto", "por": "Lupa", "afirmacao": "“Renda e massa salarial recordes”", "quem": "Lula, 14/04/2026", "dado": "Renda real habitual de R$ 3.777 (jun–ago/2026), +13,9% sobre out–dez/2022; massa de R$ 385,6 bi.", "fora": "28,7% da renda vai para o serviço de dívidas (recorde); inadimplência PF de 6,0%.", "fontes": [["Lupa, 14/04/2026", "https://www.agencialupa.org/checagem/2026/04/14/lula-exagera-ao-falar-de-empregos-e-erra-sobre-preco-de-combustiveis-no-brasil/"]]},
+      {"id": "L4", "lado": "lula", "v": "hoje_exagerado", "por": "nosso (Lupa: verdadeiro em mar/2026)", "afirmacao": "“Menor inflação em 4 anos / inflação sob controle”", "quem": "Lula, 14/04/2026", "dado": "4,14% em 12 meses em mar/2026; 4,22% em ago/2026; IPCA-15 de set em 4,47%. Copom projeta 5,2% para 2026, acima do teto de 4,5%.", "fora": "A meta foi formalmente descumprida em 2025 (carta aberta do BC de 10/07/2025, após 6 meses acima do teto) e o Copom fala em expectativas desancoradas.", "fontes": [["Lupa, 14/04/2026", "https://www.agencialupa.org/checagem/2026/04/14/lula-exagera-ao-falar-de-empregos-e-erra-sobre-preco-de-combustiveis-no-brasil/"], ["BCB, carta aberta 2025", "https://www.bcb.gov.br/content/controleinflacao/controleinflacao_docs/carta_aberta/OF_CIO_17431_2025_BCB_SECRE_01.pdf"]]},
+      {"id": "L5", "lado": "lula", "v": "enganoso", "por": "nosso (Aos Fatos: largamente correto)", "afirmacao": "“Inflação dos alimentos caiu de 56% com Bolsonaro para 13% comigo”", "quem": "Lula, 16/09/2026", "dado": "Alimentação no domicílio: 56,1% (jan/2019–dez/2022, 48 meses) contra 12,9% (jan/2023–ago/2026, 44 meses). Os números conferem.", "fora": "Períodos desiguais; o primeiro teve pandemia, câmbio acima de R$ 5 e guerra na Ucrânia. E 13% em cima de 56% não devolve o nível: a comida segue +76% sobre 2019.", "fontes": [["Aos Fatos, 01/10/2026", "https://www.aosfatos.org/noticias/checamos-entrevista-lula-ao-flow/"], ["Poder360", "https://www.poder360.com.br/poder-eleicoes-2026/lula-cita-inflacao-menor-que-bolsonaro-mas-diz-que-comida-esta-cara/"]]},
+      {"id": "L6", "lado": "lula", "v": "falso", "por": "Lupa, Gazeta do Povo", "afirmacao": "“O PIB só cresceu acima de 3% quando eu voltei”", "quem": "Lula, JN 27/08 e Flow 01/10/2026", "dado": "2011: 3,97%; 2021: 4,76%; 2022: 3,02% (SGS 7326). E 2025 foi 2,29%, não 3%.", "fora": "O crescimento de 2023–24 (3,2% e 3,4%) foi real, mas desacelera em 2026.", "fontes": [["Lupa, JN 27/08", "https://www.agencialupa.org/checagem/2026/08/27/ao-vivo-checagem-da-entrevista-de-lula-ao-jornal-nacional/"], ["BCB SGS 7326", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.7326/dados?formato=json"]]},
+      {"id": "L7", "lado": "lula", "v": "falso", "por": "Gazeta do Povo, Poder360", "afirmacao": "“Herdei o governo com déficit fiscal de 2,8%”", "quem": "Lula, JN 27/08/2026", "dado": "2022 teve superávit primário do governo central de R$ 54,9 bi; o déficit nominal foi de 4,57% do PIB (SGS 5727). Nenhuma métrica dá 2,8%.", "fora": "A crítica à qualidade do superávit de 2022 é legítima (ver F12), o número não.", "fontes": [["Poder360", "https://www.poder360.com.br/poder-governo/lula-diz-que-bolsonaro-deixou-deficit-mas-houve-superavit/"], ["Gazeta do Povo, 28/08/2026", "https://www.gazetadopovo.com.br/eleicoes/2026/mentiras-lula-entrevista-jornal-nacional-jn/"]]},
+      {"id": "L8", "lado": "lula", "v": "exagerado", "por": "Lupa", "afirmacao": "“Já acabei com a fome duas vezes”", "quem": "Lula, JN 27/08/2026", "dado": "FAO (SOFI 2026): subalimentação abaixo de 2,5% e insegurança alimentar grave de 0,6% (~1,2 mi de pessoas). Fora do Mapa da Fome desde jul/2025.", "fora": "Sair do Mapa não é zerar a fome; 21,1% não conseguem pagar uma dieta saudável.", "fontes": [["Agência Gov, SOFI 2026", "https://agenciagov.ebc.com.br/noticias/202607/relatorio-da-onu-confirma-que-brasil-permanece-fora-do-mapa-da-fome"], ["Lupa, JN 27/08", "https://www.agencialupa.org/checagem/2026/08/27/ao-vivo-checagem-da-entrevista-de-lula-ao-jornal-nacional/"]]},
+      {"id": "L9", "lado": "lula", "v": "correto", "por": "nosso", "afirmacao": "“Isenção do IR até R$ 5 mil: 10 milhões deixam de pagar”", "quem": "Fazenda e Lula, desde 26/11/2025", "dado": "Lei 15.270/2025: isenção até R$ 5 mil, desconto até R$ 7.350, até R$ 312,89/mês. Estimativa oficial.", "fora": "Não chega a informais nem a quem já era isento; ainda não há dado realizado da Receita.", "fontes": [["Ministério da Fazenda", "https://www.gov.br/fazenda/pt-br/assuntos/noticias/2025/novembro/presidente-sanciona-lei-que-amplia-isencao-do-imposto-de-renda-para-quem-ganha-ate-r-5-mil"]]},
+      {"id": "L10", "lado": "lula", "v": "enganoso", "por": "Lupa: falta contexto", "afirmacao": "“Bolsa Família ficou 4 anos sem reajuste; os 15% repõem a inflação”", "quem": "Lula, Flow 01/10/2026", "dado": "15,04% = INPC de mar/2023 a ago/2026 (confere). Piso de R$ 600 para R$ 691.", "fora": "O piso de R$ 600 com adicionais foi fixado em 2023 acima do Auxílio Brasil permanente. O 1º pagamento é em 19/10, seis dias antes do 2º turno.", "fontes": [["InfoMoney", "https://www.infomoney.com.br/politica/governo-anuncia-reajuste-de-15-no-bolsa-familia-a-menos-de-20-dias-das-eleicoes/"]]},
+      {"id": "L11", "lado": "lula", "v": "enganoso", "por": "nosso", "afirmacao": "“Menor taxa de homicídios da história”", "quem": "Lula, mai/2026", "dado": "Mortes violentas intencionais de 19,1 por 100 mil em 2025 (FBSP), menor da série.", "fora": "A queda começou em 2018. Mortes de causa indeterminada +88,6% (2023–24); feminicídio recorde (1.571).", "fontes": [["Agência Brasil, 01/05/2026", "https://agenciabrasil.ebc.com.br/geral/noticia/2026-05/brasil-tem-menor-numero-de-homicidios-e-latrocinios-em-dez-anos"]]},
+      {"id": "L12", "lado": "lula", "v": "enganoso", "por": "nosso", "afirmacao": "“Contas sob controle; dívida de 80% do PIB não é muito”", "quem": "Haddad 17/09; Lula, JN 27/08/2026", "dado": "Meta de primário formalmente cumprida, com deduções. Mas a dívida bruta foi de 71,7% (dez/2022) para 82,9% do PIB (ago/2026) e o déficit nominal está em 9,5% do PIB.", "fora": "A IFI projeta déficit de R$ 86,1 bi em 2027 (PLOA: superávit de R$ 18,6 bi) e dívida acima de 100% do PIB em 2032.", "fontes": [["IFI, RAF set/2026", "https://www12.senado.leg.br/ifi/ultimas-publicacoes/relatorio-de-acompanhamento-fiscal-set-2026"], ["BCB SGS 13762", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13762/dados/ultimos/12?formato=json"]]},
+      {"id": "L13", "lado": "lula", "v": "exagerado", "por": "Lupa", "afirmacao": "“Estamos construindo um país livre do feminicídio”", "quem": "Lula, ONU 22/09/2026", "dado": "1.571 feminicídios em 2025, recorde pelo 4º ano seguido (FBSP).", "fora": "—", "fontes": [["Lupa, 01/10/2026", "https://www.agencialupa.org/noticias/2026/10/01/erros-e-acertos-dos-candidatos-que-disputam-a-presidencia-do-brasil-em-2026/"]]},
+      {"id": "L14", "lado": "lula", "v": "falso", "por": "Lupa", "afirmacao": "“O Brasil tem um dos combustíveis mais baratos”", "quem": "Lula, 14/04/2026", "dado": "68º mais barato entre 170 países.", "fora": "O preço só está contido por subvenção e corte de tributo; a defasagem é conta a pagar em 2027.", "fontes": [["Lupa, 14/04/2026", "https://www.agencialupa.org/checagem/2026/04/14/lula-exagera-ao-falar-de-empregos-e-erra-sobre-preco-de-combustiveis-no-brasil/"]]},
+      {"id": "F1", "lado": "flavio", "v": "exagerado", "por": "nosso", "afirmacao": "“O poder de compra do brasileiro acabou”", "quem": "Flávio, vídeo de 19/07/2026", "dado": "Renda real +13,9% desde o fim de 2022; o mínimo comprava 1,59 cesta em SP em 2022 e 1,93 em jan/2026.", "fora": "O sentimento tem base (dívida recorde, café e carne caros, 62% dizem ter perdido poder de compra); “acabou” não.", "fontes": [["Metrópoles", "https://www.metropoles.com/brasil/flavio-compara-precos-entre-governos-bolsonaro-e-lula-poder-de-compra-acabou"]]},
+      {"id": "F2", "lado": "flavio", "v": "enganoso", "por": "nosso", "afirmacao": "“Picanha a R$ 88,90 hoje; em 2019 era R$ 49,98”", "quem": "Flávio, 19/07/2026", "dado": "Picanha no IPCA: +38,0% em 2020–22 e +7,8% de jan/2023 a ago/2026 (queda real). Mas +9,8% em 12 meses (ciclo do boi).", "fora": "A maior parte da alta desde 2019 é anterior a 2023; preço de uma loja não é média.", "fontes": [["Diário do Comércio", "https://diariodocomercio.com.br/economia/precos-picanha-alta-lula-3/"]]},
+      {"id": "F3", "lado": "flavio", "v": "enganoso", "por": "Lupa: falta contexto", "afirmacao": "“Lula deixou o povo endividado”", "quem": "Flávio, live 01/10/2026", "dado": "Endividamento: 41,5% da renda (dez/2019) → 49,1% (dez/2022) → 49,9% (jul/2026).", "fora": "O salto do estoque foi em 2020–22. Sob Lula pioraram o custo (Selic de 15%), a inadimplência (3,9% → 6,0%) e o comprometimento de renda (27,6% → 28,7%).", "fontes": [["Lupa, live 01/10", "https://www.agencialupa.org/checagem/2026/10/01/ao-vivo-checagem-da-live-de-flavio-bolsonaro/"], ["BCB SGS 29037", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.29037/dados/ultimos/12?formato=json"]]},
+      {"id": "F4", "lado": "flavio", "v": "falso", "por": "Lupa", "afirmacao": "“Lula deixou o povo brasileiro com fome”", "quem": "Flávio, 01/10/2026", "dado": "Fora do Mapa da Fome desde jul/2025; insegurança alimentar grave de 0,6% (SOFI 2026).", "fora": "Comer bem continua caro: 21,1% não pagam uma dieta saudável.", "fontes": [["Lupa, live 01/10", "https://www.agencialupa.org/checagem/2026/10/01/ao-vivo-checagem-da-live-de-flavio-bolsonaro/"]]},
+      {"id": "F5", "lado": "flavio", "v": "correto", "por": "Lupa", "afirmacao": "“Recorde de carga tributária”", "quem": "Daniella Marques (coord. econômica), 01/10/2026", "dado": "32,4% do PIB em 2025, +1,2 p.p. desde 2022.", "fora": "Parte vem de crescimento da base e formalização; a isenção do IR reduz a carga da renda média.", "fontes": [["Lupa, 01/10/2026", "https://www.agencialupa.org/noticias/2026/10/01/erros-e-acertos-dos-candidatos-que-disputam-a-presidencia-do-brasil-em-2026/"]]},
+      {"id": "F6", "lado": "flavio", "v": "falso", "por": "Lupa", "afirmacao": "“Recorde de falência de empresas”", "quem": "Daniella Marques, 01/10/2026", "dado": "Pedidos de falência: 823 (2023) → 812 (2024) → 686 (2025), em queda.", "fora": "O que bateu recorde foi a recuperação judicial (2.273 pedidos em 2024; 2.466 CNPJs em 2025). A palavra certa teria tornado a frase correta.", "fontes": [["Serasa Experian", "https://www.serasaexperian.com.br/sala-de-imprensa/indicadores/recuperacoes-judiciais-avancam-no-brasil-e-atingem-25-mil-empresas-em-2025-maior-nivel-da-serie-aponta-serasa-experian/"]]},
+      {"id": "F7", "lado": "flavio", "v": "correto", "por": "Lupa", "afirmacao": "“Maior juro real do mundo”", "quem": "Flávio, JN 28/08/2026", "dado": "Juro real de ~9,7% em ago/2026, o maior do mundo.", "fora": "A Selic é do Copom autônomo (LC 179/2021). Em dez/2022 a Selic também estava em 13,75%.", "fontes": [["Lupa, 01/10/2026", "https://www.agencialupa.org/noticias/2026/10/01/erros-e-acertos-dos-candidatos-que-disputam-a-presidencia-do-brasil-em-2026/"]]},
+      {"id": "F8", "lado": "flavio", "v": "sem_base", "por": "nosso", "afirmacao": "“Com minha eleição os juros caem na reunião seguinte do Copom; cada 1 p.p. = R$ 90 bi”", "quem": "Flávio, 17/09 e 28/09/2026", "dado": "O Copom decide por inflação e expectativas. O BC estima ~R$ 55–57 bi por 1 p.p. de Selic mantido 12 meses, não R$ 90 bi.", "fora": "Os juros futuros podem cair se o mercado acreditar no ajuste; a Selic não cai por resultado eleitoral.", "fontes": [["RIC, 17/09/2026", "https://ric.com.br/economia/veja-o-que-cada-candidato-a-presidencia-pensa-sobre-a-selic-taxa-de-juros-basica/"], ["IstoÉ Dinheiro (estimativa do BC)", "https://istoedinheiro.com.br/custo-divida-publica-selic-14-porcento-impacta-contas"]]},
+      {"id": "F9", "lado": "flavio", "v": "sem_base", "por": "nosso", "afirmacao": "“Corte de R$ 190 bi; quem depende de ajuda não perde. Ponto.”", "quem": "Daniella Marques, 03/08/2026; plano, p. 42–43", "dado": "As despesas discricionárias do Executivo no PLOA 2027 somam R$ 222,1 bi; 91,7% da despesa é obrigatória. Em 25/09 a equipe já falava em R$ 300 bi e em desvincular os pisos de saúde e educação.", "fora": "Securitização e venda de imóveis são receitas únicas, não corte recorrente. Não houve lista de rubricas.", "fontes": [["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/daniella-marques-diz-que-plano-de-flavio-bolsonaro-preve-corte-de-r-190-bi-em-gastos/"], ["CNN, 25/09/2026", "https://www.cnnbrasil.com.br/blogs/caio-junqueira/eleicoes/flavio-planeja-pec-da-transicao-com-corte-de-gastos-de-r-300-bilhoes/"]]},
+      {"id": "F10", "lado": "flavio", "v": "sem_base", "por": "nosso", "afirmacao": "“IVA de 20%”", "quem": "Flávio, evento da CNI, 22/06/2026 (fora do plano)", "dado": "A alíquota de referência estimada é de 28%–28,5%. Perda de R$ 150 bi a R$ 560 bi por ano, conforme a leitura.", "fora": "Não há fonte de compensação; Flávio votou contra a PEC 45 e falou em “pausar” a reforma.", "fontes": [["reformatributaria.com", "https://www.reformatributaria.com/reforma-tributaria-nas-eleicoes/flavio-bolsonaro-diz-que-fara-nova-reforma-tributaria-e-menciona-iva-de-20/"]]},
+      {"id": "F11", "lado": "flavio", "v": "sem_base", "por": "nosso", "afirmacao": "“Crescimento sustentado de 4% ao ano por uma década”", "quem": "Plano registrado, p. 49", "dado": "Média de 2011–2025: 1,4% ao ano. Desde 2003, só cinco anos chegaram a 4%. Potencial estimado pelo FMI: ~2,5%.", "fora": "Meta sem estimativa de produtividade ou investimento; a taxa de investimento está em ~16% do PIB.", "fontes": [["BCB SGS 7326", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.7326/dados?formato=json"]]},
+      {"id": "F12", "lado": "flavio", "v": "enganoso", "por": "nosso", "afirmacao": "“Bolsonaro deixou superávit de R$ 54 bi; Lula tem rombo de R$ 1 tri por ano”", "quem": "Jair Bolsonaro, redes (data exata não confirmada); Revista Oeste, 2026", "dado": "Primário de 2022 de +R$ 54 bi (correto). Mas “R$ 1 tri” é o déficit nominal, com juros (8,3%–8,8% do PIB); o nominal de 2022 foi 4,57% do PIB.", "fora": "Compara primário de um com nominal de outro. O superávit de 2022 teve precatórios adiados e receitas extraordinárias. Ainda assim, os déficits primários voltaram com Lula.", "fontes": [["Diário do Poder", "https://diariodopoder.com.br/brasil-e-regioes/csa-brasil/bolsonaro-critica-lula-por-contas-esfaceladas-e-um-trilhao-em-deficit"], ["Gazeta do Povo", "https://www.gazetadopovo.com.br/economia/rombo-fiscal-contas-publicas-lula-bolsonaro/"]]},
+      {"id": "F13", "lado": "flavio", "v": "sem_base", "por": "nosso (impreciso)", "afirmacao": "“50 milhões de brasileiros vivem em áreas controladas por facções”", "quem": "Flávio, Curitiba, 29/05/2026", "dado": "Datafolha/FBSP: 28,5 mi (19%) em bairros dominados (out/2025); 68,7 mi (41,2%) relatam presença de grupos criminosos (mai/2026).", "fora": "O número não corresponde a nenhuma das medidas, embora a ordem de grandeza seja plausível. É pesquisa de percepção, não mapa.", "fontes": [["Exame", "https://exame.com/brasil/datafolha-68-milhoes-vivem-em-bairros-dominados-por-faccoes-e-milicias/"]]},
+      {"id": "F14", "lado": "flavio", "v": "falso", "por": "Lupa", "afirmacao": "“Lula, você é o pai do tigrinho”", "quem": "Flávio, live 01/10/2026", "dado": "As apostas de quota fixa foram criadas pela Lei 13.756/2018 (Temer); Lula regulamentou o setor (Lei 14.790/2023).", "fora": "A regulamentação de 2023 coincidiu com a explosão do setor; a crítica ao custo social é legítima, a paternidade não.", "fontes": [["Lupa, live 01/10", "https://www.agencialupa.org/checagem/2026/10/01/ao-vivo-checagem-da-live-de-flavio-bolsonaro/"]]},
+      {"id": "M1", "lado": "mercado", "v": "exagerado", "por": "nosso", "afirmacao": "“Lula quebrou o Brasil”", "quem": "Revista Oeste, 24/07/2026", "dado": "Não há calote nem crise cambial; primário de −0,4% do PIB. Mas a dívida subiu 11 p.p. do PIB desde dez/2022, sem estabilização à vista.", "fora": "“Quebrou” é exagerado; “trajetória insustentável sem ajuste” é consenso (IFI, FMI, Anexo de Riscos do PLOA).", "fontes": [["Revista Oeste", "https://revistaoeste.com/revista/edicao-332/lula-quebrou-o-brasil/"]]},
+      {"id": "M2", "lado": "mercado", "v": "enganoso", "por": "nosso", "afirmacao": "“Risco de crise: dívida acima de 100% e Ibovespa −25%”", "quem": "Morgan Stanley, 24/08/2026", "dado": "É o cenário adverso, sem ajuste. No favorável, Selic de 9,75%.", "fora": "Correto como cenário condicional; enganoso quando citado como previsão.", "fontes": [["Forças Terrestres (resumo do relatório)", "https://www.forte.jor.br/2026/08/25/morgan-stanley-dedica-relatorio-de-126-paginas-as-eleicoes-brasileiras-e-alerta-para-risco-fiscal-no-pos-2026/"]]},
+      {"id": "M3", "lado": "mercado", "v": "enganoso", "por": "nosso", "afirmacao": "“Dólar a R$ 4,50 com Flávio e a R$ 5,80 com Lula”", "quem": "Posts virais atribuídos ao Goldman Sachs, set–out/2026", "dado": "O Goldman condiciona R$ 4,50–4,80 a compromisso fiscal e R$ 5,80 a ajuste travado, e diz que as decisões pós-eleição pesam mais que o nome.", "fora": "Transforma projeção condicional em promessa.", "fontes": [["Investing, 01/10/2026", "https://br.investing.com/analysis/dolar-cai-com-flavio-e-sobe-com-lula-200479939"]]},
+      {"id": "M4", "lado": "mercado", "v": "enganoso", "por": "nosso", "afirmacao": "“Pacote eleitoral de R$ 215–270 bi”", "quem": "CNN 24/07; Insper, set/2026", "dado": "As somas existem, mas misturam crédito, fundos (FGTS, BNDES) e renúncia com gasto primário.", "fora": "A comparação direta com os R$ 41,2 bi da PEC Kamikaze (2022) não vale. O ponto válido: crédito parafiscal aumenta a dívida sem aparecer no primário.", "fontes": [["CNN, 24/07/2026", "https://www.cnnbrasil.com.br/economia/macroeconomia/acoes-do-governo-lula-somam-ao-menos-r-256-9-bilhoes-no-ano-eleitoral/"]]},
+      {"id": "M5", "lado": "mercado", "v": "correto", "por": "nosso", "afirmacao": "“Expectativas desancoradas; inflação acima da meta em 2026”", "quem": "Ata do Copom (set/2026); Focus", "dado": "Focus: 4,99% (2026) e 4,31% (2027), contra centro de 3%. Copom: 5,2% em 2026.", "fora": "—", "fontes": [["SpaceMoney, ata do Copom", "https://www.spacemoney.com.br/economia/ata-copom-cautela-ipca-2026"]]},
+      {"id": "M6", "lado": "mercado", "v": "exagerado", "por": "nosso", "afirmacao": "“PLOA 2027 entrega superávit de R$ 18,6 bi” (governo) contra “déficit de R$ 86,1 bi” (IFI)", "quem": "MPO 31/08; IFI 17/09/2026", "dado": "O PLOA supõe PIB de 2,5% (IFI 1,8%; Focus 1,5%) e massa salarial de +10,1% (IFI 7,3%), além de R$ 42 bi de Imposto Seletivo sem lei enviada.", "fora": "A projeção do governo é otimista; incluída aqui por ser disputa entre projeções oficiais e de analistas.", "fontes": [["IFI, RAF set/2026", "https://www12.senado.leg.br/ifi/ultimas-publicacoes/relatorio-de-acompanhamento-fiscal-set-2026"]]}
+    ]
+  },
+  "empresas": {
+    "incidencia_lit": [
+      "Na literatura internacional, quem paga o imposto sobre empresas não é só a empresa: na Alemanha, os trabalhadores arcam com ~51% via salários menores (Fuest, Peichl e Siegloch, AER 2018); nos EUA, donos ~40%, trabalhadores 30–35% e donos de terra 25–30% (Suárez Serrato e Zidar, AER 2016).",
+      "Para o Brasil não há estudo específico sobre a incidência do IRPJ/CSLL nos salários (lacuna). A faixa de trabalho usada aqui (30–50% salários, 40–60% capital, 0–20% consumidores) é hipótese de confiança média."
+    ],
+    "incidencia_fontes": [["Fuest, Peichl e Siegloch (AER)", "https://www.aeaweb.org/articles?id=10.1257%2Faer.20130570"], ["Suárez Serrato e Zidar (AER)", "https://www.aeaweb.org/articles?id=10.1257/aer.20141702"]],
+    "medidas": [
+      ["Imposto mínimo até 10% acima de R$ 600 mil/ano e retenção de 10% sobre dividendos acima de R$ 50 mil/mês (Lei 15.270/2025)", "compensa ~R$ 25,4 bi da isenção do IR", "~141 mil contribuintes", "Sobretudo o 0,1% mais rico, que recebe quase metade dos lucros e dividendos. Parte pode ser repassada via menos reinvestimento ou mudança de forma jurídica (não medido no Brasil).", "alta / média"],
+      ["JCP: IR de 15% para 17,5%", "R$ 3,1 bi (2026)", "acionistas", "Acionistas; pouco efeito sobre salários no curto prazo.", "média"],
+      ["Bets: 12% para 15% da receita", "R$ 0,26 bi", "operadores", "Apostadores (odds piores) e operadores. Sem estudo de repasse.", "baixa"],
+      ["CSLL de fintechs e financeiras escalonada até 20% em 2028", "R$ 1,1 bi (2026)", "instituições financeiras", "Tomadores de crédito, via spread (tributos e FGC = 21% do spread em 2024). Atinge mais quem usa crédito caro, desproporcionalmente baixa renda.", "média"],
+      ["Corte linear de 10% em benefícios fiscais federais (LC 224/2025)", "R$ 16,5 bi", "empresas beneficiadas", "Misto: preços dos setores beneficiados, margens e emprego onde havia desoneração.", "baixa"],
+      ["IOF (Decreto 12.499/2025, validado pelo STF): crédito PJ, câmbio, VGBL", "R$ 27,7 bi (2026, previsão)", "empresas que tomam crédito; quem compra câmbio", "Custo de capital de giro de pequenas empresas (MEI e Simples pagam o dobro) → preços e investimento. É o item menos progressivo do pacote.", "média"]
+    ],
+    "medidas_fontes": [["CNN, mar/2026", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/governo-projeta-arrecadar-r-44-bi-com-taxacao-de-fintechs-bets-e-jcp/"], ["Lei 15.270/2025", "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15270.htm"], ["IBRE, concentração e dividendos", "https://observatorio-politica-fiscal.ibre.fgv.br/reformas/tributacao/concentracao-de-renda-e-reforma-do-irpf-novas-evidencias"], ["Contábeis, IOF/STF", "https://www.contabeis.com.br/noticias/71814/stf-restabelece-aumento-do-iof-e-dobra-taxa-para-mei/"]],
+    "simetrico": [
+      ["Lula", "Itens regressivos possíveis: IOF e CSLL repassados ao crédito; déficit contínuo que mantém o juro alto, e juro alto pesa mais para o devedor de baixa renda. Itens progressivos: isenção do IR até R$ 5 mil (classe média baixa formal) e tributação do topo."],
+      ["Flávio", "Itens regressivos possíveis: corte de R$ 190–300 bi sem composição definida, que pode recair em transferências ou na regra do mínimo, e reversão de tributos sobre o topo (o ganho direto vai ao 0,1% mais rico). Itens progressivos: possível prêmio de risco menor, que barateia o crédito, e IVA menor, se financiado sem cortar transferências."]
+    ],
+    "resultados": [
+      ["PIB, média anual", "1,43%", "2,98% (2023–25); 2026 ~1,9%"],
+      ["Taxa de investimento (FBCF/PIB), média", "16,9%", "16,7% (2023–25); 1º sem/2026: 16,3%"],
+      ["Investimento direto no país, líquido (US$ bi/ano, média)", "57,3", "74,8 (2023–25); 12 meses até ago/2026: 86,6"],
+      ["Confiança empresarial (ICE/FGV)", "96,1 (dez/19) → 90,7 (dez/22)", "89,3 (set/26), em queda"],
+      ["Pedidos de recuperação judicial (Serasa)", "891 (2021); 833 (2022)", "1.405 (2023); 2.273 (2024, recorde); 2.466 CNPJs (2025)"],
+      ["Pedidos de falência", "n.d.", "823 → 812 → 686 (2023–25), em queda"],
+      ["Selic no fim do período", "13,75% (dez/22)", "15% (2025) → 13,75% (set/26)"]
+    ],
+    "resultados_fontes": [["BCB SGS 22885 (IDP)", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.22885/dados?formato=json"], ["IBGE/SIDRA 1846", "https://sidra.ibge.gov.br/tabela/1846"], ["O Povo/BC, IDP ago/2026", "https://www.opovo.com.br/noticias/economia/2026/09/28/investimento-direto-no-pais-idp-soma-uss-7396-bilhoes-em-agosto-revela-bc.html"], ["CNN, ICE set/2026", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/fgv-indice-de-confianca-empresarial-cai-12-em-setembro-a-893-pontos/"]],
+    "resultados_leitura": "O investimento estrangeiro e o PIB foram melhores em 2023–25, o que não combina com fuga de capital produtivo. A taxa de investimento ficou estável e baixa (bem abaixo dos ~20% de 2010–13). A confiança empresarial está abaixo de 100 e caindo, como no fim de 2022. A FBCF acompanhou mais o ciclo de juros (+7,3% em 2024 com Selic de 10,5–11%; +2,9% em 2025 com Selic subindo a 15%) do que o calendário tributário: atribuir a desaceleração a “risco antinegócio” em vez de aos juros não tem evidência que separe os dois. Pandemia, juros globais, tarifas dos EUA e petróleo pesam nos dois períodos.",
+    "vereditos": [
+      ["E1", "“O governo Lula é anti-empresa”", "oposição, parte do mercado", "exagerado", "Subiu tributos sobre empresas e alta renda e teve retórica hostil ao BC em 2023–24, mas também fez a reforma tributária pedida pela indústria, crédito do BNDES, recorde de concessões e teve IDP maior que em 2019–22."],
+      ["E2", "“Lula aumentou impostos sobre empresas e investidores”", "oposição", "verdadeiro", "IOF de 2025, reoneração gradual da folha (Lei 14.973/2024, de 2025 a 2028), dividendos em 2026, fundos exclusivos e offshores (Lei 14.754/2023), subvenções de ICMS (Lei 14.789/2023)."],
+      ["E3", "“Mais de 30 impostos criados ou aumentados”", "Flávio, 28/08/2026", "exagerado", "Houve muitas mudanças, mas a contagem mistura impostos, tributos e reonerações; o Aos Fatos retirou a própria classificação para revisão."],
+      ["E4", "“Nunca se investiu tanto na indústria e em infraestrutura”", "governo", "enganoso", "Crédito aprovado e contratos de concessão são recordes, mas a FBCF/PIB não subiu. Volume aprovado não é investimento realizado."],
+      ["E5", "“Flávio é o candidato da liberdade econômica e das empresas”", "campanha, mercado", "exagerado", "Plano pró-empresa (privatizações caso a caso, OCDE, “negociado sobre o legislado”), mas votou contra a reforma tributária pedida pela indústria e o IVA de 20% e o corte de R$ 190–300 bi não têm conta."],
+      ["E6", "“Com Flávio, o mercado e o investimento voltam”", "campanha, bancos", "sem evidência", "Verdadeiro sobre preços de ativos (o real valorizou quando ele subiu nas pesquisas); sem evidência sobre investimento produtivo."],
+      ["E7", "“A oposição é pró-empresa só para os ricos”", "PT, CUT", "exagerado", "Há sinais de viés para a alta renda (emenda para isentar dividendos de sociedades de profissionais liberais), mas o plano mantém programas sociais e um IVA menor reduz imposto sobre consumo, que pesa mais para os pobres."],
+      ["E8", "“O ajuste de Flávio vai causar recessão”", "economistas à esquerda", "sem evidência", "Sem lista de cortes não dá para estimar; o efeito depende de quanto o ajuste reduz juros. É opinião, não projeção com modelo."]
+    ],
+    "mercado_precifica": [
+      "Mercados de previsão (proibidos no Brasil, liquidez pequena) davam a Flávio 58–59% em 20/09 e 64–65% em torno do 1º turno. As pesquisas mostravam empate técnico ou Lula à frente no 2º turno.",
+      "Os preços de ativos seguiram mais as pesquisas: dólar na máxima de 6 meses (R$ 5,23) em 28/09 com pesquisas melhores para Lula; em 05/10, após Flávio liderar o 1º turno (47,2% x 45,0%), o EWZ subiu ~8% na abertura.",
+      "Os cenários condicionais dos bancos (dólar de R$ 4,80–4,90 com ajuste crível, R$ 5,50–5,80 sem) implicam uma probabilidade de Flávio de 0,40–0,60 no câmbio à vista (cálculo de confiança baixa)."
+    ],
+    "mercado_fontes": [["CNN, mercados de previsão", "https://www.cnnbrasil.com.br/eleicoes/flavio-atinge-59-de-probabilidade-de-vitoria-na-kalshi-e-58-no-polymarket/"], ["InfoMoney, dólar e Ibovespa", "https://www.infomoney.com.br/mercados/ibovespa-dolar-primeiro-turno-eleicoes-2026-4-pregoes/"], ["Bloomberg Línea, Goldman", "https://www.bloomberglinea.com.br/mercados/dolar-pode-ir-de-r-450-a-r-580-apos-eleicao-e-depende-do-fiscal-segundo-o-goldman/"]],
+    "orcamento": [
+      ["Cada 10 p.p. a mais de chance de um candidato no mercado", "< 0,3% da renda real", "Câmbio −1,3% a −1,9% e IPCA −0,13 a −0,19 p.p., se o movimento durar 12 meses (confiança baixa)."],
+      ["Diferença total entre os dois vencedores, se persistir 12 meses", "IPCA 1,2–2,5 p.p.; comida 3–6,5 p.p.", "Supõe câmbio 12–25% diferente entre os cenários; depende das políticas, não do nome (confiança baixa a média)."],
+      ["Dólar 10% mais caro, por faixa de renda", "+1,14% (até 2 SM) x +0,84% (acima de 25 SM)", "A comida pesa 3,4 vezes mais na cesta de quem ganha até 2 SM (POF 2017–18; repasse do BC de 0,26 para alimentos)."]
+    ],
+    "erros": [
+      ["2002–03, transição de Lula", "EMBI de 2.436 pontos, dólar a R$ 3,95, temor de calote", "Primário de 4,32% em 2003; EMBI de 468 no fim de 2003; dólar a ~R$ 2,89", "Errou: pessimismo excessivo com Lula (mas a renda real caiu 7,4% em 2003, na crise que o próprio prêmio ajudou a gerar)"],
+      ["2019, 1º ano de Bolsonaro/Guedes", "Focus de jan/2019: PIB de 2,53% com a agenda de reformas", "PIB de 1,2%, mesmo com a reforma da Previdência aprovada", "Errou: otimismo excessivo com o programa pró-mercado"],
+      ["2023, 1º ano de Lula 3", "Focus de jan/2023: PIB de 0,8%", "PIB de ~2,9% na 1ª divulgação (3,2% revisado); dólar −8%", "Errou: pessimismo excessivo com Lula"],
+      ["2014–16 (Dilma)", "Prêmio de risco subindo desde 2014 com o primário negativo", "Recessão acumulada de ~6,7% (2015–16) e desemprego de até 13,7%", "Acertou a direção"],
+      ["Dez/2024, pacote + isenção do IR", "Dólar a R$ 6,26, juros futuros em alta", "Selic a 15% e IPCA acima da meta, mas sem crise; o real valorizou ~10% em 2025", "Acerto parcial: o custo de juros foi real, o pânico reverteu"]
+    ],
+    "erros_licao": "O mercado acerta mais a direção quando a política fiscal já piorou do que quando reage a expectativas sobre um candidato. Errou para os dois lados no primeiro ano de governos novos (2003 e 2023 pessimista com Lula; 2019 otimista com a agenda liberal).",
+    "erros_fontes": [["CNN/Focus 2023", "https://www.cnnbrasil.com.br/economia/seu-bolso/meu-dinheiro/boletim-focus-aumenta-projecoes-para-pib-com-crescimento-de-231-em-2023/"], ["Poder360/Focus 2019", "https://www.poder360.com.br/economia/projecao-do-pib-em-2019-cai-para-1-diz-boletim-focus/"], ["BCB SGS 7326 (PIB)", "https://api.bcb.gov.br/dados/serie/bcdata.sgs.7326/dados?formato=json"]]
+  },
+  "salario_minimo": {
+    "intro": "Um aumento real do salário mínimo não sobe só a renda de quem ganha o piso: mexe em preços, salários acima do piso, emprego formal e contas públicas. Para cada ponto de ganho real (g):",
+    "ganha": [
+      "Quem ganha o piso formal e os 70,8% dos beneficiários do INSS que recebem 1 SM: +g (≈ +0,95% de poder de compra líquido por ponto).",
+      "Informais perto do piso: cerca de metade de g (“efeito farol”: o mínimo guia salários mesmo sem carteira).",
+      "O trabalhador mediano do Nordeste, onde o mínimo já equivale a ~100% da renda mediana em sete estados: +0,6 a 0,9 de g. No Sudeste, quase nada (≈ +0,05%).",
+      "Entre 1996 e 2018 o mínimo explicou ~45% da queda da desigualdade de salários formais (Engbom e Moser, AER 2022)."
+    ],
+    "paga": [
+      "Consumidores de serviços intensivos em mão de obra (doméstica, cabeleireiro, reparos, restaurante): 10% de mínimo → serviços +0,6 p.p. e IPCA ~+0,3 p.p. em um ano (BCB, 2013). Na Hungria, ~75% do custo foi pago por consumidores.",
+      "O orçamento público: cada R$ 1 no mínimo custa R$ 413,2 mi por ano; 1 p.p. a mais de ganho real em 2027 custa ~R$ 7,2 bi/ano, de forma permanente. A despesa indexada ao piso (~25% da primária) comprime as discricionárias.",
+      "Quem está acima de 3 SM: ≈ −0,03% a −0,08% pelo efeito-preço, antes de juros e impostos.",
+      "Risco de emprego onde o mínimo “morde” mais: o efeito foi pequeno no Brasil de 1996–2012 (boom de commodities, mínimo a 30–55% da mediana), mas no Nordeste de hoje o mínimo está fora dessa faixa. Estimativa central: −0,15% do emprego formal por ponto no Nordeste, mais para jovens e quem não tem ensino médio."
+    ],
+    "consenso": "Consenso: repasse pequeno ao índice geral, forte compressão da base salarial, efeito agregado pequeno sobre emprego no passado. Em disputa: migração para a informalidade, validade das estimativas antigas com o mínimo perto da mediana no Nordeste, e se o mínimo é o melhor instrumento contra a pobreza.",
+    "fontes": [["Engbom e Moser (AER 2022)", "https://www.aeaweb.org/articles?id=10.1257%2Faer.20181506"], ["Harasztosi e Lindner (AER 2019)", "https://pubs.aeaweb.org/doi/10.1257/aer.20171445"], ["BCB, RI mar/2013", "https://www.bcb.gov.br/content/ri/relatorioinflacao/201303/RELINF201303-ri201303b8p.pdf"], ["DIEESE NT 289", "https://www.dieese.org.br/notatecnica/2025/notaTec289salarioMinimo.pdf"], ["CNN, custo de R$ 1 no mínimo", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/proposta-do-minimo-de-2027-pode-elevar-despesas-do-governo-em-r-496-bi/"], ["Times Brasil (IMDS)", "https://timesbrasil.com.br/brasil/salario-minimo-ganha-peso-e-chega-perto-da-renda-mediana-em-sete-estados-nordestinos/"]]
+  },
+  "como_ler": [
+    {
+      "k": "a",
+      "pergunta": "O número mede mesmo o que está sendo dito?",
+      "sinais": ["Taxa contra nível (inflação do mês x preço desde 2019).", "Unidade errada (litro x km; contrato antigo x aluguel novo).", "Média que esconde dois grupos (tarifa social x quem paga a CDE).", "Renda bruta x renda que sobra depois da dívida."],
+      "governo": "“Inflação de 4,2%” e “deflação em agosto”: corretas, mas a comida segue 76% acima de 2019 e agosto foi o bônus de Itaipu.",
+      "oposicao": "“O IPCA não reflete a realidade” com índices pessoais sem amostra: a parte verdadeira (nível da comida) já está no próprio IPCA.",
+      "mercado": "Defasagem de 102% no diesel (Abicom): direção certa, tamanho depende de uma métrica contestada, calculada por entidade interessada."
+    },
+    {
+      "k": "b",
+      "pergunta": "Por que este período, esta base e esta métrica?",
+      "sinais": ["Períodos de tamanhos diferentes ou escolhidos a dedo.", "Métricas diferentes lado a lado (primário x nominal; vínculos x pessoas).", "Atribuir a um governo o que veio de choque externo.", "Citar só o “recorde” ou só a “desaceleração” do mesmo quadro."],
+      "governo": "“Alimentos 56% com Bolsonaro, 13% comigo” (L5) e “10,1 milhões de empregos” (L2): números certos, conclusão maior que o dado.",
+      "oposicao": "“Superávit de R$ 54 bi x rombo de R$ 1 tri” (F12) e “picanha de R$ 49,98 em 2019” (F2): mistura métricas e períodos.",
+      "mercado": "“Dólar a R$ 4,50 com Flávio” (M3): projeção condicional virou promessa."
+    },
+    {
+      "k": "c",
+      "pergunta": "O dado citado existe na fonte oficial?",
+      "sinais": ["Número que não aparece em nenhuma série oficial.", "Palavra trocada que muda o fato (falência x recuperação judicial).", "Promessa sem conta: valor sem lista de cortes, meta sem caminho."],
+      "governo": "PIB “só acima de 3% quando voltei” (L6), “herdei déficit de 2,8%” (L7), “combustível dos mais baratos” (L14).",
+      "oposicao": "“Lula deixou o povo com fome” (F4), “recorde de falências” (F6), “pai do tigrinho” (F14). Promessas sem conta: F8 a F11.",
+      "mercado": "Projeção oficial com premissas otimistas, como o PLOA 2027 (M6), é o caso mais próximo do lado do governo."
+    },
+    {
+      "k": "d",
+      "pergunta": "Há documento mostrando que o número foi adulterado?",
+      "sinais": ["Denúncia técnica de servidores ou do sindicato.", "Revisão de série sem nota técnica.", "Mudança de método sem explicação ou sem série retroativa.", "Sem isso, “manipulação” é alegação, não fato."],
+      "governo": "Nenhum documento de interferência nos números do IBGE na gestão atual; a crise é administrativa (greve, IBGE+). A bandeira verde de outubro chamou atenção pelo momento, mas segue regra paramétrica.",
+      "oposicao": "“O IBGE maquia o desemprego por causa do Bolsa Família” (Jair e Flávio Bolsonaro, 2024–26): falso pelo método da OIT, o mesmo usado desde 2012, inclusive no governo Bolsonaro.",
+      "mercado": "Erros de dado honesto não são manipulação: o Caged inflado na transição para o eSocial (2020–21) e a nota do BC de 2024 sobre bets (fluxo bruto lido como gasto)."
+    }
+  ]
+}

@@ -93,3 +93,31 @@ def test_curiosidades_json_usa_placar_final():
     assert fl in card["texto"] and "44,98" not in card["texto"]
     assert "NÃO VERIFICADO" not in json.dumps([cu["cards"], cu["explicador"]], ensure_ascii=False)
     assert all(c.get("fonte_url") for c in cu["cards"])
+
+
+def test_index_tem_aba_realidade():
+    out = publicar.converter((publicar.ORIG / "index.html").read_text(encoding="utf-8"))
+    for alvo in ('id="tab-realidade"', 'id="painel-realidade"', "realidade.json", 'id="rd-cards"',
+                 'id="rd-claims"', 'id="rd-tally"', 'id="rd-empresas"', 'id="rd-ler"'):
+        assert alvo in out
+    assert '"realidade"' in out and "Realidade × discurso" in out
+
+
+def test_realidade_json_contagem_e_fontes():
+    rd = json.loads((publicar.ORIG / "realidade.json").read_text(encoding="utf-8"))
+    itens = rd["checagem"]["itens"]
+    conta = lambda lado, v: sum(1 for i in itens if i["lado"] == lado and i["v"] == v)
+    # balanço da nota de checagem (seção 0.4): mesma régua para os dois lados
+    assert [conta("lula", v) for v in ("correto", "hoje_exagerado", "enganoso", "exagerado", "falso", "sem_base")] == [3, 1, 5, 2, 3, 0]
+    assert [conta("flavio", v) for v in ("correto", "hoje_exagerado", "enganoso", "exagerado", "falso", "sem_base")] == [2, 0, 3, 1, 3, 5]
+    assert sum(1 for i in itens if i["lado"] == "mercado") == 6
+    escala = {e[0] for e in rd["checagem"]["escala"]}
+    assert all(i["v"] in escala and i["fontes"] and all(f[1].startswith("https://") for f in i["fontes"]) for i in itens)
+    assert all(c["fontes"] and c["tipo"] and set(c["tipo"]) <= {"a", "b", "c", "d"} for c in rd["indicadores"])
+    txt = json.dumps(rd, ensure_ascii=False)
+    assert "antes de publicar" not in txt and "de memória" not in txt
+    # nenhuma alegação de manipulação do IBGE sem evidência: o único cartão (d) diz "sem evidência"
+    d = [c for c in rd["indicadores"] if "d" in c["tipo"]]
+    assert len(d) == 1 and "Sem evidência" in d[0]["gap"]
+    divida = next(c for c in rd["indicadores"] if c["id"] == "divida")
+    assert "28,72%" in divida["gap_det"] and "29034" in divida["gap_det"] and "29265" in divida["verif"]

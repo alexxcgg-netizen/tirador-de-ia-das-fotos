@@ -130,7 +130,8 @@ def main():
     if (ORIG / "resultados_2t.json").exists():     # 2º turno com o 1º turno apurado (resultado_1t.py)
         shutil.copyfile(ORIG / "resultados_2t.json", DEST / "resultados_2t.json")
     for nome in ("mercado_ao_vivo.json", "benchmarks.json",    # painéis "Mercado ao vivo" e "Apuração ao vivo"
-                 "nordeste.json", "curiosidades.json"):        # abas "Nordeste" e "Curiosidades"
+                 "nordeste.json", "curiosidades.json",         # abas "Nordeste" e "Curiosidades"
+                 "realidade.json"):                            # aba "Realidade × discurso"
         copiar_opcional(ORIG / nome, DEST / nome)
     alt = AQUI.parent / "modelo_alternativo" / "resultados_alt.json"
     if alt.exists():                      # comparação com o modelo alternativo (lida relativamente pelo painel)

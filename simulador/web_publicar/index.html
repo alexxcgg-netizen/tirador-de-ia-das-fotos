@@ -19,6 +19,10 @@
   --accent: #2b2a27;
   --warn-bg: #fbf3e2;
   --warn-border: #e8cf96;
+  --ok-bg: #e8f1e9;
+  --ok-border: #9cc3a2;
+  --bad-bg: #f8e6e3;
+  --bad-border: #dc9d93;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -39,6 +43,10 @@
     --accent: #e9e8e2;
     --warn-bg: #2a2416;
     --warn-border: #5b4a22;
+    --ok-bg: #1a2a1d;
+    --ok-border: #3f6b47;
+    --bad-bg: #2e1b19;
+    --bad-border: #7a3d35;
   }
 }
 :root[data-theme="dark"] {
@@ -59,6 +67,10 @@
   --accent: #e9e8e2;
   --warn-bg: #2a2416;
   --warn-border: #5b4a22;
+  --ok-bg: #1a2a1d;
+  --ok-border: #3f6b47;
+  --bad-bg: #2e1b19;
+  --bad-border: #7a3d35;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -298,6 +310,57 @@ td.dvcol { min-width: 150px; width: 30%; }
 .mito b { display: block; margin-bottom: 4px; }
 td.pos { font-weight: 650; }
 .ap-veredito { font-size: 14px; margin: 0 0 8px; }
+/* Realidade × discurso */
+.rd-tipos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 860px) { .rd-tipos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .rd-tipos { grid-template-columns: 1fr; } }
+.rd-tipo { font-size: 13px; color: var(--text-2); }
+.rd-tipo b { color: var(--text); display: block; font-size: 14px; margin-bottom: 2px; }
+.tp { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 6px; font-size: 12px; font-weight: 700; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); margin-right: 4px; }
+.tp.d { background: var(--ok-bg); border-color: var(--ok-border); }
+.rd-card { display: flex; flex-direction: column; gap: 6px; font-size: 13px; overflow-wrap: anywhere; }
+.rd-card h3 { font-size: 15px; margin: 0; }
+.rd-card dl { margin: 0; }
+.rd-card dt { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+.rd-card dd { margin: 2px 0 0; color: var(--text-2); }
+.rd-gap { font-size: 26px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; line-height: 1.15; color: var(--text); }
+.rd-gap small { display: block; font-size: 12px; font-weight: 500; color: var(--text-3); letter-spacing: 0; }
+.rd-card p { margin: 0; color: var(--text-2); }
+.rd-card .nota { font-size: 12px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; }
+.rd-card .nota.alerta { background: var(--warn-bg); border-color: var(--warn-border); }
+.rd-card .fonte, .rd-fonte { margin-top: auto; font-size: 12px; color: var(--text-3); }
+.rd-niv .row { display: grid; grid-template-columns: minmax(110px, 36%) minmax(0, 1fr) 54px; gap: 8px; align-items: center; font-size: 13px; padding: 3px 0; }
+.rd-niv .trk { position: relative; height: 14px; background: var(--surface-2); border-radius: 3px; }
+.rd-niv .trk i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--text-3); }
+.rd-niv .row.ref .trk i { background: var(--accent); }
+.rd-niv .row.outra .trk i { background: transparent; border: 1.5px dashed var(--text-2); }
+.rd-niv .row.ref { font-weight: 650; }
+.rd-niv .trk .rl { position: absolute; top: -3px; bottom: -3px; border-left: 2px solid var(--text); }
+.rd-niv .v { text-align: right; font-variant-numeric: tabular-nums; }
+.vd { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); white-space: nowrap; }
+.vd.correto { background: var(--ok-bg); border-color: var(--ok-border); }
+.vd.enganoso, .vd.exagerado, .vd.hoje_exagerado { background: var(--warn-bg); border-color: var(--warn-border); }
+.vd.falso { background: var(--bad-bg); border-color: var(--bad-border); }
+.vd.sem_base { border-style: dashed; border-color: var(--text-2); background: transparent; }
+.rd-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 12px 0; font-size: 13px; }
+.rd-filtros select { font: inherit; font-size: 13px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); max-width: 100%; }
+.rd-filtros select:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.rd-claim { display: flex; flex-direction: column; gap: 6px; font-size: 13px; overflow-wrap: anywhere; }
+.rd-claim.lula { border-top: 4px solid var(--lula); } .rd-claim.flavio { border-top: 4px solid var(--flavio); } .rd-claim.mercado { border-top: 4px solid var(--text-3); }
+.rd-claim .hd { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--text-3); }
+.rd-claim .af { font-size: 14px; font-weight: 600; color: var(--text); margin: 0; }
+.rd-claim p { margin: 0; color: var(--text-2); }
+.rd-claim p b { color: var(--text); font-weight: 600; }
+.rd-tally td, .rd-tally th { white-space: normal; }
+.rd-tally td:first-child { min-width: 0; }
+.rd-tally .vd { white-space: normal; border-radius: 8px; }
+.rd-tally th { white-space: normal; vertical-align: bottom; }
+.rd-list { margin: 0; padding-left: 18px; font-size: 13px; color: var(--text-2); }
+.rd-list li { margin-bottom: 6px; }
+.rd-ler h3 { display: flex; align-items: center; gap: 6px; font-size: 15px; }
+.rd-ler dt { font-size: 12px; color: var(--text-3); margin-top: 8px; }
+.rd-ler dd { margin: 2px 0 0; color: var(--text-2); font-size: 13px; }
+.rd-ler ul { margin: 4px 0 0; padding-left: 18px; font-size: 13px; color: var(--text-2); }
 </style>
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 <header class="top">
@@ -315,6 +378,7 @@ td.pos { font-weight: 650; }
       <button role="tab" id="tab-primeiro-turno" data-tab="primeiro-turno" aria-controls="painel-primeiro-turno" aria-selected="false" tabindex="-1">1º turno: resultado e avaliação</button>
       <button role="tab" id="tab-estados" data-tab="estados" aria-controls="painel-estados" aria-selected="false" tabindex="-1">Mapa e estados</button>
       <button role="tab" id="tab-nordeste" data-tab="nordeste" aria-controls="painel-nordeste" aria-selected="false" tabindex="-1">Nordeste</button>
+      <button role="tab" id="tab-realidade" data-tab="realidade" aria-controls="painel-realidade" aria-selected="false" tabindex="-1">Realidade × discurso</button>
       <button role="tab" id="tab-modelos" data-tab="modelos" aria-controls="painel-modelos" aria-selected="false" tabindex="-1">Modelos e comparação</button>
       <button role="tab" id="tab-pesquisas" data-tab="pesquisas" aria-controls="painel-pesquisas" aria-selected="false" tabindex="-1">Pesquisas e mercado</button>
       <button role="tab" id="tab-bastidores" data-tab="bastidores" aria-controls="painel-bastidores" aria-selected="false" tabindex="-1">Bastidores e premissas</button>
@@ -544,6 +608,71 @@ td.pos { font-weight: 650; }
   <section id="ne-monitorar">
     <h2>O que observar até 25/10</h2>
     <div class="grid g3" id="ne-mon"></div>
+  </section>
+  </div>
+  <div role="tabpanel" class="painel" id="painel-realidade" data-painel="realidade" aria-labelledby="tab-realidade" tabindex="-1">
+  <section id="rd-intro">
+    <h2>Realidade × discurso: o que os números medem e o que cada lado diz</h2>
+    <p class="sub" id="rd-intro-txt">Carregando realidade.json…</p>
+    <nav class="st-nav" aria-label="Partes da aba Realidade × discurso" style="margin-bottom:12px"><a href="#rd-numeros">Número oficial × vida real</a><a href="#rd-checagem">Checagem dos discursos</a><a href="#rd-empresas">Empresas, impostos e mercado</a><a href="#rd-salario">Salário mínimo</a><a href="#rd-ler">Como ler</a></nav>
+    <div class="rd-tipos" id="rd-tipos"></div>
+    <div class="note" id="rd-regra" style="margin-top:12px"></div>
+  </section>
+  <section id="rd-numeros">
+    <h2>Número oficial × vida real</h2>
+    <p class="sub">Cada cartão traz o número publicado, o que ele não capta por construção, o tamanho da diferença e a fonte. A letra indica o tipo de diferença (a–d, acima). Nenhuma delas é erro ou fraude do órgão que publica o dado.</p>
+    <div class="grid g2">
+      <div class="card"><h3 id="rd-niv-t"></h3><div class="rd-niv" id="rd-niv"></div><p class="sub" id="rd-niv-nota" style="margin:8px 0 0"></p></div>
+      <div class="card" id="rd-percepcao"></div>
+    </div>
+    <div class="grid g3" id="rd-cards" style="margin-top:12px"></div>
+  </section>
+  <section id="rd-checagem">
+    <h2>Checagem dos discursos</h2>
+    <p class="sub" id="rd-chk-nota"></p>
+    <div class="grid g2">
+      <div class="card tbl-wrap" style="max-height:none"><table class="rd-tally" id="rd-tally"></table></div>
+      <div class="card"><h3>Padrão observado (descrição, não julgamento dos candidatos)</h3><ul class="rd-list" id="rd-padrao"></ul></div>
+    </div>
+    <div class="rd-filtros">
+      <div class="seg" role="group" aria-label="Filtrar por lado" id="rd-f-lado"></div>
+      <label>Veredito <select id="rd-f-v" aria-label="Filtrar por veredito"></select></label>
+      <span class="muted" id="rd-f-n" aria-live="polite"></span>
+    </div>
+    <div class="grid g2" id="rd-claims"></div>
+  </section>
+  <section id="rd-empresas">
+    <h2>Empresas, impostos e mercado</h2>
+    <p class="sub">Quem de fato paga cada tributo nem sempre é quem recolhe. Mesma régua para as medidas do governo e para as propostas da oposição; cada linha traz o grau de confiança.</p>
+    <div class="card"><h3>Quem paga o imposto sobre empresas</h3><ul class="rd-list" id="rd-inc-lit"></ul><p class="rd-fonte" id="rd-inc-fontes"></p></div>
+    <div class="card tbl-wrap" style="margin-top:12px;max-height:none"><table id="rd-medidas"></table><p class="rd-fonte" id="rd-medidas-fontes" style="margin:8px 0 0"></p></div>
+    <div class="grid g2" style="margin-top:12px" id="rd-simetrico"></div>
+    <h3 class="st-h3">Investimento e empresas: 2019–22 x 2023–26</h3>
+    <div class="card tbl-wrap" style="max-height:none"><table id="rd-result"></table><p class="sub" id="rd-result-leitura" style="margin:8px 0 0"></p><p class="rd-fonte" id="rd-result-fontes"></p></div>
+    <div class="card tbl-wrap" style="margin-top:12px;max-height:none"><table id="rd-emp-v"></table></div>
+    <h3 class="st-h3">O que o mercado precifica e quanto isso pesa no orçamento</h3>
+    <div class="grid g2">
+      <div class="card"><ul class="rd-list" id="rd-precifica"></ul><p class="rd-fonte" id="rd-precifica-fontes"></p></div>
+      <div class="card tbl-wrap" style="max-height:none"><table id="rd-orcamento"></table></div>
+    </div>
+    <h3 class="st-h3">Quando o mercado errou e quando acertou</h3>
+    <div class="card tbl-wrap" style="max-height:none"><table id="rd-erros"></table><p class="sub" id="rd-erros-licao" style="margin:8px 0 0"></p><p class="rd-fonte" id="rd-erros-fontes"></p></div>
+  </section>
+  <section id="rd-salario">
+    <h2>Aumento do salário mínimo: quem ganha, quem paga</h2>
+    <p class="sub" id="rd-sm-intro"></p>
+    <div class="grid g2">
+      <div class="card"><h3>Quem ganha</h3><ul class="rd-list" id="rd-sm-ganha"></ul></div>
+      <div class="card"><h3>Quem paga</h3><ul class="rd-list" id="rd-sm-paga"></ul></div>
+    </div>
+    <p class="sub" id="rd-sm-consenso" style="margin-top:12px"></p>
+    <p class="rd-fonte" id="rd-sm-fontes"></p>
+  </section>
+  <section id="rd-ler">
+    <h2>Como ler: quatro tipos de distância entre número e discurso</h2>
+    <p class="sub">Perguntas para fazer diante de qualquer número de campanha, com exemplos dos dois lados e do mercado.</p>
+    <div class="grid g2" id="rd-ler-cards"></div>
+    <p class="sub" id="rd-verif" style="margin-top:12px"></p>
   </section>
   </div>
   <div role="tabpanel" class="painel" id="painel-modelos" data-painel="modelos" aria-labelledby="tab-modelos" tabindex="-1">
@@ -1750,16 +1879,119 @@ td.pos { font-weight: 650; }
         "<p class='fonte'>" + link(c.fonte_url, c.fonte_nome) + (c.fonte_extra ? " · " + esc(c.fonte_extra) : "") + " · " + dmy(c.data) + "</p></div>";
     }).join("");
   }
+  // ---------- aba Realidade × discurso (realidade.json)
+  var RD = null, rdLado = "todos", rdV = "todos";
+  function rdFontes(fs) { return (fs || []).map(function (f) { return link(f[1], f[0]); }).join(" · "); }
+  function rdTipos(ks) { return (ks || []).map(function (k) { return "<span class='tp " + esc(k) + "' title='Tipo (" + esc(k) + ")'>" + esc(k) + "</span>"; }).join(""); }
+  function rdLista(id, arr) { document.getElementById(id).innerHTML = arr.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join(""); }
+  function rdTabela(id, cab, linhas, cls) {
+    var t = "<thead><tr>" + cab.map(function (c, i) { return "<th class='l'>" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>";
+    linhas.forEach(function (l) { t += "<tr>" + l.map(function (c, i) { return "<td class='" + (cls && cls[i] ? cls[i] : "wrap-txt") + "'>" + c + "</td>"; }).join("") + "</tr>"; });
+    document.getElementById(id).innerHTML = t + "</tbody>";
+  }
+  function rdVerdNome(k) { var e = RD.checagem.escala.filter(function (x) { return x[0] === k; })[0]; return e ? e[1] : k; }
+  function rdVd(k, txt) { return "<span class='vd " + esc(k) + "'>" + esc(txt || rdVerdNome(k)) + "</span>"; }
+  function renderRdClaims() {
+    var C = RD.checagem, LN = {}; C.lados.forEach(function (l) { LN[l[0]] = l[1]; });
+    var its = C.itens.filter(function (i) { return (rdLado === "todos" || i.lado === rdLado) && (rdV === "todos" || i.v === rdV); });
+    document.getElementById("rd-f-n").textContent = "Mostrando " + its.length + " de " + C.itens.length + " afirmações";
+    document.getElementById("rd-claims").innerHTML = its.length ? its.map(function (i) {
+      return "<div class='card rd-claim " + esc(i.lado) + "'><div class='hd'><b>" + esc(i.id) + "</b><span>" + esc(LN[i.lado]) + "</span>" + rdVd(i.v) + "<span>veredito: " + esc(i.por) + "</span></div>" +
+        "<p class='af'>" + esc(i.afirmacao) + "</p><p class='muted' style='font-size:12px'>" + esc(i.quem) + "</p>" +
+        "<p><b>O dado:</b> " + esc(i.dado) + "</p>" + (i.fora && i.fora !== "—" ? "<p><b>O que fica de fora:</b> " + esc(i.fora) + "</p>" : "") +
+        "<p class='rd-fonte'>" + rdFontes(i.fontes) + "</p></div>";
+    }).join("") : "<p class='sub'>Nenhuma afirmação com esses filtros.</p>";
+  }
+  function renderRealidade() {
+    if (!RD) return;
+    var M = RD.meta;
+    document.getElementById("rd-intro-txt").textContent = M.intro;
+    document.getElementById("rd-tipos").innerHTML = RD.tipos.map(function (t) {
+      return "<div class='card rd-tipo'><b>" + rdTipos([t.k]) + esc(t.nome) + "</b>" + esc(t.def) + "</div>";
+    }).join("");
+    document.getElementById("rd-regra").innerHTML = "<b>" + esc(M.regra) + "</b> " + esc(M.fontes_notas);
+    // 1. níveis (barras CSS: funcionam sem Chart.js)
+    var N = RD.niveis, mx = Math.max.apply(null, N.itens.map(function (x) { return x[1]; }));
+    document.getElementById("rd-niv-t").textContent = N.titulo;
+    document.getElementById("rd-niv").innerHTML = N.itens.map(function (x) {
+      return "<div class='row " + esc(x[2]) + "'><span>" + esc(x[0]) + "</span><span class='trk'><i style='width:" + (x[1] / mx * 100).toFixed(1) + "%'></i><span class='rl' style='left:" + (N.ref / mx * 100).toFixed(1) + "%' aria-hidden='true'></span></span><span class='v'>+" + fmtN(x[1], 1) + "%</span></div>";
+    }).join("") + "<p class='sub' style='margin:6px 0 0;font-size:12px'>Linha vertical: IPCA geral (+" + fmtN(N.ref, 1) + "%). Barras tracejadas: fontes fora do IPCA.</p>";
+    document.getElementById("rd-niv-nota").innerHTML = esc(N.nota) + " " + rdFontes(N.fontes);
+    document.getElementById("rd-percepcao").innerHTML = "<h3>Percepção × índice</h3><div class='cur-big'>67%</div><p class='sub' style='margin:4px 0 8px'>acharam que a comida subiu num mês de queda no índice</p><p style='margin:0;font-size:13px;color:var(--text-2)'>" + esc(M.percepcao) + "</p><p class='rd-fonte' style='margin:8px 0 0'>" + rdFontes(M.percepcao_fontes) + "</p>";
+    document.getElementById("rd-cards").innerHTML = RD.indicadores.map(function (c) {
+      return "<div class='card rd-card' id='rd-" + esc(c.id) + "'><div>" + rdTipos(c.tipo) + "</div><h3>" + esc(c.titulo) + "</h3>" +
+        "<dl><dt>Número oficial</dt><dd>" + esc(c.oficial) + "</dd><dt>O que não capta</dt><dd>" + esc(c.nao_capta) + "</dd></dl>" +
+        "<div class='rd-gap'><small>Tamanho da diferença</small>" + esc(c.gap) + "</div><p>" + esc(c.gap_det) + "</p>" +
+        (c.alerta ? "<p class='nota alerta'>" + esc(c.alerta) + "</p>" : "") + (c.verif ? "<p class='nota'>" + esc(c.verif) + "</p>" : "") +
+        "<p class='fonte'>" + rdFontes(c.fontes) + "</p></div>";
+    }).join("");
+    // 2. checagem
+    var C = RD.checagem;
+    document.getElementById("rd-chk-nota").textContent = C.nota;
+    var t = "<caption>Vereditos por lado (contagem desta seleção)</caption><thead><tr><th class='l'>Veredito</th>" + C.lados.map(function (l) { return "<th>" + esc(l[1]) + "</th>"; }).join("") + "</tr></thead><tbody>";
+    C.escala.forEach(function (e) {
+      t += "<tr><td class='l'>" + rdVd(e[0], e[1]) + "</td>" + C.lados.map(function (l) { var n = C.itens.filter(function (i) { return i.lado === l[0] && i.v === e[0]; }).length; return "<td>" + (n || "–") + "</td>"; }).join("") + "</tr>";
+    });
+    t += "<tr class='destaque'><td class='l'>Total</td>" + C.lados.map(function (l) { return "<td>" + C.itens.filter(function (i) { return i.lado === l[0]; }).length + "</td>"; }).join("") + "</tr>";
+    document.getElementById("rd-tally").innerHTML = t + "</tbody>";
+    rdLista("rd-padrao", C.padrao);
+    var fl = document.getElementById("rd-f-lado");
+    if (!fl.dataset.ok) {
+      fl.dataset.ok = 1;
+      fl.innerHTML = [["todos", "Todos"]].concat(C.lados).map(function (l) { return "<button type='button' data-rdlado='" + esc(l[0]) + "' aria-pressed='" + (l[0] === rdLado) + "'>" + esc(l[1]) + "</button>"; }).join("");
+      fl.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { rdLado = b.dataset.rdlado; fl.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); renderRdClaims(); }); });
+      var sv = document.getElementById("rd-f-v");
+      sv.innerHTML = "<option value='todos'>Todos</option>" + C.escala.map(function (e) { return "<option value='" + esc(e[0]) + "'>" + esc(e[1]) + "</option>"; }).join("");
+      sv.addEventListener("change", function () { rdV = sv.value; renderRdClaims(); });
+    }
+    renderRdClaims();
+    // 3. empresas
+    var E = RD.empresas;
+    rdLista("rd-inc-lit", E.incidencia_lit);
+    document.getElementById("rd-inc-fontes").innerHTML = rdFontes(E.incidencia_fontes);
+    rdTabela("rd-medidas", ["Medida de 2025–26", "Receita estimada", "Quem recolhe", "Quem provavelmente paga", "Confiança"], E.medidas.map(function (m) { return m.map(esc); }), ["wrap-txt", "wrap-txt", "wrap-txt", "wrap-txt", "l"]);
+    document.getElementById("rd-medidas").insertAdjacentHTML("afterbegin", "<caption>Medidas do governo Lula: quem recolhe x quem paga</caption>");
+    document.getElementById("rd-medidas-fontes").innerHTML = rdFontes(E.medidas_fontes);
+    document.getElementById("rd-simetrico").innerHTML = E.simetrico.map(function (s) {
+      return "<div class='card ne-card " + (s[0] === "Lula" ? "l" : "f") + "'><h3>Mesmo teste: " + esc(s[0]) + "</h3><p style='margin:0;color:var(--text-2)'>" + esc(s[1]) + "</p></div>";
+    }).join("");
+    rdTabela("rd-result", ["Indicador", "2019–22 (Bolsonaro)", "2023–26 (Lula 3)"], E.resultados.map(function (m) { return m.map(esc); }));
+    document.getElementById("rd-result-leitura").textContent = E.resultados_leitura;
+    document.getElementById("rd-result-fontes").innerHTML = rdFontes(E.resultados_fontes);
+    rdTabela("rd-emp-v", ["#", "Afirmação", "Quem diz", "Veredito", "Por quê"], E.vereditos.map(function (v) { return [esc(v[0]), esc(v[1]), esc(v[2]), "<span class='vd " + (v[3] === "verdadeiro" ? "correto" : v[3] === "sem evidência" ? "sem_base" : "enganoso") + "'>" + esc(v[3]) + "</span>", esc(v[4])]; }), ["l", "wrap-txt", "wrap-txt", "l", "wrap-txt"]);
+    document.getElementById("rd-emp-v").insertAdjacentHTML("afterbegin", "<caption>“Anti-empresa” x “pró-empresa só para os ricos”: 4 afirmações de cada lado (escala: verdadeiro, exagerado, enganoso, sem evidência)</caption>");
+    rdLista("rd-precifica", E.mercado_precifica);
+    document.getElementById("rd-precifica-fontes").innerHTML = rdFontes(E.mercado_fontes);
+    rdTabela("rd-orcamento", ["Choque", "Tamanho no orçamento", "Hipótese e confiança"], E.orcamento.map(function (m) { return m.map(esc); }));
+    rdTabela("rd-erros", ["Episódio", "O que o mercado esperava", "O que aconteceu", "Resultado"], E.erros.map(function (m) { return m.map(esc); }));
+    document.getElementById("rd-erros-licao").textContent = E.erros_licao;
+    document.getElementById("rd-erros-fontes").innerHTML = rdFontes(E.erros_fontes);
+    // salário mínimo
+    var S = RD.salario_minimo;
+    document.getElementById("rd-sm-intro").textContent = S.intro;
+    rdLista("rd-sm-ganha", S.ganha); rdLista("rd-sm-paga", S.paga);
+    document.getElementById("rd-sm-consenso").textContent = S.consenso;
+    document.getElementById("rd-sm-fontes").innerHTML = "Fontes: " + rdFontes(S.fontes);
+    // 4. como ler
+    var TN = {}; RD.tipos.forEach(function (x) { TN[x.k] = x.nome; });
+    document.getElementById("rd-ler-cards").innerHTML = RD.como_ler.map(function (c) {
+      return "<div class='card rd-ler'><h3>" + rdTipos([c.k]) + esc(TN[c.k]) + "</h3><p style='margin:0;font-size:13px'><b>" + esc(c.pergunta) + "</b></p><dl><dt>Sinais</dt><dd><ul>" + c.sinais.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul></dd>" +
+        "<dt>Exemplo do lado do governo/PT</dt><dd>" + esc(c.governo) + "</dd><dt>Exemplo do lado da oposição/PL</dt><dd>" + esc(c.oposicao) + "</dd><dt>Exemplo do mercado e de instituições</dt><dd>" + esc(c.mercado) + "</dd></dl></div>";
+    }).join("");
+    document.getElementById("rd-verif").textContent = M.verificacao + " Atualizado em " + dmy(M.atualizado) + ".";
+  }
   function carregarExtras() {
     getJSON("nordeste.json").then(function (n) { NE = n; safe(renderNordeste); })
       .catch(function (e) { var el = document.getElementById("ne-status"); if (el) el.textContent = "Dados do Nordeste indisponíveis (nordeste.json: " + e.message + ")."; });
     getJSON("curiosidades.json").then(function (c) { CU = c; safe(renderCuriosidades); })
       .catch(function (e) { var el = document.getElementById("cur-intro"); if (el) el.textContent = "Curiosidades indisponíveis (curiosidades.json: " + e.message + ")."; });
+    getJSON("realidade.json").then(function (r) { RD = r; safe(renderRealidade); })
+      .catch(function (e) { var el = document.getElementById("rd-intro-txt"); if (el) el.textContent = "Conteúdo indisponível (realidade.json: " + e.message + ")."; });
   }
   carregarExtras();
 
   // ---------- navegação por abas (deep link com #âncora; lembra a última aba)
-  var TABS = ["segundo-turno", "primeiro-turno", "estados", "nordeste", "modelos", "pesquisas", "bastidores", "curiosidades"];
+  var TABS = ["segundo-turno", "primeiro-turno", "estados", "nordeste", "realidade", "modelos", "pesquisas", "bastidores", "curiosidades"];
   var TAB_VIS = { "primeiro-turno": 1, "estados": 1 };
   function painelDe(el) { var pn = el && el.closest ? el.closest("[data-painel]") : null; return pn ? pn.dataset.painel : null; }
   function fecharMenu() { var tb = document.getElementById("tabs"); tb.classList.remove("aberto"); document.getElementById("menu-btn").setAttribute("aria-expanded", "false"); }
