@@ -945,6 +945,27 @@ def historico_ano(ano: int) -> dict:
             "eleitores": r1.loc[ufs, "eleitorado"].values.astype(float)}
 
 
+def historico_turnos(anos=(2014, 2018, 2022)) -> list:
+    """1º -> 2º turno nacional (BR) de cada ano: PT e adversário em % dos válidos, válidos, abstenção, brancos+nulos."""
+    h = _hist()
+    out = []
+    for a in anos:
+        r1 = h[(h.ano == a) & (h.turno == 1) & (h.uf == "BR")].iloc[0]
+        r2 = h[(h.ano == a) & (h.turno == 2) & (h.uf == "BR")].iloc[0]
+        out.append({"ano": a, "pt": str(r1.pt_candidato).title(), "adversario": str(r1.oponente).title(),
+                    "pt_1t_pct": round(float(r1.pt_pct_validos), 2), "adv_1t_pct": round(float(r1.oponente_pct_validos), 2),
+                    "demais_1t_pct": round(100 - float(r1.pt_pct_validos) - float(r1.oponente_pct_validos), 2),
+                    "pt_2t_pct": round(float(r2.pt_pct_validos), 2), "adv_2t_pct": round(float(r2.oponente_pct_validos), 2),
+                    "pt_1t_votos": int(r1.pt_votos), "adv_1t_votos": int(r1.oponente_votos),
+                    "pt_2t_votos": int(r2.pt_votos), "adv_2t_votos": int(r2.oponente_votos),
+                    "validos_1t": int(r1.votos_validos), "validos_2t": int(r2.votos_validos),
+                    "eleitorado": int(r1.eleitorado),
+                    "abst_1t_pct": round(float(r1.abstencao_pct), 2), "abst_2t_pct": round(float(r2.abstencao_pct), 2),
+                    "bn_1t_pct": round(float(r1.branco_pct_comp + r1.nulo_pct_comp), 2),
+                    "bn_2t_pct": round(float(r2.branco_pct_comp + r2.nulo_pct_comp), 2)})
+    return out
+
+
 def delta_comparecimento(anos=(2014, 2018, 2022)) -> pd.DataFrame:
     """Variação média (2º − 1º turno) da abstenção e de brancos+nulos por UF, em p.p."""
     rows = []
@@ -1134,8 +1155,9 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
         qp = q_transf(S0[None], Rp[:, None, :, :])
     var_dir = float(np.var((W2c * qp).sum(1) / W2c.sum()) * 1e4)
     sd_e = math.sqrt(max(sd_nat ** 2 - var_dir, (0.5 * sd_nat) ** 2))
-    acc = {"Q": [], "decide": [], "nat1": []}
+    acc = {"Q": [], "decide": [], "nat1": [], "VA": [], "VB": [], "COMP": [], "BN": []}
     hq = np.zeros((U, 1001), np.int64); sq = np.zeros(U); win = np.zeros(U)
+    sva = np.zeros(U); svb = np.zeros(U); svv = np.zeros(U); tp_cont = np.zeros(U, np.int64)
     feito = 0
     while feito < n:
         Bn = min(lote, n - feito)
@@ -1166,6 +1188,17 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
         W2 = c["eleitores"][None] * (1 - ab / 100) * (1 - bb / 100)
         Q = (W2 * q).sum(1) / W2.sum(1)
         acc["Q"].append(Q); acc["decide"].append(decide); acc["nat1"].append(nat1[:, [A, B]])
+        # votos absolutos: válidos do 2º turno por UF x fatia; comparecimento e brancos+nulos
+        comp_u = c["eleitores"][None] * (1 - ab / 100)
+        acc["VA"].append((W2 * q).sum(1)); acc["VB"].append((W2 * (1 - q)).sum(1))
+        acc["COMP"].append(comp_u.sum(1)); acc["BN"].append((comp_u * bb / 100).sum(1))
+        sva += (W2 * q).sum(0); svb += (W2 * (1 - q)).sum(0); svv += W2.sum(0)
+        # UF de virada: ordenando as UFs da maior para a menor fatia de A, a UF em que os válidos acumulados
+        # passam de 50% do total (no voto popular, é a UF "mediana" do eleitorado, não um colégio eleitoral)
+        ordem = np.argsort(-q, axis=1)
+        cum = np.cumsum(np.take_along_axis(W2, ordem, 1), 1) / W2.sum(1, keepdims=True)
+        tp = ordem[np.arange(Bn), (cum >= 0.5).argmax(1)]
+        tp_cont += np.bincount(tp, minlength=U)
         idx = np.clip(np.rint(q * 1000).astype(int), 0, 1000)
         for u in range(U):
             hq[u] += np.bincount(idx[:, u], minlength=1001)
@@ -1173,6 +1206,21 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
         feito += Bn
     Q = np.concatenate(acc["Q"]); dec = np.concatenate(acc["decide"])
     QS = [0.025, 0.1, 0.25, 0.5, 0.75, 0.9, 0.975]
+    VA = np.concatenate(acc["VA"]); VB = np.concatenate(acc["VB"])
+    COMP = np.concatenate(acc["COMP"]); BNv = np.concatenate(acc["BN"])
+    ele_br = float(c["eleitores"].sum())
+
+    def qv(x):
+        return [round(float(v)) for v in np.quantile(x, QS)]
+    # 1º turno (apurado; UFs parciais completadas pela projeção) e fluxo central dos eliminados
+    V1 = c["V1"].astype(float)
+    votos1 = (S0 * V1[:, None]).sum(0)
+    comp1_u = c["eleitores"] * (1 - c["abst1"] / 100)
+    R_c = (regionalizar(rows, np.asarray(regional["mu"], float)) if regional is not None
+           else np.broadcast_to(rows[None], (U, len(elim), 3)))
+    fluxo = {cands[k]: [round(float((S0[:, k] * V1 * R_c[:, j, d]).sum())) for d in range(3)]
+             for j, k in enumerate(elim)}
+    va_c = float((W2c * qtr_c).sum()); vb_c = float((W2c * (1 - qtr_c)).sum())
 
     def qh(h, qs):
         cc = np.cumsum(h) / h.sum()
@@ -1186,7 +1234,13 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
                         "a_q95": qh(hq[i], [0.025, 0.975]), "p_a": round(win[i] / n, 4),
                         "a_1t": round(float(S0[i, A]) * 100, 2), "b_1t": round(float(S0[i, B]) * 100, 2),
                         "transferencia_central": round(float(qtr_c[i]) * 100, 2),
-                        "pst": round(float(c["pst"][i]), 2), "fonte": c["fonte_uf"][i]})
+                        "pst": round(float(c["pst"][i]), 2), "fonte": c["fonte_uf"][i],
+                        "eleitores": round(float(c["eleitores"][i])), "validos_1t": round(float(V1[i])),
+                        "votos_a_1t": round(float(S0[i, A] * V1[i])), "votos_b_1t": round(float(S0[i, B] * V1[i])),
+                        "abst_1t_pct": round(float(c["abst1"][i]), 2), "bn_1t_pct": round(float(c["bn1"][i]), 2),
+                        "abst_2t_pct": round(float(abst2_c[i]), 2), "bn_2t_pct": round(float(bn2_c[i]), 2),
+                        "validos_2t_media": round(float(svv[i] / n)), "votos_a_media": round(float(sva[i] / n)),
+                        "votos_b_media": round(float(svb[i] / n)), "p_virada": round(float(tp_cont[i] / n), 4)})
     return {
         "par": list(par), "n": n, "semente": seed,
         "p_a_vence": round(float((Q > 0.5).mean()), 5), "p_b_vence": round(float((Q <= 0.5).mean()), 5),
@@ -1194,6 +1248,29 @@ def simular_2t(c: dict, par: tuple, transf: dict, q_pesq: dict | None, cal: dict
         "a_media": round(float(Q.mean() * 100), 3), "a_quantis": [round(float(x) * 100, 2) for x in np.quantile(Q, QS)],
         "margem_quantis": [round(float(x), 2) for x in np.quantile(marg, QS)],
         "hist_margem": {"inicio": -25, "passo": 0.5, "contagens": hm.astype(int).tolist()},
+        "faixas_margem": [{"de": lo, "ate": hi, "p": round(float(((marg > lo) & (marg <= hi)).mean()), 5)}
+                          for lo, hi in zip([-100, -10, -5, -2, 0, 2, 5, 10], [-10, -5, -2, 0, 2, 5, 10, 100])],
+        "votos": {
+            "eleitores": round(ele_br),
+            "primeiro_turno": {"validos": round(float(V1.sum())), "comparecimento": round(float(comp1_u.sum())),
+                               "abstencao_pct": round(float(100 * (1 - comp1_u.sum() / ele_br)), 2),
+                               "bn_pct_comp": round(float(100 * (1 - V1.sum() / comp1_u.sum())), 2),
+                               "por_candidato": {cands[k]: round(float(votos1[k])) for k in range(len(cands))}},
+            "fluxo_eliminados": fluxo,
+            "central_transferencia": {"a": round(va_c), "b": round(vb_c), "validos": round(float(W2c.sum()))},
+            "a_quantis": qv(VA), "b_quantis": qv(VB), "a_media": round(float(VA.mean())), "b_media": round(float(VB.mean())),
+            "validos_quantis": qv(VA + VB), "validos_media": round(float((VA + VB).mean())),
+            "margem_quantis": qv(VA - VB), "margem_media": round(float((VA - VB).mean())),
+            "comparecimento_quantis": qv(COMP), "comparecimento_media": round(float(COMP.mean())),
+            "abstencao_pct_quantis": [round(100 * (1 - x / ele_br), 2) for x in np.quantile(COMP, QS[::-1])],
+            "bn_quantis": qv(BNv), "bn_media": round(float(BNv.mean())),
+            "bn_pct_comp_media": round(float(100 * (BNv / COMP).mean()), 2),
+            "abstencao_media": round(float(ele_br - COMP.mean())),
+            "abstencao_pct_media": round(float(100 * (1 - COMP.mean() / ele_br)), 2)},
+        "uf_virada": {"nota": "UFs ordenadas da maior para a menor fatia de A; UF em que os válidos acumulados passam "
+                              "de 50% do total, em cada simulação. No voto popular é ilustrativo (não há colégio "
+                              "eleitoral): mostra onde fica o eleitor mediano.",
+                      "freq": {u: round(float(tp_cont[i] / n), 4) for i, u in enumerate(UFS) if tp_cont[i] > 0}},
         "p_decidido_1t_projecao": round(float(dec.mean()), 5),
         "centro": {"via_transferencia_a_pct": round(qtr_br * 100, 3),
                    "pesquisas_a_pct": None if not q_pesq or q_pesq.get("q") is None else round(q_pesq["q"] * 100, 3),
@@ -1801,6 +1878,7 @@ def rodar_2026(n: int, seed: int, fonte: str = "auto", log=print, municipios: bo
     sim["pesquisas_2t"] = qp
     sim["calibracao"] = {k: v for k, v in cal.items()}
     sim["ecologico"] = [ecologico(a) for a in (2014, 2018, 2022)]
+    sim["historico_turnos"] = historico_turnos()
     nomes = dict(zip(UFS, pd.read_csv(DADOS / "eleitorado_uf_2026.csv").set_index("uf").reindex(UFS)["nome"].fillna("Exterior")))
     for u in sim["ufs"]:
         u["nome"] = nomes.get(u["uf"], u["uf"])

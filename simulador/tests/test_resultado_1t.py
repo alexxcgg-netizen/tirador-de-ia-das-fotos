@@ -217,3 +217,33 @@ def test_rodar_2026_aguardando(monkeypatch, tmp_path):
     out = R.rodar_2026(1000, 1, log=lambda *a: None)
     assert out["meta"]["status"] == "aguardando"
     assert json.loads((tmp_path / "resultados_2t.json").read_text())["meta"]["status"] == "aguardando"
+
+
+def test_simular_2t_votos_faixas_virada(res2022, ufs_ref_2022):
+    """Campos do painel '2º turno': votos absolutos, faixas de margem, UF de virada, fluxo dos eliminados."""
+    c = R.consolidar(res2022, 2022, ufs_ref_2022)
+    cal = {"dp_nacional_pp": 2.5, "dp_regional_pp": 1.0, "dp_uf_pp": 1.5, "vies_pp": 0.0, "vies_dp_pp": 0.0}
+    d = R.delta_comparecimento((2014, 2018))
+    s = R.simular_2t(c, ("Lula", "Bolsonaro"), R.transf_para_par(("Lula", "Bolsonaro"), 2022, [0.32, 0.22, 0.46]),
+                     None, cal, d, n=20000, seed=1)
+    v = s["votos"]
+    assert sum(f["p"] for f in s["faixas_margem"]) == pytest.approx(1, abs=1e-4)
+    assert sum(f["p"] for f in s["faixas_margem"] if f["de"] >= 0) == pytest.approx(s["p_a_vence"], abs=1e-4)
+    assert v["a_quantis"] == sorted(v["a_quantis"]) and v["validos_quantis"] == sorted(v["validos_quantis"])
+    assert v["a_media"] + v["b_media"] == pytest.approx(v["validos_media"], rel=1e-6)
+    assert 100 * v["a_media"] / v["validos_media"] == pytest.approx(s["a_media"], abs=0.05)
+    assert v["comparecimento_media"] < v["eleitores"] and v["validos_media"] < v["comparecimento_media"]
+    assert v["primeiro_turno"]["por_candidato"]["Lula"] == pytest.approx(57_259_504, rel=1e-4)   # TSE 2022, 1º turno
+    assert sum(v["primeiro_turno"]["por_candidato"].values()) == pytest.approx(v["primeiro_turno"]["validos"], rel=1e-6)
+    elim = sum(v["primeiro_turno"]["por_candidato"][k] for k in ("Ciro", "Tebet", "Outros"))
+    assert sum(sum(x) for x in v["fluxo_eliminados"].values()) == pytest.approx(elim, rel=1e-3)
+    assert sum(s["uf_virada"]["freq"].values()) == pytest.approx(1, abs=1e-3)
+    assert sum(u["validos_2t_media"] for u in s["ufs"]) == pytest.approx(v["validos_media"], rel=1e-4)
+
+
+def test_historico_turnos():
+    h = R.historico_turnos()
+    assert [x["ano"] for x in h] == [2014, 2018, 2022]
+    h22 = h[-1]
+    assert h22["pt_2t_pct"] == pytest.approx(50.9, abs=0.1) and h22["pt_1t_pct"] == pytest.approx(48.4, abs=0.1)
+    assert h22["abst_2t_pct"] > h22["abst_1t_pct"] - 1
