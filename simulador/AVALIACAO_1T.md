@@ -1,6 +1,6 @@
 # Avaliação das previsões do 1º turno de 2026
 
-Gerado por `resultado_1t.py` em 2026-10-05 02:30 UTC. Seções totalizadas no Brasil: 99,99% (TSE, 04/10/2026 23:25:38). **Apuração parcial: números provisórios; UFs não totalizadas projetadas.** Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
+Gerado por `resultado_1t.py` em 2026-10-05 12:01 UTC. Seções totalizadas no Brasil: 100,00% (TSE, 05/10/2026 02:59:31). Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
 
 ## Resultado (votos válidos, %)
 
@@ -97,21 +97,21 @@ Exterior fora das métricas por UF. Viés positivo = previsão acima do resultad
 |---|---|---|---|
 | AC | 28,7 | 64,6 | apurado |
 | AL | 54,7 | 40,5 | apurado |
-| AM | 48,2 | 45,0 | parcial |
+| AM | 48,2 | 45,0 | apurado |
 | AP | 45,7 | 45,7 | apurado |
-| BA | 66,2 | 28,5 | parcial |
+| BA | 66,2 | 28,5 | apurado |
 | CE | 63,3 | 31,3 | apurado |
 | DF | 38,1 | 51,3 | apurado |
 | ES | 37,8 | 54,8 | apurado |
 | GO | 31,1 | 53,6 | apurado |
-| MA | 64,0 | 30,9 | parcial |
-| MG | 43,3 | 48,2 | parcial |
+| MA | 64,0 | 30,9 | apurado |
+| MG | 43,3 | 48,2 | apurado |
 | MS | 34,7 | 58,6 | apurado |
 | MT | 29,2 | 65,2 | apurado |
-| PA | 49,9 | 44,5 | parcial |
+| PA | 49,9 | 44,5 | apurado |
 | PB | 61,3 | 33,1 | apurado |
 | PE | 63,5 | 31,0 | apurado |
-| PI | 71,0 | 24,1 | parcial |
+| PI | 71,0 | 24,1 | apurado |
 | PR | 31,2 | 59,9 | apurado |
 | RJ | 39,4 | 53,0 | apurado |
 | RN | 59,8 | 34,8 | apurado |
