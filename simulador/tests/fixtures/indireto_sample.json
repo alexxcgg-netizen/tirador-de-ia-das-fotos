@@ -1,0 +1,480 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-05",
+  "origem": [
+   "research_notes/Indireto 2026/indireto_lula.csv",
+   "research_notes/Indireto 2026/indireto_flavio.csv",
+   "research_notes/Indireto 2026/simetria_depois.md",
+   "research_notes/Indireto 2026/auditoria_simetria.py"
+  ],
+  "escopo": {
+   "lula": [
+    {
+     "periodo": "PT 2003-22 (histórico)",
+     "ativos": 12,
+     "total": 12
+    },
+    {
+     "periodo": "governo Lula 2023-26",
+     "ativos": 40,
+     "total": 52
+    }
+   ],
+   "flavio": [
+    {
+     "periodo": "governo Bolsonaro 2019-22",
+     "ativos": 18,
+     "total": 18
+    },
+    {
+     "periodo": "oposição 2023-26 (Jair, Flávio e aliados)",
+     "ativos": 32,
+     "total": 43
+    },
+    {
+     "periodo": "pré-2019 (histórico)",
+     "ativos": 4,
+     "total": 5
+    }
+   ]
+  },
+  "regra": "Mesma régua para os dois lados: o ator é avaliado pelo que faz, defende, protege, financia, cala e com quem se alia, não só pelo que declara. O rótulo 'indireto' é uma hipótese em teste, não um veredito: cada caso traz a leitura inocente mais forte (coluna contra_evidencia).",
+  "regra_top_fortes": "10 mais fortes = casos com status 'indireto' (a leitura indireta e o que esta em teste), que passam a barra de evidencia (fonte primaria/oficial, OU checador com metodo publicado, OU 2+ veiculos distintos), que NAO estao marcados 'disputado' e cuja forca_leitura_indireta e 'forte' ou 'media'. Ordem: forca_leitura_indireta, depois confianca_fato, depois numero de veiculos distintos, depois numero de classes de veiculo diferentes; empate final pelo SHA-1 do id (arbitrario, sem relacao com lado, data ou tema). Casos favoraveis ao ator, 'nao indireto' e retirados nao entram.",
+  "regra_top_fracos": "5 mais fracos = casos com status 'indireto' (a acusacao de indireto que menos se sustenta). Ordem crescente: forca_leitura_indireta (nao conclusivo < fraca), depois confianca_fato (baixa < media < alta), depois numero de veiculos distintos (menos primeiro), depois SHA-1 do id. Casos 'nao indireto' (controles explicitos) e retirados ficam em listas proprias.",
+  "avisos": [
+   "Este é um mapa de comportamento e de leituras possíveis, não um veredito sobre pessoas e não é recomendação de voto.",
+   "As contagens dependem da seleção: os casos foram escolhidos por quem pesquisou, e a escolha, a ordem e a omissão de temas são, elas próprias, enquadramento. O número de casos de um lado não mede quem 'fala mais indireto'.",
+   "A classificação dos veículos (esquerda, centro, direita, oficial, checador) e a rubrica de força da leitura são juízos dos autores, aplicados por um modelo de IA que não consegue auditar o próprio treinamento; podem ser contestados caso a caso pelas colunas do CSV.",
+   "Itens não verificados ou com fonte única estão marcados: confianca_fato 'média' ou 'baixa', força da leitura limitada a 'fraca' quando a fonte não passa a barra de evidência, 'disputado' quando as fontes não resolvem o fato.",
+   "Casos com status 'retirado' ficam no arquivo para transparência (evidência insuficiente ou fundidos em outro caso) e não entram nas contagens por categoria e período nem nos rankings."
+  ]
+ },
+ "como_ler": [
+  {
+   "titulo": "O que é",
+   "texto": "Um mapa de comportamento revelado: o que cada ator faz, defende, protege, cala e com quem se alia, ao lado do que diz. Método, não conclusão: o rótulo 'indireto' é hipótese em teste."
+  },
+  {
+   "titulo": "Duas colunas separadas",
+   "texto": "confianca_fato mede o quanto se tem certeza de que o fato ocorreu (alta = fonte primária ou duas independentes; média = uma fonte confiável; baixa = resumo de busca, blog ou página não aberta). forca_leitura mede o quanto a leitura 'o comportamento revela o que a fala não diz' se sustenta depois da contra-evidência: forte, média, fraca ou não conclusivo."
+  }
+ ],
+ "categorias": [
+  {
+   "id": 1,
+   "nome": "Porta-vozes",
+   "descricao": "O ator não diz, mas ministros, partido, aliados, influenciadores, 'fontes em off' ou anúncios pagos dizem. Avalia-se o ecossistema, não só a boca do candidato."
+  },
+  {
+   "id": 2,
+   "nome": "Atos sem palavras",
+   "descricao": "Nomeações, decretos, vetos, emendas e verbas: quem recebe dinheiro ou cargo e quando. O ato como evidência de comportamento, para comparar com o discurso."
+  },
+  {
+   "id": 3,
+   "nome": "Timing",
+   "descricao": "Quando a informação ou a medida aparece: dado ruim em dia de baixa atenção, benefício antes da eleição e conta depois, medidas que vencem entre os turnos."
+  },
+  {
+   "id": 4,
+   "nome": "Escolha do número",
+   "descricao": "Ano-base, média ou mediana, nominal ou real, métrica trocada quando a antiga piora. O dado pode ser verdadeiro e o enquadramento mudar a conclusão."
+  },
+  {
+   "id": 5,
+   "nome": "Palavras com dono",
+   "descricao": "Termos-senha ('democracia', 'instituições', 'liberdade', 'família', 'fome') que sinalizam lado sem afirmar nada verificável."
+  },
+  {
+   "id": 6,
+   "nome": "Mensagens diferentes por público",
+   "descricao": "O que se diz a cada plateia (comício, mercado, imprensa estrangeira, igreja) quando as versões não coincidem."
+  },
+  {
+   "id": 7,
+   "nome": "Imagens, símbolos e memes",
+   "descricao": "Imagem, símbolo, gesto, cor, música ou a data de uma postagem usados como recado, sem frase que possa ser citada."
+  },
+  {
+   "id": 8,
+   "nome": "Reescrita posterior",
+   "descricao": "Fala original guardada com data comparada com a explicação dada depois ('não foi isso que eu quis dizer')."
+  },
+  {
+   "id": 9,
+   "nome": "Silêncios",
+   "descricao": "Assuntos de que o ator não fala ou de que nunca fala mal, quando o contexto indica que falar teria custo ou benefício."
+  },
+  {
+   "id": 10,
+   "nome": "Aliados e proteção",
+   "descricao": "Com quem o ator se alia e quem defende ou deixa de criticar; o comportamento diante de aliados investigados, condenados ou beneficiados."
+  },
+  {
+   "id": 11,
+   "nome": "Linguagem de ameaça e combate",
+   "descricao": "Frases de confronto, ameaça ou guerra, e se foram eleitorais (contra um grupo político) ou dirigidas a pessoas."
+  },
+  {
+   "id": 12,
+   "nome": "Narrativa de vítima ou inimigo",
+   "descricao": "Enquadramentos em que o ator ou o grupo aparece perseguido, ou um adversário aparece como inimigo, e o que a narrativa explica ou deixa de explicar."
+  }
+ ],
+ "casos": [
+  {
+   "id": "L01",
+   "lado": "lula",
+   "categoria": 1,
+   "periodo": "governo Lula 2023-26",
+   "ator": "Ministros do 1º escalão (anônimos, em off) / Planalto",
+   "data": "2026-09-24",
+   "fala_ou_ato": "Integrantes do governo disseram em off à colunista que o silêncio de Moraes sobre o caso Master é 'tóxico' para a campanha de Lula; criticaram a própria campanha por não explicar a relação do presidente com Moraes.",
+   "comportamento_revelado": "O governo usa 'fontes do 1º escalão' para pressionar Moraes e se descolar dele, enquanto o presidente ainda não falava em público (só falou em 2026-10-01, ver L29).",
+   "leituras_por_publico": "Eleitor de Lula: governo se preocupa com ética. Oposição: governo admite a ligação e só se afasta por conveniência eleitoral. Moraes: recado privado.",
+   "negacao_plausivel": "sim",
+   "quem_perderia_se_dito_direto": "Lula perderia a base que defende Moraes ('democracia') e criaria atrito com o STF em ano de julgamentos; o recado em off custa zero.",
+   "contra_evidencia": "Fonte anônima e única (coluna); não dá para saber se é posição do presidente. O próprio Lula falou direto uma semana depois (L29), o que enfraquece a leitura de 'só indireto'.",
+   "fonte_url": "https://www.metropoles.com/colunas/matheus-leitao/ministros-de-lula-veem-silencio-de-moraes-como-toxico-para-a-campanha",
+   "confianca_fato": "baixa",
+   "forca_leitura": "não conclusivo",
+   "status": "retirado",
+   "a_favor_do_ator": false,
+   "disputado": false,
+   "tag": "[fato] + [leitura]"
+  },
+  {
+   "id": "L05",
+   "lado": "lula",
+   "categoria": 2,
+   "periodo": "governo Lula 2023-26",
+   "ator": "Lula (indicação de Jorge Messias ao STF)",
+   "data": "2025-11-20 (indicação); 2026-04-29 (Senado rejeita: 42 contra x 34 a favor)",
+   "fala_ou_ato": "Lula indicou o chefe da AGU, Jorge Messias; CCJ aprovou 16x11, plenário rejeitou: primeira rejeição desde 1894.",
+   "comportamento_revelado": "Ato direto com custo político assumido: a indicação foi rejeitada. Não há indireto.",
+   "leituras_por_publico": "Governo: derrota por manobra de Alcolumbre (que apoiava Pacheco). Oposição: nome político demais. Neutro: sinal de perda de controle do Senado.",
+   "negacao_plausivel": "não",
+   "quem_perderia_se_dito_direto": "Lula perderia a narrativa de 'nome técnico' se admitisse o critério político.",
+   "contra_evidencia": "O plenário rejeitou Messias por 42 votos contra e 34 a favor (mínimo de 41 para aprovar) em 29/04/2026, primeira rejeição em mais de 130 anos; a CCJ o aprovara por 16x11 (Agência Brasil, verificado). Reportagem diz que o presidente do Senado teria pedido votos contra (ele nega): a derrota reflete disputa de poder, não só o perfil do indicado.",
+   "fonte_url": "https://agenciabrasil.ebc.com.br/politica/noticia/2026-04/senado-rejeita-indicacao-de-messias-para-stf",
+   "confianca_fato": "alta",
+   "forca_leitura": "fraca",
+   "status": "não indireto",
+   "a_favor_do_ator": true,
+   "disputado": false,
+   "tag": "[fato]"
+  },
+  {
+   "id": "L09",
+   "lado": "lula",
+   "categoria": 3,
+   "periodo": "governo Lula 2023-26",
+   "ator": "Governo Lula (reajuste do Bolsa Família)",
+   "data": "2026-09-17 (decreto); pagamento a partir de 2026-10-19",
+   "fala_ou_ato": "Decreto 13.120, de 17/09/2026: reajuste de 15,04% no Bolsa Família (piso de R$ 600 para R$ 691; média de R$ 675 para R$ 777), com impacto de R$ 5,8 bi em 2026 (out-dez) e cerca de R$ 22 bi em 2027, segundo o ministro do Planejamento, Bruno Moretti, que diz que o reajuste será feito sem aumento do gasto total, por realocação. Primeiro pagamento em 19/10 (NIS final 1), seis dias antes do 2º turno (25/10).",
+   "comportamento_revelado": "O benefício chega antes da urna e a maior parte da conta (cerca de R$ 22 bi) vem em 2027; o anúncio foi 17 dias antes do 1º turno.",
+   "leituras_por_publico": "Beneficiário: reposição do poder de compra. Oposição: benefício em ano eleitoral. Governo: cumprimento da lei do programa (reposição pelo INPC).",
+   "negacao_plausivel": "sim",
+   "quem_perderia_se_dito_direto": "Governo perderia ao admitir que a data foi calculada pelo calendário eleitoral; baixa renda caiu de 49% para 45% de apoio na semana anterior (InfoMoney).",
+   "contra_evidencia": "(1) Calendário: o Bolsa Família paga nos últimos dez dias úteis de cada mês, escalonado pelo final do NIS; em setembro foi de 17 a 30/09 e em outubro é de 19 a 30/10. O dia 19/10 é a abertura normal do calendário, não uma data escolhida; só os NIS finais 1 a 5 recebem antes do 2º turno. (2) Os 15,04% são o INPC acumulado de mar/2023 a ago/2026: reposição, sem ganho real; o governo invoca a autorização da lei do programa e a exceção do art. 73 da Lei 9.504 para programa já em execução. (3) Ação no TSE: o deputado Zé Trovão (PL-SC) representou em 17/09 invocando o art. 73; o ministro André Mendonça extinguiu o processo sem julgar o mérito, por ilegitimidade ativa (Poder360, Metrópoles, Jornal de Brasília, Revista Oeste); a legalidade segue sem decisão de mérito. (4) Escala: o Auxílio Brasil de 2022 subiu de R$ 400 para R$ 600 (+50%) por PEC com R$ 41,25 bi fora do teto e cláusula de 'estado de emergência' que blindava a Lei Eleitoral (FB12); o reajuste de 2026 é de 15%, custa R$ 5,8 bi em três meses e foi feito por decreto (os pacotes não são comparáveis: a PEC de 2022 incluía outras medidas). Resta: o pagamento coincide com a campanha e o custo cheio cai em 2027.",
+   "fonte_url": "https://www.infomoney.com.br/politica/governo-anuncia-reajuste-de-15-no-bolsa-familia-a-menos-de-20-dias-das-eleicoes/",
+   "confianca_fato": "alta",
+   "forca_leitura": "fraca",
+   "status": "indireto",
+   "a_favor_do_ator": false,
+   "disputado": false,
+   "tag": "[fato] + [leitura]"
+  },
+  {
+   "id": "LP06",
+   "lado": "lula",
+   "categoria": 4,
+   "periodo": "PT 2003-22 (histórico)",
+   "ator": "Dilma Rousseff / governo (meta de superávit de 2014: PLN 36/2014)",
+   "data": "2014-12-04 a 2014-12-09",
+   "fala_ou_ato": "O Congresso aprovou (04/12/2014; votação concluída em 09/12) o PLN 36/2014, que mudou a LDO de 2014 e retirou o teto de abatimento da meta de superávit primário (PAC e desonerações; o teto era de R$ 67 bi e os abatimentos já passavam de R$ 130 bi), dispensando o governo de cumprir a meta do ano; Dilma sancionou sem vetos. Um decreto presidencial condicionou a liberação de emendas à aprovação da mudança (Senado Notícias, 01/12/2014).",
+   "comportamento_revelado": "A métrica foi trocada depois de a antiga ser descumprida, e depois da eleição (brecha 4).",
+   "leituras_por_publico": "Governo: ajuste legal, via Congresso, para não contingenciar investimentos. Oposição: mudança da regra para esconder o descumprimento. Neutro: lei aprovada em votação, com protestos.",
+   "negacao_plausivel": "sim",
+   "quem_perderia_se_dito_direto": "O governo, ao dizer que a meta não seria cumprida antes da eleição.",
+   "contra_evidencia": "Alteração feita por lei, aprovada no Congresso com oposição contrária (Senado Notícias, Câmara, Conjur). O decreto que condicionou as emendas à aprovação é fato primário do Senado.",
+   "fonte_url": "https://www12.senado.leg.br/noticias/materias/2014/12/04/oposicao-pressiona-mas-congresso-aprova-alteracao-da-meta-fiscal-de-2014",
+   "confianca_fato": "alta",
+   "forca_leitura": "forte",
+   "status": "indireto",
+   "a_favor_do_ator": false,
+   "disputado": false,
+   "tag": "[fato] + [leitura]"
+  },
+  {
+   "id": "FB01",
+   "lado": "flavio",
+   "categoria": 1,
+   "periodo": "oposição 2023-26 (Jair, Flávio e aliados)",
+   "ator": "Flávio Bolsonaro / Jair Bolsonaro",
+   "data": "2026-07 (reportagem de 18/07/2026)",
+   "fala_ou_ato": "Flávio leu em público uma carta escrita por Jair Bolsonaro; Moraes viu nisso tentativa de comunicação política contornando as restrições impostas ao ex-presidente.",
+   "comportamento_revelado": "O ex-presidente restrito fala pela voz do filho candidato: o candidato serve de canal de uma fala que o autor está impedido de fazer.",
+   "leituras_por_publico": "Base: voz do líder preso. Adversários: burla de decisão judicial. Centro: dependência do pai.",
+   "negacao_plausivel": "sim",
+   "quem_perderia_se_dito_direto": "Jair (agravamento das restrições) e Flávio (eleitor de centro, que quer distância do pai).",
+   "contra_evidencia": "A carta foi lida em público com a autoria declarada: é fala direta por mensageiro, sem negação plausível; a 'burla' é leitura de Moraes, que Flávio contesta politicamente (mesma fonte). Não há, nas fontes lidas, decisão que puna Flávio pela leitura. A data é a da reportagem (18/07/2026).",
+   "fonte_url": "https://jornaldebrasilia.com.br/noticias/politica-e-poder/flavio-promete-anistiar-envolvidos-no-8-1-e-ataca-moraes/",
+   "confianca_fato": "média",
+   "forca_leitura": "fraca",
+   "status": "não indireto",
+   "a_favor_do_ator": false,
+   "disputado": false,
+   "tag": "[fato]"
+  },
+  {
+   "id": "FB05",
+   "lado": "flavio",
+   "categoria": 1,
+   "periodo": "oposição 2023-26 (Jair, Flávio e aliados)",
+   "ator": "Silas Malafaia (pastor, ex-aliado)",
+   "data": "2026-06-17",
+   "fala_ou_ato": "\"Não passo a mão na cabeça de corrupto de direita\"; \"Nunca tive relacionamento chegado nem com Carlos, nem com Eduardo, nem com Flávio.\"",
+   "comportamento_revelado": "Porta-voz evangélico de peso se afasta publicamente: custo real do ecossistema para Flávio (caso contra o padrão de blindagem total).",
+   "leituras_por_publico": "Evangélicos: sinal de desconforto com os escândalos. Esquerda: confirmação. Base: racha.",
+   "negacao_plausivel": "não",
+   "quem_perderia_se_dito_direto": "Flávio (perda de ponte com evangélicos).",
+   "contra_evidencia": "A matéria não especifica quais 'escândalos' motivaram a fala nem registra resposta de Flávio; não dá para atribuir causa. Evangélicos seguem majoritariamente com Flávio no 2T (Datafolha citado pelo InfoMoney: 62% x 29%).",
+   "fonte_url": "https://revistaforum.com.br/politica/malafaia-flavio-bolsonaro-corrupto/",
+   "confianca_fato": "média",
+   "forca_leitura": "não conclusivo",
+   "status": "retirado",
+   "a_favor_do_ator": false,
+   "disputado": false,
+   "tag": "[fato]"
+  },
+  {
+   "id": "FB12",
+   "lado": "flavio",
+   "categoria": 3,
+   "periodo": "governo Bolsonaro 2019-22",
+   "ator": "Jair Bolsonaro",
+   "data": "2022-07 (PEC 15/2022; Câmara aprovou em 2º turno por 469 x 17)",
+   "fala_ou_ato": "PEC elevou o Auxílio Brasil de R$ 400 para R$ 600 (até dez/2022), criou voucher de R$ 1.000 a caminhoneiros e outras medidas: R$ 41,25 bi fora do teto, com cláusula de 'estado de emergência' que blindava a Lei Eleitoral.",
+   "comportamento_revelado": "Benefício concentrado no trimestre da eleição, vencimento em 31/12/2022, juridicamente protegido da vedação a benefícios em ano eleitoral.",
+   "leituras_por_publico": "Beneficiários: ajuda. Críticos: 'kamikaze' eleitoral. Mercado: risco fiscal.",
+   "negacao_plausivel": "sim",
+   "quem_perderia_se_dito_direto": "Jair, se dissesse 'é para a eleição'.",
+   "contra_evidencia": "Escala: Auxílio Brasil de R$ 400 para R$ 600 (+50%), voucher de R$ 1.000 a caminhoneiros e outras medidas, R$ 41,25 bi fora do teto, com cláusula de 'estado de emergência' que blindava a Lei Eleitoral (PEC 15/2022, aprovada em 2º turno na Câmara por 469x17). Compare com L09 (reajuste de 15,04% por decreto, sem emenda constitucional). Dois contra-fatos da versão anterior foram retirados por falta de fonte: a promessa de R$ 600 por outros candidatos e a pesquisa Datafolha de 56x28; o voto do PT na PEC não foi verificado.",
+   "fonte_url": "https://maisretorno.com/portal/camara-aprova-em-2o-turno-pec-kamikaze-por-469-votos-a-17",
+   "confianca_fato": "alta",
+   "forca_leitura": "forte",
+   "status": "indireto",
+   "a_favor_do_ator": false,
+   "disputado": false,
+   "tag": "[fato]"
+  },
+  {
+   "id": "FB44",
+   "lado": "flavio",
+   "categoria": 10,
+   "periodo": "oposição 2023-26 (Jair, Flávio e aliados)",
+   "ator": "Flávio Bolsonaro / Daniel Vorcaro",
+   "data": "2025-02 a 05 (transferências); 2026-05-13 (Intercept)",
+   "fala_ou_ato": "Pediu ~US$ 24 mi (R$ 134 mi) a Vorcaro para o filme 'Dark Horse'; ao menos US$ 10,6 mi (R$ 61 mi) em seis transferências (fev-mai/2025); áudio: \"Imagina a gente dando calote num Jim Caviezel, num Cyrus... ia ser muito ruim.\" Flávio: \"um filho buscando patrocínio privado... zero dinheiro público, zero Lei Rouanet\".",
+   "comportamento_revelado": "Dinheiro de banqueiro de banco liquidado (18/11/2025) financiando o filme sobre o pai; relação omitida do mercado.",
+   "leituras_por_publico": "Base: projeto privado. Críticos: conflito. Mercado: contaminação.",
+   "negacao_plausivel": "sim",
+   "quem_perderia_se_dito_direto": "Flávio.",
+   "contra_evidencia": "Valores: ao menos US$ 10,6 mi em seis transferências (fev-mai/2025, Intercept); um resumo de busca diz que a PF elevou o total para US$ 12,3 mi (não verificado). Patrocínio privado de filme é legal em abstrato; a questão é a relação com banqueiro de banco depois liquidado, que foi negada ao mercado (FB34). Nenhuma contrapartida política está demonstrada nas fontes lidas (limite do próprio caso). Aos Fatos e Lupa classificam a defesa como enganosa/falsa.",
+   "fonte_url": "https://www.cnnbrasil.com.br/politica/flavio-pediu-r-134-mi-a-vorcaro-para-filme-de-bolsonaro-diz-intercept/",
+   "confianca_fato": "alta",
+   "forca_leitura": "forte",
+   "status": "indireto",
+   "a_favor_do_ator": false,
+   "disputado": false,
+   "tag": "[fato]"
+  }
+ ],
+ "contagens": {
+  "por_lado": {
+   "lula": {
+    "total": 4,
+    "ativos": 3,
+    "indireto": 2,
+    "nao_indireto": 1,
+    "retirado": 1
+   },
+   "flavio": {
+    "total": 4,
+    "ativos": 3,
+    "indireto": 2,
+    "nao_indireto": 1,
+    "retirado": 1
+   }
+  },
+  "por_categoria_lado": {
+   "1": {
+    "lula": 0,
+    "flavio": 1
+   },
+   "2": {
+    "lula": 1,
+    "flavio": 0
+   },
+   "3": {
+    "lula": 1,
+    "flavio": 1
+   },
+   "4": {
+    "lula": 1,
+    "flavio": 0
+   },
+   "5": {
+    "lula": 0,
+    "flavio": 0
+   },
+   "6": {
+    "lula": 0,
+    "flavio": 0
+   },
+   "7": {
+    "lula": 0,
+    "flavio": 0
+   },
+   "8": {
+    "lula": 0,
+    "flavio": 0
+   },
+   "9": {
+    "lula": 0,
+    "flavio": 0
+   },
+   "10": {
+    "lula": 0,
+    "flavio": 1
+   },
+   "11": {
+    "lula": 0,
+    "flavio": 0
+   },
+   "12": {
+    "lula": 0,
+    "flavio": 0
+   }
+  },
+  "por_periodo": {
+   "PT 2003-22 (histórico)": {
+    "lula": 1,
+    "flavio": 0
+   },
+   "governo Bolsonaro 2019-22": {
+    "lula": 0,
+    "flavio": 1
+   },
+   "governo Lula 2023-26": {
+    "lula": 2,
+    "flavio": 0
+   },
+   "oposição 2023-26 (Jair, Flávio e aliados)": {
+    "lula": 0,
+    "flavio": 2
+   }
+  },
+  "por_status": {
+   "indireto": {
+    "lula": 2,
+    "flavio": 2
+   },
+   "não indireto": {
+    "lula": 1,
+    "flavio": 1
+   },
+   "retirado": {
+    "lula": 1,
+    "flavio": 1
+   }
+  },
+  "nota": "Contagens por categoria e por período usam só casos ativos (status 'indireto' ou 'não indireto'); por_status e por_lado contam todas as linhas, inclusive as retiradas."
+ },
+ "top_fortes": {
+  "lula": [
+   "LP06"
+  ],
+  "flavio": [
+   "FB12",
+   "FB44"
+  ]
+ },
+ "top_fracos": {
+  "lula": [
+   "L09"
+  ],
+  "flavio": []
+ },
+ "simetria": {
+  "texto": "Resultado de auditoria_simetria.py (lê os dois CSVs) e interpretação, com as assimetrias que restam. O que ficou simétrico. Mesmo vocabulário de tags (0 violações nos dois), mesmas colunas, mesma barra de evidência, mesma regra para os 10 mais fortes e os 5 mais fracos, mesmo número de linhas retira",
+  "tabela": [
+   {
+    "titulo": "Antes e depois (o que as revisões mediram x o que o script mede agora)",
+    "colunas": [
+     "medida",
+     "antes (revisões, calculado por elas)",
+     "depois (script)"
+    ],
+    "linhas": [
+     [
+      "Tags com rótulo de conclusão",
+      "Lula 30 de 48; Flávio 0 de 56",
+      "Lula 0; Flávio 0 (vocabulário `[fato]`/`[leitura]`/`[narrativa de X]`)"
+     ],
+     [
+      "Casos com 2+ fontes",
+      "Lula 0 de 48; Flávio 12 de 56",
+      "Lula 28 de 52 ativos; Flávio 27 de 54"
+     ],
+     [
+      "Casos com checador",
+      "Lula 0; Flávio 7 URLs",
+      "Lula 3 casos; Flávio 9 casos"
+     ],
+     [
+      "Confiança 'alta' (uma coluna só)",
+      "Lula 8 de 48 (17%); Flávio 27 de 56 (48%)",
+      "`confianca_fato` alta: Lula 56%, Flávio 72%"
+     ],
+     [
+      "Casos 'alta + indireto: sim'",
+      "Lula 6; Flávio 19",
+      "`confianca_fato` alta + `forca_leitura_indireta` forte ou média: Lula 8; Flávio 16 (ver seção 4)"
+     ],
+     [
+      "Casos ativos",
+      "Lula 48; Flávio 56",
+      "Lula 52; Flávio 54"
+     ],
+     [
+      "Casos em escopo histórico",
+      "Lula 2 (L25, L33); Flávio 21 (2005 a 2022)",
+      "Lula 12 (PT 2003-22); Flávio 22 (4 pré-2019 + 18 de 2019-22)"
+     ]
+    ]
+   }
+  ]
+ },
+ "resumos": [
+  {
+   "secao": "Visão geral",
+   "pontos": [
+    "130 linhas nos dois mapas: 64 de Lula/PT e 66 de Flávio/Bolsonaro.",
+    "Casos ativos: 52 de Lula/PT (34 indireto, 18 não indireto) e 54 de Flávio/Bolsonaro (40 indireto, 14 não indireto).",
+    "Retirados e mantidos no arquivo: 12 de Lula/PT e 12 de Flávio/Bolsonaro.",
+    "As contagens dependem da seleção dos casos; não medem quem fala mais indireto."
+   ]
+  },
+  {
+   "secao": "Resumo da aba",
+   "pontos": [
+    "52 casos ativos de Lula/PT e 54 de Flávio/Bolsonaro, com a mesma régua, as mesmas colunas e a mesma barra de evidência.",
+    "Leitura 'forte': 1 caso de Lula/PT e 5 de Flávio/Bolsonaro; 'não conclusivo': 8 e 8.",
+    "É um mapa de comportamento e de leituras, não um veredito nem recomendação de voto; a seleção e a rubrica são juízos dos autores.",
+    "Assimetrias restantes (força, escopo histórico, fontes, redação) estão declaradas na seção de simetria."
+   ]
+  }
+ ]
+}
