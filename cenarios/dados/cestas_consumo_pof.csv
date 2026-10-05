@@ -1,0 +1,273 @@
+classe_codigo,classe_rendimento,limite_inf_sm2018,limite_sup_sm2018,num_familias,categoria,codigos_pof_tab,despesa_media_mensal_rs_jan2018,pct_despesa_total,pct_despesa_consumo,grupo_ipca,codigo_ipca_c315,peso_ipca_ago2026,peso_inpc_ago2026
+7999,Total,,,69017704,alimentacao_domicilio,6972:103626,442.27,9.51,11.75,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+7999,Total,,,69017704,alimentacao_fora_domicilio,6972:103692,215.96,4.65,5.74,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+7999,Total,,,69017704,habitacao_aluguel_monetario,6715:8007,94.34,2.03,2.51,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+7999,Total,,,69017704,habitacao_aluguel_nao_monetario_imputado,6715:8008,606.15,13.04,16.1,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+7999,Total,,,69017704,habitacao_condominio,6715:8009,53.61,1.15,1.42,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+7999,Total,,,69017704,habitacao_energia_eletrica,6715:8018,115.36,2.48,3.06,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+7999,Total,,,69017704,habitacao_gas_domestico,6715:8022,38.15,0.82,1.01,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+7999,Total,,,69017704,habitacao_agua_esgoto,6715:8010,47.34,1.02,1.26,2.Habitação > 2103.Água e esgoto (taxa),,,
+7999,Total,,,69017704,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,181.37,3.9,4.82,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+7999,Total,,,69017704,artigos_residencia,6715:8026+111442+8027,133.26,2.87,3.54,3.Artigos de residência,7486,3.451,4.2118
+7999,Total,,,69017704,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,149.68,3.22,3.98,9.Comunicação,7786,4.5011,4.7283
+7999,Total,,,69017704,vestuario,6715:103554,160.25,3.45,4.26,4.Vestuário,7558,4.5963,5.4106
+7999,Total,,,69017704,transporte_publico_urbano,6715:103562,60.47,1.3,1.61,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+7999,Total,,,69017704,transporte_combustivel,6715:103563+103564,159.64,3.43,4.24,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+7999,Total,,,69017704,transporte_veiculo_manutencao,6715:8011,79.33,1.71,2.11,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+7999,Total,,,69017704,transporte_aquisicao_veiculos,6715:103566,258.15,5.55,6.86,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+7999,Total,,,69017704,transporte_viagens_outros,6715:8012+103568,122.16,2.63,3.25,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+7999,Total,,,69017704,saude_remedios,6715:103575,135.24,2.91,3.59,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+7999,Total,,,69017704,saude_plano,6715:103576,95.4,2.05,2.53,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+7999,Total,,,69017704,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,71.41,1.54,1.9,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+7999,Total,,,69017704,higiene_cuidados_pessoais,6715:103569,136.82,2.94,3.63,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+7999,Total,,,69017704,educacao,6715:103585,175.6,3.78,4.66,8.Educação,7766,6.1601,4.5233
+7999,Total,,,69017704,recreacao_cultura,6715:103593+8015+8016+103597,56.45,1.21,1.5,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+7999,Total,,,69017704,fumo,6715:103598,17.4,0.37,0.46,7.Despesas pessoais > Fumo,,,
+7999,Total,,,69017704,servicos_pessoais,6715:103599,48.55,1.04,1.29,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+7999,Total,,,69017704,despesas_diversas,6715:103605+103607+103608+103609+103610,110.12,2.37,2.93,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+7999,Total,,,69017704,fin_servicos_bancarios,6715:103614,46.23,0.99,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+7999,Total,,,69017704,fin_emprestimos_carne,6715:103623,109.58,2.36,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+7999,Total,,,69017704,fin_prestacao_imovel,6715:103624,40.8,0.88,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+7999,Total,,,69017704,impostos_contribuicoes,6715:103612+103613,378.89,8.15,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+7999,Total,,,69017704,transferencias_previdencia_outras,6715:103615+103616+103617,120.25,2.59,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+7999,Total,,,69017704,aumento_ativo,6715:103618,188.76,4.06,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+7999,Total,,,69017704,TOTAL_despesa_consumo,6715:103538,3764.51,80.97,100.0,,,,
+7999,Total,,,69017704,TOTAL_despesa_total,6715:103536,4649.03,100.0,,,,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,alimentacao_domicilio,6972:103626,261.74,17.44,18.85,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,alimentacao_fora_domicilio,6972:103692,68.1,4.54,4.91,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,habitacao_aluguel_monetario,6715:8007,63.9,4.26,4.6,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,habitacao_aluguel_nao_monetario_imputado,6715:8008,244.09,16.26,17.58,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,habitacao_condominio,6715:8009,3.0,0.2,0.22,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,habitacao_energia_eletrica,6715:8018,65.62,4.37,4.73,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,habitacao_gas_domestico,6715:8022,32.83,2.19,2.36,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,habitacao_agua_esgoto,6715:8010,28.12,1.87,2.03,2.Habitação > 2103.Água e esgoto (taxa),,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,54.16,3.61,3.9,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,artigos_residencia,6715:8026+111442+8027,66.99,4.46,4.83,3.Artigos de residência,7486,3.451,4.2118
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,44.18,2.94,3.18,9.Comunicação,7786,4.5011,4.7283
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,vestuario,6715:103554,63.46,4.23,4.57,4.Vestuário,7558,4.5963,5.4106
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,transporte_publico_urbano,6715:103562,31.7,2.11,2.28,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,transporte_combustivel,6715:103563+103564,37.99,2.53,2.74,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,transporte_veiculo_manutencao,6715:8011,20.7,1.38,1.49,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,transporte_aquisicao_veiculos,6715:103566,35.89,2.39,2.59,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,transporte_viagens_outros,6715:8012+103568,15.95,1.06,1.15,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,saude_remedios,6715:103575,62.4,4.16,4.49,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,saude_plano,6715:103576,6.02,0.4,0.43,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,20.24,1.35,1.46,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,higiene_cuidados_pessoais,6715:103569,75.4,5.02,5.43,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,educacao,6715:103585,29.02,1.93,2.09,8.Educação,7766,6.1601,4.5233
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,recreacao_cultura,6715:103593+8015+8016+103597,9.56,0.64,0.69,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,fumo,6715:103598,10.37,0.69,0.75,7.Despesas pessoais > Fumo,,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,servicos_pessoais,6715:103599,14.42,0.96,1.04,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,despesas_diversas,6715:103605+103607+103608+103609+103610,22.46,1.5,1.62,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,fin_servicos_bancarios,6715:103614,8.04,0.54,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,fin_emprestimos_carne,6715:103623,28.05,1.87,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,fin_prestacao_imovel,6715:103624,2.76,0.18,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,impostos_contribuicoes,6715:103612+103613,37.34,2.49,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,transferencias_previdencia_outras,6715:103615+103616+103617,15.26,1.02,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,aumento_ativo,6715:103618,21.0,1.4,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,TOTAL_despesa_consumo,6715:103538,1388.29,92.51,100.0,,,,
+47558,Ate R$1.908 (ate 2 SM de 2018),0.0,2.0,16737438,TOTAL_despesa_total,6715:103536,1500.73,100.0,,,,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,alimentacao_domicilio,6972:103626,333.89,14.2,15.81,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,alimentacao_fora_domicilio,6972:103692,115.32,4.91,5.46,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,habitacao_aluguel_monetario,6715:8007,80.02,3.4,3.79,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,habitacao_aluguel_nao_monetario_imputado,6715:8008,376.73,16.03,17.84,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,habitacao_condominio,6715:8009,8.58,0.36,0.41,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,habitacao_energia_eletrica,6715:8018,88.14,3.75,4.17,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,habitacao_gas_domestico,6715:8022,37.15,1.58,1.76,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,habitacao_agua_esgoto,6715:8010,39.12,1.66,1.85,2.Habitação > 2103.Água e esgoto (taxa),,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,88.36,3.76,4.19,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,artigos_residencia,6715:8026+111442+8027,89.56,3.81,4.24,3.Artigos de residência,7486,3.451,4.2118
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,78.24,3.33,3.71,9.Comunicação,7786,4.5011,4.7283
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,vestuario,6715:103554,91.6,3.9,4.34,4.Vestuário,7558,4.5963,5.4106
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,transporte_publico_urbano,6715:103562,47.72,2.03,2.26,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,transporte_combustivel,6715:103563+103564,67.5,2.87,3.2,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,transporte_veiculo_manutencao,6715:8011,38.47,1.64,1.82,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,transporte_aquisicao_veiculos,6715:103566,78.37,3.33,3.71,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,transporte_viagens_outros,6715:8012+103568,33.86,1.44,1.6,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,saude_remedios,6715:103575,102.87,4.38,4.87,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,saude_plano,6715:103576,17.76,0.76,0.84,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,44.36,1.89,2.1,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,higiene_cuidados_pessoais,6715:103569,101.49,4.32,4.81,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,educacao,6715:103585,56.22,2.39,2.66,8.Educação,7766,6.1601,4.5233
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,recreacao_cultura,6715:103593+8015+8016+103597,15.97,0.68,0.76,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,fumo,6715:103598,14.08,0.6,0.67,7.Despesas pessoais > Fumo,,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,servicos_pessoais,6715:103599,24.02,1.02,1.14,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,despesas_diversas,6715:103605+103607+103608+103609+103610,41.94,1.78,1.99,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,fin_servicos_bancarios,6715:103614,15.13,0.64,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,fin_emprestimos_carne,6715:103623,55.19,2.35,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,fin_prestacao_imovel,6715:103624,11.0,0.47,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,impostos_contribuicoes,6715:103612+103613,87.85,3.74,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,transferencias_previdencia_outras,6715:103615+103616+103617,30.9,1.31,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,aumento_ativo,6715:103618,39.36,1.67,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,TOTAL_despesa_consumo,6715:103538,2111.32,89.82,100.0,,,,
+47559,R$1.908-2.862 (2-3 SM),2.0,3.0,13079821,TOTAL_despesa_total,6715:103536,2350.74,100.0,,,,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,alimentacao_domicilio,6972:103626,443.73,11.98,13.77,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,alimentacao_fora_domicilio,6972:103692,190.67,5.15,5.92,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,habitacao_aluguel_monetario,6715:8007,85.8,2.32,2.66,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,habitacao_aluguel_nao_monetario_imputado,6715:8008,541.06,14.6,16.8,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,habitacao_condominio,6715:8009,18.57,0.5,0.58,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,habitacao_energia_eletrica,6715:8018,117.64,3.17,3.65,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,habitacao_gas_domestico,6715:8022,39.21,1.06,1.22,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,habitacao_agua_esgoto,6715:8010,50.81,1.37,1.58,2.Habitação > 2103.Água e esgoto (taxa),,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,131.35,3.54,4.08,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,artigos_residencia,6715:8026+111442+8027,124.47,3.36,3.86,3.Artigos de residência,7486,3.451,4.2118
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,133.71,3.61,4.15,9.Comunicação,7786,4.5011,4.7283
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,vestuario,6715:103554,150.44,4.06,4.67,4.Vestuário,7558,4.5963,5.4106
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,transporte_publico_urbano,6715:103562,66.71,1.8,2.07,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,transporte_combustivel,6715:103563+103564,143.51,3.87,4.45,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,transporte_veiculo_manutencao,6715:8011,75.03,2.02,2.33,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,transporte_aquisicao_veiculos,6715:103566,170.52,4.6,5.29,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,transporte_viagens_outros,6715:8012+103568,71.33,1.93,2.21,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,saude_remedios,6715:103575,134.5,3.63,4.18,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,saude_plano,6715:103576,47.83,1.29,1.48,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,58.51,1.58,1.82,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,higiene_cuidados_pessoais,6715:103569,141.77,3.83,4.4,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,educacao,6715:103585,115.75,3.12,3.59,8.Educação,7766,6.1601,4.5233
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,recreacao_cultura,6715:103593+8015+8016+103597,34.61,0.93,1.07,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,fumo,6715:103598,19.47,0.53,0.6,7.Despesas pessoais > Fumo,,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,servicos_pessoais,6715:103599,42.51,1.15,1.32,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,despesas_diversas,6715:103605+103607+103608+103609+103610,71.98,1.94,2.23,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,fin_servicos_bancarios,6715:103614,31.34,0.85,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,fin_emprestimos_carne,6715:103623,83.39,2.25,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,fin_prestacao_imovel,6715:103624,24.66,0.67,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,impostos_contribuicoes,6715:103612+103613,199.82,5.39,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,transferencias_previdencia_outras,6715:103615+103616+103617,55.35,1.49,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,aumento_ativo,6715:103618,89.17,2.41,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,TOTAL_despesa_consumo,6715:103538,3221.51,86.94,100.0,,,,
+47560,R$2.862-5.724 (3-6 SM),3.0,6.0,21099497,TOTAL_despesa_total,6715:103536,3705.24,100.0,,,,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,alimentacao_domicilio,6972:103626,560.16,8.85,10.68,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,alimentacao_fora_domicilio,6972:103692,312.52,4.94,5.96,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,habitacao_aluguel_monetario,6715:8007,118.57,1.87,2.26,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,habitacao_aluguel_nao_monetario_imputado,6715:8008,796.25,12.59,15.18,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,habitacao_condominio,6715:8009,64.27,1.02,1.23,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,habitacao_energia_eletrica,6715:8018,152.75,2.41,2.91,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,habitacao_gas_domestico,6715:8022,39.25,0.62,0.75,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,habitacao_agua_esgoto,6715:8010,64.1,1.01,1.22,2.Habitação > 2103.Água e esgoto (taxa),,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,209.54,3.31,3.99,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,artigos_residencia,6715:8026+111442+8027,178.68,2.82,3.41,3.Artigos de residência,7486,3.451,4.2118
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,228.84,3.62,4.36,9.Comunicação,7786,4.5011,4.7283
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,vestuario,6715:103554,233.04,3.68,4.44,4.Vestuário,7558,4.5963,5.4106
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,transporte_publico_urbano,6715:103562,84.15,1.33,1.6,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,transporte_combustivel,6715:103563+103564,263.73,4.17,5.03,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,transporte_veiculo_manutencao,6715:8011,130.15,2.06,2.48,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,transporte_aquisicao_veiculos,6715:103566,416.47,6.58,7.94,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,transporte_viagens_outros,6715:8012+103568,180.32,2.85,3.44,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,saude_remedios,6715:103575,183.23,2.9,3.49,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,saude_plano,6715:103576,144.21,2.28,2.75,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,99.47,1.57,1.9,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,higiene_cuidados_pessoais,6715:103569,192.28,3.04,3.67,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,educacao,6715:103585,261.01,4.13,4.98,8.Educação,7766,6.1601,4.5233
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,recreacao_cultura,6715:103593+8015+8016+103597,82.51,1.3,1.57,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,fumo,6715:103598,22.3,0.35,0.43,7.Despesas pessoais > Fumo,,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,servicos_pessoais,6715:103599,72.31,1.14,1.38,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,despesas_diversas,6715:103605+103607+103608+103609+103610,155.54,2.46,2.97,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,fin_servicos_bancarios,6715:103614,66.57,1.05,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,fin_emprestimos_carne,6715:103623,169.71,2.68,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,fin_prestacao_imovel,6715:103624,55.74,0.88,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,impostos_contribuicoes,6715:103612+103613,488.14,7.72,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,transferencias_previdencia_outras,6715:103615+103616+103617,132.72,2.1,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,aumento_ativo,6715:103618,167.99,2.66,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,TOTAL_despesa_consumo,6715:103538,5245.63,82.92,100.0,,,,
+47561,R$5.724-9.540 (6-10 SM),6.0,10.0,9509008,TOTAL_despesa_total,6715:103536,6326.5,100.0,,,,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,alimentacao_domicilio,6972:103626,713.2,7.59,9.7,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,alimentacao_fora_domicilio,6972:103692,430.63,4.58,5.86,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,habitacao_aluguel_monetario,6715:8007,143.77,1.53,1.96,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,habitacao_aluguel_nao_monetario_imputado,6715:8008,1126.87,11.99,15.32,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,habitacao_condominio,6715:8009,145.77,1.55,1.98,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,habitacao_energia_eletrica,6715:8018,183.86,1.96,2.5,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,habitacao_gas_domestico,6715:8022,42.96,0.46,0.58,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,habitacao_agua_esgoto,6715:8010,68.01,0.72,0.92,2.Habitação > 2103.Água e esgoto (taxa),,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,392.22,4.17,5.33,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,artigos_residencia,6715:8026+111442+8027,219.83,2.34,2.99,3.Artigos de residência,7486,3.451,4.2118
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,324.39,3.45,4.41,9.Comunicação,7786,4.5011,4.7283
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,vestuario,6715:103554,296.34,3.15,4.03,4.Vestuário,7558,4.5963,5.4106
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,transporte_publico_urbano,6715:103562,88.03,0.94,1.2,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,transporte_combustivel,6715:103563+103564,366.51,3.9,4.98,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,transporte_veiculo_manutencao,6715:8011,166.66,1.77,2.27,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,transporte_aquisicao_veiculos,6715:103566,570.72,6.07,7.76,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,transporte_viagens_outros,6715:8012+103568,301.56,3.21,4.1,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,saude_remedios,6715:103575,221.11,2.35,3.01,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,saude_plano,6715:103576,284.06,3.02,3.86,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,164.93,1.75,2.24,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,higiene_cuidados_pessoais,6715:103569,212.24,2.26,2.89,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,educacao,6715:103585,413.4,4.4,5.62,8.Educação,7766,6.1601,4.5233
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,recreacao_cultura,6715:103593+8015+8016+103597,127.16,1.35,1.73,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,fumo,6715:103598,22.88,0.24,0.31,7.Despesas pessoais > Fumo,,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,servicos_pessoais,6715:103599,103.59,1.1,1.41,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,despesas_diversas,6715:103605+103607+103608+103609+103610,223.13,2.37,3.03,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,fin_servicos_bancarios,6715:103614,104.9,1.12,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,fin_emprestimos_carne,6715:103623,248.08,2.64,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,fin_prestacao_imovel,6715:103624,104.21,1.11,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,impostos_contribuicoes,6715:103612+103613,992.07,10.55,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,transferencias_previdencia_outras,6715:103615+103616+103617,283.29,3.01,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,aumento_ativo,6715:103618,315.6,3.36,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,TOTAL_despesa_consumo,6715:103538,7353.83,78.22,100.0,,,,
+47562,R$9.540-14.310 (10-15 SM),10.0,15.0,4256727,TOTAL_despesa_total,6715:103536,9401.98,100.0,,,,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,alimentacao_domicilio,6972:103626,854.15,5.74,7.88,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,alimentacao_fora_domicilio,6972:103692,624.53,4.2,5.77,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,habitacao_aluguel_monetario,6715:8007,213.99,1.44,1.98,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,habitacao_aluguel_nao_monetario_imputado,6715:8008,1617.38,10.88,14.93,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,habitacao_condominio,6715:8009,294.15,1.98,2.72,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,habitacao_energia_eletrica,6715:8018,208.94,1.4,1.93,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,habitacao_gas_domestico,6715:8022,43.85,0.29,0.4,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,habitacao_agua_esgoto,6715:8010,70.42,0.47,0.65,2.Habitação > 2103.Água e esgoto (taxa),,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,684.93,4.61,6.32,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,artigos_residencia,6715:8026+111442+8027,306.22,2.06,2.83,3.Artigos de residência,7486,3.451,4.2118
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,429.87,2.89,3.97,9.Comunicação,7786,4.5011,4.7283
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,vestuario,6715:103554,391.55,2.63,3.61,4.Vestuário,7558,4.5963,5.4106
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,transporte_publico_urbano,6715:103562,98.67,0.66,0.91,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,transporte_combustivel,6715:103563+103564,479.69,3.23,4.43,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,transporte_veiculo_manutencao,6715:8011,226.07,1.52,2.09,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,transporte_aquisicao_veiculos,6715:103566,1040.38,7.0,9.6,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,transporte_viagens_outros,6715:8012+103568,551.77,3.71,5.09,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,saude_remedios,6715:103575,282.34,1.9,2.61,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,saude_plano,6715:103576,472.96,3.18,4.37,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,212.76,1.43,1.96,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,higiene_cuidados_pessoais,6715:103569,242.96,1.63,2.24,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,educacao,6715:103585,682.69,4.59,6.3,8.Educação,7766,6.1601,4.5233
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,recreacao_cultura,6715:103593+8015+8016+103597,224.33,1.51,2.07,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,fumo,6715:103598,30.44,0.2,0.28,7.Despesas pessoais > Fumo,,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,servicos_pessoais,6715:103599,142.85,0.96,1.32,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,despesas_diversas,6715:103605+103607+103608+103609+103610,404.75,2.72,3.74,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,fin_servicos_bancarios,6715:103614,145.49,0.98,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,fin_emprestimos_carne,6715:103623,409.44,2.75,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,fin_prestacao_imovel,6715:103624,157.59,1.06,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,impostos_contribuicoes,6715:103612+103613,1694.86,11.4,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,transferencias_previdencia_outras,6715:103615+103616+103617,594.15,4.0,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,aumento_ativo,6715:103618,1038.11,6.98,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,TOTAL_despesa_consumo,6715:103538,10832.65,72.84,100.0,,,,
+47563,R$14.310-23.850 (15-25 SM),15.0,25.0,2629450,TOTAL_despesa_total,6715:103536,14872.3,100.0,,,,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,alimentacao_domicilio,6972:103626,1058.28,3.8,5.76,1.Alimentação e bebidas > 11.Alimentação no domicílio,7171,15.4239,18.8896
+47564,>R$23.850 (>25 SM),25.0,,1705764,alimentacao_fora_domicilio,6972:103692,1047.64,3.76,5.7,1.Alimentação e bebidas > 12.Alimentação fora do domicílio,7432,6.0877,5.6044
+47564,>R$23.850 (>25 SM),25.0,,1705764,habitacao_aluguel_monetario,6715:8007,165.66,0.59,0.9,2.Habitação > 2101001.Aluguel residencial,7448,3.6376,4.9859
+47564,>R$23.850 (>25 SM),25.0,,1705764,habitacao_aluguel_nao_monetario_imputado,6715:8008,2804.96,10.07,15.27,(fora do IPCA: aluguel imputado de imóvel próprio/cedido),,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,habitacao_condominio,6715:8009,668.71,2.4,3.64,2.Habitação > 2101002.Condomínio,7449,2.2238,0.9109
+47564,>R$23.850 (>25 SM),25.0,,1705764,habitacao_energia_eletrica,6715:8018,260.14,0.93,1.42,2.Habitação > 2202.Energia elétrica residencial,7484,4.296,5.2889
+47564,>R$23.850 (>25 SM),25.0,,1705764,habitacao_gas_domestico,6715:8022,58.19,0.21,0.32,2.Habitação > 2201004.Gás de botijão,7482,1.2387,1.7966
+47564,>R$23.850 (>25 SM),25.0,,1705764,habitacao_agua_esgoto,6715:8010,75.27,0.27,0.41,2.Habitação > 2103.Água e esgoto (taxa),,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,habitacao_manutencao_limpeza_outros,6715:8024+8025+8023,1302.27,4.67,7.09,"2.Habitação (reparos, artigos de limpeza, outros)",,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,artigos_residencia,6715:8026+111442+8027,491.66,1.76,2.68,3.Artigos de residência,7486,3.451,4.2118
+47564,>R$23.850 (>25 SM),25.0,,1705764,comunicacao_telefonia_internet,6715:8019+8020+8021+103606+103594,621.2,2.23,3.38,9.Comunicação,7786,4.5011,4.7283
+47564,>R$23.850 (>25 SM),25.0,,1705764,vestuario,6715:103554,655.96,2.35,3.57,4.Vestuário,7558,4.5963,5.4106
+47564,>R$23.850 (>25 SM),25.0,,1705764,transporte_publico_urbano,6715:103562,103.51,0.37,0.56,5.Transportes > 5101.Transporte público,7627,3.2457,3.9786
+47564,>R$23.850 (>25 SM),25.0,,1705764,transporte_combustivel,6715:103563+103564,669.72,2.4,3.65,5.Transportes > 5104.Combustíveis (veículos),7656,6.0833,5.5446
+47564,>R$23.850 (>25 SM),25.0,,1705764,transporte_veiculo_manutencao,6715:8011,293.88,1.05,1.6,5.Transportes > 5102.Veículo próprio (manutenção/acessórios),,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,transporte_aquisicao_veiculos,6715:103566,2033.04,7.3,11.07,"5.Transportes > 5102.Veículo próprio (automóvel novo/usado, moto)",,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,transporte_viagens_outros,6715:8012+103568,1035.94,3.72,5.64,"5.Transportes (passagem aérea, ônibus interestadual, outros)",,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,saude_remedios,6715:103575,398.9,1.43,2.17,6.Saúde e cuidados pessoais > 6101.Produtos farmacêuticos,7662,3.4712,2.9986
+47564,>R$23.850 (>25 SM),25.0,,1705764,saude_plano,6715:103576,831.13,2.98,4.53,6.Saúde e cuidados pessoais > 6203.Plano de saúde,7696,4.1405,1.8254
+47564,>R$23.850 (>25 SM),25.0,,1705764,saude_outros,6715:103577+103578+8013+103580+103581+103582+103583+103584,333.38,1.2,1.82,6.Saúde e cuidados pessoais > 62.Serviços de saúde (exceto plano),,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,higiene_cuidados_pessoais,6715:103569,288.29,1.03,1.57,6.Saúde e cuidados pessoais > 6301.Higiene pessoal,7698,4.1025,5.6365
+47564,>R$23.850 (>25 SM),25.0,,1705764,educacao,6715:103585,1418.41,5.09,7.72,8.Educação,7766,6.1601,4.5233
+47564,>R$23.850 (>25 SM),25.0,,1705764,recreacao_cultura,6715:103593+8015+8016+103597,516.72,1.85,2.81,"7.Despesas pessoais > 72.Recreação, jogos e fumo",,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,fumo,6715:103598,25.08,0.09,0.14,7.Despesas pessoais > Fumo,,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,servicos_pessoais,6715:103599,231.2,0.83,1.26,7.Despesas pessoais > 71.Serviços pessoais,7713,6.3498,4.5021
+47564,>R$23.850 (>25 SM),25.0,,1705764,despesas_diversas,6715:103605+103607+103608+103609+103610,975.54,3.5,5.31,"7.Despesas pessoais (jogos de azar, cerimônias, serviços profissionais, outros)",,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,fin_servicos_bancarios,6715:103614,430.92,1.55,,(outras despesas correntes; IPCA 7.Despesas pessoais > Serviços bancários),,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,fin_emprestimos_carne,6715:103623,507.7,1.82,,(fora do IPCA) Diminuição do passivo: empréstimo e carnê (principal+juros),,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,fin_prestacao_imovel,6715:103624,420.73,1.51,,(fora do IPCA) Diminuição do passivo: prestação de imóvel,,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,impostos_contribuicoes,6715:103612+103613,4009.06,14.39,,(fora do IPCA) Impostos e contribuições trabalhistas,,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,transferencias_previdencia_outras,6715:103615+103616+103617,1431.41,5.14,,"(fora do IPCA) Pensões/doações, previdência privada, outras",,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,aumento_ativo,6715:103618,2702.4,9.7,,"(fora do IPCA) Aquisição/reforma de imóvel, investimentos",,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,TOTAL_despesa_consumo,6715:103538,18364.67,65.9,100.0,,,,
+47564,>R$23.850 (>25 SM),25.0,,1705764,TOTAL_despesa_total,6715:103536,27866.89,100.0,,,,,
