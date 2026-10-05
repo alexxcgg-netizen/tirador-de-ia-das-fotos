@@ -399,7 +399,7 @@ Método: ΔDBGG ≈ primário consolidado + juros nominais (NFSP nominal − pri
 |---|---|---|---|---|
 | SM com ganho real | não sustentado | não sustentado | **parcialmente** | Ganho real de ~11% e transparente; custo de ~R$ 68 bi/ano em dívida e discricionárias |
 | Bolsa Família | não sustentado | **sustentado** (timing do reajuste) | **parcialmente** | Transferência real; gasto permanente sem receita própria; reajuste a 6 dias do 2º turno |
-| IR até R$ 5 mil | — | **parcialmente** | indefinido (IRPFM em 2027) | Compensação de R$ 10,5 bi contra renúncia de R$ 28 bi em 2026; o pobre não ganha porque já era isento |
+| IR até R$ 5 mil | — | **parcialmente** | indefinido (IRPFM em 2027) | Compensação projetada de R$ 10,5 bi (arrecadado jan–ago: R$ 4,0 bi) contra renúncia de R$ 28 bi em 2026; o pobre não ganha porque já era isento |
 | Bets (regulação) | parcialmente | parcialmente | — | Arrecadação de R$ 12 bi contra perda das famílias de R$ 37 bi/ano |
 | Bets (proibição) | — | não sustentado | parcialmente | Benefício real; custo fiscal explícito (~R$ 12 bi/ano); risco de mercado ilegal |
 | Desenrola | não sustentado | **parcialmente** | parcialmente | Alívio real e barato; a inadimplência voltou a recorde |
