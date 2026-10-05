@@ -113,9 +113,10 @@ def test_pesquisas_2t_2026_corrigidas():
 
 
 def test_calibracao_com_correcao_e_vies_condicionado():
-    cal0 = R.calibrar_2t_2026(None, corr="nenhuma", vies_cond=False)
-    cal1 = R.calibrar_2t_2026(None, corr="plena", vies_cond=True)
-    assert cal0["vies_metodo"] == "eb_tau0_fixo" and cal1["vies_metodo"] == "condicionado_1t_2026"
+    anos = (2014, 2018, 2022)
+    cal0 = R.calibrar_2t_2026(None, corr="nenhuma", vies_cond=False, espec="pt", anos=anos)
+    cal1 = R.calibrar_2t_2026(None, corr="plena", vies_cond=True, espec="pt", anos=anos)
+    assert cal0["vies_metodo"] == "eb_sinal_pt" and cal1["vies_metodo"] == "condicionado_1t_2026"
     assert cal1["erros_pp"][0] == pytest.approx(cal0["erros_pp"][0])          # 2014: sem pesquisas pré-1T
     assert cal1["erros_pp"][2] < cal0["erros_pp"][2]                          # 2022 corrigido
     assert cal1["vies_industria"]["erros_1t_pp"][2026] > 0

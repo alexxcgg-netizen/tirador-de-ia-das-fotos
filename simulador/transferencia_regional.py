@@ -10,7 +10,7 @@ eliminado transfere ao PT, p_k = a_k / (a_k + b_k), passa a depender da inclina�
 * p_k e a participação a_k + b_k vêm da matriz nacional (Quaest), que continua sendo o âncora;
 * c_k(beta) recentra cada linha para que a média nacional (ponderada pelos votos do eliminado em cada UF) volte a
   ser exatamente p_k — a regionalização redistribui entre UFs, não muda o nacional da matriz;
-* beta (efeito de contexto: um eleitor de terceira via num estado muito antipetista vai mais para o antipetista)
+* beta (efeito de contexto: um eleitor de terceira via num estado onde o PT é fraco vai mais para o adversário do PT)
   é estimado de forma ecológica com os resultados por UF do TSE (1º -> 2º turno) de 2002, 2010, 2014, 2018 e 2022,
   e combinado hierarquicamente (média entre eleições, variância entre eleições pelo método dos momentos); na
   simulação beta ~ N(mu, dp²) por sorteio, além da Dirichlet da matriz;

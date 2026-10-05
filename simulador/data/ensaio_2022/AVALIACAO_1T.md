@@ -1,6 +1,6 @@
 # Ensaio: avaliação das previsões do 1º turno de 2022
 
-Gerado por `resultado_1t.py` em 2026-10-04 02:06 UTC. Seções totalizadas no Brasil: 100,00% (TSE, 02/10/2022 23:59:59). Ensaio do pipeline com dados históricos (resultado oficial do TSE).
+Gerado por `resultado_1t.py` em 2026-10-05 02:22 UTC. Seções totalizadas no Brasil: 100,00% (TSE, 02/10/2022 23:59:59). Ensaio do pipeline com dados históricos (resultado oficial do TSE).
 
 ## Resultado (votos válidos, %)
 
@@ -44,36 +44,18 @@ Brier = (p − ocorreu)²; log score = log da probabilidade dada ao que acontece
 |---|---|---|---|---|---|
 | Modelo principal: neutro | Lula em 1º | 0,875 | sim | 0,016 | -0,134 |
 | Modelo principal: neutro | Bolsonaro em 1º | 0,126 | não | 0,016 | -0,134 |
-| Modelo principal: neutro | Ciro em 1º | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: neutro | Tebet em 1º | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: neutro | Outros em 1º | 0,000 | não | 0,000 | -0,001 |
 | Modelo principal: neutro | Lula no 2º turno | 1,000 | sim | 0,000 | -0,001 |
 | Modelo principal: neutro | Bolsonaro no 2º turno | 1,000 | sim | 0,000 | -0,001 |
-| Modelo principal: neutro | Ciro no 2º turno | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: neutro | Tebet no 2º turno | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: neutro | Outros no 2º turno | 0,000 | não | 0,000 | -0,001 |
 | Modelo principal: neutro | Decidida no 1º turno | 0,218 | não | 0,048 | -0,246 |
 | Modelo principal: calibrado | Lula em 1º | 0,743 | sim | 0,066 | -0,297 |
 | Modelo principal: calibrado | Bolsonaro em 1º | 0,257 | não | 0,066 | -0,297 |
-| Modelo principal: calibrado | Ciro em 1º | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: calibrado | Tebet em 1º | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: calibrado | Outros em 1º | 0,000 | não | 0,000 | -0,001 |
 | Modelo principal: calibrado | Lula no 2º turno | 1,000 | sim | 0,000 | -0,001 |
 | Modelo principal: calibrado | Bolsonaro no 2º turno | 1,000 | sim | 0,000 | -0,001 |
-| Modelo principal: calibrado | Ciro no 2º turno | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: calibrado | Tebet no 2º turno | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: calibrado | Outros no 2º turno | 0,000 | não | 0,000 | -0,001 |
 | Modelo principal: calibrado | Decidida no 1º turno | 0,152 | não | 0,023 | -0,165 |
 | Modelo principal: viés pleno | Lula em 1º | 0,505 | sim | 0,245 | -0,683 |
 | Modelo principal: viés pleno | Bolsonaro em 1º | 0,495 | não | 0,245 | -0,683 |
-| Modelo principal: viés pleno | Ciro em 1º | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: viés pleno | Tebet em 1º | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: viés pleno | Outros em 1º | 0,000 | não | 0,000 | -0,001 |
 | Modelo principal: viés pleno | Lula no 2º turno | 1,000 | sim | 0,000 | -0,001 |
 | Modelo principal: viés pleno | Bolsonaro no 2º turno | 1,000 | sim | 0,000 | -0,001 |
-| Modelo principal: viés pleno | Ciro no 2º turno | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: viés pleno | Tebet no 2º turno | 0,000 | não | 0,000 | -0,001 |
-| Modelo principal: viés pleno | Outros no 2º turno | 0,000 | não | 0,000 | -0,001 |
 | Modelo principal: viés pleno | Decidida no 1º turno | 0,139 | não | 0,019 | -0,150 |
 
 ## UFs

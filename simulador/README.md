@@ -238,18 +238,50 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
 **c) 2º turno condicionado ao 1º turno real** (`web/resultados_2t.json`, seção "2º turno" do painel; 500 mil simulações):
 - fatias reais por UF (UFs parciais projetadas por município, com o dp da projeção; no método antigo, ruído
   ∝ √(1 − pst)); se alguém passa de 50% com a apuração concluída, não há simulação;
-- transferência dos eliminados: Quaest 2–3/10 (Caiado 19/43/38, Renan 11/60/29 para Lula/Flávio/fora) e 24–27/9
-  (Cury 28/35/37, Zema 10/80/10), Dirichlet α = 30; par diferente de Lula x Flávio: linha genérica e erro × 1,5;
+- transferência dos eliminados (desde 5/10, uma onda só): Quaest 2–3/10 (BR-02197/2026) para todos os que ela mediu
+  — Caiado 19/43/36, Renan 11/60/27, Cury 23/34/41 (% Lula/Flávio/branco-nulo-não vota, 2% de indecisos em cada) —
+  e, para Zema (fora dessa onda), Quaest 24–27/9 (9/81/10) com Dirichlet α = 10 em vez de 30 (incerteza da escolha de
+  onda: entre as duas ondas a fatia decidida de Lula caiu 0,04–0,17 nos outros três). Indecisos repartidos na
+  proporção das três respostas em todas as linhas (antes: em "fora" para Caiado/Renan, linhas de premissas.json
+  para Cury/Zema). Efeito (`segundo_turno.sensibilidade_matriz`): Lula −0,07 p.p. contra a mistura antiga; só a onda
+  de 24–27/9 daria +0,37 p.p. Par diferente de Lula x Flávio: linha genérica e erro × 1,5;
 - comparecimento: abstenção e brancos/nulos reais do 1º turno + variação média 1º→2º turno da UF em 2014/2018/2022;
 - pesquisas de 2º turno: as de antes do 1º turno com peso 0,25 em logito (em 2018 e 2022 superestimaram o PT em
-  3,5 e 4,7 p.p.), **corrigidas pelo erro do mesmo instituto no 1º turno** (ver abaixo); as feitas depois do 1º
-  turno, quando entrarem em `pesquisas_nacionais.csv`, entram por precisão (dp 1,5 p.p. + deriva de 3 p.p. por 21
-  dias até o 2º turno) e **sem** correção por instituto (não passou no backtest);
-- erro calibrado em 2014/2018/2022 (1º turno real + o que se sabia na véspera → 2º turno real, com as pesquisas
-  pré-1T corrigidas do mesmo jeito): erros nacionais da projeção +2,7 / −0,6 / +2,1 p.p. (sem a correção: +2,7 /
-  −0,3 / +2,8); dp nacional com prior √((2·3² + Σe²)/(2 + n)) = 2,5 p.p. (t5), viés condicionado ao 1º turno
-  (abaixo; −0,8 p.p. no centro, antes −1,1), dp regional ~1,2 e estadual ~1,7 p.p. (resíduos por UF depois do
-  ajuste nacional). A variância nacional que já vem da incerteza da matriz não é contada duas vezes.
+  3,5 e 4,7 p.p.), **corrigidas pelo erro do mesmo instituto no 1º turno** (ver abaixo), formam com a via de
+  transferência a **projeção**; as feitas depois do 1º turno, quando entrarem em `pesquisas_nacionais.csv`, ficam
+  fora da projeção e são combinadas com ela **por precisão** (peso = (1/dp_pos²)/(1/dp_pos² + 1/dp_projeção²);
+  dp_pos = 1,5 p.p. + deriva de 3 p.p. por 21 dias até o 2º turno), **sem** correção por instituto (não passou no
+  backtest) e **sem** termo de viés (a média da véspera do 2º turno errou +0,69 / −1,14 / +0,10 p.p. em
+  2014/2018/2022). Antes de 5/10 elas entravam com peso fixo 0,5 e o viés era descontado do centro já misturado;
+- **termo sistemático da projeção e erro nacional (desde 5/10; `especificacao_vies_2t.py`, `--backtest-vies`,
+  `data/backtest_vies_2t.json`)**: a projeção (1º turno real + o que se sabia na véspera) errou, na fatia do PT,
+  +1,5 (2002), −7,2 (2006), +1,6 (2010), +2,7 (2014), −0,6 (2018), +2,2 (2022) p.p. Quatro especificações para o
+  termo sistemático, comparadas deixando uma eleição de fora (regra fixada antes: menor RMSE; empate < 0,25 p.p. →
+  a mais simples):
+
+  | Especificação | RMSE LOEO | MAE | cob. 80% | cob. 95% | log-dens. | termo em Lula 2026 | Lula 2026 (p10–p90) | P(Lula) |
+  |---|---|---|---|---|---|---|---|---|
+  | (a) viés com sinal do PT | 3,94 | 2,99 | 5/6 | 5/6 | −3,08 | −0,02 | 47,8 (43,7–52,0) | 24% |
+  | (b) viés com sinal do líder do 1º turno | 3,95 | 2,91 | 5/6 | 5/6 | −3,07 | +0,14 | 48,0 (43,8–52,1) | 26% |
+  | (c) transferência por ideologia dos terceiros | 3,79 | 3,06 | 5/6 | 5/6 | −3,02 | linhas por bloco | 49,1 (44,6–53,6) | 39% |
+  | **(d) viés zero (escolhida)** | **3,41** | **2,63** | 5/6 | 5/6 | **−2,86** | 0 | **47,9 (43,9–51,8)** | **23%** |
+
+  (Lula 2026 das sensibilidades com 100 mil simulações; a rodada oficial usa 500 mil.) Em (c) a fatia decidida que
+  vai ao PT é p_esq para terceiros de esquerda/centro-esquerda e p_nesq para os demais (classificação por família
+  partidária, com fonte, em `especificacao_vies_2t.TERCEIROS`); ajustada nas 6 eleições, p_esq = 0,46 e p_nesq =
+  0,61 — o contrário da hipótese de que os terceiros de esquerda explicariam o erro (Garotinho, Marina 2010/2014 e
+  Heloísa Helena não foram em bloco para o PT); aplicada a 2026 (todos de não-esquerda) contradiz a medida direta da
+  Quaest (Caiado 0,31, Cury 0,40, Renan 0,16, Zema 0,10). **2006 entra**: Alckmin perder votos entre turnos é um
+  erro real da projeção, do tipo que pode acontecer de novo; só fica fora da estimativa ecológica de β. **Robustez:
+  sem 2006 o resultado muda** — o viés com sinal do líder vence (RMSE 0,94 contra 1,85 do zero, 1,38 PT e 2,09
+  ideologia; o líder do 1º turno foi superestimado nas outras 5 eleições) e daria Lula 49,3% (46,5–52,0), P = 36%;
+  PT sem 2006: 46,6%, P = 6%; zero sem 2006: 47,8%, P = 16%. Tudo em `segundo_turno.sensibilidade_vies`.
+  Escolhida: **viés zero**, que vence em RMSE, MAE e log-densidade com as 6 eleições. dp nacional = √((2·3² +
+  Σe²)/(2 + 6)) = **3,31 p.p.** (t5; antes 2,46 com 3 eleições + 1,21 do viés, que era contado duas vezes: o RMS
+  dos erros já incluía o viés que se descontava do centro). dp regional 1,10 e estadual 1,94 p.p. (resíduos por UF
+  das 6 eleições depois do ajuste nacional). A variância nacional que já vem da incerteza da matriz não é contada
+  duas vezes. O termo condicionado ao 1º turno de 2026 (κ, abaixo) só vale na especificação (a); fora da amostra
+  (2014/2018/2022) ele não ajudou: RMSE 2,09 com κ, 1,94 só com b, 2,02 com zero.
 - **Recalibração com o 1º turno de 2026 (5/10/2026; `vies_institutos.py`, `--backtest-institutos`).**
   *(1) Correção por instituto.* Erro de cada instituto no 1º turno = fatia bipartidária Lula/(Lula+Flávio) da sua
   última pesquisa da semana final menos o real (48,98%). *Partial pooling* (efeitos aleatórios, DerSimonian-Laird;
@@ -264,16 +296,23 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   incerteza); pós-1T sem correção (`PARAM_2T["correcao_institutos_pos_1t"] = "nenhuma"`; código pronto para as
   variantes). No pipeline LOEO completo o erro nacional fica igual (RMS 1,96 → 1,95; 2022 melhora, 2014 e 2018
   pioram um pouco), UF MAE 2,25 → 2,19, cobertura de 80% nas UFs 0,94 → 0,90.
-  *(2) Viés da indústria 1T → 2T com 2026.* Erro do agregador no 1º turno (fatia do PT): +7,6 (2014), +0,5 (2018),
+  *(2) Viés da indústria 1T → 2T com 2026 (desde a tarde de 5/10, só sensibilidade: especificação (a)).* Erro do
+  agregador no 1º turno (fatia do PT): +7,6 (2014), +0,5 (2018),
   +0,6 (2022), **+1,8 (2026)**. τ0 (escala do viés persistente) por máxima verossimilhança marginal: 1,7 sem 2026,
-  **2,0 com 2026** (confirma o τ0 = 2 usado). Relação 1º → 2º turno: erro da projeção = b + κ·(e1 − média e1),
+  2,0 com 2026 — mas puxado por 2014 (sem 2014: 0,88); desde 5/10 o estimador é robusto (mediana e MAD): **1,13**
+  (todas as variantes em `vies_industria.tau0_sensibilidade_pp`). Relação 1º → 2º turno: erro da projeção = b + κ·(e1 − média e1),
   κ ~ N(0; 0,5²) (prior neutro) → **κ = 0,17 ± 0,32** (fraca; 2014 domina). Como 2026 errou menos que a média
   histórica no 1º turno, o viés condicionado cai: termo de viés do 2º turno **−1,13 → −0,78 p.p.** (−0,93 só pela
   calibração com pesquisas corrigidas; −0,15 pelo κ).
   *Sensibilidade* (`segundo_turno.sensibilidade_recalibracao`, 100 mil simulações, TSE 99,94%): método antigo
   P(Lula) 14,6%, Lula 47,26% (p10–p90 43,9–50,7); só correção 11,7%, 46,98%; só viés 1T→2T 15,6%, 47,37%; **novo
   12,9%, 47,13% (43,8–50,4)**; alternativa com correção só relativa 16,3%, 47,50%. Rodada publicada (`--rodar-tudo`, 500 mil):
-  **P(Lula) 13,0%, Lula 47,14% (p10–p90 43,82–50,45)**; antes desta recalibração, 14,7% e 47,27% (TSE 99,89%).
+  P(Lula) 13,0%, Lula 47,14% (p10–p90 43,82–50,45); antes desta recalibração, 14,7% e 47,27% (TSE 99,89%).
+  **Revisão da tarde de 5/10** (termo sistemático por LOEO 2002–2022, dp sem dupla contagem, uma onda da Quaest,
+  pesquisas pós-1T por precisão; ensaio a seco, TSE 99,99%, 500 mil): **Lula 47,86% (p10–p90 43,93–51,79),
+  P(Lula) 23,1%**. Decomposição: viés removido +0,78 p.p.; matriz de uma onda −0,06 p.p.; dp nacional 2,74 → 3,31
+  (P sobe ~10 p.p. pelos dois). O método da manhã com as linhas novas e τ0 robusto daria 47,39% e 12,6%
+  (`sensibilidade_recalibracao`).
 - Estimativas ecológicas TSE (fração do PT nos votos ganhos entre turnos): 2014 0,40; 2018 0,63; 2022 0,30 —
   mostram quanto a transferência real varia de uma eleição para outra (reportadas em `resultados_2t.json`).
 - **Transferência regionalizada (desde a noite de 4/10/2026; `transferencia_regional.py`).** A matriz Quaest continua
@@ -281,7 +320,7 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   da UF no 1º turno: logito p_UF = logito p + β·z_UF + c(β), com z_UF = logito(Lula/(Lula+Flávio)) da UF menos o
   nacional e c(β) recentrando cada linha para que a média nacional (ponderada pelos votos do eliminado em cada UF)
   continue igual à da Quaest — redistribui entre UFs, não muda o nacional. β é o efeito de contexto ecológico (o
-  eleitor de terceira via num estado muito antipetista vai mais para o antipetista), estimado por MQ não linear
+  eleitor de terceira via num estado onde o PT é fraco vai mais para o adversário do PT), estimado por MQ não linear
   com os resultados por UF do TSE (1º → 2º turno) de 2002, 2010, 2014, 2018 e 2022 (β por ano 1,31 / 0,46 / 0,12 /
   0,57 / 0,38; 2006 fora: Alckmin perdeu votos entre turnos) e combinado hierarquicamente (prior N(0; 0,5²),
   variação entre eleições pelo método dos momentos): **β = 0,46, dp preditivo 0,44**, sorteado em cada simulação
@@ -303,15 +342,17 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   dp de 1 p.p. usado. Nada mudou.
 - **Ensaio a seco:** `--saida PASTA` grava `resultados_2t.json`, `avaliacao_1t.json` e `AVALIACAO_1T.md` na pasta e
   não roda `publicar.py`; `--fonte cache` lê só a última leitura gravada (sem rede); `--backtest-2t` imprime os
-  backtests acima.
+  backtests acima; `--backtest-vies` refaz a escolha do termo sistemático (`data/backtest_vies_2t.json`).
 
 **Ensaio com 2022** (1º turno de 2022 como se fosse a noite de hoje; resultado lido de JSON no formato do TSE de
-2022, reconstruídos dos dados abertos em `tests/fixtures/tse/2022/`; erros calibrados só com 2014 e 2018):
-2º turno previsto Lula 53,1% (p10–p90 49,6–56,6; P(Lula vence) 88%); real 50,9% (PIT 0,20, dentro do intervalo
+2022, reconstruídos dos dados abertos em `tests/fixtures/tse/2022/`; regerado em 5/10 com o método atual: calibração
+com 2002–2018, especificação do termo sistemático escolhida por LOEO sem 2022 — deu viés zero):
+2º turno previsto Lula 53,1% (p10–p90 49,0–57,2; P(Lula vence) 84%); real 50,9% (PIT 0,24, dentro do intervalo
 de 80%); 26 de 27 UFs com o vencedor certo, erro médio absoluto por UF 2,1 p.p., todas as UFs no intervalo de 80%.
 Na véspera do 1º turno, o modelo principal dava 54,3% para Lula no 2º turno. Ensaios 2014/2018 (mesma regra, sem o
-próprio ano): Dilma 53,6 (real 51,6; PIT 0,24), Haddad 43,3 (real 44,9; PIT 0,70); nos três, resultado nacional
-dentro do intervalo de 80%, UFs 91% no de 80% e 98% no de 95%. Saídas em `data/ensaio_2022/`.
+próprio ano): Dilma 54,4 (real 51,6; PIT 0,20), Haddad 44,3 (real 44,9; PIT 0,57); nos três, resultado nacional
+dentro do intervalo de 80% (erro médio absoluto 1,8 p.p.), UFs 94% no de 80% e 99% no de 95% (antes 91% e 98%).
+Saídas em `data/ensaio_2022/` (`resumo.json` vai para `resultados_2t.json`, bloco `ensaio_2022`).
 
 ## Comparação com o modelo alternativo (`modelo_alternativo/`)
 Modelo independente (filtro de Kalman, bootstrap dos erros reais de 2014/18/22, swing uniforme sem

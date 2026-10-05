@@ -161,7 +161,7 @@ def test_par_imprevisto_e_decisao():
     S3 = np.tile([0.44, 0.46, 0.03, 0.03, 0.01, 0.02, 0.01], (U, 1))
     par, _, previsto = R.definir_par({"cands": cands, "S": S3, "V1": np.ones(U), "nacional": S3[0]})
     assert par == ("Lula", "Flavio") and previsto
-    assert R.transf_para_par(par, 2026)["Zema"] == [0.10, 0.80, 0.10]
+    assert R.transf_para_par(par, 2026)["Zema"] == [0.09, 0.81, 0.10]          # Quaest 24-27/09 (única onda com Zema)
 
 
 def test_calibracao_historica_sem_o_ano():

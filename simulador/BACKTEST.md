@@ -399,3 +399,98 @@ transferência genérica, não pelas pesquisas), κ é praticamente o prior; o e
 | Só viés 1T→2T com 2026 | 49,59 | −1,02 | 15,6% | 47,37 | 43,93–50,80 |
 | **Novo (ambos)** | 47,67 | −0,78 | **12,9%** | **47,13** | 43,83–50,43 |
 | Alternativa: correção relativa + viés | 49,63 | −0,89 | 16,3% | 47,50 | 44,14–50,86 |
+
+## 2º turno: termo sistemático da projeção 1T → 2T — PT, líder, ideologia dos terceiros ou zero (5/10/2026, tarde)
+
+*Seção escrita à mão; refazer com `python simulador/resultado_1t.py --backtest-vies` (grava
+`data/backtest_vies_2t.json`; código em `especificacao_vies_2t.py`). Se `backtest.py` regenerar este arquivo,
+recolar esta seção.*
+
+**Pergunta.** Até a manhã de 5/10 o centro do 2º turno descontava um viés estimado com o sinal do PT (erros +2,7 /
+−0,6 / +2,1 em 2014/2018/2022 → −0,78 p.p. em Lula). Uma revisão independente apontou que o PT liderou o 1º turno
+em 2014 e 2022 e ficou em 2º em 2018, então os mesmos dados também cabem em "o líder do 1º turno é superestimado"
+(o que, em 2026, com Flávio na frente, favorece Lula); e o modelo municipal sugeriu que o efeito pode vir da
+ideologia dos terceiros (esquerda x não-esquerda). Testado com todas as eleições com 2º turno e dados por UF.
+
+**Projeção** (igual para todas as especificações): 1º turno real por UF; votos dos eliminados com a linha implícita
+nas pesquisas pareadas da véspera (2018, 2022) ou a genérica [0,35; 0,35; 0,30] (2002–2014); mistura com peso 0,25
+da média das pesquisas de 2º turno pré-1T corrigidas por instituto (2018, 2022). Erro = previsto − real na fatia do
+PT (p.p.): **+1,52 (2002), −7,23 (2006), +1,56 (2010), +2,71 (2014), −0,55 (2018), +2,20 (2022)**. O PT liderou o
+1º turno em todas menos 2018, então (a) e (b) só diferem pelo sinal de 2018.
+
+**Especificações** (viéses encolhidos para zero com prior N(0, 2²), como no simulador; dp preditivo com o prior
+qui-quadrado inverso do simulador mais a incerteza do termo; intervalos t5):
+(a) erro = b_PT; (b) erro = s·b_L, s = +1 se o PT liderou; (c) sem viés, fatia decidida ao PT p_esq/p_nesq por
+bloco ideológico dos terceiros (participação da linha da véspera; 2 parâmetros por MQ com prior fraco em logito);
+(d) zero. Classificação dos terceiros (regra por família partidária: PSB, PPS-2002, PDT, PSOL, PSTU, PCB, PCO, UP,
+PV, Rede e PPL = esquerda/centro-esquerda; resto = não-esquerda; mesma regra do `modelo_municipal/` em 2018/2022),
+com partido, % e fonte em `especificacao_vies_2t.TERCEIROS`:
+
+| Ano | Esquerda (% válidos) | Não-esquerda | PT liderou? |
+|---|---|---|---|
+| 2002 | 30,4 (Garotinho PSB, Ciro PPS, PSTU, PCO) | 0,0 | sim |
+| 2006 | 9,5 (Heloísa Helena PSOL, Cristovam PDT) | 0,3 | sim |
+| 2010 | 20,3 (Marina PV, Plínio PSOL, ...) | 0,2 | sim |
+| 2014 | 23,6 (Marina PSB, Genro PSOL, Eduardo Jorge PV, ...) | 1,2 (Everaldo, Levy, Eymael) | sim |
+| 2018 | 14,1 (Ciro PDT, Marina Rede, Boulos, ...) | 10,6 (Alckmin, Amoêdo, Daciolo, Meirelles, Dias) | não |
+| 2022 | 3,2 (Ciro PDT, UP, PCB, PSTU) | 5,2 (Tebet MDB, Soraya, d'Avila, Kelmon) | sim |
+| 2026 | 0,17 (PSTU, PCB, PCO, UP) | 7,6 (Cury, Renan, Caiado, Zema) | não (Flávio) |
+
+**Erro fora da amostra (deixando a eleição de fora), p.p.:**
+
+| Ano | (a) PT | (b) líder | (c) ideologia | (d) zero |
+|---|---|---|---|---|
+| 2002 | +1,67 | +1,54 | +1,13 | +1,52 |
+| 2006 | −8,47 | −8,66 | −7,76 | −7,24 |
+| 2010 | +1,72 | +1,59 | +1,22 | +1,56 |
+| 2014 | +3,01 | +2,88 | +2,85 | +2,71 |
+| 2018 | −0,64 | −0,46 | −3,27 | −0,55 |
+| 2022 | +2,43 | +2,30 | +2,14 | +2,20 |
+| **RMSE** | 3,94 | 3,95 | 3,79 | **3,41** |
+| MAE | 2,99 | 2,91 | 3,06 | **2,63** |
+| cobertura 80% / 95% | 5/6 / 5/6 | 5/6 / 5/6 | 5/6 / 5/6 | 5/6 / 5/6 |
+| log-densidade média | −3,08 | −3,07 | −3,02 | **−2,86** |
+
+**Variantes.** *Sem 2006* (5 eleições): RMSE (a) 1,38, **(b) 0,94**, (c) 2,09, (d) 1,85 — o líder do 1º turno foi
+superestimado em 2002, 2010, 2014, 2018 e 2022, e (b) venceria com folga. *Marina 2014 como não-esquerda* (apoiou
+Aécio no 2º turno): (c) piora para 4,38; as outras não mudam. Ajustada nas 6 eleições, (c) dá p_esq = 0,46 e
+p_nesq = 0,61: os terceiros de esquerda históricos (Garotinho, Marina, Heloísa Helena) **não** foram em bloco para o
+PT, e o ganho que o modelo municipal teve ao separar os blocos (5,3 → 2,8 p.p. em 2018/2022, com inferência
+ecológica por município) não aparece no nacional de 2002–2022.
+
+**Decisão** (regra fixada antes de rodar: menor RMSE LOEO; diferença < 0,25 p.p. para o zero = empate → zero):
+**viés zero** (`PARAM_2T["especificacao_vies"] = "auto"` → "zero"), melhor também em MAE e log-densidade. 2006 fica:
+a falha de 2006 (Alckmin perdeu 2,4 milhões de votos entre turnos) é um erro real da projeção, não de dado, e não
+há como saber de antemão que 2026 não terá um choque desses; tirá-la por mudar a resposta seria escolher a amostra
+pelo resultado. A dependência de 2006 é a principal ressalva: está publicada como sensibilidade.
+Erro nacional: dp = √((2·3² + Σe²)/(2 + 6)) = 3,31 p.p. (antes 2,46 com 3 eleições, mais 1,21 do viés — contado
+duas vezes, porque o RMS dos erros já incluía a parte sistemática descontada do centro; agora, em (a)/(b), o dp é
+o resíduo em torno do viés mais a incerteza do viés). dp regional 1,10 e estadual 1,94 p.p. com as 6 eleições.
+
+**κ fora da amostra** (relação entre o erro do agregador no 1º turno e o da projeção do 2º, 2014/2018/2022, LOEO):
+RMSE 2,09 com κ, 1,94 só com b, 2,02 com zero — κ não ajuda. **τ0** (escala do viés persistente): ML com 2026 2,03,
+sem 2026 1,71, **sem 2014 0,88**, robusto (mediana/MAD) 1,13 — o ML era puxado por 2014 (+7,6 p.p.); adotado o
+robusto (só afeta a especificação (a), que virou sensibilidade).
+
+**Efeito em 2026** (TSE 99,99%; oficial 500 mil simulações, sensibilidades 100 mil, mesma semente):
+
+| Variante | Termo em Lula | dp nacional | Lula % | p10–p90 | P(Lula) |
+|---|---|---|---|---|---|
+| **(d) zero — escolhida** | 0 | 3,31 | **47,86** | 43,93–51,79 | **23,1%** |
+| (a) PT | −0,02 | 3,51 | 47,82 | 43,67–51,97 | 23,8% |
+| (b) líder | +0,14 | 3,51 | 47,99 | 43,84–52,13 | 25,5% |
+| (c) ideologia | linhas por bloco | 3,85 | 49,10 | 44,56–53,62 | 38,9% |
+| (a) PT, sem 2006 | −1,24 | 2,16 | 46,61 | 43,89–49,33 | 6,0% |
+| (b) líder, sem 2006 | +1,42 | 2,16 | 49,26 | 46,52–51,99 | 35,7% |
+| (c) ideologia, sem 2006 | linhas por bloco | 2,47 | 49,14 | 46,07–52,19 | 34,9% |
+| (d) zero, sem 2006 | 0 | 2,25 | 47,84 | 45,03–50,66 | 15,7% |
+| (c) ideologia, Marina 2014 não-esquerda | linhas por bloco | 3,85 | 48,35 | 43,85–52,86 | 30,6% |
+| método da manhã de 5/10 (PT condicionado, 2014–2022, τ0 robusto, linhas novas) | −0,46 | 2,40 | 47,39 | 44,43–50,35 | 12,6% |
+
+**Pipeline completo LOEO** (`--ensaio-2022`, calibração 2002–2022 sem o próprio ano, especificação escolhida sem
+ele — zero nos três): Dilma 54,4 (real 51,6), Haddad 44,3 (44,9), Lula 53,1 (50,9); MAE nacional 1,83 (antes
+1,94), todos no intervalo de 80%; UFs: MAE 2,35 (antes 2,25), cobertura 80% 0,94 (0,91) e 95% 0,99 (0,975).
+
+**Matriz de transferência de 2026** (mesma rodada): uma onda só da Quaest (2–3/10 para Caiado, Renan e Cury; Zema,
+ausente nela, de 24–27/9 com Dirichlet α = 10) e indecisos repartidos na proporção: Lula 47,84 contra 47,91 com a
+mistura antiga e 48,21 com só a onda de 24–27/9 (P(Lula) 22,9%, 23,6%, 26,7%; 100 mil simulações).

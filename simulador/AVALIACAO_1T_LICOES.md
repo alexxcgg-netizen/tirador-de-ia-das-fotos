@@ -1,4 +1,4 @@
-# Lições do 1º turno de 2026 (noite de 4/10/2026, ~90% das seções apuradas; adendo de 5/10 no fim)
+# Lições do 1º turno de 2026 (noite de 4/10/2026, ~90% das seções apuradas; adendos de 5/10 no fim)
 
 Notas para a próxima versão do modelo. **Os resultados publicados do modelo de véspera não foram alterados**
 (`web/resultados.json`, `premissas.json` e o motor de `modelo.py` ficaram como estavam); a avaliação completa é a de
@@ -41,8 +41,8 @@ aparecer fora da amostra, não só em 2026.
 ## O que já mudou hoje (só no 2º turno condicionado ao 1º turno real)
 
 * **Transferência regionalizada** (`transferencia_regional.py`): a mesma lição — o contexto partidário da UF importa —
-  aplicada aos votos dos eliminados. O eleitor de Caiado/Cury/Zema/Renan num estado muito antipetista vai mais para
-  Flávio que a matriz nacional da Quaest diz; num estado petista, menos. β = 0,46 (dp 0,44), estimado nos resultados
+  aplicada aos votos dos eliminados. O eleitor de Caiado/Cury/Zema/Renan num estado onde o PT é fraco vai mais para
+  Flávio que a matriz nacional da Quaest diz; num estado onde o PT é forte, menos. β = 0,46 (dp 0,44), estimado nos resultados
   por UF do TSE 2002–2022 e recentrado para não mudar o nacional. Backtest e decisão em BACKTEST.md (seção do 2º
   turno). Efeito em 2026: nacional igual; UFs ±0,35 p.p.
 * **Comparecimento entre turnos**: checado em 2014/2018/2022; o método atual (variação média por UF) é o melhor dos
@@ -73,3 +73,26 @@ errou +1,8 p.p. e as últimas pesquisas de 11 dos 14 institutos ficaram acima do
 Ressalvas: 2 anos para a correção pré-1T e 3 para a pós-1T; no pipeline completo LOEO a correção é neutra no
 nacional (RMS 1,96 → 1,95) e a cobertura de 80% nas UFs cai de 0,94 para 0,90. O que mais pesa nesta semana são as
 pesquisas pós-1T e a deriva entre turnos, que esta recalibração não muda.
+
+## Revisão da tarde de 5/10: o termo de viés do 2º turno não se sustenta com 2002–2022
+
+Uma revisão independente questionou o sinal do viés (o PT foi superestimado em 2014 e 2022, mas nos dois ele
+liderava o 1º turno; em 2018, em 2º, foi subestimado — cabe também "o líder é superestimado", que em 2026 favorece
+Lula). Testadas quatro especificações (viés com sinal do PT, com sinal do líder, transferência por ideologia dos
+terceiros, zero) com as seis eleições de 2002 a 2022, deixando uma de fora (BACKTEST.md, última seção):
+
+* **Viés zero venceu** (RMSE 3,41 contra 3,79–3,95 p.p.; também em MAE e log-densidade). O erro de 2006 (−7,2:
+  Alckmin perdeu votos entre turnos) domina; **sem 2006 o líder venceria** (0,94 contra 1,85) e daria Lula 49,3%,
+  P = 36%. 2006 ficou, por ser um erro real da projeção; a alternativa está publicada como sensibilidade.
+* Ideologia dos terceiros: nos dados nacionais os de esquerda históricos (Garotinho, Marina, Heloísa Helena) não
+  foram em bloco para o PT (p_esq 0,46 < p_nesq 0,61) e a especificação validou pior; a Quaest mede diretamente os
+  eleitores de Caiado, Cury, Renan e Zema e continua sendo a base.
+* Erro nacional recalibrado com as seis eleições: dp 3,31 p.p. (antes 2,46 + 1,21 do viés, contado duas vezes).
+* Matriz da Quaest de uma onda só (2–3/10; Zema da anterior, com incerteza maior), indecisos tratados igual em todas
+  as linhas: efeito −0,07 p.p. Pesquisas pós-1T (a partir desta semana) combinadas por precisão, sem viés.
+* **Resultado (ensaio a seco, TSE 99,99%): Lula 47,86% (p10–p90 43,9–51,8), P(Lula) 23,1%** (de manhã: 47,14%,
+  13,0%). A mudança vem quase toda do viés removido (+0,78 p.p.) e do erro nacional maior.
+
+Ressalva: com seis eleições, a escolha da especificação depende de uma só (2006). O intervalo mais largo é a forma
+honesta de carregar isso; a faixa das sensibilidades (Lula 46,6% a 49,3%; P de 6% a 39%) mostra o quanto o centro
+ainda depende de hipóteses.

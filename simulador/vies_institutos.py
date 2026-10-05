@@ -335,6 +335,15 @@ def tau0_ml(erros, sigma: float, grade=np.linspace(0.0, 6.0, 601)) -> float:
     return float(math.sqrt(max(0.0, x.mean() ** 2 - sigma ** 2 / n)))
 
 
+def tau0_robusto(erros) -> float:
+    """Versão robusta de tau0_ml: mediana no lugar da média e 1,4826 x MAD no lugar do dp (um ano extremo, como
+    o erro de 7,6 p.p. de 2014 no 1º turno, não domina a escala)."""
+    x = np.asarray(erros, float)
+    med = float(np.median(x))
+    s = 1.4826 * float(np.median(np.abs(x - med)))
+    return float(math.sqrt(max(0.0, med ** 2 - s ** 2 / len(x))))
+
+
 def regressao_bayes(y, X, sigma: float, prior_dp) -> tuple[np.ndarray, np.ndarray]:
     """y = X b + e, e ~ N(0, sigma²), b ~ N(0, diag(prior_dp²)). Devolve (média, covariância) posterior."""
     X = np.asarray(X, float); y = np.asarray(y, float)
@@ -344,7 +353,7 @@ def regressao_bayes(y, X, sigma: float, prior_dp) -> tuple[np.ndarray, np.ndarra
 
 
 def vies_industria(erros_2t: dict, sigma_2t: float, e1: dict | None = None, tau0_atual: float = 2.0,
-                   dp_kappa: float = 0.5, prem: dict | None = None) -> dict:
+                   dp_kappa: float = 0.5, prem: dict | None = None, estimador_tau0: str = "robusto") -> dict:
     """Termo de viés do 2º turno de 2026 a partir de (a) os erros históricos da projeção do 2º turno (erros_2t:
     {ano: p.p.}), (b) o erro do agregador no 1º turno em 2014-2026 (e1) e (c) a relação 1T -> 2T.
 
@@ -352,7 +361,9 @@ def vies_industria(erros_2t: dict, sigma_2t: float, e1: dict | None = None, tau0
     marginal com os erros do 1º turno de 2014, 2018, 2022 e 2026 (com e sem 2026, para comparar); (2) modelo
     erro_2T_ano = b + kappa (e1_ano − média e1) + ruído (dp sigma_2t), b ~ N(0, tau0²), kappa ~ N(0, dp_kappa²)
     (prior neutro: sem relação); (3) viés de 2026 = b + kappa (e1_2026 − média e1), com dp posterior.
-    Também devolve o método antigo (eb_vies com tau0 fixo) e o EB com o tau0 novo sem kappa."""
+    Também devolve o método antigo (eb_vies com tau0 fixo) e o EB com o tau0 novo sem kappa.
+    estimador_tau0: 'robusto' (mediana/MAD, padrão desde 5/10: o ML era puxado pelo erro de 2014) ou 'ml'.
+    Sensibilidade de tau0 (ML com e sem 2026, ML sem 2014, robusto) sai em 'tau0_sensibilidade_pp'."""
     e1 = e1 or erros_industria_1t(prem)
     anos = sorted(erros_2t)
     y = np.array([erros_2t[a] for a in anos], float)
@@ -361,8 +372,11 @@ def vies_industria(erros_2t: dict, sigma_2t: float, e1: dict | None = None, tau0
     sd1 = float(np.std(e1_todos, ddof=1))
     tau0_sem = tau0_ml(e1_hist, float(np.std(e1_hist, ddof=1)))
     tau0_com = tau0_ml(e1_todos, sd1)
+    sem14 = np.array([e1[a] for a in sorted(e1) if a != 2014], float)
+    tau0_sem14 = tau0_ml(sem14, float(np.std(sem14, ddof=1)))
+    tau0_rob = tau0_robusto(e1_todos)
     piso = 0.5
-    tau0 = max(tau0_com, piso)
+    tau0 = max(tau0_rob if estimador_tau0 == "robusto" else tau0_com, piso)
     ref = float(e1_todos.mean())
     X = np.column_stack([np.ones(len(anos)), [e1[a] - ref for a in anos]])
     b, S = regressao_bayes(y, X, sigma_2t, [tau0, dp_kappa])
@@ -374,7 +388,10 @@ def vies_industria(erros_2t: dict, sigma_2t: float, e1: dict | None = None, tau0
     return {"erros_1t_pp": e1, "erros_2t_pp": {a: round(float(erros_2t[a]), 3) for a in anos},
             "media_e1_pp": round(ref, 3), "dp_e1_pp": round(sd1, 3),
             "tau0_ml_sem_2026_pp": round(tau0_sem, 3), "tau0_ml_com_2026_pp": round(tau0_com, 3), "tau0_usado_pp": round(tau0, 3),
-            "tau0_piso_pp": piso, "kappa_media": round(float(b[1]), 3), "kappa_dp": round(float(math.sqrt(S[1, 1])), 3),
+            "tau0_piso_pp": piso, "tau0_estimador": estimador_tau0,
+            "tau0_sensibilidade_pp": {"ml_com_2026": round(tau0_com, 3), "ml_sem_2026": round(tau0_sem, 3),
+                                      "ml_sem_2014": round(tau0_sem14, 3), "robusto_mediana_mad": round(tau0_rob, 3)},
+            "kappa_media": round(float(b[1]), 3), "kappa_dp": round(float(math.sqrt(S[1, 1])), 3),
             "b_media_pp": round(float(b[0]), 3), "b_dp_pp": round(float(math.sqrt(S[0, 0])), 3),
             "vies_2026_pp": v26, "vies_2026_dp_pp": dp26,
             "metodo_antigo": {"vies_pp": antigo[0], "vies_dp_pp": antigo[1], "tau0_pp": tau0_atual},
