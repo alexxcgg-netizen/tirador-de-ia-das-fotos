@@ -52,16 +52,29 @@ Antes desta revisão: 1.972 × 2.013 palavras (−2,0%), 61/62 fontes, 14/14 pro
 
 Caiado 345, Zema 332, Cury 232, Renan Santos 359 palavras (na revisão de 03/10: 335, 322, 232, 359; antes dela: 311, 282, 205, 325). Nesta revisão, Caiado ganhou a frase sobre armas (nada encontrado) e Zema, o custo [calc] do bônus e do fundo e o valor da fatia da União na Petrobras. Cresceram com os itens conferidos nos planos (autonomia do BC e redução de danos de Caiado; internação involuntária e porte rural de Zema; fonte do crédito de Cury; custo da desfavelização de Renan) e com a marcação das falas fora dos planos. Para Caiado, Cury e Renan, a política externa segue “não encontrada”.
 
-## Neutralidade de apresentação
+## Neutralidade de apresentação (revisão de 05/10/2026: comparador integrado ao painel, em 3 passos)
 
-- Ordem fixa alfabética (Augusto Cury, Flávio Bolsonaro, Lula, Renan Santos, Romeu Zema, Ronaldo Caiado), com botão para embaralhar. O resultado segue a ordem de exibição, não a ordem por pontuação.
-- Cores: ciano, azul, violeta, índigo, magenta e grafite, além de um monograma. Não há vermelho, verde nem amarelo. A etiqueta [declaração de campanha] usa a cor de destaque neutra, com borda tracejada.
-- As notas começam vazias. O peso de cada área começa em 5 para todas.
-- Rótulos objetivos: a evidência segue a coluna “Evidência” das tabelas-síntese do relatório. Os outros rótulos seguem as seções de viabilidade e custo. A base de cada rótulo aparece na página e pode ser trocada pelo usuário. Onde o relatório não dá base, o rótulo fica “sem base” e não entra na conta.
+O comparador deixou de ser uma página separada: é a sub-aba “Comparar propostas” da área “Propostas e cenários” do painel (`simulador/web/index.html`, gerado a partir deste `index.html` por `python simulador/publicar.py`). O conteúdo (dados, textos, rótulos, contagens de palavras e tabelas acima) não mudou; mudou a apresentação.
+
+- Ordem fixa alfabética pelo primeiro nome (Augusto Cury, Flávio Bolsonaro, Lula, Renan Santos, Romeu Zema, Ronaldo Caiado), com botão para embaralhar e uma frase que explica o motivo (“evita que quem aparece primeiro leve vantagem”). O resultado segue a ordem de exibição, não a ordem por pontuação; a única ordenação é a do vetor de notas usado para calcular a diferença entre as duas primeiras.
+- Cores: Flávio e Lula usam as duas cores do painel (violeta e laranja), que passam no teste de daltonismo (ΔE de OKLab ≥ 8 nos dois simuladores) e têm contraste ≥ 3:1; não são cores de partido. Os outros quatro candidatos usam monograma cinza com a sigla, porque seis matizes não passam no validador (ΔE de daltonismo < 6 entre vizinhos). A identidade nunca depende só da cor: nome e monograma aparecem sempre.
+- Pesos: todas as áreas começam em “Importa” (5) e a tela diz isso; as 4 posições (Não importa 0, Importa pouco 3, Importa 5, Importa muito 10) e o ajuste fino 0–10 gravam o mesmo número de antes, no mesmo formato do `localStorage` (chave `comparador-propostas-2026:v1`).
+- Notas: começam vazias e a pergunta é a mesma para todos (“Quanto essa proposta te convence?”). A diferença de profundidade (Lula e Flávio completos, os demais resumidos) aparece como etiqueta “análise completa” ou “análise resumida”, sem mudar tamanho de fonte ou cor.
+- Resultado: sem frase de placar (a antiga “N ponto(s) à frente do segundo” foi trocada por “a diferença para a seguinte é de N ponto(s)”), com a frase fixa “Isto descreve as suas escolhas. Não é recomendação nem previsão.” antes do resultado, e com uma faixa de sensibilidade por candidato (pontuação quando o peso de uma área vai a 0 ou a 10, uma de cada vez).
+- Rótulos objetivos (custo, PEC, evidência): inalterados e fora da conta até o usuário ligar cada critério (bloco “Critérios extras”, no passo 1).
+
+### Verificações automáticas desta revisão
+
+Em `simulador/tests/test_ux_painel.py` e `test_ux_navegador.py`: pesos iniciais iguais e notas vazias (`defaults()`); ordem alfabética dos seis candidatos no código-fonte; a mesma pergunta de nota para todos; só um `sort` em `renderResult` (no vetor de notas) e candidatos exibidos em `state.order`; presença de “Recomeçar”, “Voltar ao passo 2”, “Voltar ao início do painel” e da frase “Não é recomendação nem previsão”; ausência de “à frente do segundo”; cores de Flávio e Lula iguais às do painel; nenhuma cor de partido (distância de cor a vermelho, azul, amarelo e verde de partidos > 60) nos tokens do painel e no CSS do comparador; ΔE de daltonismo ≥ 8 e contraste ≥ 3:1 entre as duas cores de candidato nos dois temas; o resultado na ordem alfabética depois de preencher notas em ordem inversa; o primeiro controle de peso aparece dentro da primeira tela a 1280 px e a ≤ 1,5 tela a 390 px; sem rolagem horizontal e sem erros de JavaScript.
+
+### Medidas (05/10/2026)
+
+- Primeiro controle de peso: 766 px a 1280 px (0,85 tela) e 1.015 px a 390 px (1,2 tela); antes, 1.777 px e 3.516 px.
+- Altura da aba a 390 px no passo 1: cerca de 4.200 px (antes, 29.762 px no comparador inteiro).
 
 ## Verificação
 
-Playwright (Chromium 1194, `ignoreHTTPSErrors`), página envolvida num esqueleto mínimo só para o teste, Google Fonts bloqueado, 1366 px e 400 px, claro e escuro, refeito em 04/10/2026: nenhum erro de console, nenhuma rolagem horizontal (scrollWidth = largura da janela, também com todos os painéis abertos), cálculo, persistência e “apagar” funcionando. Capturas refeitas em `screenshots/`.
+Versão anterior (página separada): Playwright (Chromium 1194, `ignoreHTTPSErrors`), página envolvida num esqueleto mínimo só para o teste, Google Fonts bloqueado, 1366 px e 400 px, claro e escuro, refeito em 04/10/2026: nenhum erro de console, nenhuma rolagem horizontal (scrollWidth = largura da janela, também com todos os painéis abertos), cálculo, persistência e “apagar” funcionando. Capturas refeitas em `screenshots/`.
 
 ## Assimetrias que permanecem (vêm do relatório)
 

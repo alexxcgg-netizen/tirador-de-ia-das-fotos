@@ -1,320 +1,356 @@
-<title>Comparador de propostas 2026</title>
+<title>Comparar propostas</title>
 <style>
-/* Layout: uma coluna de leitura (máx. 1120px) com cartões de área empilhados; dentro de cada área, Lula e Flávio em blocos completos e os demais em grade compacta. Cores neutras; nenhuma cor partidária. */
-:root {
-  --bg: #f2f3f5;
-  --surface: #ffffff;
-  --surface-2: #e8eaee;
-  --ink: #171c26;
-  --muted: #545c6b;
-  --line: #d2d6dd;
-  --accent: #23366e;
-  --accent-soft: #dfe4f1;
-  --on-accent: #ffffff;
-  --warn-bg: #f1ece2;
-  --warn-ink: #4d4231;
-  --c-cury: #1d7d8c;
-  --c-flavio: #2f5fae;
-  --c-lula: #7d4aa8;
-  --c-renan: #4e45a0;
-  --c-zema: #9a4683;
-  --c-caiado: #586070;
-  --font-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-display: "Public Sans", "Segoe UI", system-ui, sans-serif;
-  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --radius: 6px;
+/* Comparador de propostas em 3 passos, integrado ao painel (sub-aba "Comparar propostas").
+   Fonte única: este arquivo. O build (simulador/publicar.py, integrar_comparador) injeta CSS, HTML e JS em simulador/web/index.html
+   e prefixa todo o CSS com #painel-propostas, para nada vazar. ":scope" vira o próprio painel.
+   Neutralidade: pesos iniciais iguais, notas vazias, ordem alfabética, mesmas palavras e mesmo estilo para todos, nenhuma cor de partido.
+   Cores: Flávio e Lula usam as duas cores validadas do painel; os demais usam monograma cinza com a sigla. */
+:scope {
+  --ink: var(--text); --muted: var(--text-2); --line: var(--border); --accent-soft: var(--surface-2); --on-accent: var(--bg); --warn-ink: var(--text);
+  --c-lula: var(--cand-a); --c-flavio: var(--cand-b); --c-outros: var(--cand-n);
+  display: grid; gap: var(--s-5); font-size: var(--fs-3); line-height: 1.55; min-width: 0;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #12151b; --surface: #1a1e26; --surface-2: #232834; --ink: #e6e8ed; --muted: #a2a9b7; --line: #333a48;
-    --accent: #a9bbef; --accent-soft: #263152; --on-accent: #10131a; --warn-bg: #2b2720; --warn-ink: #e3d6bd;
-    --c-cury: #4fb4c2; --c-flavio: #7aa2e6; --c-lula: #b58ae0; --c-renan: #958df0; --c-zema: #d886c3; --c-caiado: #a3abb9;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #12151b; --surface: #1a1e26; --surface-2: #232834; --ink: #e6e8ed; --muted: #a2a9b7; --line: #333a48;
-  --accent: #a9bbef; --accent-soft: #263152; --on-accent: #10131a; --warn-bg: #2b2720; --warn-ink: #e3d6bd;
-  --c-cury: #4fb4c2; --c-flavio: #7aa2e6; --c-lula: #b58ae0; --c-renan: #958df0; --c-zema: #d886c3; --c-caiado: #a3abb9;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
-.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 64px; display: grid; gap: 40px; }
-a { color: var(--accent); text-underline-offset: 2px; }
-h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; margin: 0; }
-h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
-h2 { font-size: 1.5rem; font-weight: 750; }
-h3 { font-size: 1.2rem; font-weight: 700; }
-h4 { font-size: 1rem; font-weight: 700; }
-p { margin: 0; }
-.prose { max-width: 68ch; display: grid; gap: 12px; }
-.eyebrow { font-family: var(--font-data); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.muted { color: var(--muted); }
-.small { font-size: 0.875rem; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
-section { min-width: 0; }
-
-/* header */
-.top { display: grid; gap: 16px; }
-.top nav { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.9rem; }
-.isnot { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
-.isnot > div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 6px; }
-.isnot ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
-
+:scope[hidden] { display: none; }
+:scope > section, :scope > header { min-width: 0; margin: 0; display: grid; gap: var(--s-4); align-content: start; }
+:scope > section[hidden], :scope > header[hidden] { display: none; }
+:scope h2, :scope h3, :scope h4 { line-height: 1.2; text-wrap: balance; margin: 0; letter-spacing: 0; }
+:scope h2 { font-size: var(--fs-4); font-weight: 750; }
+:scope h3 { font-size: var(--fs-3); font-weight: 700; }
+:scope h4 { font-size: var(--fs-3); font-weight: 700; }
+:scope p { margin: 0; }
+:scope a { color: var(--accent); text-underline-offset: 2px; }
+:scope .prose { max-width: 68ch; display: grid; gap: var(--s-3); }
+:scope .muted { color: var(--text-2); }
+:scope .small { font-size: var(--fs-2); }
+:scope h2:focus, :scope h2:focus-visible { outline: none; }
+:scope :focus-visible { outline: var(--focus); outline-offset: 2px; border-radius: 3px; }
+:scope table { border-collapse: collapse; width: 100%; font-size: var(--fs-2); }
+:scope th, :scope td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; white-space: normal; position: static; }
+:scope th { font-weight: 650; background: var(--surface-2); }
+:scope td.num, :scope th.num { text-align: right; white-space: nowrap; }
+:scope tr:last-child td { border-bottom: 0; }
+:scope .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+/* cabeçalho e passos */
+:scope .cmp-top { gap: var(--s-3); }
+:scope .cmp-det { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: 0 var(--s-4); }
+:scope .cmp-det > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 650; font-size: var(--fs-2); color: var(--text); margin: 0; }
+:scope .cmp-det[open] > summary { border-bottom: 1px solid var(--line); }
+:scope .cmp-det > .cmp-det-corpo { padding: var(--s-3) 0 var(--s-4); display: grid; gap: var(--s-3); }
+:scope .cmp-isnot { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--s-3); }
+:scope .cmp-isnot ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: var(--fs-2); }
+:scope .cmp-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: var(--fs-2); color: var(--muted); align-items: center; }
+:scope .cmp-passos ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-2); }
+:scope .cmp-passos button { width: 100%; min-height: 56px; display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; text-align: left; font: inherit; font-size: var(--fs-2); font-weight: 600; color: var(--text-2); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: 8px 12px; cursor: pointer; }
+:scope .cmp-passos button .n { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--text-3); font-family: var(--font-data); font-size: var(--fs-1); }
+:scope .cmp-passos button[aria-current="step"] { color: var(--text); border-color: var(--accent); border-width: 2px; background: var(--surface-2); }
+:scope .cmp-passos button[aria-current="step"] .n { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+@media (max-width: 560px) { :scope .cmp-passos ol { gap: 6px; } :scope .cmp-passos button { grid-template-columns: 1fr; justify-items: start; gap: 2px; padding: 6px 8px; font-size: var(--fs-1); min-height: 64px; } :scope .cmp-acoes .cmp-btn { padding: 0 10px; } }
+:scope .cmp-status { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); align-items: center; justify-content: space-between; font-size: var(--fs-2); color: var(--muted); }
+:scope .cmp-acoes { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+:scope .confirm { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+:scope .confirm[hidden] { display: none; }
+/* botões */
+:scope .cmp-btn { font: inherit; font-size: var(--fs-2); font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; border-radius: var(--radius); border: 1px solid var(--accent); background: var(--surface); color: var(--accent); cursor: pointer; text-decoration: none; }
+:scope .cmp-btn:hover { background: var(--accent-soft); }
+:scope .cmp-btn.solid { background: var(--accent); color: var(--on-accent); }
+:scope .cmp-btn.solid:hover { opacity: .9; }
+:scope .cmp-btn[disabled] { opacity: .45; cursor: default; }
 /* tags */
-.tag { display: inline-block; font-family: var(--font-data); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0 5px; border-radius: 3px; border: 1px solid var(--ink); line-height: 1.5; vertical-align: 1px; margin-right: 3px; white-space: nowrap; }
-.tag-fato { background: var(--ink); color: var(--bg); }
-.tag-proposta { border-color: var(--accent); color: var(--accent); }
-.tag-alegação { border-style: dashed; }
-.tag-declaração { border-color: var(--accent); color: var(--accent); border-style: dashed; }
-.tag-opinião { border-style: dotted; border-width: 2px; }
-.tag-calc, .tag-inferência { border-color: var(--muted); color: var(--muted); font-style: italic; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 0.85rem; color: var(--muted); align-items: center; }
-
-/* context */
-.ctx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; }
-.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
-.stat b { font-family: var(--font-data); font-size: 1.35rem; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-.stat p { font-size: 0.9rem; }
-.stat .src { font-size: 0.78rem; color: var(--muted); }
-.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
-table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
-th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-weight: 650; background: var(--surface-2); }
-td.num, th.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
-tr:last-child td { border-bottom: 0; }
-
-/* order bar */
-.orderbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
-.orderlist { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 260px; min-width: 0; }
-.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 2px 8px 2px 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
-.btn { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 7px 14px; border-radius: var(--radius); border: 1px solid var(--accent); background: var(--surface); color: var(--accent); cursor: pointer; }
-.btn:hover { background: var(--accent-soft); }
-.btn.solid { background: var(--accent); color: var(--on-accent); }
-.btn.solid:hover { opacity: 0.9; }
-
-/* candidate identity: hue + monogram */
-.mono { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-family: var(--font-data); font-size: 0.7rem; font-weight: 600; color: var(--surface); background: var(--cc); flex: none; }
-.c-cury { --cc: var(--c-cury); } .c-flavio { --cc: var(--c-flavio); } .c-lula { --cc: var(--c-lula); }
-.c-renan { --cc: var(--c-renan); } .c-zema { --cc: var(--c-zema); } .c-caiado { --cc: var(--c-caiado); }
-
-/* areas */
-.areas { display: grid; gap: 20px; }
-.area { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.area-head { padding: 18px 18px 14px; display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); align-items: start; }
-.area-head .ah-text { display: grid; gap: 6px; min-width: 0; }
-.area-ctx { font-size: 0.92rem; color: var(--muted); max-width: 70ch; }
-.weight { display: grid; gap: 4px; }
-.weight label { font-size: 0.85rem; font-weight: 600; }
-.weight .row { display: flex; gap: 10px; align-items: center; }
-.weight input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
-output, .val { font-family: var(--font-data); font-variant-numeric: tabular-nums; min-width: 2.2ch; text-align: right; font-weight: 600; }
-.progress { font-size: 0.8rem; color: var(--muted); font-family: var(--font-data); }
-@media (max-width: 720px) { .area-head { grid-template-columns: minmax(0, 1fr); } }
-details.area-body > summary { cursor: pointer; padding: 12px 18px; border-top: 1px solid var(--line); font-weight: 650; color: var(--accent); list-style-position: inside; }
-details.area-body[open] > summary { border-bottom: 1px solid var(--line); }
-.area-inner { padding: 16px 18px 20px; display: grid; gap: 18px; }
-.cands { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
-.cand { border: 1px solid var(--line); border-top: 4px solid var(--cc); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 12px; align-content: start; min-width: 0; background: var(--surface); }
-.cand.deep { grid-column: 1 / -1; }
-.cand-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.cand-h h4 { font-size: 1.05rem; }
-.cand-h small { font-weight: 500; color: var(--muted); }
-.depth { margin-left: auto; font-family: var(--font-data); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-dl.fields { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px 22px; }
-dl.fields > div { min-width: 0; display: grid; gap: 2px; align-content: start; }
-dl.fields > div.wide { grid-column: 1 / -1; }
-dt { font-size: 0.75rem; font-family: var(--font-data); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-dd { margin: 0; font-size: 0.93rem; max-width: 75ch; }
-.srcs { font-size: 0.8rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 10px; }
-.srcs a { overflow-wrap: anywhere; }
-.lensrow { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.78rem; }
-.lchip { border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; background: var(--surface-2); }
-.lchip b { font-weight: 650; }
-.lchip.ov { border-style: dashed; border-color: var(--accent); }
-details.lensd > summary { cursor: pointer; font-size: 0.82rem; color: var(--accent); }
-.lensbox { display: grid; gap: 10px; margin-top: 8px; padding: 10px 12px; background: var(--surface-2); border-radius: var(--radius); }
-.lensbox .lb { display: grid; gap: 4px; font-size: 0.85rem; }
-.cand > *, .lensd, .lensbox, .lensbox .lb { min-width: 0; }
-.lensbox select { width: 100%; }
-.lensbox label { font-weight: 600; }
-select { font: inherit; font-size: 0.92rem; padding: 6px 8px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); max-width: 100%; }
-.rate { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
-.rate label { font-weight: 650; font-size: 0.92rem; }
-.rate select { font-family: var(--font-data); }
-.rate .hint { font-size: 0.78rem; color: var(--muted); flex-basis: 100%; }
-.promessas { display: grid; gap: 10px; }
-.promessas ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.promessas li { display: grid; gap: 2px; padding: 10px 12px; border-left: 3px solid var(--line); background: var(--surface-2); border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.92rem; }
-.promessas .who { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.8rem; color: var(--muted); }
-
-/* result */
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 16px; }
-.lenses-ctl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
-.lens-ctl { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 8px; align-content: start; }
-.lens-ctl .chk { display: flex; gap: 8px; align-items: flex-start; font-weight: 650; }
-.lens-ctl input[type=checkbox] { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent); }
-.lens-ctl .row { display: flex; gap: 10px; align-items: center; }
-.lens-ctl input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
-.incl { display: flex; flex-wrap: wrap; gap: 8px 16px; }
-.incl label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.92rem; }
-.incl input { width: 18px; height: 18px; accent-color: var(--accent); }
-.notice { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius); padding: 12px 14px; font-size: 0.95rem; display: grid; gap: 6px; }
-.bars { display: grid; gap: 10px; }
-.bar { display: grid; grid-template-columns: minmax(0, 170px) minmax(0, 1fr) 4.5ch; gap: 10px; align-items: center; }
-.bar .nm { display: flex; gap: 8px; align-items: center; font-weight: 600; font-size: 0.92rem; min-width: 0; }
-.bar .nm span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.track { height: 14px; background: var(--surface-2); border-radius: 3px; position: relative; overflow: hidden; }
-.track i { position: absolute; inset: 0 auto 0 0; background: var(--cc); border-radius: 3px; transition: width .35s ease; }
-.track .ticks { position: absolute; inset: 0; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: 10% 100%; opacity: .7; }
-.bar .sc { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
-.scale { display: grid; grid-template-columns: minmax(0, 170px) minmax(0, 1fr) 4.5ch; gap: 10px; font-family: var(--font-data); font-size: 0.72rem; color: var(--muted); }
-.scale div { display: flex; justify-content: space-between; }
+:scope .tag { display: inline-block; font-family: var(--font-data); font-size: var(--fs-1); letter-spacing: .04em; text-transform: uppercase; padding: 0 5px; border-radius: 3px; border: 1px solid var(--ink); line-height: 1.5; vertical-align: 1px; }
+:scope .tag-fato { background: var(--ink); color: var(--bg); }
+:scope .tag-proposta { border-color: var(--accent); color: var(--accent); }
+:scope .tag-alegação { border-style: dashed; }
+:scope .tag-declaração { border-color: var(--accent); color: var(--accent); border-style: dashed; }
+:scope .tag-opinião { border-style: dotted; border-width: 2px; }
+:scope .tag-calc, :scope .tag-inferência { border-color: var(--muted); color: var(--muted); font-style: italic; }
+/* identidade do candidato: monograma; Flávio e Lula com as cores do painel, os demais em cinza */
+:scope .mono { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-family: var(--font-data); font-size: var(--fs-1); font-weight: 600; color: var(--surface); background: var(--cc, var(--c-outros)); flex: none; }
+:scope .c-flavio { --cc: var(--c-flavio); } :scope .c-lula { --cc: var(--c-lula); }
+:scope .c-cury, :scope .c-renan, :scope .c-zema, :scope .c-caiado { --cc: var(--c-outros); }
+/* passo 1: pesos */
+:scope .cmp-pesos-cab { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); align-items: center; justify-content: space-between; }
+:scope .cmp-pesos { display: grid; gap: var(--s-3); }
+:scope .cmp-peso { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: var(--s-3) var(--s-4); display: grid; gap: var(--s-2); }
+:scope .cmp-peso .nm { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; }
+:scope .cmp-peso .nm strong { font-size: var(--fs-3); }
+:scope .cmp-peso .vale { font-size: var(--fs-2); color: var(--muted); font-variant-numeric: tabular-nums; }
+:scope .seg4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg); }
+:scope .seg4 label { position: relative; display: grid; place-items: center; min-height: 44px; padding: 4px 6px; text-align: center; font-size: var(--fs-2); line-height: 1.2; cursor: pointer; color: var(--text-2); border-left: 1px solid var(--line); }
+:scope .seg4 label:first-child { border-left: 0; }
+:scope .seg4 input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+:scope .seg4 label:has(input:checked) { background: var(--accent); color: var(--on-accent); font-weight: 650; }
+:scope .seg4 label:has(input:focus-visible) { outline: var(--focus); outline-offset: -3px; }
+:scope .seg4 label.padrao::after { content: "padrão"; font-size: var(--fs-1); opacity: .8; display: block; }
+:scope .fino summary { cursor: pointer; font-size: var(--fs-2); color: var(--muted); min-height: 32px; display: flex; align-items: center; margin: 0; }
+:scope .fino .row { display: flex; gap: 10px; align-items: center; }
+:scope .fino input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); min-height: 32px; }
+:scope output, :scope .val { font-family: var(--font-data); font-variant-numeric: tabular-nums; min-width: 2.2ch; text-align: right; font-weight: 600; }
+:scope .lenses-ctl { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--s-3); }
+:scope .lens-ctl { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--s-3); display: grid; gap: var(--s-2); align-content: start; background: var(--surface); }
+:scope .lens-ctl .chk { display: flex; gap: 8px; align-items: flex-start; font-weight: 650; min-height: 32px; }
+:scope .lens-ctl input[type=checkbox] { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--accent); }
+:scope .lens-ctl .row { display: flex; gap: 10px; align-items: center; }
+:scope .lens-ctl input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+/* passo 2: uma área por vez */
+:scope .orderbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+:scope .orderlist { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 260px; min-width: 0; }
+:scope .cmp-pill { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-2); padding: 2px 10px 2px 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+:scope .incl { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+:scope .incl label { display: inline-flex; gap: 8px; align-items: center; font-size: var(--fs-2); min-height: 44px; }
+:scope .incl input { width: 22px; height: 22px; accent-color: var(--accent); }
+:scope .cmp-areanav { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--s-2); align-items: center; }
+:scope .cmp-areanav select { width: 100%; min-height: 44px; font: inherit; font-size: var(--fs-2); padding: 0 8px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+:scope .cmp-areapos { font-family: var(--font-data); font-size: var(--fs-1); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+:scope .area { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: var(--s-4); display: grid; gap: var(--s-4); }
+:scope .area-ctx { font-size: var(--fs-2); color: var(--muted); max-width: 70ch; }
+:scope .progress { font-size: var(--fs-1); color: var(--muted); font-family: var(--font-data); }
+:scope .cands { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: var(--s-3); align-items: start; }
+:scope .cand { border: 1px solid var(--line); border-top: 4px solid var(--cc, var(--c-outros)); border-radius: var(--radius); padding: var(--s-3) var(--s-4); display: grid; gap: var(--s-3); align-content: start; min-width: 0; background: var(--surface); }
+:scope .cand-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+:scope .cand-h h4 small { font-weight: 500; color: var(--muted); }
+:scope .depth { margin-left: auto; font-family: var(--font-data); font-size: var(--fs-1); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+:scope dl.fields { margin: 0; display: grid; gap: var(--s-3); }
+:scope dl.fields > div { min-width: 0; display: grid; gap: 2px; align-content: start; }
+:scope dt { font-size: var(--fs-1); font-family: var(--font-data); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+:scope dd { margin: 0; font-size: var(--fs-2); max-width: 75ch; }
+:scope .srcs { font-size: var(--fs-1); color: var(--muted); display: flex; flex-wrap: wrap; gap: 2px 10px; }
+:scope .srcs a { overflow-wrap: anywhere; }
+:scope .lensrow { display: flex; flex-wrap: wrap; gap: 6px; font-size: var(--fs-1); }
+:scope .lchip { border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; background: var(--surface-2); }
+:scope .lchip b { font-weight: 650; }
+:scope .lchip.ov { border-style: dashed; border-color: var(--accent); }
+:scope details.lensd > summary { cursor: pointer; font-size: var(--fs-1); color: var(--accent); min-height: 32px; display: flex; align-items: center; margin: 0; }
+:scope .lensbox { display: grid; gap: 10px; margin-top: 8px; padding: 10px 12px; background: var(--surface-2); border-radius: var(--radius); }
+:scope .lensbox .lb { display: grid; gap: 4px; font-size: var(--fs-2); }
+:scope .cand > *, :scope .lensd, :scope .lensbox, :scope .lensbox .lb { min-width: 0; }
+:scope .lensbox select, :scope .rate select { font: inherit; font-size: var(--fs-2); min-height: 44px; padding: 0 8px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: var(--ink); max-width: 100%; }
+:scope .lensbox select { width: 100%; }
+:scope .lensbox label { font-weight: 600; }
+:scope .rate { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+:scope .rate label { font-weight: 650; font-size: var(--fs-2); }
+:scope .rate .hint { font-size: var(--fs-1); color: var(--muted); flex-basis: 100%; }
+:scope .promessas { display: grid; gap: 10px; }
+:scope .promessas ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+:scope .promessas li { display: grid; gap: 2px; padding: 10px 12px; border-left: 3px solid var(--line); background: var(--surface-2); border-radius: 0 var(--radius) var(--radius) 0; font-size: var(--fs-2); }
+:scope .promessas .who { display: flex; flex-wrap: wrap; gap: 6px; font-size: var(--fs-1); color: var(--muted); }
+:scope .cmp-faixa { position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: var(--s-2) var(--s-4); padding-bottom: calc(var(--s-2) + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -6px 18px rgba(0, 0, 0, .12); }
+:scope .cmp-faixa .mini { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: var(--fs-1); color: var(--muted); font-variant-numeric: tabular-nums; }
+:scope .cmp-faixa .mini b { color: var(--text); }
+/* passo 3: resultado */
+:scope .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-2); padding: var(--s-4); display: grid; gap: var(--s-4); }
+:scope .notice { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-ink); border-radius: var(--radius); padding: 12px 14px; font-size: var(--fs-2); display: grid; gap: 6px; }
+:scope .cmp-fixo { font-weight: 650; }
+:scope .bars { display: grid; gap: 10px; }
+:scope .cmp-bar { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr) 4.5ch; gap: 10px; align-items: center; }
+:scope .cmp-bar .nm { display: flex; gap: 8px; align-items: center; font-weight: 600; font-size: var(--fs-2); min-width: 0; }
+:scope .cmp-bar .nm span:last-child { overflow-wrap: anywhere; }
+:scope .track { height: 14px; background: var(--surface-2); border-radius: 3px; position: relative; overflow: hidden; }
+:scope .track i { position: absolute; inset: 0 auto 0 0; background: var(--cc, var(--c-outros)); border-radius: 3px; }
+:scope .track .ticks { position: absolute; inset: 0; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: 10% 100%; opacity: .7; }
+:scope .track .rg { position: absolute; top: 5px; height: 4px; background: var(--text); opacity: .65; border-radius: 2px; }
+:scope .cmp-bar .sc { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+:scope .cmp-bar .fx { grid-column: 2 / 3; font-size: var(--fs-1); color: var(--muted); }
+:scope .cmp-scale { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr) 4.5ch; gap: 10px; font-family: var(--font-data); font-size: var(--fs-1); color: var(--muted); }
+:scope .cmp-scale div { display: flex; justify-content: space-between; }
 @media (max-width: 520px) {
-  .bar { grid-template-columns: minmax(0, 1fr) 4.5ch; row-gap: 4px; }
-  .bar .nm { grid-column: 1 / -1; }
-  .scale { grid-template-columns: minmax(0, 1fr) 4.5ch; }
-  .scale > span:first-child { display: none; }
+  :scope .cmp-bar { grid-template-columns: minmax(0, 1fr) 4.5ch; row-gap: 4px; }
+  :scope .cmp-bar .nm { grid-column: 1 / -1; }
+  :scope .cmp-bar .fx { grid-column: 1 / -1; }
+  :scope .cmp-scale { grid-template-columns: minmax(0, 1fr) 4.5ch; }
+  :scope .cmp-scale > span:first-child { display: none; }
+  :scope .cmp-areanav { grid-template-columns: 1fr 1fr; }
+  :scope .cmp-areanav select { grid-column: 1 / -1; order: -1; }
 }
-.sens { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 0.93rem; }
-.gaps { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.9rem; }
-.confirm { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-
-/* fatos */
-.fatos { display: grid; gap: 12px; }
-.fato { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 10px; }
-.fato .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
-.fato .cols > div { display: grid; gap: 2px; align-content: start; font-size: 0.9rem; min-width: 0; }
-.fato .neutral { font-size: 0.92rem; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius); }
-footer { font-size: 0.85rem; color: var(--muted); display: grid; gap: 8px; max-width: 75ch; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+:scope .sens, :scope .gaps { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: var(--fs-2); }
+:scope .cmp-copia { width: 100%; min-height: 120px; font: inherit; font-size: var(--fs-2); padding: 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); color: var(--ink); }
+/* contexto e fatos */
+:scope .ctx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: var(--s-3); }
+:scope .cmp-stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+:scope .cmp-stat b { font-family: var(--font-data); font-size: var(--fs-4); font-weight: 500; font-variant-numeric: tabular-nums; }
+:scope .cmp-stat p { font-size: var(--fs-2); }
+:scope .cmp-stat .src { font-size: var(--fs-1); color: var(--muted); }
+:scope .fatos { display: grid; gap: var(--s-3); }
+:scope .fato { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 10px; }
+:scope .fato .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--s-3); }
+:scope .fato .cols > div { display: grid; gap: 2px; align-content: start; font-size: var(--fs-2); min-width: 0; }
+:scope .fato .neutral { font-size: var(--fs-2); padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius); }
+:scope .eyebrow { font-family: var(--font-data); font-size: var(--fs-1); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+:scope .cmp-rodape { font-size: var(--fs-2); color: var(--muted); display: grid; gap: 8px; max-width: 75ch; }
+@media (prefers-reduced-motion: reduce) { :scope * { transition: none !important; animation: none !important; } }
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Public+Sans:wght@400;500;600;700;800&display=swap">
-
-<div class="wrap">
-  <header class="top" id="inicio">
-    <p class="eyebrow">Eleição presidencial · 1º turno em 04/10/2026 · dados até 03/10/2026, com complementos de 04/10/2026</p>
-    <h1>Comparador de propostas 2026</h1>
-    <div class="prose">
+<div role="tabpanel" class="painel" id="painel-propostas" data-painel="propostas" aria-labelledby="tab-propostas" tabindex="-1">
+  <header class="cmp-top" id="cmp-topo">
+    <h2 tabindex="-1">Comparar propostas</h2>
+    <div class="prose small">
       <p>Leia o que cada candidato propõe em oito áreas, decida quanto cada área pesa para você e dê a sua própria nota a cada proposta. A página só faz a conta com os números que você escolher.</p>
     </div>
-    <div class="isnot">
-      <div>
-        <h3>O que esta ferramenta é</h3>
-        <ul>
-          <li>Um resumo do relatório “Propostas e viabilidade dos candidatos”, com as fontes de cada afirmação.</li>
-          <li>Uma calculadora transparente: média ponderada das suas notas pelos seus pesos.</li>
-          <li>Um lugar para ver o que é concreto, o que é vago, quanto custa e do que depende cada proposta.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>O que ela não é</h3>
-        <ul>
-          <li><strong>Não recomenda candidato.</strong> O resultado reflete os seus pesos e as suas avaliações.</li>
-          <li>Não vem com notas preenchidas. Toda nota começa vazia.</li>
-          <li>Não é pesquisa eleitoral nem previsão. Suas respostas ficam só neste navegador.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="legend" aria-label="Legenda das etiquetas">
-      <span><span class="tag tag-fato">fato</span> dado oficial ou verificável</span>
-      <span><span class="tag tag-proposta">proposta</span> o que o candidato promete</span>
-      <span><span class="tag tag-declaração">declaração de campanha</span> proposta dita fora do plano registrado</span>
-      <span><span class="tag tag-alegação">alegação</span> sem decisão final ou verificação</span>
-      <span><span class="tag tag-opinião">opinião</span> analista, entidade ou campanha</span>
-      <span><span class="tag tag-calc">calc</span> conta feita pelo relatório</span>
-      <span><span class="tag tag-inferência">inferência</span> dedução do autor do relatório</span>
-    </div>
-    <nav aria-label="Seções">
-      <a href="#contexto">Contexto de 2027</a>
-      <a href="#areas">Áreas e suas notas</a>
-      <a href="#resultado">Resultado</a>
-      <a href="#fatos">Fatos verificados e contestados</a>
+    <nav class="cmp-passos" aria-label="Passos do comparador">
+      <ol>
+        <li><button type="button" data-passo="1" aria-current="step"><span class="n" aria-hidden="true">1</span><span>Escolha o que importa</span></button></li>
+        <li><button type="button" data-passo="2"><span class="n" aria-hidden="true">2</span><span>Veja o que cada plano propõe</span></button></li>
+        <li><button type="button" data-passo="3"><span class="n" aria-hidden="true">3</span><span>Resultado por critério</span></button></li>
+      </ol>
     </nav>
+    <div class="cmp-status">
+      <span id="cmp-prog" aria-live="polite">Passo 1 de 3</span>
+      <span class="cmp-acoes">
+        <button class="cmp-btn" type="button" id="btn-reset">Recomeçar</button>
+        <span class="confirm" id="reset-confirm" hidden>
+          <span class="small">Apagar pesos, notas e ajustes deste navegador?</span>
+          <button class="cmp-btn solid" type="button" id="btn-reset-yes">Sim, apagar</button>
+          <button class="cmp-btn" type="button" id="btn-reset-no">Cancelar</button>
+        </span>
+        <a class="cmp-btn" href="#comece" id="cmp-volta-inicio">Voltar ao início do painel</a>
+        <span class="small muted" id="save-status" role="status"></span>
+      </span>
+    </div>
   </header>
 
-  <section id="contexto" aria-labelledby="ctx-h" style="display:grid;gap:16px">
-    <p class="eyebrow">Antes das propostas</p>
-    <h2 id="ctx-h">O contexto que qualquer eleito herda em 2027</h2>
-    <p class="prose">Quem vencer encontra um orçamento quase todo obrigatório, uma dívida em alta e um Congresso de centro-direita que nenhum dos dois favoritos controla. O STF segue arbitrando os temas mais disputados.</p>
-    <div class="ctx-grid" id="ctx-grid"></div>
-    <details>
-      <summary class="small" style="cursor:pointer;color:var(--accent);font-weight:600">Hiato fiscal estimado por candidato (único estudo comparável)</summary>
-      <div style="display:grid;gap:8px;margin-top:10px">
-        <div class="tablewrap"><table>
-          <caption class="small muted" style="text-align:left;padding:8px 10px">Ranking dos Políticos (think tank), 1.297 propostas testadas contra a linha de base da IFI. Conclusão: nenhum dos seis planos estabiliza a dívida. Ordem alfabética.</caption>
-          <thead><tr><th>Candidato</th><th class="num">Hiato (R$)</th><th class="num">% do PIB</th><th>Ajuste declarado pela campanha</th></tr></thead>
-          <tbody id="hiato-body"></tbody>
-        </table></div>
-        <p class="small muted">Ler com cautela: um único think tank, só 36,9% das propostas puderam ser quantificadas, e itens caros (6x1, tarifa zero, IVA de 20%, presídios, moradia) ficaram fora da conta <span class="tag tag-opinião">opinião sobre a fonte</span>. <a href="https://www.opovo.com.br/noticias/politica/2026/09/18/estudo-de-think-tank-aponta-que-nenhum-plano-de-governo-consegue-estabilizar-divida-publica.html" target="_blank" rel="noopener">O Povo/Estadão Conteúdo</a></p>
+  <section id="cmp-passo-1" data-passo="1" aria-labelledby="cmp-h1">
+    <h2 id="cmp-h1" tabindex="-1">Passo 1 de 3: escolha o que importa</h2>
+    <p class="prose small muted">Peso diz quanto uma área pesa na conta. A nota, no passo 2, diz o quanto a proposta te convence. O resultado é a média ponderada das suas notas. Todas as áreas começam em “Importa” (5), para ninguém sair na frente. A ferramenta não recomenda candidato e toda nota começa vazia.</p>
+    <details class="cmp-det" id="cmp-intro">
+      <summary>O que esta ferramenta é e o que não é</summary>
+      <div class="cmp-det-corpo">
+        <div class="cmp-isnot">
+          <div>
+            <h3>É</h3>
+            <ul>
+              <li>Um resumo do relatório “Propostas e viabilidade dos candidatos”, com as fontes de cada afirmação.</li>
+              <li>Uma calculadora transparente: média ponderada das suas notas pelos seus pesos.</li>
+              <li>Um lugar para ver o que é concreto, o que é vago, quanto custa e do que depende cada proposta.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Não é</h3>
+            <ul>
+              <li><strong>Não recomenda candidato.</strong> O resultado reflete os seus pesos e as suas avaliações.</li>
+              <li>Não vem com notas preenchidas. Toda nota começa vazia.</li>
+              <li>Não é pesquisa eleitoral nem previsão. Suas respostas ficam só neste navegador.</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </details>
+    <details class="cmp-det" id="cmp-etiquetas">
+      <summary>Como ler as etiquetas</summary>
+      <div class="cmp-det-corpo">
+        <div class="cmp-legend" aria-label="Legenda das etiquetas">
+          <span><span class="tag tag-fato">fato</span> dado oficial ou verificável</span>
+          <span><span class="tag tag-proposta">proposta</span> o que o candidato promete</span>
+          <span><span class="tag tag-declaração">declaração de campanha</span> proposta dita fora do plano registrado</span>
+          <span><span class="tag tag-alegação">alegação</span> sem decisão final ou verificação</span>
+          <span><span class="tag tag-opinião">opinião</span> analista, entidade ou campanha</span>
+          <span><span class="tag tag-calc">calc</span> conta feita pelo relatório</span>
+          <span><span class="tag tag-inferência">inferência</span> dedução do autor do relatório</span>
+        </div>
+      </div>
+    </details>
+    <div class="cmp-pesos-cab">
+      <h3>Quanto cada área importa para você</h3>
+      <button class="cmp-btn" type="button" id="btn-iguais">Todas iguais</button>
+    </div>
+    <div class="cmp-pesos" id="cmp-pesos" role="list"></div>
+    <details class="cmp-det" id="cmp-extras">
+      <summary>Critérios extras (opcional)</summary>
+      <div class="cmp-det-corpo">
+        <p class="small muted prose">Cada critério vira mais uma linha da conta, com o peso que você der. Os rótulos vêm do relatório; a base de cada um aparece em cada área, em “Ver base e ajustar”. Começam desligados.</p>
+        <div class="lenses-ctl" id="lenses-ctl"></div>
+      </div>
+    </details>
+    <div><button class="cmp-btn solid" type="button" id="btn-ir-2">Continuar: ver o que cada plano propõe</button></div>
+    <aside class="resumo" data-resumo="cmp-passo-1" hidden></aside>
   </section>
 
-  <section id="areas" aria-labelledby="areas-h" style="display:grid;gap:16px">
-    <p class="eyebrow">Passo 1 e 2</p>
-    <h2 id="areas-h">Áreas: pese, leia e dê a sua nota</h2>
-    <div class="prose small muted">
-      <p>Para cada área, ajuste o peso (0 = não importa, 10 = importa muito). Abra a área, leia e escolha de 0 a 10 quanto cada proposta te convence. Lula e Flávio Bolsonaro têm análise completa; Caiado, Zema, Cury e Renan Santos aparecem resumidos, como no relatório.</p>
-    </div>
+  <section id="cmp-contexto" data-passo="1" aria-labelledby="ctx-h">
+    <details class="cmp-det" id="cmp-ctx-det">
+      <summary id="ctx-h">Antes de decidir: o contexto que qualquer eleito herda em 2027</summary>
+      <div class="cmp-det-corpo">
+        <p class="prose small">Quem vencer encontra um orçamento quase todo obrigatório, uma dívida em alta e um Congresso de centro-direita que nenhum dos dois favoritos controla. O STF segue arbitrando os temas mais quentes.</p>
+        <div class="ctx-grid" id="ctx-grid"></div>
+        <details>
+          <summary class="small" style="cursor:pointer;color:var(--accent);font-weight:600;min-height:44px;display:flex;align-items:center">Hiato fiscal estimado por candidato (único estudo comparável)</summary>
+          <div style="display:grid;gap:8px;margin-top:10px">
+            <div class="tablewrap"><table>
+              <caption class="small muted" style="text-align:left;padding:8px 10px">Ranking dos Políticos (think tank), 1.297 propostas testadas contra a linha de base da IFI. Conclusão: nenhum dos seis planos estabiliza a dívida.</caption>
+              <thead><tr><th>Candidato</th><th class="num">Hiato (R$)</th><th class="num">% do PIB</th><th>Ajuste declarado pela campanha</th></tr></thead>
+              <tbody id="hiato-body"></tbody>
+            </table></div>
+            <p class="small muted">Ler com cautela: um único think tank, só 36,9% das propostas puderam ser quantificadas, e itens caros (6x1, tarifa zero, IVA de 20%, presídios, moradia) ficaram fora da conta.</p>
+          </div>
+        </details>
+      </div>
+    </details>
+    <aside class="resumo" data-resumo="cmp-contexto" hidden></aside>
+  </section>
+
+  <section id="cmp-passo-2" data-passo="2" aria-labelledby="cmp-h2" hidden>
+    <h2 id="cmp-h2" tabindex="-1">Passo 2 de 3: veja o que cada plano propõe</h2>
+    <p class="prose small muted">Uma área por vez, com os candidatos na mesma ordem, os mesmos campos e o mesmo estilo. Lula e Flávio Bolsonaro têm análise completa; os demais, resumo e obstáculo principal. A nota é sua e fica vazia até você escolher.</p>
     <div class="orderbar">
       <div style="display:grid;gap:6px;flex:1 1 260px;min-width:0">
         <span class="small" id="order-label"><strong>Ordem de exibição:</strong> alfabética</span>
         <div class="orderlist" id="orderlist" aria-live="polite"></div>
+        <span class="small muted">Embaralhar evita que quem aparece primeiro leve vantagem.</span>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" type="button" id="btn-shuffle">Embaralhar ordem</button>
-        <button class="btn" type="button" id="btn-alpha">Voltar à ordem alfabética</button>
+        <button class="cmp-btn" type="button" id="btn-shuffle">Embaralhar ordem</button>
+        <button class="cmp-btn" type="button" id="btn-alpha">Voltar à ordem alfabética</button>
       </div>
     </div>
-    <div class="areas" id="area-list"></div>
+    <div style="display:grid;gap:4px">
+      <h3>Quem entra na comparação</h3>
+      <div class="incl" id="incl"></div>
+      <p class="small muted">Uma área só entra na conta quando tem peso maior que 0 e todos os candidatos marcados têm nota nela. Assim todos são comparados nas mesmas áreas.</p>
+    </div>
+    <div class="cmp-areanav">
+      <button class="cmp-btn" type="button" id="area-prev">‹ Anterior</button>
+      <label class="sr" for="area-sel">Área</label><select id="area-sel"></select>
+      <button class="cmp-btn" type="button" id="area-next">Próxima ›</button>
+    </div>
+    <div id="area-corpo" aria-live="polite"></div>
+    <div class="cmp-faixa" id="cmp-faixa">
+      <span id="cmp-notas">0 de 0 notas</span>
+      <span class="mini" id="cmp-mini"></span>
+      <button class="cmp-btn solid" type="button" id="btn-ver-res">Ver resultado</button>
+    </div>
+    <aside class="resumo" data-resumo="cmp-passo-2" hidden></aside>
   </section>
 
-  <section id="resultado" aria-labelledby="res-h" style="display:grid;gap:16px">
-    <p class="eyebrow">Passo 3</p>
-    <h2 id="res-h">Resultado com os seus números</h2>
-    <div class="panel">
-      <div style="display:grid;gap:8px">
-        <h3>Critérios objetivos opcionais</h3>
-        <p class="small muted prose">Cada critério vira mais uma linha da conta, com o peso que você der. Os rótulos vêm do relatório; a base de cada um aparece em cada área, em “Ver base e ajustar”, onde você pode trocá-lo. Onde o relatório não dá base, o rótulo fica “sem base” e não entra na conta daquele candidato.</p>
-      </div>
-      <div class="lenses-ctl" id="lenses-ctl"></div>
-      <div style="display:grid;gap:8px">
-        <h3>Quem entra na comparação</h3>
-        <div class="incl" id="incl"></div>
-        <p class="small muted">Uma área só entra na conta quando tem peso maior que 0 e todos os candidatos marcados têm nota nela. Assim todos são comparados nas mesmas áreas.</p>
-      </div>
-    </div>
+  <section id="cmp-passo-3" data-passo="3" aria-labelledby="cmp-h3" hidden>
+    <h2 id="cmp-h3" tabindex="-1">Passo 3 de 3: resultado por critério</h2>
+    <p class="cmp-fixo">Isto descreve as suas escolhas. Não é recomendação nem previsão.</p>
     <div id="result-out" class="panel" aria-live="polite"></div>
     <div class="panel">
       <h3>Incertezas e lacunas que valem para qualquer resultado</h3>
       <ul class="gaps" id="gaps"></ul>
-      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-        <button class="btn" type="button" id="btn-reset">Apagar minhas respostas</button>
-        <span class="confirm" id="reset-confirm" hidden>
-          <span class="small">Apagar pesos, notas e ajustes deste navegador?</span>
-          <button class="btn solid" type="button" id="btn-reset-yes">Sim, apagar</button>
-          <button class="btn" type="button" id="btn-reset-no">Cancelar</button>
-        </span>
-        <span class="small muted" id="save-status" role="status"></span>
-      </div>
     </div>
+    <div class="cmp-acoes">
+      <button class="cmp-btn" type="button" id="btn-volta-2">Voltar ao passo 2</button>
+      <button class="cmp-btn" type="button" id="btn-reset-3">Recomeçar</button>
+      <button class="cmp-btn" type="button" id="btn-copiar">Copiar resultado como texto</button>
+      <span class="small muted" id="copia-status" role="status"></span>
+    </div>
+    <textarea class="cmp-copia" id="cmp-copia" readonly hidden aria-label="Resultado em texto para copiar"></textarea>
+    <aside class="resumo" data-resumo="cmp-passo-3" hidden></aside>
   </section>
 
-  <section id="fatos" aria-labelledby="fatos-h" style="display:grid;gap:16px">
-    <p class="eyebrow">Registro histórico</p>
-    <h2 id="fatos-h">Fatos verificados e contestados</h2>
-    <p class="prose">O registro verificado não sustenta inteiramente a narrativa de nenhum dos campos. Para cada tema: o que está confirmado em fonte, a leitura de cada lado e uma formulação neutra.</p>
-    <div class="fatos" id="fatos-list"></div>
+  <section id="cmp-fatos" data-passo="3" aria-labelledby="fatos-h">
+    <details class="cmp-det" id="cmp-fatos-det">
+      <summary id="fatos-h">Depois: fatos verificados e contestados</summary>
+      <div class="cmp-det-corpo">
+        <p class="prose">O registro verificado não sustenta inteiramente a narrativa de nenhum dos campos. Para cada tema: o que está confirmado em fonte, a leitura de cada lado e uma formulação neutra.</p>
+        <div class="fatos" id="fatos-list"></div>
+      </div>
+    </details>
+    <aside class="resumo" data-resumo="cmp-fatos" hidden></aside>
   </section>
 
-  <footer>
+  <div class="cmp-rodape">
     <p>Fonte: relatório “Propostas e viabilidade dos candidatos” (03/10/2026, complementado em 04/10/2026) e notas de pesquisa associadas. Os seis planos registrados no <a href="https://www.tse.jus.br/eleicoes/eleicoes-2026-content/propostas-de-governo-dos-candidatos-ao-cargo-de-presidente-da-republica-eleicoes-2026" target="_blank" rel="noopener">TSE</a> foram lidos diretamente em 03/10/2026, em cópias hospedadas pelo Poder360 e pelo Congresso em Foco (o site do TSE bloqueou acesso automatizado); “p.” indica a página do PDF. O que não está no plano aparece como declaração de campanha ou reportagem. Fontes com alinhamento declarado vêm sinalizadas no texto.</p>
     <p>Suas notas e pesos ficam salvos apenas neste navegador, se ele permitir. Nada é enviado.</p>
-  </footer>
+  </div>
+  <aside class="resumo aba" data-resumo-aba="propostas" hidden></aside>
 </div>
 
 <script>
@@ -831,15 +867,19 @@ var GAPS = [
   "O único estudo fiscal comparável é de um único think tank e deixou fora itens caros."
 ];
 
+
 /* ---------- ESTADO ---------- */
-var KEY = "comparador-propostas-2026:v1";
+var KEY = "comparador-propostas-2026:v1";   // mesmo formato das versões anteriores: pesos 0 a 10 intactos
+var PESO_PADRAO = 5;
+var POSICOES = [["Não importa", 0], ["Importa pouco", 3], ["Importa", 5], ["Importa muito", 10]];
 function defaults() {
   var s = { w: {}, r: {}, ov: {}, lensOn: { custo: false, pec: false, evid: false }, lensW: { custo: 3, pec: 3, evid: 3 }, incl: {}, order: ALPHA.slice(), shuffled: false };
-  AREAS.forEach(function (a) { s.w[a.id] = 5; s.r[a.id] = {}; s.ov[a.id] = {}; });
+  AREAS.forEach(function (a) { s.w[a.id] = PESO_PADRAO; s.r[a.id] = {}; s.ov[a.id] = {}; });
   CANDS.forEach(function (c) { s.incl[c.id] = true; });
   return s;
 }
 var state = defaults();
+var passoAtual = 1, areaIdx = 0;
 function load() {
   var raw = null;
   try { raw = window.localStorage.getItem(KEY); } catch (e) { raw = null; }
@@ -866,13 +906,14 @@ function load() {
 function validOpt(k, v) { return v === "none" || LENS_DEF[k].opts.some(function (o) { return o[0] === v; }); }
 var saveTimer = null;
 function save() {
-  var st = document.getElementById("save-status");
+  var st = $c("save-status");
   try { window.localStorage.setItem(KEY, JSON.stringify(state)); if (st) st.textContent = "Respostas salvas neste navegador."; }
   catch (e) { if (st) st.textContent = "Este navegador não permite salvar; suas respostas valem só nesta visita."; }
   clearTimeout(saveTimer); saveTimer = setTimeout(function () { if (st) st.textContent = ""; }, 2500);
 }
 
 /* ---------- UTIL ---------- */
+function $c(id) { return document.getElementById(id); }
 function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 function rich(s) {
   return esc(s).replace(/\[(fato[^\]]*|proposta[^\]]*|declaração[^\]]*|alegação[^\]]*|opinião[^\]]*|calc|inferência[^\]]*)\]/g, function (m, inner) {
@@ -894,46 +935,65 @@ function lensEff(a, c, k) {
 }
 function isOv(a, c, k) { return !!(state.ov[a] && state.ov[a][c] && state.ov[a][c][k] !== undefined); }
 function monogram(c) { return '<span class="mono c-' + c.id + '" aria-hidden="true">' + c.sigla + "</span>"; }
+function areaNome(id) { return AREAS.filter(function (x) { return x.id === id; })[0].nome; }
+function posRotulo(w) { var p = POSICOES.filter(function (x) { return x[1] === w; })[0]; return p ? p[0] : "ajuste fino"; }
 
-/* ---------- RENDER ---------- */
+/* ---------- RENDER: contexto, fatos, controles fixos ---------- */
 function renderStatic() {
-  document.getElementById("ctx-grid").innerHTML = CTX.map(function (x) {
-    return '<div class="stat"><b>' + esc(x[0]) + "</b><p>" + rich(x[1]) + '</p><p class="src"><span class="tag tag-' + x[2].split(/[\s–]/)[0] + '">' + esc(x[2]) + '</span> <a href="' + esc(x[4]) + '" target="_blank" rel="noopener">' + esc(x[3]) + "</a></p></div>";
+  $c("ctx-grid").innerHTML = CTX.map(function (x) {
+    return '<div class="cmp-stat"><b>' + esc(x[0]) + "</b><p>" + rich(x[1]) + '</p><p class="src"><span class="tag tag-' + x[2].split(/[\s–]/)[0] + '">' + esc(x[2]) + '</span> <a href="' + esc(x[4]) + '" target="_blank" rel="noopener">' + esc(x[3]) + "</a></p></div>";
   }).join("");
-  document.getElementById("hiato-body").innerHTML = ALPHA.map(function (id) {
+  $c("hiato-body").innerHTML = ALPHA.map(function (id) {
     var h = HIATO[id], c = CBY[id];
     return '<tr><td><span style="display:inline-flex;gap:8px;align-items:center">' + monogram(c) + esc(c.nome) + '</span></td><td class="num">' + h[0] + '</td><td class="num">' + h[1] + "</td><td>" + esc(h[2]) + "</td></tr>";
   }).join("");
-  document.getElementById("fatos-list").innerHTML = FATOS.map(function (f) {
+  $c("fatos-list").innerHTML = FATOS.map(function (f) {
     return '<article class="fato"><h3>' + esc(f.t) + '</h3><div class="cols">' +
       '<div><span class="eyebrow">Verificado <span class="tag tag-fato">fato</span></span><p>' + rich(f.f) + "</p></div>" +
       '<div><span class="eyebrow">Uma leitura</span><p>' + rich(f.a) + "</p></div>" +
       '<div><span class="eyebrow">Outra leitura</span><p>' + rich(f.b) + "</p></div></div>" +
       '<p class="neutral"><strong>Formulação neutra:</strong> ' + rich(f.n) + "</p>" + links(f.s) + "</article>";
   }).join("");
-  document.getElementById("gaps").innerHTML = GAPS.map(function (g) { return "<li>" + rich(g) + "</li>"; }).join("");
-  document.getElementById("lenses-ctl").innerHTML = LENS_KEYS.map(function (k) {
+  $c("gaps").innerHTML = GAPS.map(function (g) { return "<li>" + rich(g) + "</li>"; }).join("");
+  $c("lenses-ctl").innerHTML = LENS_KEYS.map(function (k) {
     var d = LENS_DEF[k];
     return '<div class="lens-ctl"><label class="chk" for="lens-on-' + k + '"><input type="checkbox" id="lens-on-' + k + '" data-lens-on="' + k + '"> <span>' + esc(d.nome) + "</span></label>" +
       '<p class="small muted">Conversão: ' + d.opts.map(function (o) { return esc(o[1]) + " = " + o[2]; }).join(", ") + "; sem base = fora da conta.</p>" +
       '<div class="row"><label class="small" for="lens-w-' + k + '">Peso</label><input type="range" min="0" max="10" step="1" id="lens-w-' + k + '" data-lens-w="' + k + '"><output class="val" id="lens-wo-' + k + '" for="lens-w-' + k + '"></output></div></div>';
   }).join("");
-  document.getElementById("incl").innerHTML = ALPHA.map(function (id) {
+  $c("incl").innerHTML = ALPHA.map(function (id) {
     var c = CBY[id];
     return '<label for="incl-' + id + '"><input type="checkbox" id="incl-' + id + '" data-incl="' + id + '"> ' + monogram(c) + esc(c.nome) + "</label>";
   }).join("");
+  $c("area-sel").innerHTML = AREAS.map(function (a, i) { return '<option value="' + i + '">' + esc(a.nome) + "</option>"; }).join("");
   syncControls();
 }
-
 function syncControls() {
   LENS_KEYS.forEach(function (k) {
-    document.getElementById("lens-on-" + k).checked = state.lensOn[k];
-    document.getElementById("lens-w-" + k).value = state.lensW[k];
-    document.getElementById("lens-wo-" + k).textContent = state.lensW[k];
+    $c("lens-on-" + k).checked = state.lensOn[k];
+    $c("lens-w-" + k).value = state.lensW[k];
+    $c("lens-wo-" + k).textContent = state.lensW[k];
   });
-  CANDS.forEach(function (c) { document.getElementById("incl-" + c.id).checked = state.incl[c.id]; });
+  CANDS.forEach(function (c) { $c("incl-" + c.id).checked = state.incl[c.id]; });
 }
 
+/* ---------- RENDER: passo 1 (pesos) ---------- */
+function somaPesos() { return AREAS.reduce(function (s, a) { return s + state.w[a.id]; }, 0); }
+function valeTxt(a) { var t = somaPesos(); return state.w[a] > 0 && t > 0 ? "vale " + Math.round(100 * state.w[a] / t) + "% da sua conta" : "fora da conta"; }
+function renderPesos() {
+  $c("cmp-pesos").innerHTML = AREAS.map(function (a) {
+    var w = state.w[a.id], inPos = POSICOES.some(function (p) { return p[1] === w; });
+    return '<div class="cmp-peso" role="listitem" id="peso-' + a.id + '"><div class="nm"><strong>' + esc(a.nome) + '</strong><span class="vale" id="vale-' + a.id + '">' + valeTxt(a.id) + "</span></div>" +
+      '<div class="seg4" role="radiogroup" aria-label="Quanto ' + esc(a.nome) + ' importa para você">' + POSICOES.map(function (p) {
+        return '<label class="' + (p[1] === PESO_PADRAO ? "padrao" : "") + '"><input type="radio" name="w-' + a.id + '" value="' + p[1] + '" data-pos="' + a.id + '"' + (w === p[1] ? " checked" : "") + "><span>" + p[0] + "</span></label>";
+      }).join("") + "</div>" +
+      '<details class="fino"' + (inPos ? "" : " open") + "><summary>Ajuste fino (0 a 10)" + (inPos ? "" : ": " + w) + '</summary><div class="row"><span class="small muted">0</span><input type="range" min="0" max="10" step="1" id="w-' + a.id + '" data-weight="' + a.id + '" value="' + w + '" aria-label="Peso de ' + esc(a.nome) + ' de 0 a 10"><span class="small muted">10</span><output class="val" id="wo-' + a.id + '" for="w-' + a.id + '">' + w + "</output></div></details></div>";
+  }).join("");
+}
+function atualizaVales() { AREAS.forEach(function (a) { var v = $c("vale-" + a.id); if (v) v.textContent = valeTxt(a.id); }); }
+function mudadas() { return AREAS.filter(function (a) { return state.w[a.id] !== PESO_PADRAO; }).length; }
+
+/* ---------- RENDER: passo 2 (uma área por vez) ---------- */
 function lensChips(a, c) {
   return LENS_KEYS.map(function (k) {
     var v = lensEff(a, c, k);
@@ -949,59 +1009,57 @@ function lensBox(a, c) {
     return '<div class="lb"><label for="' + id + '">' + esc(LENS_DEF[k].nome) + '</label><span class="muted">Base: ' + rich(base[1]) + '</span><select id="' + id + '" data-ov="' + a + "|" + c + "|" + k + '">' + opts + "</select></div>";
   }).join("");
 }
-
 function candBlock(a, c) {
   var data = CONTENT[a][c.id], id = "r-" + a + "-" + c.id, cur = state.r[a][c.id];
   var body;
   if (c.deep) {
-    body = '<dl class="fields">' + DEEP_FIELDS.map(function (f) {
-      return '<div class="' + (f[2] ? "wide" : "") + '"><dt>' + f[1] + "</dt><dd>" + rich(data[f[0]]) + "</dd></div>";
-    }).join("") + "</dl>";
+    body = '<dl class="fields">' + DEEP_FIELDS.map(function (f) { return "<div><dt>" + f[1] + "</dt><dd>" + rich(data[f[0]]) + "</dd></div>"; }).join("") + "</dl>";
   } else {
-    body = '<dl class="fields"><div class="wide"><dt>Resumo</dt><dd>' + rich(data.resumo) + '</dd></div><div class="wide"><dt>Obstáculo principal</dt><dd>' + rich(data.obstaculo) + "</dd></div></dl>";
+    body = '<dl class="fields"><div><dt>Resumo</dt><dd>' + rich(data.resumo) + '</dd></div><div><dt>Obstáculo principal</dt><dd>' + rich(data.obstaculo) + "</dd></div></dl>";
   }
   var sel = '<option value="">— sem nota</option>';
   for (var i = 0; i <= 10; i++) sel += '<option value="' + i + '"' + (cur === i ? " selected" : "") + ">" + i + "</option>";
-  var areaName = AREAS.filter(function (x) { return x.id === a; })[0].nome;
-  return '<section class="cand c-' + c.id + (c.deep ? " deep" : "") + '" aria-label="' + esc(c.nome + " – " + areaName) + '">' +
-    '<div class="cand-h">' + monogram(c) + "<h4>" + esc(c.nome) + " <small>" + esc(c.partido) + '</small></h4><span class="depth">' + (c.deep ? "análise completa" : "resumo") + "</span></div>" +
+  return '<article class="cand c-' + c.id + (c.deep ? " deep" : "") + '" aria-label="' + esc(c.nome + " – " + areaNome(a)) + '">' +
+    '<div class="cand-h">' + monogram(c) + "<h4>" + esc(c.nome) + " <small>" + esc(c.partido) + '</small></h4><span class="depth">' + (c.deep ? "análise completa" : "análise resumida") + "</span></div>" +
     body + links(data.fontes) +
     '<div style="display:grid;gap:6px"><div class="lensrow" id="lc-' + a + "-" + c.id + '">' + lensChips(a, c.id) + "</div>" +
     '<details class="lensd"><summary>Ver base dos critérios objetivos e ajustar</summary><div class="lensbox">' + lensBox(a, c.id) + "</div></details></div>" +
-    '<div class="rate"><label for="' + id + '">Quanto essa proposta te convence? (0–10)</label><select id="' + id + '" data-rate="' + a + "|" + c.id + '">' + sel + '</select><span class="hint">Sua avaliação. Fica vazia até você escolher.</span></div></section>';
+    '<div class="rate"><label for="' + id + '">Quanto essa proposta te convence? (0–10)</label><select id="' + id + '" data-rate="' + a + "|" + c.id + '">' + sel + '</select><span class="hint">Sua avaliação. Fica vazia até você escolher.</span></div></article>';
 }
-
 function promessasBlock(a) {
-  var list = PROMESSAS[a] || [];
-  var ord = state.order;
+  var list = PROMESSAS[a] || [], ord = state.order;
   var sorted = list.slice().sort(function (x, y) { return ord.indexOf(x.q[0]) - ord.indexOf(y.q[0]); });
-  return '<section class="promessas"><h4>Promessas que soam fáceis mas não são</h4><p class="small muted">Mesmo critério para todos: o valor ou efeito anunciado esbarra em uma conta, uma regra constitucional ou uma variável externa não explicitada <span class="tag tag-inferência">inferência</span></p><ul>' +
+  if (!sorted.length) return "";
+  return '<div class="promessas"><h4>Promessas que soam fáceis mas não são</h4><p class="small muted">Mesmo critério para todos: o valor ou efeito anunciado esbarra em uma conta, uma regra constitucional ou uma variável externa não explicitada <span class="tag tag-inferência">inferência</span></p><ul>' +
     sorted.map(function (p) {
       return '<li><span class="who">' + p.q.map(function (id) { return '<span style="display:inline-flex;gap:5px;align-items:center">' + monogram(CBY[id]) + esc(CBY[id].nome) + "</span>"; }).join("") + "</span><strong>" + rich(p.p) + "</strong><span>" + rich(p.r) + "</span></li>";
-    }).join("") + "</ul></section>";
+    }).join("") + "</ul></div>";
 }
-
-function renderAreas() {
-  var openSet = {};
-  document.querySelectorAll("details.area-body").forEach(function (d) { openSet[d.dataset.area] = d.open; });
-  var first = !Object.keys(openSet).length;
-  var html = AREAS.map(function (a, i) {
-    var open = first ? i === 0 : openSet[a.id];
-    return '<article class="area" id="area-' + a.id + '">' +
-      '<div class="area-head"><div class="ah-text"><h3>' + esc(a.nome) + '</h3><p class="area-ctx">' + rich(a.ctx) + '</p><p class="progress" id="prog-' + a.id + '"></p></div>' +
-      '<div class="weight"><label for="w-' + a.id + '">Quanto esta área importa para você</label><div class="row"><span class="small muted">0</span><input type="range" min="0" max="10" step="1" id="w-' + a.id + '" data-weight="' + a.id + '" value="' + state.w[a.id] + '"><span class="small muted">10</span><output class="val" id="wo-' + a.id + '" for="w-' + a.id + '">' + state.w[a.id] + "</output></div></div></div>" +
-      '<details class="area-body" data-area="' + a.id + '"' + (open ? " open" : "") + "><summary>Ler propostas e dar suas notas</summary>" +
-      '<div class="area-inner"><div class="cands">' + state.order.map(function (cid) { return candBlock(a.id, CBY[cid]); }).join("") + "</div>" + promessasBlock(a.id) + "</div></details></article>";
-  }).join("");
-  document.getElementById("area-list").innerHTML = html;
-  AREAS.forEach(function (a) { updateProgress(a.id); });
-  document.getElementById("orderlist").innerHTML = state.order.map(function (id) { return '<span class="pill">' + monogram(CBY[id]) + esc(CBY[id].nome) + "</span>"; }).join("");
-  document.getElementById("order-label").innerHTML = "<strong>Ordem de exibição:</strong> " + (state.shuffled ? "embaralhada" : "alfabética");
+function renderArea() {
+  var a = AREAS[areaIdx];
+  $c("area-sel").value = String(areaIdx);
+  $c("area-prev").disabled = areaIdx === 0; $c("area-next").disabled = areaIdx === AREAS.length - 1;
+  $c("area-corpo").innerHTML = '<article class="area" id="area-' + a.id + '"><div style="display:grid;gap:6px"><span class="cmp-areapos">Área ' + (areaIdx + 1) + " de " + AREAS.length + '</span><h3>' + esc(a.nome) + '</h3><p class="area-ctx">' + rich(a.ctx) + '</p><p class="progress" id="prog-' + a.id + '"></p></div>' +
+    '<div class="cands">' + state.order.map(function (cid) { return candBlock(a.id, CBY[cid]); }).join("") + "</div>" + promessasBlock(a.id) + "</article>";
+  updateProgress(a.id);
+  $c("orderlist").innerHTML = state.order.map(function (id) { return '<span class="cmp-pill">' + monogram(CBY[id]) + esc(CBY[id].nome) + "</span>"; }).join("");
+  $c("order-label").innerHTML = "<strong>Ordem de exibição:</strong> " + (state.shuffled ? "embaralhada" : "alfabética");
 }
-
 function updateProgress(a) {
-  var n = CANDS.filter(function (c) { return state.r[a][c.id] != null; }).length;
-  document.getElementById("prog-" + a).textContent = "Peso " + state.w[a] + " · " + n + " de " + CANDS.length + " candidatos avaliados";
+  var n = CANDS.filter(function (c) { return state.r[a][c.id] != null; }).length, el = $c("prog-" + a);
+  if (el) el.textContent = "Peso " + state.w[a] + " (" + posRotulo(state.w[a]).toLowerCase() + ") · " + n + " de " + CANDS.length + " candidatos avaliados";
+}
+function notasContagem() {
+  var inc = state.order.filter(function (c) { return state.incl[c]; }), areas = AREAS.filter(function (a) { return state.w[a.id] > 0; });
+  var dadas = 0; areas.forEach(function (a) { inc.forEach(function (c) { if (state.r[a.id][c] != null) dadas++; }); });
+  return { dadas: dadas, total: inc.length * areas.length, inc: inc, areas: areas };
+}
+function renderFaixa() {
+  var n = notasContagem();
+  $c("cmp-notas").textContent = n.dadas + " de " + n.total + " notas";
+  var r = compute(state.w), mini = "";
+  if (r.inc.length >= 2 && r.counted.length >= 2) mini = "<span>Resultado parcial, na ordem de exibição:</span>" + r.inc.map(function (c) { return "<span>" + monogram(CBY[c]) + " <b>" + fmt(r.res[c].score) + "</b></span>"; }).join("");
+  $c("cmp-mini").innerHTML = mini;
 }
 
 /* ---------- CÁLCULO ---------- */
@@ -1030,32 +1088,49 @@ function leaders(r) {
   return ids;
 }
 function names(ids) { return ids.map(function (i) { return CBY[i].nome; }).join(" e "); }
-
+/* faixa de sensibilidade: pontuação de cada candidato quando o peso de UMA área vai a 0 ou a 10, uma de cada vez */
+function sensFaixa(r) {
+  var out = {};
+  r.inc.forEach(function (c) { out[c] = { lo: r.res[c].score, hi: r.res[c].score }; });
+  r.counted.forEach(function (a) {
+    [0, 10].forEach(function (nw) {
+      if (nw === state.w[a]) return;
+      var w2 = Object.assign({}, state.w); w2[a] = nw;
+      var r2 = compute(w2); if (r2.counted.length < 1) return;
+      r2.inc.forEach(function (c) { var s = r2.res[c].score; if (s == null) return; if (s < out[c].lo) out[c].lo = s; if (s > out[c].hi) out[c].hi = s; });
+    });
+  });
+  return out;
+}
+var ultimoRes = null;
 function renderResult() {
-  var out = document.getElementById("result-out");
+  var out = $c("result-out");
   var r = compute(state.w);
   var minAreas = 2;
-  if (r.inc.length < 2) { out.innerHTML = '<div class="notice"><strong>Marque pelo menos dois candidatos</strong><span>A comparação precisa de dois ou mais candidatos incluídos.</span></div>'; return; }
+  ultimoRes = null;
+  if (r.inc.length < 2) { out.innerHTML = '<div class="notice"><strong>Marque pelo menos dois candidatos</strong><span>A comparação precisa de dois ou mais candidatos incluídos. Volte ao passo 2 para escolher quem entra.</span></div>'; return; }
   if (r.counted.length < minAreas) {
     var pend = AREAS.filter(function (a) { return state.w[a.id] > 0 && r.counted.indexOf(a.id) < 0; }).map(function (a) {
       var miss = r.inc.filter(function (c) { return state.r[a.id][c] == null; }).length; return esc(a.nome) + " (faltam " + miss + ")";
     });
-    out.innerHTML = '<div class="notice"><strong>Você ainda não avaliou áreas suficientes</strong><span>Para mostrar um resultado, avalie todos os candidatos incluídos em pelo menos ' + minAreas + " áreas com peso maior que 0. Áreas completas até agora: " + r.counted.length + ".</span>" + (pend.length ? "<span>Faltam notas em: " + pend.join("; ") + ".</span>" : "") + '<span class="small">Dica: se quiser comparar só alguns candidatos, desmarque os outros acima.</span></div>';
+    out.innerHTML = '<div class="notice"><strong>Você ainda não avaliou áreas suficientes</strong><span>Para mostrar um resultado, avalie todos os candidatos incluídos em pelo menos ' + minAreas + " áreas com peso maior que 0. Áreas completas até agora: " + r.counted.length + ".</span>" + (pend.length ? "<span>Faltam notas em: " + pend.join("; ") + ".</span>" : "") + '<span class="small">Use “Voltar ao passo 2” para dar as notas que faltam.</span></div>';
     return;
   }
   var lead = leaders(r);
   var scores = r.inc.map(function (c) { return r.res[c].score; }).slice().sort(function (x, y) { return y - x; });
   var margin = scores.length > 1 ? scores[0] - scores[1] : 0;
+  var sf = sensFaixa(r);
+  ultimoRes = { r: r, lead: lead, sf: sf };
 
   var bars = '<div class="bars" role="list">' + r.inc.map(function (c) {
-    var s = r.res[c].score, pct = Math.max(0, Math.min(100, s * 10));
-    return '<div class="bar c-' + c + '" role="listitem"><span class="nm">' + monogram(CBY[c]) + "<span>" + esc(CBY[c].nome) + '</span></span><div class="track" aria-hidden="true"><i style="width:' + pct + '%"></i><span class="ticks"></span></div><span class="sc" aria-label="' + esc(CBY[c].nome) + " " + fmt(s) + ' de 10">' + fmt(s) + "</span></div>";
-  }).join("") + '</div><div class="scale" aria-hidden="true"><span></span><div><span>0</span><span>5</span><span>10</span></div><span></span></div>';
+    var s = r.res[c].score, pct = Math.max(0, Math.min(100, s * 10)), f = sf[c];
+    return '<div class="cmp-bar c-' + c + '" role="listitem"><span class="nm">' + monogram(CBY[c]) + "<span>" + esc(CBY[c].nome) + '</span></span><div class="track" aria-hidden="true"><i style="width:' + pct + '%"></i><span class="ticks"></span><span class="rg" style="left:' + f.lo * 10 + "%;width:" + Math.max((f.hi - f.lo) * 10, 0.6) + '%"></span></div><span class="sc" aria-label="' + esc(CBY[c].nome) + " " + fmt(s) + ' de 10">' + fmt(s) + "</span>" +
+      '<span class="fx">varia de ' + fmt(f.lo) + " a " + fmt(f.hi) + " se o peso de uma área for a 0 ou a 10</span></div>";
+  }).join("") + '</div><div class="cmp-scale" aria-hidden="true"><span></span><div><span>0</span><span>5</span><span>10</span></div><span></span></div>';
 
   var headCols = r.inc.map(function (c) { return '<th class="num"><span style="display:inline-flex;gap:6px;align-items:center">' + monogram(CBY[c]) + esc(CBY[c].nome) + "</span></th>"; }).join("");
   var rows = r.counted.map(function (a) {
-    var an = AREAS.filter(function (x) { return x.id === a; })[0].nome;
-    return "<tr><td>" + esc(an) + '</td><td class="num">' + state.w[a] + "</td>" + r.inc.map(function (c) {
+    return "<tr><td>" + esc(areaNome(a)) + '</td><td class="num">' + state.w[a] + "</td>" + r.inc.map(function (c) {
       var row = r.res[c].rows[a], share = r.res[c].num > 0 ? Math.round(100 * row.p / r.res[c].num) : 0;
       return '<td class="num">' + row.r + " × " + row.w + " = " + row.p + ' <span class="muted">(' + share + "%)</span></td>";
     }).join("") + "</tr>";
@@ -1071,13 +1146,11 @@ function renderResult() {
   rows += '<tr><td><strong>Resultado</strong></td><td class="num">Σ pesos</td>' + r.inc.map(function (c) {
     var x = r.res[c]; return '<td class="num"><strong>' + fmt(x.num) + " ÷ " + x.den + " = " + fmt(x.score) + "</strong></td>";
   }).join("") + "</tr>";
-  var table = '<div class="tablewrap"><table><caption class="small muted" style="text-align:left;padding:8px 10px">Cada linha: sua nota × seu peso = pontos (parte do total do candidato). O resultado é a soma dos pontos dividida pela soma dos pesos.</caption><thead><tr><th>Área ou critério</th><th class="num">Peso</th>' + headCols + "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+  var table = '<div class="tablewrap"><table><caption class="small muted" style="text-align:left;padding:8px 10px">Cada linha: sua nota × seu peso = pontos (parte do total do candidato). O resultado é a soma dos pontos dividida pela soma dos pesos. Candidatos na ordem de exibição, sem ordenar por pontuação.</caption><thead><tr><th>Área ou critério</th><th class="num">Peso</th>' + headCols + "</tr></thead><tbody>" + rows + "</tbody></table></div>";
 
-  /* sensibilidade */
-  var sens = [];
-  var leadTxt = lead.length > 1 ? "empate entre " + names(lead) : names(lead);
+  /* sensibilidade: o que muda quem tem a maior pontuação */
+  var sens = [], leadTxt = lead.length > 1 ? "empate entre " + names(lead) : names(lead);
   r.counted.forEach(function (a) {
-    var an = AREAS.filter(function (x) { return x.id === a; })[0].nome;
     var changes = [];
     [0, 10].forEach(function (nw) {
       if (nw === state.w[a]) return;
@@ -1086,7 +1159,7 @@ function renderResult() {
       var l2 = leaders(r2);
       if (l2.join() !== lead.join()) changes.push("com peso " + nw + ", a maior pontuação passaria a ser de " + (l2.length > 1 ? "empate entre " + names(l2) : names(l2)));
     });
-    sens.push("<li><strong>" + esc(an) + "</strong> (peso " + state.w[a] + "): " + (changes.length ? changes.join("; ") + "." : "mudar o peso entre 0 e 10 não altera quem tem a maior pontuação.") + "</li>");
+    sens.push("<li><strong>" + esc(areaNome(a)) + "</strong> (peso " + state.w[a] + "): " + (changes.length ? changes.join("; ") + "." : "mudar o peso entre 0 e 10 não altera quem tem a maior pontuação.") + "</li>");
   });
   r.lensOn.forEach(function (k) {
     var saved = state.lensOn[k]; state.lensOn[k] = false; var r2 = compute(state.w); state.lensOn[k] = saved;
@@ -1095,8 +1168,8 @@ function renderResult() {
   });
   var uneven = r.lensOn.filter(function (k) { var covs = r.inc.map(function (c) { var l = r.res[c].lens[k]; return l ? l.cov : 0; }); return Math.max.apply(null, covs) !== Math.min.apply(null, covs); });
 
-  var head = '<div style="display:grid;gap:6px"><h3>Pontuação ponderada (0 a 10)</h3><p class="small muted">Calculada só com as suas notas e pesos, em ' + r.counted.length + " de " + AREAS.length + " áreas" + (r.lensOn.length ? " e " + r.lensOn.length + " critério(s) objetivo(s)" : "") + ". Exibida na ordem atual dos candidatos.</p></div>";
-  var summary = '<p>Com os seus números, a maior pontuação é de <strong>' + esc(leadTxt) + "</strong>" + (lead.length === 1 && scores.length > 1 ? ", " + fmt(margin) + " ponto(s) à frente do segundo." : ".") + " Isso descreve as suas escolhas; não é uma recomendação.</p>";
+  var head = '<div style="display:grid;gap:6px"><h3>Pontuação ponderada (0 a 10)</h3><p class="small muted">Calculada só com as suas notas e pesos, em ' + r.counted.length + " de " + AREAS.length + " áreas" + (r.lensOn.length ? " e " + r.lensOn.length + " critério(s) objetivo(s)" : "") + ". Na ordem de exibição dos candidatos; o traço escuro na barra mostra a faixa de sensibilidade.</p></div>";
+  var summary = "<p>Com os seus números, a maior pontuação ponderada é de <strong>" + esc(leadTxt) + "</strong>" + (lead.length === 1 && scores.length > 1 ? "; a diferença para a seguinte é de " + fmt(margin) + " ponto(s)." : ".") + " Isso descreve as suas escolhas.</p>";
   var notes = [];
   if (lead.length === 1 && margin < 0.5) notes.push("A diferença entre os dois primeiros é menor que meio ponto. Um ponto a mais ou a menos em uma única nota pode inverter a ordem.");
   if (r.counted.length < AREAS.length) notes.push("Áreas fora da conta (peso 0 ou sem todas as notas): " + AREAS.filter(function (a) { return r.counted.indexOf(a.id) < 0; }).map(function (a) { return a.nome; }).join(", ") + ".");
@@ -1105,6 +1178,56 @@ function renderResult() {
     '<div style="display:grid;gap:8px"><h3>Se você mudar o peso de uma área, o resultado muda?</h3><ul class="sens">' + sens.join("") + "</ul></div>" +
     (notes.length ? '<div class="notice">' + notes.map(function (n) { return "<span>" + esc(n) + "</span>"; }).join("") + "</div>" : "");
 }
+function textoResultado() {
+  var r = compute(state.w), L = ["Comparar propostas 2026: meu resultado", "Isto descreve as minhas escolhas. Não é recomendação nem previsão.", ""];
+  L.push("Pesos (0 a 10): " + AREAS.map(function (a) { return a.nome + " " + state.w[a.id]; }).join("; ") + ".");
+  if (r.inc.length < 2 || r.counted.length < 2) { L.push("Ainda sem resultado: faltam notas em pelo menos duas áreas."); return L.join("\n"); }
+  L.push("Pontuação ponderada (0 a 10), na ordem de exibição: " + r.inc.map(function (c) { return CBY[c].nome + " " + fmt(r.res[c].score); }).join("; ") + ".");
+  L.push("Áreas na conta: " + r.counted.map(areaNome).join(", ") + ".");
+  if (r.lensOn.length) L.push("Critérios extras: " + r.lensOn.map(function (k) { return LENS_DEF[k].nome + " (peso " + state.lensW[k] + ")"; }).join("; ") + ".");
+  return L.join("\n");
+}
+
+/* ---------- PASSOS ---------- */
+function resumoCmp(k) {
+  var n = notasContagem(), r = compute(state.w);
+  if (k === "p1") {
+    var mud = AREAS.filter(function (a) { return state.w[a.id] !== PESO_PADRAO; });
+    var out = [mud.length ? mud.length + " de " + AREAS.length + " áreas com peso diferente do padrão (5): " + mud.map(function (a) { return a.nome + " (" + posRotulo(state.w[a.id]).toLowerCase() + ", " + state.w[a.id] + ")"; }).join("; ") + "." : "Todas as " + AREAS.length + " áreas estão no peso padrão (“Importa”, 5): nenhuma começa na frente das outras.",
+      "Critérios extras ligados: " + (LENS_KEYS.filter(function (x) { return state.lensOn[x]; }).map(function (x) { return LENS_DEF[x].curto; }).join(", ") || "nenhum") + "."];
+    return out;
+  }
+  if (k === "p2") return [n.dadas + " de " + n.total + " notas dadas (candidatos incluídos × áreas com peso maior que 0).",
+    "Candidatos incluídos, em ordem " + (state.shuffled ? "embaralhada" : "alfabética") + ": " + n.inc.map(function (c) { return CBY[c].nome; }).join(", ") + ".",
+    "Toda nota começa vazia; a nota é só sua e fica neste navegador."];
+  if (k === "p3") {
+    if (r.inc.length < 2 || r.counted.length < 2) return ["Resultado ainda indisponível: avalie todos os candidatos incluídos em pelo menos 2 áreas com peso maior que 0."];
+    var sf = sensFaixa(r), lead = leaders(r);
+    return ["Pontuação ponderada (0 a 10), na ordem de exibição: " + r.inc.map(function (c) { return CBY[c].nome + " " + fmt(r.res[c].score); }).join("; ") + ".",
+      "Isto descreve as suas escolhas; não é recomendação nem previsão.",
+      "Faixa de sensibilidade (um peso de cada vez a 0 ou 10): " + r.inc.map(function (c) { return CBY[c].nome + " " + fmt(sf[c].lo) + " a " + fmt(sf[c].hi); }).join("; ") + "."];
+  }
+  if (k === "ctx") return ["Quem vencer herda: " + CTX.slice(0, 3).map(function (x) { return x[0]; }).join(", ") + " e mais " + (CTX.length - 3) + " números de contexto, todos com fonte.", "O contexto vale para qualquer candidato; não indica quem está em melhor posição."];
+  if (k === "fatos") return [FATOS.length + " temas com o que está verificado em fonte, uma leitura de cada lado e uma formulação neutra.", "Nenhum campo sai com a narrativa inteiramente confirmada."];
+  if (k === "aba") return [].concat(resumoCmp("p1").slice(0, 1), resumoCmp("p2").slice(0, 1), resumoCmp("p3").slice(0, 1));
+  return null;
+}
+function atualizaResumos() { if (window.__atualizarResumos) window.__atualizarResumos(); }
+function passo(n, usuario) {
+  passoAtual = n;
+  document.querySelectorAll("#painel-propostas [data-passo]").forEach(function (el) { if (el.tagName === "SECTION") el.hidden = String(el.dataset.passo) !== String(n); });
+  document.querySelectorAll("#painel-propostas .cmp-passos button").forEach(function (b) { if (+b.dataset.passo === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+  $c("cmp-prog").textContent = "Passo " + n + " de 3" + (n === 1 ? " · " + AREAS.length + " áreas · " + mudadas() + " mudadas" : (n === 2 ? " · " + notasContagem().dadas + " de " + notasContagem().total + " notas" : ""));
+  if (n === 2) { renderArea(); renderFaixa(); }
+  if (n === 3) renderResult();
+  if (usuario) {
+    try { history.replaceState(null, "", "#propostas-passo-" + n); } catch (e) {}
+    var topo = $c("cmp-topo"); if (topo && topo.scrollIntoView) topo.scrollIntoView({ block: "start" });
+    var h = $c("cmp-h" + n); if (h) { try { h.focus({ preventScroll: true }); } catch (e) {} }
+  }
+  atualizaResumos();
+}
+function recomputa() { renderResult(); renderFaixa(); $c("cmp-prog").textContent = $c("cmp-prog").textContent.replace(/ · .*$/, "") + (passoAtual === 1 ? " · " + AREAS.length + " áreas · " + mudadas() + " mudadas" : (passoAtual === 2 ? " · " + notasContagem().dadas + " de " + notasContagem().total + " notas" : "")); atualizaResumos(); }
 
 /* ---------- EVENTOS ---------- */
 function shuffle() {
@@ -1113,39 +1236,66 @@ function shuffle() {
   if (a.join() === state.order.join()) return shuffle();
   state.order = a; state.shuffled = a.join() !== ALPHA.join();
 }
-
-document.addEventListener("input", function (e) {
+var raiz = $c("painel-propostas");
+function marcaIntroVisto() { try { localStorage.setItem("cmp-intro:v1", "1"); } catch (e) {} }
+raiz.addEventListener("input", function (e) {
   var t = e.target;
-  if (t.dataset.weight) { var a = t.dataset.weight; state.w[a] = +t.value; document.getElementById("wo-" + a).textContent = t.value; updateProgress(a); renderResult(); save(); }
-  else if (t.dataset.lensW) { var k = t.dataset.lensW; state.lensW[k] = +t.value; document.getElementById("lens-wo-" + k).textContent = t.value; renderResult(); save(); }
+  if (t.dataset.weight) { var a = t.dataset.weight; state.w[a] = +t.value; $c("wo-" + a).textContent = t.value; atualizaVales(); recomputa(); save(); marcaIntroVisto(); }
+  else if (t.dataset.lensW) { var k = t.dataset.lensW; state.lensW[k] = +t.value; $c("lens-wo-" + k).textContent = t.value; recomputa(); save(); }
 });
-document.addEventListener("change", function (e) {
+raiz.addEventListener("change", function (e) {
   var t = e.target;
-  if (t.dataset.rate) { var p = t.dataset.rate.split("|"); if (t.value === "") delete state.r[p[0]][p[1]]; else state.r[p[0]][p[1]] = +t.value; updateProgress(p[0]); renderResult(); save(); }
+  if (t.dataset.pos) { var a0 = t.dataset.pos; state.w[a0] = +t.value; renderPesos(); recomputa(); save(); marcaIntroVisto(); var f = document.querySelector("#painel-propostas input[name='w-" + a0 + "']:checked"); if (f) f.focus(); }
+  else if (t.dataset.rate) { var p = t.dataset.rate.split("|"); if (t.value === "") delete state.r[p[0]][p[1]]; else state.r[p[0]][p[1]] = +t.value; updateProgress(p[0]); recomputa(); save(); }
   else if (t.dataset.ov) {
     var q = t.dataset.ov.split("|"); state.ov[q[0]][q[1]] = state.ov[q[0]][q[1]] || {};
     if (t.value === "") delete state.ov[q[0]][q[1]][q[2]]; else state.ov[q[0]][q[1]][q[2]] = t.value;
-    document.getElementById("lc-" + q[0] + "-" + q[1]).innerHTML = lensChips(q[0], q[1]); renderResult(); save();
+    $c("lc-" + q[0] + "-" + q[1]).innerHTML = lensChips(q[0], q[1]); recomputa(); save();
   }
-  else if (t.dataset.lensOn) { state.lensOn[t.dataset.lensOn] = t.checked; renderResult(); save(); }
-  else if (t.dataset.incl) { state.incl[t.dataset.incl] = t.checked; renderResult(); save(); }
+  else if (t.dataset.lensOn) { state.lensOn[t.dataset.lensOn] = t.checked; recomputa(); save(); }
+  else if (t.dataset.incl) { state.incl[t.dataset.incl] = t.checked; recomputa(); save(); }
+  else if (t.id === "area-sel") { areaIdx = +t.value; renderArea(); }
 });
-document.getElementById("btn-shuffle").addEventListener("click", function () { shuffle(); renderAreas(); renderResult(); save(); });
-document.getElementById("btn-alpha").addEventListener("click", function () { state.order = ALPHA.slice(); state.shuffled = false; renderAreas(); renderResult(); save(); });
-document.getElementById("btn-reset").addEventListener("click", function () { document.getElementById("reset-confirm").hidden = false; document.getElementById("btn-reset-no").focus(); });
-document.getElementById("btn-reset-no").addEventListener("click", function () { document.getElementById("reset-confirm").hidden = true; document.getElementById("btn-reset").focus(); });
-document.getElementById("btn-reset-yes").addEventListener("click", function () {
+raiz.addEventListener("click", function (e) {
+  var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
+  if (b.dataset.passo) passo(+b.dataset.passo, true);
+});
+function iniciaReset() { $c("reset-confirm").hidden = false; $c("btn-reset").hidden = true; $c("btn-reset-no").focus(); }
+$c("btn-ir-2").addEventListener("click", function () { marcaIntroVisto(); passo(2, true); });
+$c("btn-ver-res").addEventListener("click", function () { passo(3, true); });
+$c("btn-volta-2").addEventListener("click", function () { passo(2, true); });
+$c("area-prev").addEventListener("click", function () { if (areaIdx > 0) { areaIdx--; renderArea(); } });
+$c("area-next").addEventListener("click", function () { if (areaIdx < AREAS.length - 1) { areaIdx++; renderArea(); } });
+$c("btn-iguais").addEventListener("click", function () { AREAS.forEach(function (a) { state.w[a.id] = PESO_PADRAO; }); renderPesos(); recomputa(); save(); });
+$c("btn-shuffle").addEventListener("click", function () { shuffle(); renderArea(); recomputa(); save(); });
+$c("btn-alpha").addEventListener("click", function () { state.order = ALPHA.slice(); state.shuffled = false; renderArea(); recomputa(); save(); });
+$c("btn-reset").addEventListener("click", iniciaReset);
+$c("btn-reset-3").addEventListener("click", function () { window.scrollTo(0, 0); iniciaReset(); var topo = $c("cmp-topo"); if (topo) topo.scrollIntoView({ block: "start" }); });
+$c("btn-reset-no").addEventListener("click", function () { $c("reset-confirm").hidden = true; $c("btn-reset").hidden = false; $c("btn-reset").focus(); });
+$c("btn-reset-yes").addEventListener("click", function () {
   state = defaults();
   try { window.localStorage.removeItem(KEY); } catch (e) { /* sem armazenamento */ }
-  document.getElementById("reset-confirm").hidden = true;
-  syncControls(); renderAreas(); renderResult();
-  document.getElementById("save-status").textContent = "Respostas apagadas.";
-  document.getElementById("btn-reset").focus();
+  $c("reset-confirm").hidden = true; $c("btn-reset").hidden = false;
+  syncControls(); renderPesos(); renderArea(); renderResult(); renderFaixa();
+  $c("save-status").textContent = "Respostas apagadas.";
+  passo(1, true); $c("btn-reset").focus();
 });
+$c("btn-copiar").addEventListener("click", function () {
+  var txt = textoResultado(), st = $c("copia-status"), ta = $c("cmp-copia");
+  function fallback() { ta.hidden = false; ta.value = txt; ta.focus(); ta.select(); st.textContent = "Selecione e copie o texto abaixo."; }
+  try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { st.textContent = "Resultado copiado."; ta.hidden = true; }, fallback); else fallback(); } catch (e) { fallback(); }
+});
+document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$c("reset-confirm").hidden) { $c("btn-reset-no").click(); } });
 
+/* ---------- início ---------- */
 load();
 renderStatic();
-renderAreas();
-renderResult();
+renderPesos();
+/* o quadro “é / não é” começa recolhido para o primeiro controle aparecer logo; o resumo dele está no texto acima */
+renderArea(); renderResult(); renderFaixa();
+window.__cmp = { passo: passo, resumo: resumoCmp, defaults: defaults, estado: function () { return state; } };
+var mh = /^#propostas-passo-([123])$/.exec(location.hash || "");
+passo(mh ? +mh[1] : 1, false);
+window.addEventListener("hashchange", function () { var m = /^#propostas-passo-([123])$/.exec(location.hash || ""); if (m && passoAtual !== +m[1]) passo(+m[1], false); });
 })();
 </script>

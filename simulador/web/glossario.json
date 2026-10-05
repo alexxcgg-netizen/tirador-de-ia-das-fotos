@@ -1,0 +1,236 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-05",
+  "nota": "Definições em linguagem simples, com no máximo 30 palavras cada. Os números de exemplo são do 2º turno de 2026, modelo calibrado."
+ },
+ "termos": [
+  {
+   "id": "monte-carlo",
+   "termo": "Monte Carlo",
+   "definicao": "Método que repete a eleição centenas de milhares de vezes no computador, sorteando os erros possíveis em cada rodada, para ver quantas vezes cada resultado acontece.",
+   "exemplo": "Com 500.000 simulações, o erro do próprio método fica abaixo de 0,1 ponto percentual."
+  },
+  {
+   "id": "simulacao",
+   "termo": "Simulação",
+   "definicao": "Uma rodada completa da eleição no computador, com erros sorteados. O painel mostra o conjunto de todas as rodadas, não uma rodada isolada."
+  },
+  {
+   "id": "p-lula",
+   "termo": "P(Lula), P(Flávio): chance de vencer",
+   "definicao": "Fração das simulações em que o candidato vence. Mede a incerteza do modelo, não a fatia de votos do candidato.",
+   "exemplo": "23% quer dizer cerca de 1 vitória em 4 simulações."
+  },
+  {
+   "id": "intervalo-80",
+   "termo": "Intervalo ou faixa de 80%",
+   "definicao": "Faixa em que caíram 80% das simulações. Em 1 de cada 5 simulações o resultado ficou fora dela, para cima ou para baixo.",
+   "exemplo": "Faixa de 43,9% a 51,8% = 80% das simulações ficaram aí."
+  },
+  {
+   "id": "intervalo-95",
+   "termo": "Intervalo de 95%",
+   "definicao": "Faixa mais larga, em que caíram 95% das simulações. Só 1 em cada 20 ficou fora."
+  },
+  {
+   "id": "mediana",
+   "termo": "Mediana",
+   "definicao": "Valor do meio: metade das simulações deu mais, metade deu menos. Costuma ficar perto da média quando a distribuição é simétrica."
+  },
+  {
+   "id": "p-p",
+   "termo": "Ponto percentual (p.p.)",
+   "definicao": "Diferença entre dois percentuais. Ir de 47% para 50% é subir 3 p.p., e não 3%."
+  },
+  {
+   "id": "votos-validos",
+   "termo": "Votos válidos",
+   "definicao": "Votos dados a candidatos, sem brancos e nulos. É a base que decide a eleição e a usada nos percentuais do painel, salvo aviso."
+  },
+  {
+   "id": "votos-totais",
+   "termo": "Votos totais",
+   "definicao": "Todos os votos depositados, incluindo brancos e nulos. As pesquisas costumam divulgar nessa base, por isso não se comparam direto com votos válidos."
+  },
+  {
+   "id": "margem",
+   "termo": "Margem",
+   "definicao": "Diferença entre os dois candidatos, em pontos percentuais dos válidos ou em votos. Positiva para um lado, negativa para o outro."
+  },
+  {
+   "id": "abstencao",
+   "termo": "Abstenção",
+   "definicao": "Eleitores aptos que não compareceram. Entra no cálculo do 2º turno porque muda quantos votos válidos existem."
+  },
+  {
+   "id": "calibrado",
+   "termo": "Modelo calibrado",
+   "definicao": "Versão principal do modelo: o viés das pesquisas é estimado dos erros de 2014, 2018 e 2022 e encolhido em direção a zero, com incerteza."
+  },
+  {
+   "id": "neutro",
+   "termo": "Visão neutra",
+   "definicao": "Versão de sensibilidade que assume viés zero nas pesquisas. Serve para ver quanto o resultado depende dessa premissa."
+  },
+  {
+   "id": "vies-pleno",
+   "termo": "Viés pleno",
+   "definicao": "Versão de sensibilidade que aplica por inteiro o erro médio histórico das pesquisas, sem encolhimento. É o cenário mais duro para quem as pesquisas favoreceram."
+  },
+  {
+   "id": "vies",
+   "termo": "Viés das pesquisas",
+   "definicao": "Erro que se repete na mesma direção. Se as pesquisas sobrestimaram um candidato nas últimas eleições, o modelo desconta parte disso."
+  },
+  {
+   "id": "house-effect",
+   "termo": "House effect (efeito de instituto)",
+   "definicao": "Quanto um instituto fica, de forma sistemática, acima ou abaixo do consenso das demais pesquisas. Não indica qual instituto está certo."
+  },
+  {
+   "id": "encolhimento",
+   "termo": "Encolhimento hierárquico",
+   "definicao": "Técnica que aproxima de zero o efeito estimado de institutos com poucas pesquisas, porque poucos dados permitem pouca certeza."
+  },
+  {
+   "id": "backtest",
+   "termo": "Backtest",
+   "definicao": "Teste do modelo em eleições passadas: ele prevê 2014, 2018 e 2022 usando só o que se sabia na véspera, e compara com o resultado real."
+  },
+  {
+   "id": "fora-da-amostra",
+   "termo": "Fora da amostra",
+   "definicao": "Avaliação feita em um ano que não foi usado para ajustar o modelo. É um teste mais duro e mais honesto do que testar nos mesmos dados."
+  },
+  {
+   "id": "calibracao",
+   "termo": "Calibração",
+   "definicao": "Propriedade de um intervalo ou de uma probabilidade acertar na frequência que anuncia: intervalos de 80% devem conter o resultado em cerca de 80% dos casos."
+  },
+  {
+   "id": "cobertura",
+   "termo": "Cobertura",
+   "definicao": "Percentual de resultados reais que caíram dentro do intervalo previsto. Compara-se com o nominal (80% ou 95%)."
+  },
+  {
+   "id": "pit",
+   "termo": "PIT",
+   "definicao": "Posição do resultado real dentro da distribuição prevista (0 a 1). Se o modelo é calibrado, os valores se espalham de modo uniforme."
+  },
+  {
+   "id": "brier",
+   "termo": "Escore de Brier",
+   "definicao": "Erro quadrático médio de uma probabilidade prevista contra o que ocorreu (0 ou 1). Menor é melhor; 0,25 equivale a chutar 50% sempre."
+  },
+  {
+   "id": "crps",
+   "termo": "CRPS",
+   "definicao": "Nota que avalia a distribuição inteira prevista contra o resultado real. Menor é melhor e é dada na unidade da variável, aqui pontos percentuais."
+  },
+  {
+   "id": "transferencia",
+   "termo": "Matriz de transferência",
+   "definicao": "Para onde vão os votos dos candidatos eliminados no 1º turno. É a peça central da projeção do 2º turno."
+  },
+  {
+   "id": "ponto-de-virada",
+   "termo": "Ponto de virada",
+   "definicao": "UF em que os votos válidos acumulados, da mais para a menos favorável a um candidato, passam de 50%. Mostra onde a eleição se decide."
+  },
+  {
+   "id": "swing",
+   "termo": "Swing",
+   "definicao": "Variação da fatia de um candidato entre duas eleições na mesma região ou município, em pontos percentuais."
+  },
+  {
+   "id": "exposicao",
+   "termo": "Exposição ao viés",
+   "definicao": "Fração do viés estimado que se aplica a um instituto, conforme o método que ele usa. Instituições com método diferente ficam menos expostas."
+  },
+  {
+   "id": "mercado-previsao",
+   "termo": "Mercado de previsão",
+   "definicao": "Plataforma em que pessoas apostam no resultado. Os preços viram probabilidades implícitas. São apostas, não pesquisas."
+  },
+  {
+   "id": "normalizado",
+   "termo": "Normalizado",
+   "definicao": "Ajustado para que as probabilidades de todos os resultados somem 100%, removendo a margem da plataforma."
+  },
+  {
+   "id": "indireto",
+   "termo": "Indireto",
+   "definicao": "Mensagem passada por ato, silêncio, aliança ou duplo sentido, sem dizer diretamente. Cada público lê o que quer e sobra a saída do “não foi isso que eu quis dizer”."
+  },
+  {
+   "id": "negacao-plausivel",
+   "termo": "Negação plausível",
+   "definicao": "Possibilidade de dizer depois que não era isso que se quis dizer. É um dos sinais de que uma fala foi construída de forma indireta."
+  },
+  {
+   "id": "leitura-inocente",
+   "termo": "Leitura inocente mais forte",
+   "definicao": "Explicação mais favorável ao autor para o mesmo fato. Todo caso do painel traz essa leitura, para o leitor poder discordar da conclusão."
+  },
+  {
+   "id": "confianca-fato",
+   "termo": "Confiança no fato",
+   "definicao": "Quão bem o fato em si está documentado (que a fala ou o ato ocorreu). Não mede se a interpretação está certa."
+  },
+  {
+   "id": "forca-leitura",
+   "termo": "Força da leitura",
+   "definicao": "Quão sustentada é a interpretação de que o caso é indireto. Pode ser baixa mesmo com o fato bem documentado."
+  },
+  {
+   "id": "disputado",
+   "termo": "Caso disputado",
+   "definicao": "Caso em que há leitura plausível diferente da apresentada e fontes que a sustentam. Aparece marcado e pode ser filtrado."
+  },
+  {
+   "id": "kaitz",
+   "termo": "Índice de Kaitz",
+   "definicao": "Razão entre o salário mínimo e o salário mediano (ou médio). Mostra quanto o piso pesa na estrutura de salários."
+  },
+  {
+   "id": "efeito-farol",
+   "termo": "Efeito farol",
+   "definicao": "Quando o salário mínimo serve de referência para preços de serviços e salários informais, que sobem junto, mesmo sem lei obrigando."
+  },
+  {
+   "id": "efeito-sanduiche",
+   "termo": "Efeito sanduíche",
+   "definicao": "Classe média que não recebe o benefício focalizado nem tem como se adaptar ao custo que o benefício gera, e fica espremida entre os dois."
+  },
+  {
+   "id": "efeito-cascata",
+   "termo": "Efeito cascata",
+   "definicao": "Aumento do piso que empurra para cima faixas salariais acima dele, para manter diferenças entre cargos."
+  },
+  {
+   "id": "segunda-ordem",
+   "termo": "Efeito de segunda ordem",
+   "definicao": "Consequência indireta de uma medida, como repasse a preços, juros mais altos ou dívida maior, que aparece depois do benefício visível."
+  },
+  {
+   "id": "renda-real",
+   "termo": "Renda real",
+   "definicao": "Renda corrigida pela inflação. Depende do índice usado: o mesmo salário pode parecer crescer pelo IPCA e cair em itens como comida."
+  },
+  {
+   "id": "ipca",
+   "termo": "IPCA",
+   "definicao": "Índice oficial de inflação do IBGE. Mede uma cesta média; a cesta de uma família pobre pode subir de modo diferente."
+  },
+  {
+   "id": "informalidade",
+   "termo": "Informalidade",
+   "definicao": "Parcela dos ocupados sem carteira nem CNPJ. Desemprego baixo com informalidade alta indica emprego, mas com menos proteção."
+  },
+  {
+   "id": "ordem-alfabetica",
+   "termo": "Ordem alfabética pelo primeiro nome",
+   "definicao": "Regra deste painel para o conteúdo novo quando dois candidatos aparecem juntos: Flávio Bolsonaro antes de Lula. Evita que a ordem sugira preferência."
+  }
+ ]
+}

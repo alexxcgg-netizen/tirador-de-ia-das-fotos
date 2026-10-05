@@ -39,14 +39,11 @@ def test_index_tem_secao_segundo_turno():
     assert out.index('id="segundo-turno"') < out.index('id="cards"')
 
 
-def test_documento_comparador_tem_esqueleto_e_volta():
-    frag = "<title>Comparador</title>\n<style>:root{--bg:#fff}</style>\n<link rel=\"stylesheet\" href=\"x.css\">\n<div class=\"wrap\">oi</div>\n"
-    doc = publicar.documento_comparador(frag)
-    assert doc.startswith("<!doctype html>") and "<body>" in doc and doc.rstrip().endswith("</html>")
-    assert "viewport-fit=cover" in doc and 'charset="utf-8"' in doc
-    assert 'href="index.html"' in doc and '<div class="wrap">oi</div>' in doc
-    head = doc.split("</head>")[0]
-    assert "<title>Comparador</title>" in head and 'href="x.css"' in head
+def test_comparador_html_virou_aviso_com_link_ao_painel():
+    doc = publicar.documento_comparador("<title>qualquer</title>")
+    assert doc.startswith("<!doctype html>") and "viewport-fit=cover" in doc and 'charset="utf-8"' in doc
+    assert 'href="index.html#propostas"' in doc and "mudou de lugar" in doc
+    assert len(doc) < 4000      # aviso curto, não a página inteira do comparador
 
 
 def test_link_cenarios_so_se_existir():
@@ -54,7 +51,7 @@ def test_link_cenarios_so_se_existir():
     assert "hidden" in publicar.link_cenarios(html, False)
     assert "hidden" not in publicar.link_cenarios(html, True)
     idx = (publicar.ORIG / "index.html").read_text(encoding="utf-8")
-    assert 'id="link-cenarios" href="cenarios.html" hidden' in idx and 'href="comparador.html"' in idx
+    assert 'id="link-cenarios" href="cenarios.html" hidden' in idx and 'href="comparador.html"' not in idx
 
 
 def test_documento_cenarios_injeta_volta_so_se_faltar():
@@ -147,8 +144,9 @@ def test_cada_aba_termina_com_resumo():
     """Toda seção ("assunto") de toda aba termina com um quadro Resumo, e toda aba com "Resumo da aba"."""
     import re
     html = (publicar.ORIG / "index.html").read_text(encoding="utf-8")
+    html = re.sub(r"\n\s*<!--.*?-->", "", html)       # marcadores CMP:* do comparador integrado
     paineis = re.findall(r'<div role="tabpanel"[^>]*data-painel="([^"]+)"[^>]*>([\s\S]*?)(?=\n  <div role="tabpanel"|\n  <footer)', html)
-    assert len(paineis) == 9
+    assert len(paineis) == 14   # 9 antigos + comece, indireto, propostas, cenarios, glossario
     chaves_js = set(re.findall(r'^    "([a-z0-9-]+)": function', html, re.M))
     for nome, corpo in paineis:
         corpo = corpo.rstrip()

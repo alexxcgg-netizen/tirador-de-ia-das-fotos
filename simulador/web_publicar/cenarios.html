@@ -14,7 +14,7 @@
   --border: #dedcd5;
   --text: #0b0b0b;
   --text-2: #52514e;
-  --text-3: #75736d;
+  --text-3: #66645e;
   --lula: #4a3aa7;
   --flavio: #b4531a;
   --lula-soft: rgba(74, 58, 167, .16);
@@ -35,7 +35,7 @@
     --border: #34332f;
     --text: #ffffff;
     --text-2: #c3c2b7;
-    --text-3: #9a998f;
+    --text-3: #a3a298;
     --lula: #9085e9;
     --flavio: #c86a2e;
     --lula-soft: rgba(144, 133, 233, .22);
@@ -56,7 +56,7 @@
   --border: #34332f;
   --text: #ffffff;
   --text-2: #c3c2b7;
-  --text-3: #9a998f;
+  --text-3: #a3a298;
   --lula: #9085e9;
   --flavio: #c86a2e;
   --lula-soft: rgba(144, 133, 233, .22);
@@ -212,17 +212,37 @@ ul.lim li { margin-bottom: 6px; }
 tr.sel td { background: var(--surface-2); }
 tbody tr { cursor: default; }
 td .sub2 { display: block; font-size: 11px; color: var(--text-3); }
+/* cabeçalho compartilhado com o painel (mesmos tokens e navegação) */
+header.top .wrap.nv-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 8px; padding-top: 0; padding-bottom: 0; }
+header.top .wrap.nv-sub { display: flex; gap: 4px; padding-top: 0; padding-bottom: 0; border-top: 1px solid var(--border); overflow-x: auto; }
+.nv-scroll { display: flex; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.nv-scroll::-webkit-scrollbar { display: none; }
+.nv-l { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; color: var(--text-2); text-decoration: none; font-weight: 600; font-size: 14px; border-bottom: 3px solid transparent; white-space: nowrap; }
+.nv-l:hover { color: var(--text); background: var(--surface-2); }
+.nv-l[aria-current="page"] { color: var(--text); font-weight: 700; border-bottom-color: var(--accent); }
+.nv-l:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+.brand { max-width: 1180px; margin: 0 auto; padding: 14px 16px 0; }
+.brand h1 { font-size: 20px; font-weight: 800; }
+body { font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap">
 </head>
 <body>
 <header class="top">
-  <div class="wrap">
-    <a class="voltar" href="index.html">← Voltar ao painel</a>
-    <h1>Cenários econômicos 2027–2034 (v2)</h1>
-    <span class="spacer"></span>
+  <div class="wrap nv-row">
+    <nav class="nv-scroll" aria-label="Áreas do painel">
+      <a class="nv-l" href="index.html#comece">Comece aqui</a>
+      <a class="nv-l" href="index.html#ganhar">Quem vai ganhar</a>
+      <a class="nv-l" href="index.html#realidade">Realidade × discurso</a>
+      <a class="nv-l" href="index.html#propostas" aria-current="page">Propostas e cenários</a>
+      <a class="nv-l" href="index.html#pesquisas">Dados e método</a>
+    </nav>
     <button class="btn-ghost" id="tema" type="button" aria-label="Alternar tema claro/escuro">Tema</button>
   </div>
+  <div class="wrap nv-sub"><a class="nv-l" href="index.html#propostas">Comparar propostas</a><a class="nv-l" href="cenarios.html" aria-current="page">Cenários econômicos</a></div>
 </header>
+<div class="brand"><h1>Cenários econômicos 2027–2034 (v2)</h1></div>
 
 <main class="wrap">
   <p class="lead">Com Lula ou com Flávio Bolsonaro, quanto a renda de cada tipo de família compraria, ano a ano, até 2034?</p>

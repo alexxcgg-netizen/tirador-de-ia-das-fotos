@@ -38,34 +38,101 @@ def link_cenarios(html: str, existe: bool) -> str:
     return html.replace(alvo, 'id="link-cenarios" href="cenarios.html"') if existe else html
 
 
-VOLTAR = """<style>
-.voltar-painel { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; display: flex; justify-content: center;
-  background: var(--surface); border-bottom: 1px solid var(--line); }
-.voltar-painel a { display: inline-block; max-width: 1120px; width: 100%; padding: 10px 16px; color: var(--accent);
-  font: 600 0.92rem var(--font-body); text-decoration: none; }
-.voltar-painel a:hover { text-decoration: underline; }
-.voltar-painel a:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+ESCOPO_CMP = "#painel-propostas"
+
+
+def _prefixar_seletor(sel: str, escopo: str) -> str:
+    sel = sel.strip()
+    return escopo + sel[len(":scope"):] if sel.startswith(":scope") else escopo + " " + sel
+
+
+def prefixar_css(css: str, escopo: str = ESCOPO_CMP) -> str:
+    """Prefixa todos os seletores com o escopo (":scope" vira o próprio escopo), para o CSS do comparador não vazar
+    para o resto do painel. Trata @media/@supports recursivamente; outras @-regras passam sem prefixo."""
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+
+    def bloco(txt: str) -> str:
+        out, i, n = [], 0, len(txt)
+        while i < n:
+            j = txt.find("{", i)
+            if j < 0:
+                break
+            cab, depth, k = txt[i:j].strip(), 1, j + 1
+            while k < n and depth:
+                depth += (txt[k] == "{") - (txt[k] == "}")
+                k += 1
+            corpo = txt[j + 1:k - 1]
+            if cab.startswith(("@media", "@supports")):
+                out.append(cab + " {\n" + bloco(corpo) + "}\n")
+            elif cab.startswith("@"):
+                out.append(cab + " {" + corpo + "}\n")
+            else:
+                out.append(",\n".join(_prefixar_seletor(x, escopo) for x in cab.split(",")) + " {" + corpo + "}\n")
+            i = k
+        return "".join(out)
+
+    return bloco(css)
+
+
+def partes_comparador(frag: str) -> tuple[str, str, str]:
+    """Separa comparador/index.html em (css, html, js): o primeiro <style>, o último <script> e o resto
+    (sem <title> nem <link>, que o painel já tem)."""
+    f = re.sub(r"<title>.*?</title>\s*", "", frag.strip(), flags=re.S)
+    f = re.sub(r"\s*<link[^>]*>", "", f)
+    m_css = re.search(r"<style>(.*?)</style>", f, flags=re.S)
+    m_js = list(re.finditer(r"<script>(.*?)</script>", f, flags=re.S))
+    assert m_css and m_js, "comparador/index.html precisa de <style> e <script>"
+    js = m_js[-1]
+    html = (f[:m_css.start()] + f[m_css.end():js.start()]).strip()
+    return m_css.group(1), html, js.group(1)
+
+
+def _troca(txt: str, ini: str, fim: str, novo: str) -> str:
+    a, b = txt.index(ini), txt.index(fim)
+    return txt[:a + len(ini)] + "\n" + novo.rstrip("\n") + "\n" + txt[b:]
+
+
+def integrar_comparador(index_html: str, frag: str) -> str:
+    """Injeta o comparador (CSS prefixado, painel e JS) nos marcadores CMP:* de simulador/web/index.html."""
+    css, html, js = partes_comparador(frag)
+    out = _troca(index_html, "/* CMP:CSS:INICIO */", "/* CMP:CSS:FIM */", prefixar_css(css))
+    corpo = "\n".join(("  " + l) if l.strip() else l for l in html.split("\n"))
+    out = _troca(out, "<!-- CMP:HTML:INICIO -->", "<!-- CMP:HTML:FIM -->", corpo)
+    return _troca(out, "<!-- CMP:JS:INICIO -->", "<!-- CMP:JS:FIM -->", "<script>" + js.rstrip() + "\n</script>")
+
+
+AVISO_COMPARADOR = """<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comparar propostas mudou de lugar</title>
+<style>
+:root { color-scheme: light dark; --bg: #f6f5f2; --fg: #0b0b0b; --fg2: #52514e; --ac: #2b2a27; --line: #dedcd5; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #121211; --fg: #ffffff; --fg2: #c3c2b7; --ac: #e9e8e2; --line: #34332f; } }
+:root[data-theme="dark"] { --bg: #121211; --fg: #ffffff; --fg2: #c3c2b7; --ac: #e9e8e2; --line: #34332f; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+main { max-width: 560px; margin: 0 auto; padding: 48px 16px; display: grid; gap: 16px; }
+h1 { font-size: 1.4rem; margin: 0; }
+p { margin: 0; color: var(--fg2); }
+a.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 1px solid var(--ac); border-radius: 6px; color: var(--ac); font-weight: 600; text-decoration: none; justify-self: start; }
+a.btn:focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; }
 </style>
-<nav class="voltar-painel" aria-label="Voltar"><a href="index.html">← Voltar ao painel da eleição</a></nav>
+</head>
+<body>
+<main>
+<h1>Comparar propostas mudou de lugar</h1>
+<p>O comparador agora faz parte do painel da eleição, na área “Propostas e cenários”, com o mesmo visual e em 3 passos. Suas notas e pesos continuam salvos neste navegador.</p>
+<a class="btn" href="index.html#propostas">Abrir Comparar propostas</a>
+</main>
+</body>
+</html>
 """
 
 
-def documento_comparador(fragmento: str) -> str:
-    """comparador/index.html é um fragmento (sem doctype/html/head/body); como página extra do artifact ele precisa
-    do próprio esqueleto. Injeta só o link de volta ao painel; o conteúdo do comparador não muda."""
-    frag = fragmento.strip()
-    m = re.search(r"<title>.*?</title>", frag, flags=re.S)
-    titulo = m.group(0) if m else "<title>Comparador de propostas 2026</title>"
-    if m:
-        frag = frag[:m.start()] + frag[m.end():]
-    corte = frag.find("</style>")
-    cab, corpo = (frag[:corte + len("</style>")], frag[corte + len("</style>"):]) if corte >= 0 else ("", frag)
-    links = re.findall(r"\s*<link[^>]*>", corpo)
-    for l in links:
-        corpo = corpo.replace(l, "", 1)
-    return ("<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\">\n"
-            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
-            + titulo + "\n" + cab + "".join(links) + "\n</head>\n<body>\n" + VOLTAR + corpo.strip() + "\n</body>\n</html>\n")
+def documento_comparador(_fragmento: str = "") -> str:
+    """comparador.html virou um aviso curto com link para o painel (o comparador foi integrado como sub-aba)."""
+    return AVISO_COMPARADOR
 
 
 VOLTAR_CENARIOS = """<nav class="voltar-painel" aria-label="Voltar" style="padding:10px 16px;font:600 0.92rem system-ui,sans-serif">\
@@ -117,21 +184,27 @@ def copiar_opcional(origem: Path, destino: Path) -> bool:
 def main():
     DEST.mkdir(exist_ok=True)
     html = (ORIG / "index.html").read_text(encoding="utf-8")
-    publicar_cenarios(ORIG, DEST)          # "Cenários econômicos": página extra, menu só aparece se ela existir
-    (DEST / "index.html").write_text(link_cenarios(converter(html), (DEST / "cenarios.html").exists()), encoding="utf-8")
     comp = AQUI.parent / "comparador" / "index.html"
-    if comp.exists():                     # "Propostas dos candidatos": página extra do mesmo artifact
-        doc = documento_comparador(comp.read_text(encoding="utf-8"))
-        for d in (ORIG, DEST):
-            (d / "comparador.html").write_text(doc, encoding="utf-8")
+    if comp.exists():                     # "Comparar propostas": fonte em comparador/index.html, integrada como sub-aba do painel
+        novo_html = integrar_comparador(html, comp.read_text(encoding="utf-8"))
+        if novo_html != html:
+            (ORIG / "index.html").write_text(novo_html, encoding="utf-8")
+        html = novo_html
     else:
         print("ausente (pulado): comparador/index.html")
+    publicar_cenarios(ORIG, DEST)          # "Cenários econômicos": página extra, o botão só aparece se ela existir
+    (DEST / "index.html").write_text(link_cenarios(converter(html), (DEST / "cenarios.html").exists()), encoding="utf-8")
+    for d in (ORIG, DEST):                 # comparador.html (endereço antigo): aviso curto com link para o painel
+        (d / "comparador.html").write_text(documento_comparador(), encoding="utf-8")
     shutil.copyfile(ORIG / "resultados.json", DEST / "resultados.json")
     if (ORIG / "resultados_2t.json").exists():     # 2º turno com o 1º turno apurado (resultado_1t.py)
         shutil.copyfile(ORIG / "resultados_2t.json", DEST / "resultados_2t.json")
     for nome in ("mercado_ao_vivo.json", "benchmarks.json",    # painéis "Mercado ao vivo" e "Apuração ao vivo"
                  "nordeste.json", "curiosidades.json",         # abas "Nordeste" e "Curiosidades"
-                 "realidade.json"):                            # aba "Realidade × discurso"
+                 "realidade.json",                             # aba "Realidade × discurso"
+                 "indireto.json",                              # sub-aba "Indireto" (gerado por outro processo; ausente = "dados em preparação")
+                 "nordeste_trajetoria.json",                   # seção "Trajetória por governo" da aba Nordeste (idem)
+                 "glossario.json"):                            # "Glossário e regras"
         copiar_opcional(ORIG / nome, DEST / nome)
     alt = AQUI.parent / "modelo_alternativo" / "resultados_alt.json"
     if alt.exists():                      # comparação com o modelo alternativo (lida relativamente pelo painel)
