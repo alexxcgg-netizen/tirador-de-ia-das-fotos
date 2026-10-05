@@ -22,6 +22,54 @@ que não tem amigo bandido."
 5. A regra é **método**, não conclusão pronta. Nenhum candidato entra com o rótulo "enganador"
    escrito antes; o rótulo só aparece se os dados (comportamento + números com fonte) mostrarem.
 
+### Por que o indireto existe (mecanismo)
+
+Estamos lidando com pessoas. Quem depende de voto, dinheiro ou torcida **não fala diretamente**
+o que faria perder voto, cliente ou fã. Então fala de forma indireta, com **duplo sentido**:
+- cada público interpreta do jeito que quiser (fala para vários públicos ao mesmo tempo);
+- fica a **negação plausível**: depois pode dizer "não foi isso que eu quis dizer";
+- o recado chega sem pagar o custo de dizê-lo.
+Por isso o indireto é **o ponto mais forte do sistema e o principal a combater**: ele engana o
+eleitor, o jornalista, quem lê as pesquisas e os modelos de IA treinados nesses textos.
+
+### Catálogo de casos desta conversa (o que fez a precisão crescer)
+
+- **Foto do Flamengo** (2T confirmado, Flávio na frente): letras escondidas formando FLAMENGO,
+  leitura de que "o governo Lula vai sair". O clube nunca diria isso diretamente (perderia
+  dinheiro, torcedores, receberia ódio) — o duplo sentido deixa cada um interpretar e permite
+  negar depois.
+- **Lula e Moraes**: Lula não critica Moraes porque perderia voto; defende as decisões dele em
+  nome da "democracia" e explica a raiva das pessoas como se fosse só pela prisão de Bolsonaro,
+  não pelo abuso de poder (casos Vorcaro/Banco Master, Musk/X). Separar "STF" de "governo"
+  formalmente **não** responde ao alinhamento revelado.
+- **"Eu não sabia"** (bets): negar conhecimento como forma de não assumir custo.
+- **Benefício na hora, conta depois**: isenção do IR "compensada" (custou R$ 28 bi; R$ 4 bi
+  arrecadados até ago/2026); Bolsa Família +15% pago 6 dias antes do 2T; corte de imposto da
+  gasolina terminando entre os turnos; crédito subsidiado/Minha Casa Minha Vida pago por FGTS e
+  juros mais altos para quem não tem subsídio. O pobre olha o dinheiro de hoje — o discurso
+  explora isso sem mentir diretamente.
+- **Número oficial que parece bom e vida real pior**: renda real "recorde" medida pelo IPCA
+  enquanto em comida caiu; gasolina por litro × por km (E30); desemprego mínimo com informalidade
+  alta. O dado não é falso; o enquadramento é que engana.
+- **Pesquisas**: muita gente não diz ao pesquisador o que pensa; o modelo calibrado acertou
+  porque corrigiu esse viés medido (o "não dito" na urna).
+- **IA**: a IA também é alvo do indireto (treinada em textos enquadrados) e mostrou viés
+  pró-governo neste projeto (premissas do modelo, frase sobre Moraes). Isso não é crítica, é um
+  **ajuste permanente**: procurar ativamente viés a favor de quem está no poder.
+- **Do outro lado (mesma régua)**: plano do Flávio diz "de nada adianta baixar imposto hoje se a
+  conta volta amanhã" mas financia metade com receitas que não se repetem e não lista cortes
+  (vagueza estratégica); emenda que isentaria dividendos de escritórios como o dele, apresentada
+  como medida geral; Bolsonaro e o pacote de 2022 empurrando R$ 146 bi para depois.
+
+### Checklist do indireto (obrigatório em toda análise de discurso)
+
+1. O que foi dito literalmente? O que o comportamento sugere?
+2. Quem perderia voto/dinheiro se isso fosse dito diretamente? (incentivo para falar indireto)
+3. Quais leituras cada público faz? Existe saída de "não foi isso que eu quis dizer"?
+4. Do que a pessoa **nunca** fala mal, e quem ela sempre defende?
+5. O benefício anunciado chega antes da eleição e a conta depois?
+6. Aplicar as mesmas 5 perguntas ao adversário antes de publicar.
+
 ## Regra nº 2 — Mesma régua e sem amaciar
 
 - Nenhum "por outro lado", "mas", "embora", "contexto" sem número com fonte que o sustente.
