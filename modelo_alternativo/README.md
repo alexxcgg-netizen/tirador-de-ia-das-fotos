@@ -14,7 +14,7 @@ abaixo vêm de `resultados_alt.json`, rodado com o estado dos CSVs registrado em
 ```
 python modelo_alternativo/rodar_alt.py            # 500 mil simulações por variante (~70 s)
 python modelo_alternativo/rodar_alt.py --rapido   # versão curta para teste
-python -m pytest modelo_alternativo/tests         # 13 testes (~6 s)
+python -m pytest modelo_alternativo/tests         # 23 testes (13 do 1º turno + 10 do 2º; ~6 s)
 ```
 
 ## Método
@@ -329,6 +329,10 @@ Resumo das diferenças de método:
 | `modelo_alt.py` | dados, filtro de Kalman, MCMC, erros históricos, bootstrap, swing estadual, simulação e métricas |
 | `rodar_alt.py` | execução completa e geração de `resultados_alt.json` |
 | `resultados_alt.json` | metadados (tempo, hash dos dados), agregado, erros, cenários `neutro` e `historico`, sensibilidade, backtest, comparação |
+| `modelo_alt_2t.py` | 2º turno pós-1T: regressão 1T→2T por UF (2002–2022), resíduos LOO, bootstrap, variante com pesquisas corrigidas |
+| `rodar_alt_2t.py` | execução do 2º turno e geração de `resultados_alt_2t.json` (~9 s) |
+| `resultados_alt_2t.json` | coeficientes, resíduos LOO, cenário principal e variante com pesquisas (nacional e UFs), sensibilidade, backtest, comparação |
+| `tests/test_modelo_alt_2t.py` | testes do 2º turno: recuperação de coeficientes sintéticos, ausência de vazamento no LOO e no backtest, bootstrap, dados de 2026, sinal da correção das pesquisas, mistura |
 | `tests/test_modelo_alt.py` | testes: recuperação de parâmetros sintéticos no filtro e no MCMC, invariância à base, ausência de vazamento no backtest, simetria e preservação de variância do bootstrap, coerência das probabilidades |
 
 Tempo de execução (Python 3.11 / NumPy 2.4, 1 núcleo): **cerca de 70 s no total**.
@@ -344,3 +348,154 @@ Referências:
   for the US presidential election. *HDSR*.
 * Silverman, B. & Young, G. (1987). The bootstrap: to smooth or not to smooth?
   *Biometrika* 74(3).
+
+
+---
+
+# 2º turno a partir do resultado do 1º turno (atualizado em 5/10/2026)
+
+```
+python modelo_alternativo/rodar_alt_2t.py            # 500 mil simulações (~9 s)
+python -m pytest modelo_alternativo/tests            # inclui tests/test_modelo_alt_2t.py
+```
+
+Com o 1º turno apurado (99,94%; Flávio 47,03%, Lula 45,16%, demais 7,81% dos
+válidos), este modelo prevê o 2º turno (25/10) **sem usar pesquisas** no cenário
+principal. O simulador principal parte de pesquisas de 2º turno e de matrizes de
+transferência; aqui a pergunta é outra: *dado o mapa do 1º turno, o que a história
+de 2002–2022 diz sobre o 2º?* Se os dois concordam, o resultado não depende das
+pesquisas; se discordam, a diferença mostra quanto as pesquisas pesam.
+
+## Método
+
+**Regressão 1T → 2T por UF.** Para cada UF `i` e eleição `e` (2002, 2006, 2010,
+2014, 2018, 2022; 27 UFs; fonte TSE, `research_notes/.../resultados_uf_2002_2022.csv`):
+
+```
+logit(y_ie) = b0 + b1·logit(x_ie) + b2·t_ie + r_ie
+y = fatia do PT entre os dois no 2º turno
+x = PT / (PT + principal oponente) no 1º turno
+t = 1 − PT − oponente   (agregado dos demais no 1º turno)
+```
+
+PT, oponente e terceiros entram juntos (somam 1). Mínimos quadrados ponderados por
+√(votos válidos). Coeficientes com as seis eleições: `b0 = 0,173`, `b1 = 0,794`,
+`b2 = −0,771`. Em palavras: o 2º turno puxa as UFs em direção a 50% (`b1 < 1`), e um
+1º turno com mais votos fora dos dois primeiros historicamente prejudicou o PT no
+2º turno.
+
+**Incerteza (leave-one-election-out).** Cada eleição é prevista por um ajuste
+estimado sem ela. O resíduo `r_ie` é dividido em um efeito nacional `d_e` (média
+ponderada pelos votos do 2º turno) e um vetor estadual `u_ie`. Na simulação:
+
+* `d` é sorteado de uma eleição e o vetor `u` inteiro de outra, preservando a
+  correlação entre UFs;
+* os dois passam por bootstrap suavizado (Silverman), com a variância reescalada
+  para a amostral (ddof = 1), porque são só seis eleições.
+
+Erros nacionais LOO, em p.p.: 2002 +2,8; 2006 −7,9; 2010 +2,1; 2014 +3,3;
+2018 −7,4; 2022 +6,1.
+
+**Nacional.** Soma das UFs (e do exterior) ponderada pelos votos válidos esperados
+no 2º turno: votos válidos do 1º turno de 2026 (JSON do TSE) × razão histórica
+2T/1T da UF (2006–2022), com ruído log-normal no desvio histórico da razão.
+
+**500 mil simulações.**
+
+## Resultado
+
+| Cenário | Lula (média) | Intervalo de 80% | Intervalo de 95% | P(Lula) |
+|---|---|---|---|---|
+| **Principal: regressão 1T→2T** | **52,1** (mediana 51,2) | **44,5 – 61,0** | 41,5 – 64,3 | **58%** |
+| Variante: só pesquisas corrigidas | 47,6 | 45,1 – 50,2 | 43,7 – 51,6 | 12% |
+| Variante: regressão + pesquisas (peso 0,91 nas pesquisas) | 48,0 | 45,7 – 50,8 | 44,8 – 51,8 | 19% |
+| Ingênuo (2T = fatia de Lula entre os dois no 1T) | 49,0 | — | — | — |
+| Simulador principal (5/10, em recalibração) | 47,3 | — | — | 15% |
+
+Por que a regressão dá mais a Lula do que o 1º turno (49,0)? Em 2026 os terceiros
+somaram só 7,8%. Na história, o PT perdeu terreno no 2º turno sobretudo quando os
+terceiros eram grandes: 2002, 2010 e 2014, com 20–30%. Já 2006, com 10% de
+terceiros, deu +7 ao PT. Com `t` pequeno, a regressão aplica quase inteiro o
+intercepto positivo, e esse intercepto se apoia muito em 2006. Essa leitura vem de **seis eleições**, e a
+especificação muda o centro:
+
+| Especificação | Lula (média) | P(Lula) | RMSE nacional LOO 2006–22 |
+|---|---|---|---|
+| principal (`logit x`, `t`) | 52,1 | 0,58 | 5,9 |
+| com interação `t·logit x` | 50,9 | 0,51 | 5,9 |
+| só `logit x` | 49,8 | 0,44 | 5,0 |
+
+A conclusão robusta é **"perto de 50%, com dp de cerca de 6 p.p."**, e não 52.
+
+**Variante com pesquisas (separada do principal).** Para cada instituto, a última
+pesquisa de 2º turno feita antes do 1º turno é corrigida pelo próprio erro de margem
+do instituto no 1º turno de 2026 (`avaliacao_1t.json`). A correção, em fatia
+bipartidária, é `erro_margem / (2 · 0,922)`. Média simples de 14 institutos: bruta
+50,0 → **corrigida 47,6**. Os corrigidos vão de 45,9 (Indexa) a 48,6 (Futura).
+
+O mesmo procedimento foi testado em 2018 e 2022, os únicos anos com pesquisas de
+2º turno antes do 1º turno:
+
+| Ano | Erro da média bruta | Erro da média corrigida |
+|---|---|---|
+| 2018 | +4,2 | +0,7 |
+| 2022 | +4,8 | +2,8 |
+
+A correção tira a maior parte do viés, mas, nos dois anos, ainda sobrou PT
+superestimado. O dp das pesquisas é o RMSE desses dois anos (2,0 p.p., que também é
+o piso). A mistura usa inverso da variância: a regressão, com dp de 6, recebe peso
+de só 0,09. As UFs da mistura são a regressão deslocada em logit até o nacional
+misturado (aproximação).
+
+UFs mais disputadas no cenário principal, P(Lula vence): MG 58%, RJ 54%, TO 48%,
+DF 43%, SP 30%. Na mistura: AM 48%, PA 41%, AP 39%, MG 27%, RJ 26%. Número esperado
+de UFs com Lula à frente: 14,6 no principal e 11,6 na mistura.
+
+## Backtest (LOO por eleição; nunca usa o ano-alvo nem nos coeficientes nem no pool de erros)
+
+| Ano | Previsto | Real | Erro | MAE UF | Nacional no IC 80%? | Cobertura UF 80% |
+|---|---|---|---|---|---|---|
+| 2006 | 53,0 | 60,8 | −7,8 | 8,1 | não (PIT 0,91) | 33% |
+| 2010 | 58,1 | 56,1 | +2,1 | 2,9 | sim | 100% |
+| 2014 | 55,2 | 51,7 | +3,5 | 3,8 | sim | 96% |
+| 2018 | 37,3 | 44,9 | −7,6 | 6,2 | não (PIT 0,90) | 74% |
+| 2022 | 57,2 | 50,9 | +6,3 | 6,5 | não (PIT 0,10) | 59% |
+| **2006–2022** | | | **RMSE 5,9; viés −0,7** | **5,5** | **2/5 no IC 80%; 5/5 no IC 95%** | **73% (95%: 95%)** |
+
+Em 2002–2022: RMSE nacional 5,5; MAE UF 5,3; 3/6 no IC 80%; 6/6 no IC 95%.
+
+O pool de erros do backtest é um LOO aninhado: o ano-alvo sai também do ajuste que
+gera os resíduos das outras eleições.
+
+**Leitura franca.** A regressão **não supera o ingênuo** "2T = fatia entre os dois
+no 1T", que tem RMSE de 4,7 p.p. em 2006–2022, contra 5,9 da regressão. A transição
+1T→2T no Brasil varia muito de uma eleição para outra:
+
+* em 2006 e 2018 o PT ganhou 6–7 p.p. sobre o 1º turno;
+* em 2002, 2014 e 2022 perdeu 2–5 p.p.
+
+Seis eleições não bastam para separar efeitos de incumbência, da ideologia dos
+terceiros e de mobilização. A cobertura nacional de 80% fica abaixo do nominal
+(2/5), e a de 95% acerta 5/5: a cauda é larga, mas o miolo é estreito demais.
+
+## Diferença em relação ao simulador principal
+
+* **Método.** O principal usa pesquisas de 2º turno, transferências (Quaest) e o viés
+  1T→2T medido em 2026. Este modelo, no cenário principal, usa só o mapa do 1º turno
+  e a história do TSE.
+* **Centro e incerteza.** Pela história, o resultado fica **perto de 50/50** (média
+  52, mediana 51; P(Lula) entre 44% e 58% conforme a especificação) e com incerteza
+  muito maior (dp ≈ 6 p.p.). O principal dá 47,3% e P = 15%.
+* **De onde vem a vantagem de Flávio.** Ela não está no mapa do 1º turno: Flávio
+  liderou por 1,9 p.p., e historicamente essa diferença se reverteu ou se ampliou
+  com a mesma frequência. A vantagem vem das **pesquisas de 2º turno**, que, mesmo
+  corrigidas pelo erro do 1º turno, apontam 47,6.
+* **Quando se juntam as pesquisas**, o alternativo converge para o principal (48,0;
+  P = 19%). Quem decide o resultado é a confiança nas pesquisas de 2º turno
+  corrigidas.
+* **Ressalva sobre os terceiros.** Em 2026 os terceiros (Cury, Renan, Caiado, Zema)
+  são de centro-direita. Na série histórica, os terceiros relevantes eram de
+  centro-esquerda (Ciro, Marina, Heloísa Helena, Tebet). A regressão não enxerga
+  ideologia, o que provavelmente favorece Lula no cenário principal. As matrizes da
+  Quaest (cerca de 2:1 para Flávio entre eleitores dos terceiros) vão no sentido
+  oposto.

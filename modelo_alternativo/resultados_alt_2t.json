@@ -1,0 +1,763 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-05 01:53:23",
+  "n_simulacoes": 500000,
+  "tempo_s": 8.5,
+  "dados": {
+   "research_notes/Briefing eleição 2026 complemento/resultados_uf_2002_2022.csv": "c3768248b2313efd",
+   "simulador/data/avaliacao_1t.json": "4efce99b7ed270ff",
+   "simulador/data/pesquisas_nacionais.csv": "47bc8852c3e7bf16",
+   "simulador/data/backtest_pesquisas_nacionais.csv": "fd56a9905a63fa76"
+  },
+  "apuracao_1t_pct": 99.94,
+  "metodo": "logit(y)=b0+b1*logit(x)+b2*t por UF, 2002-2022, MQP sqrt(votos); incerteza: resíduos LOO por eleição (efeito nacional + vetor estadual), bootstrap suavizado; nacional ponderado por votos válidos esperados no 2T"
+ },
+ "entrada_1t_2026": {
+  "lula_validos": 45.158,
+  "flavio_validos": 47.032,
+  "terceiros_validos": 7.81,
+  "lula_2p_1t": 48.98
+ },
+ "coeficientes": {
+  "b0": 0.1727,
+  "b1_logit_x": 0.7938,
+  "b2_terceiros": -0.7708
+ },
+ "residuos_loo_nacionais_pp": {
+  "2002": 2.75,
+  "2006": -7.89,
+  "2010": 2.14,
+  "2014": 3.34,
+  "2018": -7.44,
+  "2022": 6.14
+ },
+ "principal_regressao": {
+  "nacional": {
+   "media": 52.1,
+   "mediana": 51.24,
+   "p10": 44.49,
+   "p90": 60.99,
+   "p2_5": 41.54,
+   "p97_5": 64.25,
+   "dp": 6.24
+  },
+  "p_lula": 0.5765,
+  "p_margem_menor_2pp": 0.1288,
+  "ufs_lula_esperadas": 14.59,
+  "ufs": {
+   "AC": {
+    "media": 32.7,
+    "p10": 24.8,
+    "p90": 41.9,
+    "p_lula": 0.004
+   },
+   "AL": {
+    "media": 58.5,
+    "p10": 50.3,
+    "p90": 67.6,
+    "p_lula": 0.91
+   },
+   "AM": {
+    "media": 53.7,
+    "p10": 44.2,
+    "p90": 63.8,
+    "p_lula": 0.667
+   },
+   "AP": {
+    "media": 53.3,
+    "p10": 45.0,
+    "p90": 62.8,
+    "p_lula": 0.646
+   },
+   "BA": {
+    "media": 69.0,
+    "p10": 60.4,
+    "p90": 77.7,
+    "p_lula": 0.999
+   },
+   "CE": {
+    "media": 70.8,
+    "p10": 61.8,
+    "p90": 79.6,
+    "p_lula": 0.999
+   },
+   "DF": {
+    "media": 48.9,
+    "p10": 38.7,
+    "p90": 59.7,
+    "p_lula": 0.428
+   },
+   "ES": {
+    "media": 45.5,
+    "p10": 37.2,
+    "p90": 55.1,
+    "p_lula": 0.268
+   },
+   "GO": {
+    "media": 41.1,
+    "p10": 33.0,
+    "p90": 50.6,
+    "p_lula": 0.117
+   },
+   "MA": {
+    "media": 66.8,
+    "p10": 56.2,
+    "p90": 76.9,
+    "p_lula": 0.978
+   },
+   "MG": {
+    "media": 52.1,
+    "p10": 43.6,
+    "p90": 61.8,
+    "p_lula": 0.579
+   },
+   "MS": {
+    "media": 40.6,
+    "p10": 32.4,
+    "p90": 50.2,
+    "p_lula": 0.106
+   },
+   "MT": {
+    "media": 36.2,
+    "p10": 28.1,
+    "p90": 45.7,
+    "p_lula": 0.026
+   },
+   "PA": {
+    "media": 53.4,
+    "p10": 45.0,
+    "p90": 63.0,
+    "p_lula": 0.654
+   },
+   "PB": {
+    "media": 66.1,
+    "p10": 58.6,
+    "p90": 74.4,
+    "p_lula": 0.999
+   },
+   "PE": {
+    "media": 66.3,
+    "p10": 55.8,
+    "p90": 76.2,
+    "p_lula": 0.969
+   },
+   "PI": {
+    "media": 73.9,
+    "p10": 66.2,
+    "p90": 81.5,
+    "p_lula": 1.0
+   },
+   "PR": {
+    "media": 38.5,
+    "p10": 30.8,
+    "p90": 47.7,
+    "p_lula": 0.047
+   },
+   "RJ": {
+    "media": 51.2,
+    "p10": 41.8,
+    "p90": 61.4,
+    "p_lula": 0.535
+   },
+   "RN": {
+    "media": 64.4,
+    "p10": 56.7,
+    "p90": 73.0,
+    "p_lula": 0.996
+   },
+   "RO": {
+    "media": 31.6,
+    "p10": 24.1,
+    "p90": 40.6,
+    "p_lula": 0.002
+   },
+   "RR": {
+    "media": 28.8,
+    "p10": 22.0,
+    "p90": 37.2,
+    "p_lula": 0.0
+   },
+   "RS": {
+    "media": 42.4,
+    "p10": 34.2,
+    "p90": 52.0,
+    "p_lula": 0.159
+   },
+   "SC": {
+    "media": 31.8,
+    "p10": 24.8,
+    "p90": 40.4,
+    "p_lula": 0.001
+   },
+   "SE": {
+    "media": 66.7,
+    "p10": 58.6,
+    "p90": 75.3,
+    "p_lula": 0.998
+   },
+   "SP": {
+    "media": 46.3,
+    "p10": 37.9,
+    "p90": 56.1,
+    "p_lula": 0.301
+   },
+   "TO": {
+    "media": 50.2,
+    "p10": 40.9,
+    "p90": 60.4,
+    "p_lula": 0.481
+   },
+   "ZZ": {
+    "media": 54.4,
+    "p10": 46.4,
+    "p90": 63.6,
+    "p_lula": 0.714
+   }
+  }
+ },
+ "variante_pesquisas": {
+  "descricao": "Média simples da última pesquisa de 2T (antes do 1T) de cada instituto, corrigida pelo erro de margem do próprio instituto no 1T de 2026; dp = RMSE do mesmo procedimento em 2018/2022 (piso 2 p.p.); combinada com a regressão por inverso da variância",
+  "institutos": [
+   {
+    "instituto": "Nexus",
+    "campo_fim": "2026-09-27",
+    "lula_2p_bruto": 51.11,
+    "erro_margem_1t": 7.495,
+    "lula_2p_corrigido": 47.05
+   },
+   {
+    "instituto": "Ideia",
+    "campo_fim": "2026-09-28",
+    "lula_2p_bruto": 50.26,
+    "erro_margem_1t": 3.155,
+    "lula_2p_corrigido": 48.55
+   },
+   {
+    "instituto": "Indexa",
+    "campo_fim": "2026-09-29",
+    "lula_2p_bruto": 50.59,
+    "erro_margem_1t": 8.715,
+    "lula_2p_corrigido": 45.86
+   },
+   {
+    "instituto": "Real Time Big Data",
+    "campo_fim": "2026-09-30",
+    "lula_2p_bruto": 49.45,
+    "erro_margem_1t": 6.125,
+    "lula_2p_corrigido": 46.13
+   },
+   {
+    "instituto": "Vox Brasil",
+    "campo_fim": "2026-10-01",
+    "lula_2p_bruto": 48.39,
+    "erro_margem_1t": 0.985,
+    "lula_2p_corrigido": 47.86
+   },
+   {
+    "instituto": "IFP",
+    "campo_fim": "2026-10-02",
+    "lula_2p_bruto": 50.48,
+    "erro_margem_1t": 5.265,
+    "lula_2p_corrigido": 47.62
+   },
+   {
+    "instituto": "Gerp",
+    "campo_fim": "2026-10-02",
+    "lula_2p_bruto": 47.31,
+    "erro_margem_1t": -0.275,
+    "lula_2p_corrigido": 47.46
+   },
+   {
+    "instituto": "AtlasIntel",
+    "campo_fim": "2026-10-02",
+    "lula_2p_bruto": 50.1,
+    "erro_margem_1t": 4.765,
+    "lula_2p_corrigido": 47.52
+   },
+   {
+    "instituto": "CNT/MDA",
+    "campo_fim": "2026-10-02",
+    "lula_2p_bruto": 52.32,
+    "erro_margem_1t": 7.525,
+    "lula_2p_corrigido": 48.24
+   },
+   {
+    "instituto": "PoderData",
+    "campo_fim": "2026-10-02",
+    "lula_2p_bruto": 50.0,
+    "erro_margem_1t": 2.935,
+    "lula_2p_corrigido": 48.41
+   },
+   {
+    "instituto": "Quaest",
+    "campo_fim": "2026-10-03",
+    "lula_2p_bruto": 48.84,
+    "erro_margem_1t": 4.175,
+    "lula_2p_corrigido": 46.57
+   },
+   {
+    "instituto": "Datafolha",
+    "campo_fim": "2026-10-03",
+    "lula_2p_bruto": 50.54,
+    "erro_margem_1t": 4.045,
+    "lula_2p_corrigido": 48.34
+   },
+   {
+    "instituto": "Palver",
+    "campo_fim": "2026-10-03",
+    "lula_2p_bruto": 47.31,
+    "erro_margem_1t": -2.165,
+    "lula_2p_corrigido": 48.49
+   },
+   {
+    "instituto": "Futura",
+    "campo_fim": "2026-10-03",
+    "lula_2p_bruto": 48.44,
+    "erro_margem_1t": -0.235,
+    "lula_2p_corrigido": 48.57
+   }
+  ],
+  "media_corrigida": 47.62,
+  "media_bruta": 49.65,
+  "dp_pesquisas": 2.01,
+  "backtest_hist": [
+   {
+    "ano": 2018,
+    "n_institutos": 11,
+    "erro_bruto": 4.19,
+    "erro_corrigido": 0.69,
+    "dp_entre_institutos": 2.58
+   },
+   {
+    "ano": 2022,
+    "n_institutos": 12,
+    "erro_bruto": 4.79,
+    "erro_corrigido": 2.76,
+    "dp_entre_institutos": 0.54
+   }
+  ],
+  "so_pesquisas": {
+   "nacional": {
+    "media": 47.62,
+    "mediana": 47.62,
+    "p10": 45.05,
+    "p90": 50.2,
+    "p2_5": 43.68,
+    "p97_5": 51.56,
+    "dp": 2.01
+   },
+   "p_lula": 0.1184
+  },
+  "peso_pesquisas": 0.906,
+  "mistura": {
+   "nacional": {
+    "media": 48.04,
+    "mediana": 47.78,
+    "p10": 45.71,
+    "p90": 50.77,
+    "p2_5": 44.8,
+    "p97_5": 51.77,
+    "dp": 1.91
+   },
+   "p_lula": 0.1912,
+   "p_margem_menor_2pp": 0.2383,
+   "ufs_lula_esperadas": 11.55,
+   "ufs": {
+    "AC": {
+     "media": 29.0,
+     "p10": 24.7,
+     "p90": 33.1,
+     "p_lula": 0.0
+    },
+    "AL": {
+     "media": 54.6,
+     "p10": 51.1,
+     "p90": 58.3,
+     "p_lula": 0.958
+    },
+    "AM": {
+     "media": 49.7,
+     "p10": 44.0,
+     "p90": 55.1,
+     "p_lula": 0.478
+    },
+    "AP": {
+     "media": 49.3,
+     "p10": 45.7,
+     "p90": 53.1,
+     "p_lula": 0.389
+    },
+    "BA": {
+     "media": 65.7,
+     "p10": 60.2,
+     "p90": 71.0,
+     "p_lula": 1.0
+    },
+    "CE": {
+     "media": 67.6,
+     "p10": 61.5,
+     "p90": 74.1,
+     "p_lula": 1.0
+    },
+    "DF": {
+     "media": 44.8,
+     "p10": 38.2,
+     "p90": 51.5,
+     "p_lula": 0.16
+    },
+    "ES": {
+     "media": 41.4,
+     "p10": 37.7,
+     "p90": 45.2,
+     "p_lula": 0.001
+    },
+    "GO": {
+     "media": 37.1,
+     "p10": 33.5,
+     "p90": 40.9,
+     "p_lula": 0.0
+    },
+    "MA": {
+     "media": 63.4,
+     "p10": 54.9,
+     "p90": 70.8,
+     "p_lula": 0.981
+    },
+    "MG": {
+     "media": 48.1,
+     "p10": 44.1,
+     "p90": 52.1,
+     "p_lula": 0.271
+    },
+    "MS": {
+     "media": 36.6,
+     "p10": 32.8,
+     "p90": 40.7,
+     "p_lula": 0.0
+    },
+    "MT": {
+     "media": 32.3,
+     "p10": 28.1,
+     "p90": 36.7,
+     "p_lula": 0.0
+    },
+    "PA": {
+     "media": 49.4,
+     "p10": 45.7,
+     "p90": 53.3,
+     "p_lula": 0.41
+    },
+    "PB": {
+     "media": 62.6,
+     "p10": 59.4,
+     "p90": 65.9,
+     "p_lula": 1.0
+    },
+    "PE": {
+     "media": 62.8,
+     "p10": 53.9,
+     "p90": 69.5,
+     "p_lula": 0.963
+    },
+    "PI": {
+     "media": 70.9,
+     "p10": 65.9,
+     "p90": 75.5,
+     "p_lula": 1.0
+    },
+    "PR": {
+     "media": 34.5,
+     "p10": 31.6,
+     "p90": 37.8,
+     "p_lula": 0.0
+    },
+    "RJ": {
+     "media": 47.2,
+     "p10": 41.8,
+     "p90": 52.7,
+     "p_lula": 0.255
+    },
+    "RN": {
+     "media": 60.8,
+     "p10": 57.4,
+     "p90": 64.4,
+     "p_lula": 1.0
+    },
+    "RO": {
+     "media": 28.0,
+     "p10": 24.2,
+     "p90": 31.9,
+     "p_lula": 0.0
+    },
+    "RR": {
+     "media": 25.3,
+     "p10": 22.4,
+     "p90": 28.6,
+     "p_lula": 0.0
+    },
+    "RS": {
+     "media": 38.4,
+     "p10": 34.7,
+     "p90": 42.3,
+     "p_lula": 0.0
+    },
+    "SC": {
+     "media": 28.2,
+     "p10": 25.5,
+     "p90": 31.1,
+     "p_lula": 0.0
+    },
+    "SE": {
+     "media": 63.2,
+     "p10": 58.7,
+     "p90": 67.7,
+     "p_lula": 1.0
+    },
+    "SP": {
+     "media": 42.2,
+     "p10": 38.4,
+     "p90": 46.2,
+     "p_lula": 0.004
+    },
+    "TO": {
+     "media": 46.1,
+     "p10": 40.8,
+     "p90": 51.2,
+     "p_lula": 0.169
+    },
+    "ZZ": {
+     "media": 50.4,
+     "p10": 47.5,
+     "p90": 53.6,
+     "p_lula": 0.509
+    }
+   }
+  }
+ },
+ "sensibilidade_especificacao": {
+  "principal": {
+   "lula_media": 52.1,
+   "p_lula": 0.576,
+   "backtest": {
+    "anos": [
+     2006,
+     2010,
+     2014,
+     2018,
+     2022
+    ],
+    "rmse_nacional": 5.91,
+    "mae_nacional": 5.45,
+    "vies_nacional": -0.71,
+    "mae_uf": 5.51,
+    "cobertura_nac_80": "2/5",
+    "cobertura_nac_95": "5/5",
+    "cobertura_uf_80": 0.726,
+    "cobertura_uf_95": 0.948,
+    "brier_vencedor": 0.036
+   }
+  },
+  "interacao": {
+   "lula_media": 50.92,
+   "p_lula": 0.51,
+   "backtest": {
+    "anos": [
+     2006,
+     2010,
+     2014,
+     2018,
+     2022
+    ],
+    "rmse_nacional": 5.86,
+    "mae_nacional": 5.46,
+    "vies_nacional": -0.62,
+    "mae_uf": 5.41,
+    "cobertura_nac_80": "4/5",
+    "cobertura_nac_95": "5/5",
+    "cobertura_uf_80": 0.756,
+    "cobertura_uf_95": 0.941,
+    "brier_vencedor": 0.027
+   }
+  },
+  "so_x": {
+   "lula_media": 49.84,
+   "p_lula": 0.435,
+   "backtest": {
+    "anos": [
+     2006,
+     2010,
+     2014,
+     2018,
+     2022
+    ],
+    "rmse_nacional": 5.03,
+    "mae_nacional": 4.53,
+    "vies_nacional": -0.78,
+    "mae_uf": 4.92,
+    "cobertura_nac_80": "4/5",
+    "cobertura_nac_95": "5/5",
+    "cobertura_uf_80": 0.793,
+    "cobertura_uf_95": 0.919,
+    "brier_vencedor": 0.046
+   }
+  }
+ },
+ "backtest": {
+  "por_ano": [
+   {
+    "ano": 2002,
+    "previsto": 64.03,
+    "real": 61.27,
+    "erro_nacional": 2.76,
+    "mae_uf": 3.94,
+    "pit_nacional": 0.394,
+    "nac_em_80": true,
+    "nac_em_95": true,
+    "cobertura_uf_80": 0.963,
+    "cobertura_uf_95": 1.0,
+    "acerto_vencedor_uf": 1.0,
+    "p_pt": 0.984,
+    "pt_venceu": true
+   },
+   {
+    "ano": 2006,
+    "previsto": 53.01,
+    "real": 60.83,
+    "erro_nacional": -7.83,
+    "mae_uf": 8.11,
+    "pit_nacional": 0.91,
+    "nac_em_80": false,
+    "nac_em_95": true,
+    "cobertura_uf_80": 0.333,
+    "cobertura_uf_95": 0.852,
+    "acerto_vencedor_uf": 0.852,
+    "p_pt": 0.727,
+    "pt_venceu": true
+   },
+   {
+    "ano": 2010,
+    "previsto": 58.14,
+    "real": 56.07,
+    "erro_nacional": 2.07,
+    "mae_uf": 2.91,
+    "pit_nacional": 0.424,
+    "nac_em_80": true,
+    "nac_em_95": true,
+    "cobertura_uf_80": 1.0,
+    "cobertura_uf_95": 1.0,
+    "acerto_vencedor_uf": 0.815,
+    "p_pt": 0.867,
+    "pt_venceu": true
+   },
+   {
+    "ano": 2014,
+    "previsto": 55.17,
+    "real": 51.68,
+    "erro_nacional": 3.49,
+    "mae_uf": 3.81,
+    "pit_nacional": 0.369,
+    "nac_em_80": true,
+    "nac_em_95": true,
+    "cobertura_uf_80": 0.963,
+    "cobertura_uf_95": 0.963,
+    "acerto_vencedor_uf": 0.926,
+    "p_pt": 0.715,
+    "pt_venceu": true
+   },
+   {
+    "ano": 2018,
+    "previsto": 37.33,
+    "real": 44.9,
+    "erro_nacional": -7.57,
+    "mae_uf": 6.24,
+    "pit_nacional": 0.904,
+    "nac_em_80": false,
+    "nac_em_95": true,
+    "cobertura_uf_80": 0.741,
+    "cobertura_uf_95": 0.963,
+    "acerto_vencedor_uf": 0.963,
+    "p_pt": 0.009,
+    "pt_venceu": false
+   },
+   {
+    "ano": 2022,
+    "previsto": 57.19,
+    "real": 50.9,
+    "erro_nacional": 6.29,
+    "mae_uf": 6.47,
+    "pit_nacional": 0.096,
+    "nac_em_80": false,
+    "nac_em_95": true,
+    "cobertura_uf_80": 0.593,
+    "cobertura_uf_95": 0.963,
+    "acerto_vencedor_uf": 0.815,
+    "p_pt": 0.936,
+    "pt_venceu": true
+   }
+  ],
+  "resumo_2006_2022": {
+   "anos": [
+    2006,
+    2010,
+    2014,
+    2018,
+    2022
+   ],
+   "rmse_nacional": 5.91,
+   "mae_nacional": 5.45,
+   "vies_nacional": -0.71,
+   "mae_uf": 5.51,
+   "cobertura_nac_80": "2/5",
+   "cobertura_nac_95": "5/5",
+   "cobertura_uf_80": 0.726,
+   "cobertura_uf_95": 0.948,
+   "brier_vencedor": 0.036
+  },
+  "resumo_2002_2022": {
+   "anos": [
+    2002,
+    2006,
+    2010,
+    2014,
+    2018,
+    2022
+   ],
+   "rmse_nacional": 5.51,
+   "mae_nacional": 5.0,
+   "vies_nacional": -0.13,
+   "mae_uf": 5.25,
+   "cobertura_nac_80": "3/6",
+   "cobertura_nac_95": "6/6",
+   "cobertura_uf_80": 0.765,
+   "cobertura_uf_95": 0.957,
+   "brier_vencedor": 0.03
+  },
+  "ingenuo_x_igual_y": {
+   "erro_por_ano": {
+    "2002": 5.42,
+    "2006": -6.96,
+    "2010": 2.93,
+    "2014": 3.72,
+    "2018": -5.99,
+    "2022": 1.95
+   },
+   "rmse_2006_2022": 4.7,
+   "previsao_2026": 48.98
+  }
+ },
+ "comparacao_modelo_principal": {
+  "principal": {
+   "lula_media": 47.3,
+   "p_lula": 0.15,
+   "fonte": "simulador principal, informado em 5/10/2026 (recalibração em curso)"
+  },
+  "alt_regressao": {
+   "lula_media": 52.1,
+   "p_lula": 0.5765
+  },
+  "alt_mistura": {
+   "lula_media": 48.04,
+   "p_lula": 0.1912
+  }
+ }
+}
