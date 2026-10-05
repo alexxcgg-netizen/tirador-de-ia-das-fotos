@@ -1,0 +1,134 @@
+[
+  {
+    "titulo": "Por que ir à urna para votar em branco?",
+    "texto": "O voto é obrigatório para alfabetizados de 18 a 69 anos. Quem falta e não justifica paga multa de R$ 3,51 por turno e fica sem quitação eleitoral: não tira passaporte, não toma posse em cargo público, não pega empréstimo em banco público e não renova matrícula em escola pública (Código Eleitoral, art. 7º). Votar em branco deixa a situação regular.",
+    "fonte_url": "https://www.tse.jus.br/legislacao/codigo-eleitoral/codigo-eleitoral-1/codigo-eleitoral-lei-nb0-4.737-de-15-de-julho-de-1965",
+    "data": "2026-09-22"
+  },
+  {
+    "titulo": "Multa baixa, burocracia alta",
+    "texto": "A multa vai de R$ 1,05 a R$ 3,51 (3% a 10% de uma base de R$ 35,13). O valor cobrado normalmente é R$ 3,51 e pode ser multiplicado por até 10 vezes ou dispensado, conforme a situação econômica do eleitor.",
+    "fonte_url": "https://www.tre-pr.jus.br/servicos-eleitorais/carta-de-servicos/servicos-cartorios-eleitorais/multa-eleitoral",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "Três faltas e o título é cancelado",
+    "texto": "Quem deixa de votar em 3 eleições consecutivas (cada turno conta como uma eleição), sem justificar nem pagar a multa, pode ter o título cancelado.",
+    "fonte_url": "https://www12.senado.leg.br/radio/1/noticia/2026/09/22/eleitor-que-faltar-a-votacao-deve-justificar-ausencia-para-evitar-punicoes",
+    "data": "2026-09-22"
+  },
+  {
+    "titulo": "Justificar no dia só fora da cidade",
+    "texto": "A justificativa pelo e-Título no dia da eleição usa geolocalização e só vale para quem está fora do município onde vota. Quem está na própria cidade precisa votar ou justificar depois, com documentos, até 3/12 (1º turno).",
+    "fonte_url": "https://agenciabrasil.ebc.com.br/politica/noticia/2026-10/eleicoes-2026-e-titulo-permite-justificar-ausencia-pelo-celular",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "Protesto ou erro?",
+    "texto": "Com dados do LAPOP 2010, Silva, Gimenes, Borba e Ribeiro (2014) associam o voto branco e nulo à desconfiança nas instituições, no processo eleitoral e na economia, e não à baixa sofisticação política. Jairo Nicolau mostrou que, na era do papel, boa parte do voto inválido era erro.",
+    "fonte_url": "https://www.teoriaepesquisa.ufscar.br/index.php/tp/article/download/396/267/763",
+    "data": "2014-12-01"
+  },
+  {
+    "titulo": "A urna eletrônica cortou o voto inválido pela metade",
+    "texto": "Para deputado federal, brancos e nulos caíram de 41,2% (1994, cédula de papel) para 20% (1998, com urna eletrônica em parte do país). No DF, onde todos votaram na urna eletrônica, a taxa foi de 31,8% para 6,8%.",
+    "fonte_url": "https://www.lac.ox.ac.uk/sites/default/files/lac/documents/media/nicolau26.pdf",
+    "data": "2002-02-01"
+  },
+  {
+    "titulo": "Voto obrigatório gera mais voto inválido",
+    "texto": "Estudos comparativos com 80 eleições em 18 democracias latino-americanas (Power e Garand, 2007) e uma meta-análise internacional (Kouba e Lysek, 2019) apontam o voto obrigatório como o fator mais consistente para explicar votos brancos e nulos.",
+    "fonte_url": "https://www.cambridge.org/core/journals/government-and-opposition/article/abs/what-affects-invalid-voting-a-review-and-metaanalysis/00EB9C6CA93CDA2F0C0B8223E20D7C17",
+    "data": "2019-10-01"
+  },
+  {
+    "titulo": "56% votariam mesmo sem obrigação",
+    "texto": "No Datafolha de 18–19/8/2026, 56% disseram que votariam mesmo se o voto fosse facultativo e 43% não votariam. Entre jovens de 16 a 24 anos, 48% votariam; entre eleitores com renda acima de 5 salários mínimos, 75%.",
+    "fonte_url": "https://www.cnnbrasil.com.br/politica/datafolha-56-dizem-que-votariam-em-2026-mesmo-se-nao-fosse-obrigatorio/",
+    "data": "2026-08-23"
+  },
+  {
+    "titulo": "Mito: nulo acima de 50% anula a eleição",
+    "texto": "Falso. Brancos e nulos não entram no cálculo, e só os votos válidos decidem. O art. 224 do Código Eleitoral trata da nulidade declarada pela Justiça (fraude, cassação), não do voto nulo escolhido na urna.",
+    "fonte_url": "https://www.tse.jus.br/comunicacao/noticias/2026/Setembro/faltam-17-dias-votos-nulos-e-brancos-nao-anulam-a-eleicao",
+    "data": "2026-09-17"
+  },
+  {
+    "titulo": "Mito: o branco vai para quem está ganhando",
+    "texto": "Falso. Até a Lei 9.504/1997, o branco contava como válido no quociente das eleições proporcionais, o que elevava a nota de corte e favorecia indiretamente os partidos maiores. Hoje ele é descartado como o nulo.",
+    "fonte_url": "https://www.tse.jus.br/servicos-eleitorais/glossario/termos/voto-em-branco",
+    "data": "1997-09-30"
+  },
+  {
+    "titulo": "Abstenção é a maior desde 1998",
+    "texto": "No 1º turno de 2026, 21,08% dos eleitores não votaram (33,2 milhões). Em 2022 foram 20,95%. Maior abstenção: MS (23,87%); menor: CE (15,52%).",
+    "fonte_url": "https://gazetadopovo.com.br/eleicoes/2026/abstencao-eleicoes-2026-primeiro-turno-historico",
+    "data": "2026-10-05"
+  },
+  {
+    "titulo": "Brancos e nulos perto da mínima histórica",
+    "texto": "Para presidente, em 2026, foram 1,84% de brancos e 2,93% de nulos (4,77% no total), pouco acima do recorde de baixa de 2022 (4,41%). Em 1998 a soma chegou a 18,7%.",
+    "fonte_url": "https://exame.com/brasil/eleicoes-2026-abstencoes-votos-em-branco-e-nulos-somam-391-milhoes-no-1o-turno/",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "158,7 milhões de eleitores",
+    "texto": "São 158.745.463 eleitores aptos em 2026, 2,29 milhões (+1,46%) a mais que em 2022: 83,8 milhões de mulheres e 74,8 milhões de homens.",
+    "fonte_url": "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/eleicoes-2026-em-numeros-158-7-milhoes-de-eleitores-estao-aptos-a-votar",
+    "data": "2026-10-01"
+  },
+  {
+    "titulo": "Quase 1 milhão votando fora do país",
+    "texto": "São 918.876 eleitores no exterior, em 186 cidades. Lisboa é o maior colégio fora do Brasil, com 78.833 eleitores. Lá, a abstenção estimada pelo consulado foi de cerca de 70%.",
+    "fonte_url": "https://www.cartacapital.com.br/politica/abstencao-chega-a-70-em-lisboa-maior-colegio-eleitoral-brasileiro-no-exterior/",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "Eleitorado envelhecendo",
+    "texto": "A faixa de 16 a 24 anos caiu de 12,5% do eleitorado (2010) para 8,6% (2026). Os eleitores com 60 anos ou mais já são 37,5 milhões.",
+    "fonte_url": "https://mais.opovo.com.br/reportagens-especiais/pauta-eleicoes-2026/2026/09/28/eleitorado-jovem-atinge-menor-nivel-historico-em-2026.html",
+    "data": "2026-09-28"
+  },
+  {
+    "titulo": "54 segundos na cabine",
+    "texto": "Pelos logs públicos das urnas, o tempo mediano para registrar os 6 votos foi de 54 s, e 87,9% dos eleitores foram liberados pela digital. A amostra cobre cerca de 42% das seções; o processamento é independente.",
+    "fonte_url": "https://logseleicoes.joaoraul.dev/",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "Fila longa, voto curto",
+    "texto": "Apesar dos 54 s na urna, houve filas de 30 min a 2 h em SP, RJ, BH, Fortaleza e Florianópolis. Os motivos apontados foram urnas com defeito, eleitores sem biometria, pico de comparecimento pela manhã e 6 votos por eleitor.",
+    "fonte_url": "https://www.otempo.com.br/eleicoes/2026/2026/10/4/filas-gigantes-e-horas-de-espera-marcam-votacao-em-sao-paulo-rio-de-janeiro-fortaleza-e-bh",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "133 milhões de teclas erradas",
+    "texto": "'Tecla indevida' foi o evento mais comum nos logs: 2,6 por eleitor. A Bahia teve a maior média (3,61). Os logs também registram 5.726 seções com urna reiniciada e 14.389 que funcionaram na bateria por falta de luz (amostra parcial).",
+    "fonte_url": "https://logseleicoes.joaoraul.dev/resumo.md",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "Auditoria sem divergência",
+    "texto": "Nos testes de integridade feitos no dia da eleição, as urnas sorteadas registraram exatamente os votos das cédulas de controle. 55 auditores do TCU acompanharam os testes. Até as 10h, 421 das cerca de 499 mil urnas (0,07%) tinham sido trocadas.",
+    "fonte_url": "https://timesbrasil.com.br/eleicoes-2026/decisao-2026-tse-registra-troca-de-421-urnas-e-auditoria-acompanha-testes-de-integridade-sem-ocorrencias/",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "A menor diferença desde 1989",
+    "texto": "Flávio Bolsonaro (47,18%) e Lula (44,98%) terminaram o 1º turno com a menor diferença entre os dois primeiros desde 1989 (parcial com 99,18% das seções apuradas). O recorde anterior era o de 2022: 5,23 pontos.",
+    "fonte_url": "https://acritica.net/nacional/lula-flavio-bolsonaro-segundo-turno-menor-diferenca-desde-1989/",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "Tabu: o líder do 1º turno sempre venceu",
+    "texto": "Nas 7 eleições presidenciais com 2º turno desde 1989, quem terminou o 1º turno na frente venceu a disputa. O 2º turno de 2026 é em 25 de outubro.",
+    "fonte_url": "https://www.infomoney.com.br/politica/tabu-de-37-anos-pode-cair-lider-do-1o-turno-nunca-perdeu-eleicao-presidencial/",
+    "data": "2026-10-04"
+  },
+  {
+    "titulo": "27 países obrigam a votar",
+    "texto": "Segundo a International IDEA, cerca de 27 de 203 países têm voto obrigatório, com fiscalização variável. O Brasil adotou o voto obrigatório em 1932; a Austrália, em 1924, com multa de AU$ 20 a 50.",
+    "fonte_url": "https://www.idea.int/data-tools/data/voter-turnout-database/compulsory-voting",
+    "data": "2026-10-01"
+  }
+]
