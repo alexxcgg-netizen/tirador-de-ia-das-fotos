@@ -1,0 +1,2246 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-05",
+  "titulo": "Nordeste: quem governou, o que mudou e o que os dados dizem (2002–2026)",
+  "origem": [
+   "research_notes/Nordeste e cenarios economicos 2026/nordeste_trajetoria_governos.md",
+   "research_notes/Nordeste e cenarios economicos 2026/nordeste_trajetoria_indicadores.csv"
+  ],
+  "grupos": {
+   "Nordeste PT atual": "BA, PI, CE, RN (governo do PT em 2026)",
+   "Outros NE": "MA, PB, PE, AL, SE (SE teve PT em 2007–2013; MA, PB, PE e AL nunca)",
+   "Brasil": "total nacional (homicídios: média das 5 regiões ponderada pela população do Censo 2022)",
+   "Espelho SP/PR/SC/GO/MT": "estados de comparação com a mesma régua; não são um 'grupo de direita' homogêneo nem placar contra o NE"
+  },
+  "correcao": "O PT também governou o Piauí em 2003–abr/2010 e Sergipe em 2007–dez/2013; a lista de estados do PT feita só com BA, PI (desde 2015), CE e RN está incompleta.",
+  "convencoes": "[fato] dado de fonte oficial; [cálculo próprio] conta feita a partir de dado com fonte; [estimativa] inferência com premissa explícita. Médias de grupo ponderadas pela população do Censo 2022 (IDEB: média simples).",
+  "avisos": [
+   "Não é veredito sobre partidos nem recomendação de voto: n = 9 estados, sem desenho causal.",
+   "A classificação de PSB/PCdoB/PDT como aliados de esquerda do PT é dos autores e é discutível; a coluna do PT é mostrada separada.",
+   "O placar depende da seleção de indicadores e do ano-base; as séries do arquivo são uma seleção de 8 indicadores do CSV."
+  ]
+ },
+ "partidos": [
+  {
+   "uf": "BA",
+   "anos_PT": 19.8,
+   "anos_aliados_esquerda": 0.0,
+   "anos_PT_mais_aliados": 19.8,
+   "anos_outros": 4.0,
+   "mandatos": [
+    {
+     "governador": "Paulo Souto",
+     "partido": "PFL",
+     "inicio": "01/01/2003",
+     "fim": "01/01/2007"
+    },
+    {
+     "governador": "Jaques Wagner",
+     "partido": "PT",
+     "inicio": "01/01/2007",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Rui Costa",
+     "partido": "PT",
+     "inicio": "01/01/2015",
+     "fim": "01/01/2023"
+    },
+    {
+     "governador": "Jerônimo Rodrigues",
+     "partido": "PT",
+     "inicio": "01/01/2023",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "PI",
+   "anos_PT": 19.0,
+   "anos_aliados_esquerda": 4.0,
+   "anos_PT_mais_aliados": 23.0,
+   "anos_outros": 0.7,
+   "mandatos": [
+    {
+     "governador": "Wellington Dias",
+     "partido": "PT",
+     "inicio": "01/01/2003",
+     "fim": "01/04/2010"
+    },
+    {
+     "governador": "Wilson Martins",
+     "partido": "PSB",
+     "inicio": "01/04/2010",
+     "fim": "04/04/2014"
+    },
+    {
+     "governador": "Zé Filho",
+     "partido": "PMDB",
+     "inicio": "04/04/2014",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Wellington Dias",
+     "partido": "PT",
+     "inicio": "01/01/2015",
+     "fim": "31/03/2022"
+    },
+    {
+     "governador": "Regina Sousa",
+     "partido": "PT",
+     "inicio": "31/03/2022",
+     "fim": "01/01/2023"
+    },
+    {
+     "governador": "Rafael Fonteles",
+     "partido": "PT",
+     "inicio": "01/01/2023",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "CE",
+   "anos_PT": 11.0,
+   "anos_aliados_esquerda": 8.8,
+   "anos_PT_mais_aliados": 19.8,
+   "anos_outros": 4.0,
+   "mandatos": [
+    {
+     "governador": "Lúcio Alcântara",
+     "partido": "PSDB",
+     "inicio": "01/01/2003",
+     "fim": "01/01/2007"
+    },
+    {
+     "governador": "Cid Gomes",
+     "partido": "PSB (PROS desde 2013)",
+     "inicio": "01/01/2007",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Camilo Santana",
+     "partido": "PT",
+     "inicio": "01/01/2015",
+     "fim": "02/04/2022"
+    },
+    {
+     "governador": "Izolda Cela",
+     "partido": "PDT",
+     "inicio": "02/04/2022",
+     "fim": "01/01/2023"
+    },
+    {
+     "governador": "Elmano de Freitas",
+     "partido": "PT",
+     "inicio": "01/01/2023",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "RN",
+   "anos_PT": 7.8,
+   "anos_aliados_esquerda": 8.0,
+   "anos_PT_mais_aliados": 15.8,
+   "anos_outros": 8.0,
+   "mandatos": [
+    {
+     "governador": "Wilma de Faria",
+     "partido": "PSB",
+     "inicio": "01/01/2003",
+     "fim": "31/03/2010"
+    },
+    {
+     "governador": "Iberê Ferreira de Souza",
+     "partido": "PSB",
+     "inicio": "31/03/2010",
+     "fim": "01/01/2011"
+    },
+    {
+     "governador": "Rosalba Ciarlini",
+     "partido": "DEM",
+     "inicio": "01/01/2011",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Robinson Faria",
+     "partido": "PSD",
+     "inicio": "01/01/2015",
+     "fim": "01/01/2019"
+    },
+    {
+     "governador": "Fátima Bezerra",
+     "partido": "PT",
+     "inicio": "01/01/2019",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "MA",
+   "anos_PT": 0.0,
+   "anos_aliados_esquerda": 14.1,
+   "anos_PT_mais_aliados": 14.1,
+   "anos_outros": 9.7,
+   "mandatos": [
+    {
+     "governador": "José Reinaldo Tavares",
+     "partido": "PFL (depois PTB/PSB)",
+     "inicio": "01/01/2003",
+     "fim": "01/01/2007"
+    },
+    {
+     "governador": "Jackson Lago",
+     "partido": "PDT",
+     "inicio": "01/01/2007",
+     "fim": "17/04/2009"
+    },
+    {
+     "governador": "Roseana Sarney",
+     "partido": "PMDB",
+     "inicio": "17/04/2009",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Flávio Dino",
+     "partido": "PCdoB (PSB desde 2021)",
+     "inicio": "01/01/2015",
+     "fim": "02/04/2022"
+    },
+    {
+     "governador": "Carlos Brandão",
+     "partido": "PSB",
+     "inicio": "02/04/2022",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "PB",
+   "anos_PT": 0.0,
+   "anos_aliados_esquerda": 15.2,
+   "anos_PT_mais_aliados": 15.2,
+   "anos_outros": 8.5,
+   "mandatos": [
+    {
+     "governador": "Cássio Cunha Lima",
+     "partido": "PSDB",
+     "inicio": "01/01/2003",
+     "fim": "17/02/2009"
+    },
+    {
+     "governador": "José Maranhão",
+     "partido": "PMDB",
+     "inicio": "18/02/2009",
+     "fim": "01/01/2011"
+    },
+    {
+     "governador": "Ricardo Coutinho",
+     "partido": "PSB",
+     "inicio": "01/01/2011",
+     "fim": "01/01/2019"
+    },
+    {
+     "governador": "João Azevêdo",
+     "partido": "PSB",
+     "inicio": "01/01/2019",
+     "fim": "02/04/2026"
+    },
+    {
+     "governador": "Lucas Ribeiro",
+     "partido": "PP",
+     "inicio": "02/04/2026",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "PE",
+   "anos_PT": 0.0,
+   "anos_aliados_esquerda": 16.0,
+   "anos_PT_mais_aliados": 16.0,
+   "anos_outros": 7.8,
+   "mandatos": [
+    {
+     "governador": "Jarbas Vasconcelos",
+     "partido": "PMDB",
+     "inicio": "01/01/2003",
+     "fim": "31/03/2006"
+    },
+    {
+     "governador": "Mendonça Filho",
+     "partido": "PFL",
+     "inicio": "31/03/2006",
+     "fim": "01/01/2007"
+    },
+    {
+     "governador": "Eduardo Campos",
+     "partido": "PSB",
+     "inicio": "01/01/2007",
+     "fim": "04/04/2014"
+    },
+    {
+     "governador": "João Lyra Neto",
+     "partido": "PSB",
+     "inicio": "04/04/2014",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Paulo Câmara",
+     "partido": "PSB",
+     "inicio": "01/01/2015",
+     "fim": "01/01/2023"
+    },
+    {
+     "governador": "Raquel Lyra",
+     "partido": "PSDB → PSD",
+     "inicio": "01/01/2023",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "AL",
+   "anos_PT": 0.0,
+   "anos_aliados_esquerda": 4.0,
+   "anos_PT_mais_aliados": 4.0,
+   "anos_outros": 19.8,
+   "mandatos": [
+    {
+     "governador": "Ronaldo Lessa",
+     "partido": "PSB",
+     "inicio": "01/01/2003",
+     "fim": "31/03/2006"
+    },
+    {
+     "governador": "Luís Abílio",
+     "partido": "PDT",
+     "inicio": "31/03/2006",
+     "fim": "01/01/2007"
+    },
+    {
+     "governador": "Teotônio Vilela Filho",
+     "partido": "PSDB",
+     "inicio": "01/01/2007",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Renan Filho",
+     "partido": "PMDB/MDB",
+     "inicio": "01/01/2015",
+     "fim": "02/04/2022"
+    },
+    {
+     "governador": "Klever Loureiro (interino, TJ)",
+     "partido": "sem partido",
+     "inicio": "02/04/2022",
+     "fim": "15/05/2022"
+    },
+    {
+     "governador": "Paulo Dantas",
+     "partido": "MDB",
+     "inicio": "15/05/2022",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "SE",
+   "anos_PT": 6.9,
+   "anos_aliados_esquerda": 0.0,
+   "anos_PT_mais_aliados": 6.9,
+   "anos_outros": 16.8,
+   "mandatos": [
+    {
+     "governador": "João Alves Filho",
+     "partido": "PFL",
+     "inicio": "01/01/2003",
+     "fim": "01/01/2007"
+    },
+    {
+     "governador": "Marcelo Déda",
+     "partido": "PT",
+     "inicio": "01/01/2007",
+     "fim": "02/12/2013"
+    },
+    {
+     "governador": "Jackson Barreto",
+     "partido": "PMDB",
+     "inicio": "02/12/2013",
+     "fim": "06/04/2018"
+    },
+    {
+     "governador": "Belivaldo Chagas",
+     "partido": "PSD",
+     "inicio": "06/04/2018",
+     "fim": "01/01/2023"
+    },
+    {
+     "governador": "Fábio Mitidieri",
+     "partido": "PSD",
+     "inicio": "01/01/2023",
+     "fim": "em exercício"
+    }
+   ]
+  }
+ ],
+ "numeros_usuario": [
+  {
+   "item": 1,
+   "descricao": "Escolaridade média do NE 8,8 anos",
+   "valor_citado": "Escolaridade média do NE 8,8 anos",
+   "valor_verificado": "PNAD Contínua 2024, pessoas de 25 anos ou mais: NE 8,8 (Brasil 10,1). Em 2025: NE 9,0 (Brasil 10,2). Para 15+: NE 9,2 (2024) e 9,3 (2025). Censo 2022 (11+): NE 8,5, Brasil 9,5. [fato]",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado (com definição)",
+   "fonte": "IBGE SIDRA 7126; SIDRA 10062",
+   "fonte_url": "https://sidra.ibge.gov.br/tabela/7126"
+  },
+  {
+   "item": 2,
+   "descricao": "Analfabetismo 11,3%",
+   "valor_citado": "Analfabetismo 11,3%",
+   "valor_verificado": "PNAD Contínua, 15+: NE 11,3% em 2023 (Brasil 5,4%); 11,1% em 2024; 10,6% em 2025 (Brasil 4,9%). O Censo 2022 dá 14,2% no NE (Brasil 7,0%) e a PNAD-C 2022 dá 11,8%: as duas fontes não são comparáveis entre si. [fato; Censo = 100 − taxa de alfabetização, cálculo próprio]",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado para 2023",
+   "fonte": "IBGE SIDRA 7113; SIDRA 9543",
+   "fonte_url": "https://sidra.ibge.gov.br/tabela/7113"
+  },
+  {
+   "item": 3,
+   "descricao": "IDH regional 0,762 e Maranhão 0,745",
+   "valor_citado": "IDH regional 0,762 e Maranhão 0,745",
+   "valor_verificado": "Radar IDHM 2024 (PNUD/FJP/IBGE, divulgado em 27/05/2026): NE 0,762 (era 0,729 em 2019), MA 0,745 (último do ranking, mas entrou na faixa \"alto\"), Brasil 0,805 (0,744 em 2012). PI 0,764, RN 0,778, PB 0,760, AL 0,746. [fato; fonte secundária para os valores por UF, a página do PNUD bloqueou o acesso automático]",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado",
+   "fonte": "PNUD (via notícias); ver seção 9",
+   "fonte_url": "https://www.undp.org/pt/brazil/news/nordeste-lidera-maiores-avancos-estaduais-no-idhm-entre-2012-e-2024"
+  },
+  {
+   "item": 4,
+   "descricao": "Coleta de esgoto ~30%",
+   "valor_citado": "Coleta de esgoto ~30%",
+   "valor_verificado": "SINISA, ano-base 2024, via Trata Brasil: NE 31,7% da população com coleta e 34,6% do esgoto tratado (Brasil: tratamento de 51,8%; Sudeste 80,8%, Centro-Oeste 64,2%, Sul 49,6%, Norte 16,6%). Atenção à definição: a coleta por rede exclui fossa séptica. No Censo 2022, 40,2% dos domicílios do NE tinham rede geral ou pluvial (Brasil 60,4%); somando fossa séptica (ligada ou não à rede), 59,5% no NE contra 77,4% no Brasil. [fato / cálculo próprio]",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado (31,7%)",
+   "fonte": "Trata Brasil (Painel Saneamento Brasil, SINISA 2024); IBGE SIDRA 6805",
+   "fonte_url": "https://tratabrasil.org.br/90-milhoes-brasileiros-nao-tem-coleta-esgoto/"
+  },
+  {
+   "item": 5,
+   "descricao": "NE = 14,2% do PIB",
+   "valor_citado": "NE = 14,2% do PIB",
+   "valor_verificado": "Contas Regionais: 14,18% em 2019 e 2020 (recorde de 14,48% em 2017); 13,83% em 2023, o dado mais recente. [cálculo próprio sobre dado oficial]",
+   "veredito": "diferente",
+   "veredito_na_nota": "diferente (dado datado)",
+   "fonte": "IBGE SIDRA 5938",
+   "fonte_url": "https://sidra.ibge.gov.br/tabela/5938"
+  },
+  {
+   "item": 6,
+   "descricao": "PIB per capita R$ 27.681,97 (51,4% do nacional)",
+   "valor_citado": "PIB per capita R$ 27.681,97 (51,4% do nacional)",
+   "valor_verificado": "Contas Regionais 2023: PIB do NE R$ 1.513,06 bi ÷ 54.658.515 hab. (Censo 2022) = R$ 27.681,97; Brasil R$ 53.886,67; razão 51,4%. A razão é robusta; o valor em reais depende de usar a população contada no Censo 2022 (IBGE). Reproduzi o número ao centavo. [cálculo próprio; coincide com IBGE]",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado",
+   "fonte": "IBGE SIDRA 5938 e 4709",
+   "fonte_url": "https://sidra.ibge.gov.br/tabela/5938"
+  },
+  {
+   "item": 7,
+   "descricao": "Transferências = 42,7% da receita estadual",
+   "valor_citado": "Transferências = 42,7% da receita estadual",
+   "valor_verificado": "Siconfi/DCA, receita corrente bruta dos 9 governos estaduais: transferências correntes = 41,6% (2022), 41,3% (2023), 41,4% (2024) no agregado; 44,0% (2024) na média simples dos 9 estados; por estado, de 30,6% (BA, 2019) a 51,7% (MA, 2024; SE, 2022). Média das 27 UFs: 23,2% (2024). Não reproduzi 42,7%. Uma matéria da Fecomércio fala em \"quase 42%\", com dado de 2015. [cálculo próprio]",
+   "veredito": "diferente",
+   "veredito_na_nota": "diferente (ordem de grandeza confere)",
+   "fonte": "Tesouro/Siconfi API DCA Anexo I-C",
+   "fonte_url": "https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2023&no_anexo=DCA-Anexo%20I-C&id_ente=29"
+  },
+  {
+   "item": 8,
+   "descricao": "Transferências >90% nas receitas municipais",
+   "valor_citado": "Transferências >90% nas receitas municipais",
+   "valor_verificado": "Siconfi/DCA 2023, 1.789 municípios do NE: mediana de 92,1%; 63,8% dos municípios têm transferências correntes acima de 90% da receita corrente (Sul 14,9%; Sudeste 28,7%; Centro-Oeste 10,1%; Norte 55,3%; Brasil 37,6%). Por estado, de 35,9% (PE) a 77,0% (MA). \"Transferência\" aqui inclui FPM, FUNDEB, SUS e a cota de ICMS (que é imposto estadual compartilhado, não dinheiro federal). [cálculo próprio]",
+   "veredito": "parcial",
+   "veredito_na_nota": "diferente / parcial",
+   "fonte": "Tesouro/Siconfi API DCA Anexo I-C",
+   "fonte_url": "https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2023&no_anexo=DCA-Anexo%20I-C&id_ente=29"
+  },
+  {
+   "item": 9,
+   "descricao": "O NE recebe mais recursos federais do que envia",
+   "valor_citado": "O NE recebe mais recursos federais do que envia",
+   "valor_verificado": "(i) Arrecadação da Receita Federal por município do contribuinte, 2024: NE = 8,0% do total (população 26,9%; PIB 13,8%). (ii) FPE 2024: NE recebeu 51,5% (2003: 52,5%); FPM 35,4%. (iii) Bolsa Família: 46,5% das famílias beneficiárias (set/2026). (iv) Estudo FGV/IBRE (2023, dados de 2022), que regionaliza receita pela incidência e despesa federal (~90%, inclusive INSS): o gasto federal per capita é bem mais uniforme do que se diz; as regiões menos desenvolvidas (excluído o DF) respondem por 26% da receita federal e 42% da população, com gasto per capita próximo da média. Ou seja, o NE é beneficiário líquido principalmente porque arrecada pouco, não porque receba gasto per capita muito acima da média. [cálculo próprio + estudo]",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado no sentido; a magnitude depende do método",
+   "fonte": "RFB; Tesouro Transparente; MDS; FGV/IBRE",
+   "fonte_url": "https://observatorio-politica-fiscal.ibre.fgv.br/politica-economica/outros/federacao-em-perspectiva-um-balanco-de-custos-e-beneficios-por-uf"
+  },
+  {
+   "item": 10,
+   "descricao": "12 redações nota 1000 no Enem, 1 de escola pública",
+   "valor_citado": "12 redações nota 1000 no Enem, 1 de escola pública",
+   "valor_verificado": "Resultado divulgado em 13/01/2025: 12 redações nota mil no Brasil, 1 de escola pública (de Minas Gerais). 5 dos 12 no NE (AL, CE, MA, PE, RN), contra 25 no NE em 2023 (60 no país) [fonte secundária]. Em 2025, matérias falam em 10 notas mil, o menor número da história [fonte secundária]. É estatística de cauda, muito sensível ao rigor da correção; não mede a qualidade do ensino regional (para isso, IDEB, seção 3).",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado (Enem 2024)",
+   "fonte": "CartaCapital; Paraíba Total; Poder360 (via busca); Santa Portal",
+   "fonte_url": "https://www.cartacapital.com.br/educacao/enem-2024-registrou-12-redacoes-com-nota-mil-apenas-uma-na-rede-publica/"
+  }
+ ],
+ "trajetoria": [
+  {
+   "indicador": "Pobreza (abaixo de US$ 6,85/dia, PPC 2017)",
+   "id": "pobreza_685ppc",
+   "unidade": "% pessoas < US$6,85 PPC 2017/dia",
+   "fonte": "IBGE Síntese de Indicadores Sociais 2025, tab. 2.18 (PNAD Contínua) | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      55.4,
+      51.81,
+      49.51,
+      49.54,
+      52.8,
+      53.25,
+      52.44,
+      50.98,
+      46.71,
+      54.85,
+      49.93,
+      46.67,
+      37.9
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      57.67,
+      55.19,
+      52.35,
+      53.55,
+      55.59,
+      55.14,
+      55.19,
+      55.49,
+      51.56,
+      60.57,
+      52.71,
+      47.92,
+      41.18
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      34.73,
+      32.48,
+      30.88,
+      31.72,
+      33.75,
+      33.79,
+      33.44,
+      32.61,
+      31.06,
+      36.77,
+      31.65,
+      27.3,
+      23.11
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      20.11,
+      18.2,
+      17.34,
+      18.95,
+      20.07,
+      20.72,
+      20.28,
+      19.35,
+      20.36,
+      23.84,
+      19.42,
+      16.27,
+      13.44
+     ]
+    }
+   ]
+  },
+  {
+   "indicador": "Analfabetismo, 15 anos ou mais",
+   "id": "analfabetismo_15mais",
+   "unidade": "% (15+)",
+   "fonte": "IBGE PNAD Contínua anual (SIDRA 7113/7126) | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      13.54,
+      13.04,
+      12.66,
+      12.75,
+      11.46,
+      11.09,
+      10.97,
+      10.35
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      14.51,
+      14.64,
+      13.61,
+      13.39,
+      12.2,
+      11.54,
+      11.38,
+      10.94
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      6.7,
+      6.5,
+      6.3,
+      6.1,
+      5.6,
+      5.4,
+      5.3,
+      4.9
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      3.32,
+      3.16,
+      3.19,
+      3.01,
+      2.82,
+      2.72,
+      2.6,
+      2.31
+     ]
+    }
+   ]
+  },
+  {
+   "indicador": "PIB per capita relativo (Brasil = 100)",
+   "id": "pib_pc_pct_do_Brasil",
+   "unidade": "% do PIB pc do Brasil",
+   "fonte": "idem | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023
+     ],
+     "valores": [
+      47.38,
+      46.81,
+      47.39,
+      48.48,
+      48.77,
+      48.1,
+      47.37,
+      49.58,
+      49.31,
+      49.0,
+      48.91,
+      49.11,
+      50.61,
+      52.21,
+      52.82,
+      53.27,
+      54.31,
+      53.61,
+      53.95,
+      52.64,
+      53.45,
+      53.19
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023
+     ],
+     "valores": [
+      45.88,
+      44.88,
+      44.76,
+      45.09,
+      46.39,
+      45.11,
+      45.65,
+      46.88,
+      46.83,
+      46.66,
+      48.65,
+      48.63,
+      49.77,
+      49.73,
+      50.58,
+      51.44,
+      50.7,
+      50.47,
+      50.39,
+      49.03,
+      48.48,
+      49.23
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023
+     ],
+     "valores": [
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023
+     ],
+     "valores": [
+      136.14,
+      137.42,
+      134.35,
+      134.55,
+      133.21,
+      136.09,
+      135.01,
+      135.96,
+      133.9,
+      133.15,
+      132.66,
+      132.47,
+      132.5,
+      133.8,
+      134.88,
+      134.1,
+      131.05,
+      131.9,
+      132.8,
+      130.18,
+      129.97,
+      131.06
+     ]
+    }
+   ]
+  },
+  {
+   "indicador": "IDEB, anos iniciais",
+   "id": "ideb_anos_iniciais",
+   "unidade": "nota 0-10",
+   "fonte": "INEP/Ideb via Wikipedia pt (Lista de UFs por IDEB), transcrição em 05/10/2026; total de redes | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022; IDEB: média simples)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2005,
+      2007,
+      2009,
+      2011,
+      2013,
+      2015,
+      2017,
+      2019,
+      2021,
+      2023,
+      2025
+     ],
+     "valores": [
+      2.85,
+      3.52,
+      4.03,
+      4.4,
+      4.6,
+      5.08,
+      5.4,
+      5.65,
+      5.55,
+      5.78,
+      6.12
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2005,
+      2007,
+      2009,
+      2011,
+      2013,
+      2015,
+      2017,
+      2019,
+      2021,
+      2023,
+      2025
+     ],
+     "valores": [
+      2.92,
+      3.48,
+      3.88,
+      4.12,
+      4.36,
+      4.76,
+      5.04,
+      5.32,
+      5.32,
+      5.64,
+      6.0
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2005,
+      2007,
+      2009,
+      2011,
+      2013,
+      2015,
+      2017,
+      2019,
+      2021,
+      2023,
+      2025
+     ],
+     "valores": [
+      3.8,
+      4.2,
+      4.6,
+      5.0,
+      5.2,
+      5.5,
+      5.8,
+      5.9,
+      5.8,
+      6.0,
+      6.3
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2005,
+      2007,
+      2009,
+      2011,
+      2013,
+      2015,
+      2017,
+      2019,
+      2021,
+      2023,
+      2025
+     ],
+     "valores": [
+      4.28,
+      4.72,
+      5.18,
+      5.48,
+      5.8,
+      6.08,
+      6.32,
+      6.36,
+      6.12,
+      6.38,
+      6.62
+     ]
+    }
+   ]
+  },
+  {
+   "indicador": "Homicídios por 100 mil habitantes",
+   "id": "homicidios_100mil",
+   "unidade": "por 100 mil hab. (média das 5 regiões ponderada pela pop. Censo 2022)",
+   "fonte": "IPEA Atlas da Violência (dados-api série 20), agregação própria | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      11.16,
+      12.95,
+      14.0,
+      16.1,
+      16.24,
+      19.05,
+      21.07,
+      22.97,
+      27.43,
+      30.22,
+      33.38,
+      33.54,
+      39.53,
+      41.34,
+      43.76,
+      41.4,
+      44.47,
+      52.21,
+      46.62,
+      34.27,
+      42.94,
+      41.08,
+      38.21,
+      36.57,
+      34.68
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      27.97,
+      31.29,
+      31.19,
+      32.05,
+      30.17,
+      32.54,
+      35.43,
+      36.9,
+      37.79,
+      37.36,
+      37.36,
+      38.93,
+      38.35,
+      39.72,
+      41.88,
+      42.86,
+      45.12,
+      47.11,
+      38.84,
+      31.79,
+      35.84,
+      32.41,
+      32.03,
+      33.16,
+      32.18
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      25.92,
+      27.04,
+      27.72,
+      28.33,
+      26.62,
+      25.93,
+      26.48,
+      25.44,
+      26.5,
+      26.97,
+      27.24,
+      26.94,
+      28.88,
+      28.81,
+      30.12,
+      29.2,
+      30.67,
+      31.95,
+      28.04,
+      21.87,
+      23.82,
+      22.74,
+      21.97,
+      21.57,
+      20.01
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+     ],
+     "valores": [
+      32.06,
+      32.53,
+      31.03,
+      30.39,
+      26.52,
+      22.75,
+      22.04,
+      18.93,
+      19.86,
+      20.63,
+      19.62,
+      19.35,
+      21.22,
+      19.84,
+      20.24,
+      18.93,
+      18.25,
+      17.13,
+      14.55,
+      12.64,
+      12.79,
+      11.74,
+      12.17,
+      11.25,
+      10.82
+     ]
+    }
+   ]
+  },
+  {
+   "indicador": "Informalidade (% dos ocupados)",
+   "id": "informalidade",
+   "unidade": "% ocupados",
+   "fonte": "IBGE PNAD Contínua anual (SIDRA 4708) | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      54.21,
+      54.63,
+      54.74,
+      54.57,
+      49.84,
+      53.41,
+      53.0,
+      52.92,
+      52.35,
+      50.7
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      52.11,
+      53.03,
+      52.24,
+      53.71,
+      50.07,
+      53.17,
+      52.84,
+      51.42,
+      50.88,
+      50.92
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      39.1,
+      40.6,
+      40.9,
+      41.0,
+      37.7,
+      39.6,
+      39.5,
+      39.2,
+      39.0,
+      38.1
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      30.31,
+      32.59,
+      33.5,
+      32.56,
+      30.22,
+      31.51,
+      31.41,
+      31.88,
+      31.4,
+      30.06
+     ]
+    }
+   ]
+  },
+  {
+   "indicador": "Esgoto por rede geral ou pluvial (Censo)",
+   "id": "esgoto_rede_geral_censo",
+   "unidade": "% dos domicílios (rede geral/pluvial)",
+   "fonte": "IBGE Censo 2000/2010/2022 (SIDRA 1437/3154/6805) | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2000,
+      2010,
+      2022
+     ],
+     "valores": [
+      25.22,
+      35.11,
+      41.52
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2000,
+      2010,
+      2022
+     ],
+     "valores": [
+      23.73,
+      31.31,
+      37.32
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2000,
+      2010,
+      2022
+     ],
+     "valores": [
+      47.24,
+      55.45,
+      60.43
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2000,
+      2010,
+      2022
+     ],
+     "valores": [
+      60.38,
+      67.52,
+      74.54
+     ]
+    }
+   ]
+  },
+  {
+   "indicador": "Renda domiciliar per capita real",
+   "id": "renda_dom_pc_real_2025",
+   "unidade": "R$/mês (preços de 2025)",
+   "fonte": "IBGE PNAD Contínua anual (SIDRA 7395) | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      1141.01,
+      1204.29,
+      1229.83,
+      1257.1,
+      1123.96,
+      1234.6,
+      1308.32,
+      1387.87,
+      1504.83
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      1073.22,
+      1107.39,
+      1117.43,
+      1123.97,
+      1010.37,
+      1190.24,
+      1227.98,
+      1393.04,
+      1456.21
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      1781.0,
+      1840.0,
+      1890.0,
+      1924.0,
+      1729.0,
+      1953.0,
+      2039.0,
+      2157.0,
+      2280.0
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "valores": [
+      2278.9,
+      2331.31,
+      2401.93,
+      2416.64,
+      2133.28,
+      2403.62,
+      2535.95,
+      2684.71,
+      2796.07
+     ]
+    }
+   ]
+  }
+ ],
+ "comparacao_pt": [
+  {
+   "indicador": "PIB pc, % da média do Brasil (2002-2023)",
+   "resultado": "sem coeficiente significativo (1,9 (1,8)); Δ médio 5,8 nos estados atuais do PT contra 3,4 nos outros NE",
+   "nota": "Correlação de postos com anos de PT 0,10 [0,79]; com PT + PSB/PCdoB/PDT 0,29 [0,44]; com o nível inicial -0,82.",
+   "delta_pt_atual": 5.8,
+   "delta_outros_ne": 3.4,
+   "coef_10_anos_pt": 1.9,
+   "erro_padrao": 1.8,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Pobreza < US$ 6,85 (p.p.) (2012-2024)",
+   "resultado": "sem coeficiente significativo (-1,1 (1,1)); Δ médio -17,5 nos estados atuais do PT contra -16,5 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,15 [0,70]; com PT + PSB/PCdoB/PDT 0,13 [0,73]; com o nível inicial -0,43.",
+   "delta_pt_atual": -17.5,
+   "delta_outros_ne": -16.5,
+   "coef_10_anos_pt": -1.1,
+   "erro_padrao": 1.1,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Analfabetismo 15+ (p.p.) (2016-2025)",
+   "resultado": "sem coeficiente significativo (0,3 (0,4)); Δ médio -3,2 nos estados atuais do PT contra -3,6 nos outros NE",
+   "nota": "Correlação de postos com anos de PT 0,49 [0,18]; com PT + PSB/PCdoB/PDT 0,75 [0,02]; com o nível inicial -0,65. Exceção formal: com anos de esquerda ampla a correlação é significativa a 5% (+0,75, p = 0,02), no sentido de MENOS queda do analfabetismo onde houve mais anos de esquerda; em 30 testes é compatível com acaso.",
+   "delta_pt_atual": -3.2,
+   "delta_outros_ne": -3.6,
+   "coef_10_anos_pt": 0.3,
+   "erro_padrao": 0.4,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Anos de estudo 25+ (2016-2025)",
+   "resultado": "sem coeficiente significativo (-0,03 (0,08)); Δ médio 1,23 nos estados atuais do PT contra 1,34 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,14 [0,73]; com PT + PSB/PCdoB/PDT -0,06 [0,88]; com o nível inicial -0,66.",
+   "delta_pt_atual": 1.23,
+   "delta_outros_ne": 1.34,
+   "coef_10_anos_pt": -0.03,
+   "erro_padrao": 0.08,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Informalidade (p.p.) (2016-2025)",
+   "resultado": "sem coeficiente significativo (-1,6 (1,4)); Δ médio -3,5 nos estados atuais do PT contra -1,2 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,50 [0,17]; com PT + PSB/PCdoB/PDT -0,41 [0,27]; com o nível inicial -0,56.",
+   "delta_pt_atual": -3.5,
+   "delta_outros_ne": -1.2,
+   "coef_10_anos_pt": -1.6,
+   "erro_padrao": 1.4,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Esgoto por rede, Censo (p.p.) (2010-2022)",
+   "resultado": "sem coeficiente significativo (0,6 (1,0)); Δ médio 6,4 nos estados atuais do PT contra 6,0 nos outros NE",
+   "nota": "Correlação de postos com anos de PT 0,14 [0,72]; com PT + PSB/PCdoB/PDT -0,19 [0,62]; com o nível inicial 0,10.",
+   "delta_pt_atual": 6.4,
+   "delta_outros_ne": 6.0,
+   "coef_10_anos_pt": 0.6,
+   "erro_padrao": 1.0,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Homicídios por 100 mil (2002-2024)",
+   "resultado": "sem coeficiente significativo (1,5 (3,8)); Δ médio 20,7 nos estados atuais do PT contra 1,0 nos outros NE",
+   "nota": "Correlação de postos com anos de PT 0,54 [0,13]; com PT + PSB/PCdoB/PDT 0,38 [0,31]; com o nível inicial -0,75. Exceção nos números: os homicídios pioram mais nos estados atuais do PT do que nos outros (diferença média de grupo), embora o coeficiente de anos de PT não seja distinguível de zero (n = 9); MA (sem PT) também subiu (+20,9) e PE (sem PT) caiu (−15,8).",
+   "delta_pt_atual": 20.7,
+   "delta_outros_ne": 1.0,
+   "coef_10_anos_pt": 1.5,
+   "erro_padrao": 3.8,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Homicídios por 100 mil (2010-2024)",
+   "resultado": "sem coeficiente significativo (2,0 (3,1)); Δ médio 1,3 nos estados atuais do PT contra -5,2 nos outros NE",
+   "nota": "Correlação de postos com anos de PT 0,47 [0,20]; com PT + PSB/PCdoB/PDT 0,59 [0,09]; com o nível inicial -0,73. Exceção nos números: os homicídios pioram mais nos estados atuais do PT do que nos outros (diferença média de grupo), embora o coeficiente de anos de PT não seja distinguível de zero (n = 9); MA (sem PT) também subiu (+20,9) e PE (sem PT) caiu (−15,8).",
+   "delta_pt_atual": 1.3,
+   "delta_outros_ne": -5.2,
+   "coef_10_anos_pt": 2.0,
+   "erro_padrao": 3.1,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Assalariados CEMPRE por 100 hab. (2006-2021)",
+   "resultado": "sem coeficiente significativo (0,0 (0,4)); Δ médio 3,8 nos estados atuais do PT contra 3,8 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,08 [0,84]; com PT + PSB/PCdoB/PDT 0,34 [0,37]; com o nível inicial -0,73.",
+   "delta_pt_atual": 3.8,
+   "delta_outros_ne": 3.8,
+   "coef_10_anos_pt": 0.0,
+   "erro_padrao": 0.4,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Renda dom. pc real (%) (2016-2025)",
+   "resultado": "sem coeficiente significativo (-1,0 (2,1)); Δ médio 31,9 nos estados atuais do PT contra 37,1 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,06 [0,88]; com PT + PSB/PCdoB/PDT -0,41 [0,27]; com o nível inicial -0,50.",
+   "delta_pt_atual": 31.9,
+   "delta_outros_ne": 37.1,
+   "coef_10_anos_pt": -1.0,
+   "erro_padrao": 2.1,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "IDEB anos iniciais (2005-2023)",
+   "resultado": "sem coeficiente significativo (0,04 (0,21)); Δ médio 2,89 nos estados atuais do PT contra 2,65 nos outros NE",
+   "nota": "Correlação de postos com anos de PT 0,17 [0,67]; com PT + PSB/PCdoB/PDT 0,17 [0,66]; com o nível inicial -0,34. Pontos bons dos estados do PT: Ceará e Piauí estão entre os melhores do país no IDEB em 2025 (CE: 6,8/5,7/4,5; PI: 6,3/5,4/5,0, tabela secundária). Pontos ruins: BA (3,9) e RN (3,7) estão entre os piores no ensino médio em 2023, como o Maranhão, sem PT (3,8).",
+   "delta_pt_atual": 2.89,
+   "delta_outros_ne": 2.65,
+   "coef_10_anos_pt": 0.04,
+   "erro_padrao": 0.21,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "IDEB anos finais (2005-2023)",
+   "resultado": "sem coeficiente significativo (-0,05 (0,28)); Δ médio 1,76 nos estados atuais do PT contra 1,96 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,31 [0,42]; com PT + PSB/PCdoB/PDT 0,01 [0,97]; com o nível inicial -0,15. Pontos bons dos estados do PT: Ceará e Piauí estão entre os melhores do país no IDEB em 2025 (CE: 6,8/5,7/4,5; PI: 6,3/5,4/5,0, tabela secundária). Pontos ruins: BA (3,9) e RN (3,7) estão entre os piores no ensino médio em 2023, como o Maranhão, sem PT (3,8).",
+   "delta_pt_atual": 1.76,
+   "delta_outros_ne": 1.96,
+   "coef_10_anos_pt": -0.05,
+   "erro_padrao": 0.28,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "IDEB ensino médio (2005-2023)",
+   "resultado": "sem coeficiente significativo (0,05 (0,14)); Δ médio 1,04 nos estados atuais do PT contra 1,19 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,17 [0,66]; com PT + PSB/PCdoB/PDT 0,31 [0,42]; com o nível inicial -0,35. Pontos bons dos estados do PT: Ceará e Piauí estão entre os melhores do país no IDEB em 2025 (CE: 6,8/5,7/4,5; PI: 6,3/5,4/5,0, tabela secundária). Pontos ruins: BA (3,9) e RN (3,7) estão entre os piores no ensino médio em 2023, como o Maranhão, sem PT (3,8).",
+   "delta_pt_atual": 1.04,
+   "delta_outros_ne": 1.19,
+   "coef_10_anos_pt": 0.05,
+   "erro_padrao": 0.14,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "IDEB ensino médio (2005-2025)",
+   "resultado": "sem coeficiente significativo (0,08 (0,16)); Δ médio 1,26 nos estados atuais do PT contra 1,41 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,15 [0,70]; com PT + PSB/PCdoB/PDT 0,38 [0,31]; com o nível inicial -0,15. Pontos bons dos estados do PT: Ceará e Piauí estão entre os melhores do país no IDEB em 2025 (CE: 6,8/5,7/4,5; PI: 6,3/5,4/5,0, tabela secundária). Pontos ruins: BA (3,9) e RN (3,7) estão entre os piores no ensino médio em 2023, como o Maranhão, sem PT (3,8).",
+   "delta_pt_atual": 1.26,
+   "delta_outros_ne": 1.41,
+   "coef_10_anos_pt": 0.08,
+   "erro_padrao": 0.16,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "IDEB anos finais (2005-2025)",
+   "resultado": "sem coeficiente significativo (-0,03 (0,23)); Δ médio 2,05 nos estados atuais do PT contra 2,19 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,22 [0,56]; com PT + PSB/PCdoB/PDT 0,00 [0,99]; com o nível inicial -0,21. Pontos bons dos estados do PT: Ceará e Piauí estão entre os melhores do país no IDEB em 2025 (CE: 6,8/5,7/4,5; PI: 6,3/5,4/5,0, tabela secundária). Pontos ruins: BA (3,9) e RN (3,7) estão entre os piores no ensino médio em 2023, como o Maranhão, sem PT (3,8).",
+   "delta_pt_atual": 2.05,
+   "delta_outros_ne": 2.19,
+   "coef_10_anos_pt": -0.03,
+   "erro_padrao": 0.23,
+   "significativo_5pct": false
+  }
+ ],
+ "espelho": [
+  {
+   "grupo": "SP",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "159,4 → 143,9"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "115,6 → 125,2"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "105,6 → 108,8"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "87,0 → 88,6"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "86,4 → 138,5"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "100,0 → 100,0"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "Pobreza <US$6,85 (%) (2012→2024)",
+   "resultado": "18,8 → 14,0"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "Pobreza <US$6,85 (%) (2012→2024)",
+   "resultado": "15,1 → 8,0"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "Pobreza <US$6,85 (%) (2012→2024)",
+   "resultado": "21,5 → 13,7"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "Pobreza <US$6,85 (%) (2012→2024)",
+   "resultado": "27,8 → 15,9"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "Pobreza <US$6,85 (%) (2012→2024)",
+   "resultado": "26,8 → 13,1"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "Pobreza <US$6,85 (%) (2012→2024)",
+   "resultado": "34,7 → 23,1"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "Analfabetismo 15+ (%) (2016→2025)",
+   "resultado": "2,6 → 1,9"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "Analfabetismo 15+ (%) (2016→2025)",
+   "resultado": "2,7 → 1,5"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "Analfabetismo 15+ (%) (2016→2025)",
+   "resultado": "4,1 → 3,3"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "Analfabetismo 15+ (%) (2016→2025)",
+   "resultado": "5,9 → 3,5"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "Analfabetismo 15+ (%) (2016→2025)",
+   "resultado": "5,9 → 3,5"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "Analfabetismo 15+ (%) (2016→2025)",
+   "resultado": "6,7 → 4,9"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "Anos de estudo 25+ (2016→2025)",
+   "resultado": "10,2 → 11,2"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "Anos de estudo 25+ (2016→2025)",
+   "resultado": "9,3 → 10,8"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "Anos de estudo 25+ (2016→2025)",
+   "resultado": "9,2 → 10,3"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "Anos de estudo 25+ (2016→2025)",
+   "resultado": "9,0 → 10,5"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "Anos de estudo 25+ (2016→2025)",
+   "resultado": "8,6 → 10,4"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "Anos de estudo 25+ (2016→2025)",
+   "resultado": "9,1 → 10,2"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "Informalidade (%) (2016→2025)",
+   "resultado": "28,1 → 29,0"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "Informalidade (%) (2016→2025)",
+   "resultado": "27,2 → 26,3"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "Informalidade (%) (2016→2025)",
+   "resultado": "32,6 → 31,6"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "Informalidade (%) (2016→2025)",
+   "resultado": "40,0 → 35,1"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "Informalidade (%) (2016→2025)",
+   "resultado": "37,8 → 36,3"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "Informalidade (%) (2016→2025)",
+   "resultado": "39,1 → 38,1"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "Esgoto rede geral, Censo (%) (2010→2022)",
+   "resultado": "86,7 → 90,4"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "Esgoto rede geral, Censo (%) (2010→2022)",
+   "resultado": "29,1 → 33,5"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "Esgoto rede geral, Censo (%) (2010→2022)",
+   "resultado": "53,3 → 68,8"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "Esgoto rede geral, Censo (%) (2010→2022)",
+   "resultado": "36,0 → 51,4"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "Esgoto rede geral, Censo (%) (2010→2022)",
+   "resultado": "19,4 → 30,1"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "Esgoto rede geral, Censo (%) (2010→2022)",
+   "resultado": "55,5 → 60,4"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "Homicídios /100 mil (2002→2024)",
+   "resultado": "37,3 → 6,6"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "Homicídios /100 mil (2002→2024)",
+   "resultado": "10,3 → 8,1"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "Homicídios /100 mil (2002→2024)",
+   "resultado": "22,8 → 18,6"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "Homicídios /100 mil (2002→2024)",
+   "resultado": "25,5 → 18,4"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "Homicídios /100 mil (2002→2024)",
+   "resultado": "34,7 → 28,7"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "Homicídios /100 mil (2002→2024)",
+   "resultado": "27,7 → 20,0"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "IDEB anos iniciais (2005→2023)",
+   "resultado": "4,7 → 6,5"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "IDEB anos iniciais (2005→2023)",
+   "resultado": "4,4 → 6,4"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "IDEB anos iniciais (2005→2023)",
+   "resultado": "4,6 → 6,7"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "IDEB anos iniciais (2005→2023)",
+   "resultado": "4,1 → 6,3"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "IDEB anos iniciais (2005→2023)",
+   "resultado": "3,6 → 6,0"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "IDEB anos iniciais (2005→2023)",
+   "resultado": "3,8 → 6,0"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "IDEB anos finais (2005→2023)",
+   "resultado": "4,2 → 5,4"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "IDEB anos finais (2005→2023)",
+   "resultado": "4,3 → 5,2"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "IDEB anos finais (2005→2023)",
+   "resultado": "3,6 → 5,5"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "IDEB anos finais (2005→2023)",
+   "resultado": "3,5 → 5,5"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "IDEB anos finais (2005→2023)",
+   "resultado": "3,1 → 4,9"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "IDEB anos finais (2005→2023)",
+   "resultado": "3,5 → 5,0"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "IDEB ens. médio (2005→2023)",
+   "resultado": "3,6 → 4,5"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "IDEB ens. médio (2005→2023)",
+   "resultado": "3,8 → 4,2"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "IDEB ens. médio (2005→2023)",
+   "resultado": "3,6 → 4,9"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "IDEB ens. médio (2005→2023)",
+   "resultado": "3,2 → 4,8"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "IDEB ens. médio (2005→2023)",
+   "resultado": "3,1 → 4,4"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "IDEB ens. médio (2005→2023)",
+   "resultado": "3,4 → 4,3"
+  },
+  {
+   "grupo": "SP",
+   "indicador": "Assalariados CEMPRE /100 hab (2006→2021)",
+   "resultado": "24,6 → 28,9"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "Assalariados CEMPRE /100 hab (2006→2021)",
+   "resultado": "26,3 → 33,6"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "Assalariados CEMPRE /100 hab (2006→2021)",
+   "resultado": "20,8 → 26,9"
+  },
+  {
+   "grupo": "GO",
+   "indicador": "Assalariados CEMPRE /100 hab (2006→2021)",
+   "resultado": "16,0 → 20,7"
+  },
+  {
+   "grupo": "MT",
+   "indicador": "Assalariados CEMPRE /100 hab (2006→2021)",
+   "resultado": "16,1 → 23,3"
+  },
+  {
+   "grupo": "Brasil",
+   "indicador": "Assalariados CEMPRE /100 hab (2006→2021)",
+   "resultado": "18,3 → 22,3"
+  },
+  {
+   "grupo": "SP, SC, PR, GO, MT (síntese)",
+   "indicador": "Níveis melhores em quase tudo",
+   "resultado": "pobreza de 8,0% (SC) a 15,9% (GO) contra 39,4% no NE; analfabetismo de 1,5% (SC) a 3,5% (GO, MT)."
+  },
+  {
+   "grupo": "SP, SC, PR, GO, MT (síntese)",
+   "indicador": "Trajetória, não só nível",
+   "resultado": "a queda absoluta da pobreza foi menor (−6,7 p.p. no grupo contra −17,0 no NE), mas partiram de nível bem inferior; a informalidade ficou parada (30,3% → 30,1%) enquanto no NE caiu 2,4 p.p.; o PIB per capita relativo caiu em SP (159,4% → 143,9% da média) e subiu em MT (86,4% → 138,5%) e SC; o crescimento real per capita 2002–2019 foi de 0,9% ao ano no grupo contra 1,8% no NE; o ganho de renda real 2016–25 foi maior em R$ (+517 contra +373) e menor em % (+22,7% contra +33,6%)."
+  },
+  {
+   "grupo": "SP, SC, PR, GO, MT (síntese)",
+   "indicador": "Violência",
+   "resultado": "SP teve a maior queda do país (37,3 → 6,6; as causas são discutidas na literatura e não foram testadas aqui; houve queda também em MG e ES e no Sudeste como um todo, de 35,9 para 11,7) e GO caiu de 25,5 para 18,4; MT ficou em 28,7, acima do Brasil (20,0) e próximo do NE (33,5)."
+  },
+  {
+   "grupo": "SP, SC, PR, GO, MT (síntese)",
+   "indicador": "Esgoto por rede",
+   "resultado": "MT 30,1% e SC 33,5% (SC tem 56% de fossa séptica), contra 40,2% do NE; o saneamento do centro-oeste e sul não é uniformemente melhor."
+  },
+  {
+   "grupo": "SP, SC, PR, GO, MT (síntese)",
+   "indicador": "Transferências",
+   "resultado": "estados fortemente menos dependentes (receita corrente: SP 12,1%, PR 18,3%, GO 17,3%, MT 15,1%, SC 15,8%, contra 41,4% no NE em 2024)."
+  }
+ ],
+ "eleitoral": {
+  "fonte": "TSE via simulador/data/resultados_uf_2002_2022.csv e modelo_municipal/data/mun_2026_1t.csv (1º turno de 2026 com cerca de 1,2% do eleitorado extrapolado)",
+  "tabela": [
+   {
+    "eleicao": "2002 2º turno",
+    "votos_candidato_pt_mi": 52.79,
+    "ne_mi": 13.2,
+    "pct_votos_do_candidato_vindos_do_ne": 25.0,
+    "ne_pct_dos_validos": 24.9,
+    "pt_pct_validos_no_ne": null,
+    "pt_pct_validos_fora_do_ne": null,
+    "margem_ne_mi": 4.94,
+    "margem_fora_do_ne_mi": 14.48,
+    "margem_nacional_mi": 19.42
+   },
+   {
+    "eleicao": "2006 2º turno",
+    "votos_candidato_pt_mi": 58.3,
+    "ne_mi": 19.35,
+    "pct_votos_do_candidato_vindos_do_ne": 33.2,
+    "ne_pct_dos_validos": 26.2,
+    "pt_pct_validos_no_ne": null,
+    "pt_pct_validos_fora_do_ne": null,
+    "margem_ne_mi": 13.61,
+    "margem_fora_do_ne_mi": 7.14,
+    "margem_nacional_mi": 20.75
+   },
+   {
+    "eleicao": "2010 2º turno",
+    "votos_candidato_pt_mi": 55.75,
+    "ne_mi": 18.41,
+    "pct_votos_do_candidato_vindos_do_ne": 33.0,
+    "ne_pct_dos_validos": 26.2,
+    "pt_pct_validos_no_ne": null,
+    "pt_pct_validos_fora_do_ne": null,
+    "margem_ne_mi": 10.73,
+    "margem_fora_do_ne_mi": 1.31,
+    "margem_nacional_mi": 12.04
+   },
+   {
+    "eleicao": "2014 2º turno",
+    "votos_candidato_pt_mi": 54.5,
+    "ne_mi": 20.18,
+    "pct_votos_do_candidato_vindos_do_ne": 37.0,
+    "ne_pct_dos_validos": 26.7,
+    "pt_pct_validos_no_ne": null,
+    "pt_pct_validos_fora_do_ne": null,
+    "margem_ne_mi": 12.21,
+    "margem_fora_do_ne_mi": -8.75,
+    "margem_nacional_mi": 3.46
+   },
+   {
+    "eleicao": "2018 2º turno",
+    "votos_candidato_pt_mi": 47.04,
+    "ne_mi": 20.29,
+    "pct_votos_do_candidato_vindos_do_ne": 43.1,
+    "ne_pct_dos_validos": 27.8,
+    "pt_pct_validos_no_ne": null,
+    "pt_pct_validos_fora_do_ne": null,
+    "margem_ne_mi": 11.47,
+    "margem_fora_do_ne_mi": -22.22,
+    "margem_nacional_mi": -10.76
+   },
+   {
+    "eleicao": "2022 1º turno",
+    "votos_candidato_pt_mi": 57.26,
+    "ne_mi": 21.75,
+    "pct_votos_do_candidato_vindos_do_ne": 38.0,
+    "ne_pct_dos_validos": 27.6,
+    "pt_pct_validos_no_ne": 66.8,
+    "pt_pct_validos_fora_do_ne": 41.5,
+    "margem_ne_mi": 12.97,
+    "margem_fora_do_ne_mi": -6.78,
+    "margem_nacional_mi": 6.19
+   },
+   {
+    "eleicao": "2022 2º turno",
+    "votos_candidato_pt_mi": 60.35,
+    "ne_mi": 22.53,
+    "pct_votos_do_candidato_vindos_do_ne": 37.3,
+    "ne_pct_dos_validos": 27.4,
+    "pt_pct_validos_no_ne": 69.3,
+    "pt_pct_validos_fora_do_ne": 43.9,
+    "margem_ne_mi": 12.57,
+    "margem_fora_do_ne_mi": -10.43,
+    "margem_nacional_mi": 2.14
+   },
+   {
+    "eleicao": "2026 1º turno",
+    "votos_candidato_pt_mi": 53.83,
+    "ne_mi": 21.46,
+    "pct_votos_do_candidato_vindos_do_ne": 39.9,
+    "ne_pct_dos_validos": 28.2,
+    "pt_pct_validos_no_ne": 63.8,
+    "pt_pct_validos_fora_do_ne": 37.8,
+    "margem_ne_mi": 11.07,
+    "margem_fora_do_ne_mi": -13.33,
+    "margem_nacional_mi": -2.26
+   }
+  ],
+  "nota_tabela": "(Para 2002–2018, \"margem\" é a do candidato do PT contra o adversário do 2º turno, ou o 2º colocado do 1º turno, conforme o arquivo; margem fora do NE = nacional − NE. Em 2026, o adversário é Flávio Bolsonaro: 56,09 mi de votos, 10,39 mi no NE.)",
+  "margens_por_regiao": "Por região, 2026 (1º turno), margem de Lula − Flávio (mi): NE +11,07; Sudeste −5,67; Sul −5,04; Centro-Oeste −2,17; Norte −0,46. Em 2022 (2º turno): NE +12,57; Sudeste −4,25; Sul −4,19; Centro-Oeste −1,81; Norte −0,19. [cálculo próprio]",
+  "aritmetica": [
+   "A margem de Lula depende do NE: em 2022 (2º turno), sem o NE ele teria perdido por 10,43 mi; a margem do NE (12,57 mi) foi 5,9 vezes a margem nacional. Em 2026, o NE dá +11,07 mi e o resto, −13,33 mi.",
+   "O NE tem 28,2% dos válidos e deu 39,9% dos votos de Lula (37–38% em 2022); o voto de Lula no NE é muito mais concentrado do que o do PT em 2002 (25,0%), de modo que a participação do NE na base do PT subiu de 25% (2002) para 37–43% (2014–2022).",
+   "Em 2026 a base do NE encolheu: Lula caiu de 66,8% para 63,8% dos válidos no NE (1º turno 2022 → 2026) e a margem regional caiu 1,90 mi (12,97 → 11,07), enquanto fora do NE caiu de −6,78 para −13,33 mi (−6,55). O NE respondeu por 22,5% da piora nacional (nota nordeste_dados_1t.md, seção 0)."
+  ],
+  "enquadramento": "'O Nordeste salva o Brasil' é um enquadramento, não um número: é um enquadramento. A mesma conta dá \"SE, S e CO decidem por Flávio\", com margens maiores em valor absoluto (−13,33 mi no conjunto SE+S+CO+N frente a +11,07 mi do NE em 2026). Em termos de resultado (pobreza, emprego, segurança), a seção 3 mostra um NE que avança em quase tudo mas continua muito atrás.",
+  "espelho": "A mesma conta lida para as outras regiões: no 1º turno de 2026 as margens de Lula contra Flávio foram Sudeste −5,67, Sul −5,04, Centro-Oeste −2,17 e Norte −0,46 (mi); em 2022 (2º turno), Sudeste −4,25, Sul −4,19, Centro-Oeste −1,81 e Norte −0,19. Logo, 'Sudeste, Sul e Centro-Oeste decidem por Flávio' é tão verdadeiro como aritmética quanto 'o Nordeste decide por Lula', e nenhuma das duas frases explica por que as pessoas votam.",
+  "indireto": "O indireto (Regra nº 1): \"o Nordeste salva o Brasil\" soa como elogio e carrega duplo sentido (\"o resto não presta\"); a fala oposta (\"o NE vota por Bolsa Família\") soa como constatação e carrega duplo sentido de desprezo. A conta acima não sustenta nenhuma das duas leituras: fala de onde estão os votos, não de por que votam. O BF atinge 46,5% das famílias beneficiárias no NE, mas o voto por faixa de BF no município desaparece quando se controla por porte e capital (seção 1.4 do nordeste_dados_1t.md).",
+  "itens_originais": [
+   "A margem de Lula depende do NE: em 2022 (2º turno), sem o NE ele teria perdido por 10,43 mi; a margem do NE (12,57 mi) foi 5,9 vezes a margem nacional. Em 2026, o NE dá +11,07 mi e o resto, −13,33 mi.",
+   "O NE tem 28,2% dos válidos e deu 39,9% dos votos de Lula (37–38% em 2022); o voto de Lula no NE é muito mais concentrado do que o do PT em 2002 (25,0%), de modo que a participação do NE na base do PT subiu de 25% (2002) para 37–43% (2014–2022).",
+   "Em 2026 a base do NE encolheu: Lula caiu de 66,8% para 63,8% dos válidos no NE (1º turno 2022 → 2026) e a margem regional caiu 1,90 mi (12,97 → 11,07), enquanto fora do NE caiu de −6,78 para −13,33 mi (−6,55). O NE respondeu por 22,5% da piora nacional (nota nordeste_dados_1t.md, seção 0).",
+   "\"Salva o Brasil\" não é um número: é um enquadramento. A mesma conta dá \"SE, S e CO decidem por Flávio\", com margens maiores em valor absoluto (−13,33 mi no conjunto SE+S+CO+N frente a +11,07 mi do NE em 2026). Em termos de resultado (pobreza, emprego, segurança), a seção 3 mostra um NE que avança em quase tudo mas continua muito atrás.",
+   "O indireto (Regra nº 1): \"o Nordeste salva o Brasil\" soa como elogio e carrega duplo sentido (\"o resto não presta\"); a fala oposta (\"o NE vota por Bolsa Família\") soa como constatação e carrega duplo sentido de desprezo. A conta acima não sustenta nenhuma das duas leituras: fala de onde estão os votos, não de por que votam. O BF atinge 46,5% das famílias beneficiárias no NE, mas o voto por faixa de BF no município desaparece quando se controla por porte e capital (seção 1.4 do nordeste_dados_1t.md)."
+  ]
+ },
+ "limites": [
+  "n = 9 e controles grosseiros; nada aqui é efeito causal. A classificação de campos políticos é nossa.",
+  "Seleção (CLAUDE.md, brecha 9): escolhi os indicadores pelos que o usuário citou e por séries com cobertura por UF; ficaram de fora saúde (mortalidade infantil), habitação, água, banda larga, que podem alterar o quadro. O placar depende da seleção.",
+  "Ano-base (brecha 4): PIB per capita 2002→2023 mistura bases populacionais (quebra em 2021→22); homicídios 2002 vs 2010 mudam a leitura (ver tabela).",
+  "IDEB 2025 vem de fonte secundária e há divergência entre veículos; 2005–2023 também é secundário (Wikipedia, concordante nos totais nacionais).",
+  "IDHM por UF: só tenho NE, MA, PI, RN, PB, AL, Brasil de fontes secundárias; os demais valores que circulam têm vintages misturadas e não os usei.",
+  "Pobreza (IBGE/PNAD-C, US$ 6,85 PPC 2017): linha internacional, não oficial brasileira; o saldo 2012→2024 mistura efeitos de recessão, pandemia e aumento de transferências.",
+  "Homicídios: série do Atlas (SIM/DATASUS); melhora da qualidade do registro e MVCI (mortes violentas por causa indeterminada) afetam a comparação.",
+  "Eleitoral: 1º turno de 2026 extrapolado em ~1,2% por pst; 2º turno de 2026 ainda não ocorreu (25/10).",
+  "Não achei: analfabetismo 15+ do Censo 2010 por UF em tabela comparável (sem trajetória Censo 2010→2022), BPC e INSS por UF (para o balanço federal completo), a planilha oficial do IDEB 2025.",
+  "Auditoria de neutralidade (Regra 4): os scripts audit.py e checks.py descritos em auditoria_neutralidade.md varrem o painel e relatórios existentes, não esta nota. Apliquei à mão o mesmo critério de ressalvas: as ressalvas de conteúdo (\"mas\", \"embora\", \"contexto\") trazem número ou fonte (a única sem número é a citação do argumento do usuário, na seção 0), e as críticas a PT e a estados de centro/direita seguem o mesmo padrão de exigência.",
+  "Janelas e anos-base diferentes por indicador: a escolha do ano inicial muda os números e as janelas estão escritas em cada série.",
+  "Séries por grupo são médias ponderadas pela população do Censo 2022 (IDEB: média simples); n = 9 estados, nada é efeito causal."
+ ],
+ "resumo": [
+  "Quem governou: O PT governou BA e PI por cerca de 19 anos cada, CE por 11, RN por 8 e SE por 7; nunca governou MA, PB, PE e AL. Somando PSB/PCdoB/PDT, a esquerda no sentido amplo governou 14 a 23 anos em sete estados. Lista do usuário: correta para BA, CE e RN; incompleta para PI (2003–2010) e omite SE (2007–2013). ---",
+  "Números do usuário: Confirmados: 1, 2, 3, 4, 6, 9, 10. Diferentes ou parciais: 5 (14,2% era 2019/2020; hoje 13,8%), 7 (41,3–41,6% no agregado, 44,0% na média simples), 8 (63,8% dos municípios do NE, não todos). Ressalva de método importante: o analfabetismo do Censo (14,2%) e o da PNAD-C (11,8% em 2022) diferem na mesma data; comparações entre regiões só valem dentro da mesma fonte. ---",
+  "Trajetória: O NE continua muito atrás do Brasil em nível, mas avançou mais do que a média em pobreza, analfabetismo, IDEB, renda e informalidade, e perdeu terreno relativo em segurança pública. Entre os próprios estados do NE, a trajetória é mais parecida do que diferente entre os governados pelo PT e os demais; o que mais explica quanto cada estado avançou é de onde partiu. ---",
+  "Controles e ressalvas: Ponto de partida, transferências federais, emprego público e seca existem, são mensuráveis e explicam por que o NE é diferente do Sudeste em nível; mas nenhuma dessas variáveis separa estados de PT dos demais (as transferências são iguais por regra: FPE de 51,5% para o NE;  a dependência de emprego público é, se algo, maior fora do PT; ponto de partida é parecido entre os dois grupos). Não as uso como desculpa: a conclusão da seção 3 vale com ou sem elas. ---",
+  "Aritmética eleitoral: A margem de Lula depende do NE nas duas eleições (2022 e o 1º turno de 2026), e a base nordestina de Lula, 39,9% dos seus votos, é a mais lopsided entre as regiões. A conta é verdadeira e é só aritmética; não valida \"o NE salva o Brasil\" como juízo de resultado e vale simetricamente para as outras regiões. ---",
+  "Correção à lista do usuário: o PT também governou o Piauí em 2003–abr/2010 (Wellington Dias) e Sergipe em 2007–dez/2013 (Marcelo Déda).",
+  "Resumo da aba: O Nordeste é precário em nível e melhorou em quase tudo; o PT governa estados que somam 54% da região, mas a trajetória desses estados é muito parecida com a dos demais (que tiveram PSB, MDB, PSDB, PSD, PCdoB e outros), e o que mais explica quanto cada estado avançou é de onde partiu. A exceção é a segurança pública, que piorou em termos relativos no NE inteiro (21,9 → 33,5 homicídios por 100 mil, 2002→2024, contra 27,7 → 20,0 no Brasil): BA +27,7, CE +16,0 e RN +13,3 nos estados do PT, mas também MA +20,9 e PB +8,5 fora dele. Dos 10 números do usuário, 7 estão confirmados e 3 estão datados ou parciais. Eleitoralmente, a margem de Lula depende do NE (+11,07 mi no NE contra −13,33 mi no resto do país no 1º turno de 2026), uma conta que a nota confirma e que não vale como juízo sobre o NE \"salvar o Brasil\"."
+ ]
+}
