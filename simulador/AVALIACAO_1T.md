@@ -1,6 +1,6 @@
 # Avaliação das previsões do 1º turno de 2026
 
-Gerado por `resultado_1t.py` em 2026-10-05 12:01 UTC. Seções totalizadas no Brasil: 100,00% (TSE, 05/10/2026 02:59:31). Fonte do resultado: TSE (https://resultados.tse.jus.br/oficial/ele2026/6257/dados/...).
+Gerado por `resultado_1t.py` em 2026-10-09 05:36 UTC. Seções totalizadas no Brasil: 100,00% (TSE, 05/10/2026 02:59:31). Fonte do resultado: cache local (ensaio a seco).
 
 ## Resultado (votos válidos, %)
 
