@@ -364,3 +364,24 @@ Incerteza que não dá para reduzir agora: o mercado de previsão (85-88% Flávi
 - **Indireto:** o caso forte da semana é F2. O mercado precifica um ajuste que a equipe de Flávio estuda (R$ 250 bi, segundo a Folha) e que o candidato nega ao eleitor; Sachsida também nega as privatizações que o programa prevê. Do lado de Lula, os casos são de timing e todos ficaram em "média": a crítica ao STF endurece só depois da derrota, a PEC 6x1 cai entre os turnos e a gasolina vence com decisão pendente. Placar 1 forte, 3 médias e 1 fraca para Flávio, contra 4 médias e 1 fraca para Lula, e ele depende da seleção.
 - **Abstenção:** no Nordeste ficou em 18,4%, a menor do país. Cada ponto a menos vale ~120 mil votos líquidos para Lula, contra ~4,9 mi a recuperar, então a abstenção sozinha não vira a eleição.
 - **Não verificado:** prorrogação da gasolina; texto original da Folha sobre a desindexação; posição de Ratinho Jr., Helder, prefeitos e Michelle; confirmação de presença nos debates; dados de XP e BTG; fechamento de mercado de 09/10.
+
+## Atualização (após 09/10/2026)
+
+- **Cury declarou apoio a Flávio (08/10)** após videochamada; Flávio assinou termo de compromisso
+  público (transparência, responsabilidade fiscal, propostas do Avante); Cury diz que não terá cargo.
+  Corrige a tabela acima, que o listava como neutro. Fontes: Poder360
+  (https://www.poder360.com.br/poder-eleicoes-2026/augusto-cury-declara-apoio-a-flavio-bolsonaro-no-2o-turno/),
+  Exame (https://exame.com/brasil/cury-declara-apoio-a-flavio-bolsonaro-no-2o-turno-e-diz-que-lula-ja-deu/).
+  [fato, 2 veículos]. Efeito no modelo: a matriz de transferência já dava a maior parte dos votos de
+  Cury a Flávio; o apoio reforça, não muda a estrutura.
+- **Vorcaro × filme sobre Lula (Veja, 09/10)**: segundo a revista, Vorcaro relatou ter pago ~R$ 30 mi
+  em espécie para documentário sobre Lula (dirigido por Oliver Stone) e pagamentos ao Instituto Lula, em
+  troca de acesso a fundos de pensão (Previ, Petros, Postalis), com pedido de comissão atribuído a
+  Vaccari. O relato foi apresentado em tentativa de delação **não aceita pela PGR por falta de provas**
+  (PF também teria recusado). Lula, Instituto Lula e Padilha negam; a PF diz que Vorcaro não prestou
+  depoimento com esse conteúdo; a defesa de Vorcaro diz ter mensagens e registros de saques.
+  Fontes: Metrópoles, Poder360, CNN, Jovem Pan, Revista Oeste, Jornal Opção. Status: [narrativa de
+  Vorcaro via Veja; não corroborada]. **Mesma régua**: o caso Dark Horse (filme sobre Bolsonaro,
+  US$ 10,6 mi pagos por Vorcaro; áudio do Intercept; inquérito da PF no STF com parecer favorável da
+  PGR) está hoje em estágio de evidência mais avançado (FB34/FB44). Os dois casos envolvem Vorcaro
+  financiando filme de cada lado; os dois devem ser reavaliados quando houver documento.
