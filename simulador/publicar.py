@@ -204,6 +204,7 @@ def main():
                  "realidade.json",                             # aba "Realidade × discurso"
                  "indireto.json",                              # sub-aba "Indireto" (gerado por outro processo; ausente = "dados em preparação")
                  "nordeste_trajetoria.json",                   # seção "Trajetória por governo" da aba Nordeste (idem)
+                 "segundo_turno_conteudo.json",                # 2º turno pós-1T e "Realidade × discurso" (gerar_segundo_turno_json.py)
                  "glossario.json"):                            # "Glossário e regras"
         copiar_opcional(ORIG / nome, DEST / nome)
     alt = AQUI.parent / "modelo_alternativo" / "resultados_alt.json"

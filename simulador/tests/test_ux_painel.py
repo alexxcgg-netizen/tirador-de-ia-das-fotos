@@ -18,7 +18,7 @@ WEB = publicar.ORIG
 HTML = (WEB / "index.html").read_text(encoding="utf-8")
 COMP = (publicar.AQUI.parent / "comparador" / "index.html").read_text(encoding="utf-8")
 TABS_ANTIGAS = ["segundo-turno", "primeiro-turno", "estados", "nordeste", "realidade", "modelos", "pesquisas", "bastidores", "curiosidades"]
-NOVAS = ["comece", "indireto", "propostas", "cenarios", "glossario"]
+NOVAS = ["comece", "indireto", "campanha-2t", "democracia", "propostas", "cenarios", "glossario"]
 
 
 def tokens(bloco):

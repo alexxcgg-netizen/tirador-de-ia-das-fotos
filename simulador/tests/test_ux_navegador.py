@@ -15,7 +15,7 @@ import publicar  # noqa: E402
 
 sync_api = pytest.importorskip("playwright.sync_api")
 FIX = Path(__file__).resolve().parent / "fixtures"
-TABS = ["comece", "segundo-turno", "primeiro-turno", "estados", "nordeste", "realidade", "indireto", "propostas", "cenarios",
+TABS = ["comece", "segundo-turno", "primeiro-turno", "estados", "nordeste", "realidade", "indireto", "campanha-2t", "democracia", "propostas", "cenarios",
         "pesquisas", "modelos", "bastidores", "curiosidades", "glossario"]
 
 
@@ -253,3 +253,100 @@ def test_graficos_com_aria_label_e_texto_minimo(browser, site):
     assert pg.evaluate("[...document.querySelectorAll('canvas')].every(c => c.getAttribute('aria-label') && c.getAttribute('role') === 'img')")
     assert pg.evaluate("[...document.querySelectorAll('details.tab-alt')].length") >= 5
     ctx.close()
+
+
+# ---------- 2º turno pós-1T e Realidade × discurso (campanha do 2T, risco democrático)
+def _servir(d):
+    srv = socketserver.ThreadingTCPServer(("127.0.0.1", 0), functools.partial(H, directory=str(d)))
+    srv.daemon_threads = True
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, f"http://127.0.0.1:{srv.server_address[1]}"
+
+
+def _abrir_secao(pg, sec):
+    pg.evaluate("s => { const e = document.getElementById(s); e.querySelectorAll('details.sec-det').forEach(d => d.open = true); }", sec)
+    pg.wait_for_timeout(200)
+
+
+def test_tres_visoes_renderizam_do_fixture(browser, tmp_path_factory):
+    """As três visões vêm de segundo_turno.visoes_vies: com valores-sentinela no JSON, a tabela mostra esses valores."""
+    d = tmp_path_factory.mktemp("visoes")
+    for f in publicar.ORIG.iterdir():
+        if f.is_file():
+            shutil.copyfile(f, d / f.name)
+    t2 = json.loads((publicar.ORIG / "resultados_2t.json").read_text(encoding="utf-8"))
+    sentinela = {"neutro": (0.111, 47.0), "calibrado": (0.222, 46.0), "vies_pleno": (0.333, 45.0)}
+    for k, (p, c) in sentinela.items():
+        v = t2["segundo_turno"]["visoes_vies"]["visoes"][k]
+        v["p_a_vence"], v["centro_a_pct"] = p, c
+    (d / "resultados_2t.json").write_text(json.dumps(t2), encoding="utf-8")
+    srv, base = _servir(d)
+    ctx, pg, erros = abrir(browser, base, 1280, 900, hash_="#st2-vies")
+    pg.wait_for_timeout(600)
+    _abrir_secao(pg, "painel-segundo-turno")
+    linhas = pg.eval_on_selector_all("#st2-visoes tbody tr", "e => e.map(x => [x.dataset.visao, ...[...x.querySelectorAll('td')].map(t => t.textContent)])")
+    assert [l[0] for l in linhas] == ["neutro", "calibrado", "vies_pleno"]
+    for l, (k, (p, c)) in zip(linhas, sentinela.items()):
+        assert l[1] == f"{(1 - p) * 100:.1f}%".replace(".", ",") and l[2] == f"{p * 100:.1f}%".replace(".", ","), l   # Flávio, depois Lula
+        assert l[3].startswith(f"{100 - c:.1f}".replace(".", ",")), l
+    cab = pg.eval_on_selector_all("#st2-visoes thead th", "e => e.map(x => x.textContent)")
+    assert cab.index("Chance de Flávio") < cab.index("Chance de Lula")
+    assert pg.evaluate("!document.querySelector('[data-resumo=\"st2-vies\"]').hidden")
+    assert erros == []
+    ctx.close()
+    srv.shutdown()
+
+
+def test_secoes_novas_renderizam_com_resumo_e_flavio_antes(browser, site):
+    ctx, pg, erros = abrir(browser, site, 390, 844, hash_="#segundo-turno")
+    pg.wait_for_timeout(800)
+    _abrir_secao(pg, "painel-segundo-turno")
+    assert pg.locator("#st2-pesq-tabela tbody tr").count() >= 7          # 6 pesquisas + média (+ 1º turno real)
+    peso_atlas = pg.evaluate("[...document.querySelectorAll('#st2-pesq-tabela tbody tr')].find(r => r.textContent.startsWith('AtlasIntel')).textContent")
+    assert "4/6 dos dias de campo" in peso_atlas
+    assert pg.locator("#st2-sem-cada tbody tr").count() == 6
+    cards = pg.eval_on_selector_all(".st2-mand .card", "e => e.map(x => x.dataset.cand)")
+    assert cards == ["Flavio", "Lula"]
+    assert "não entram na chance de vencer" in pg.inner_text("#st2-mandato-corpo")
+    for s in ("st2-pesquisas", "st2-vies", "st2-mandato"):
+        assert pg.evaluate(f"!document.querySelector('[data-resumo=\"{s}\"]').hidden"), s
+    pg.evaluate("location.hash = '#campanha-2t'")
+    pg.wait_for_timeout(900)
+    cab = pg.eval_on_selector_all("#c2-placar thead th", "e => e.map(x => x.textContent)")
+    assert cab == ["Força", "Flávio", "Lula"]
+    cols = pg.eval_on_selector_all("#c2-indireto-corpo .ind-duo .ind-col h4", "e => e.map(x => x.textContent)")
+    assert cols[0].startswith("Flávio") and cols[1].startswith("Lula")
+    assert "Flávio" in pg.evaluate("[...document.querySelectorAll('#c2-apoios-corpo tr')].find(r => r.textContent.startsWith('Augusto Cury')).textContent")
+    for s in ("c2-intro", "c2-linha", "c2-apoios", "c2-justica", "c2-mercados", "c2-indireto", "c2-disputados"):
+        assert pg.evaluate(f"!document.querySelector('[data-resumo=\"{s}\"]').hidden"), s
+    assert pg.evaluate("document.querySelectorAll('#painel-campanha-2t .c2-tag.nv').length") >= 1     # marcas [não verificado] visíveis
+    pg.evaluate("location.hash = '#democracia'")
+    pg.wait_for_timeout(900)
+    assert pg.eval_on_selector_all("#dm-duo .ind-col", "e => e.map(x => x.dataset.lado)") == ["flavio", "lula"]
+    assert pg.evaluate("document.querySelectorAll('#dm-sinais-corpo tbody th').length") == 0     # nenhum lado em negrito como cabeçalho
+    for s in ("dm-intro", "dm-vereditos", "dm-evidencia", "dm-freios", "dm-indices", "dm-sinais", "dm-peso", "dm-nv"):
+        assert pg.evaluate(f"!document.querySelector('[data-resumo=\"{s}\"]').hidden"), s
+    assert pg.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth") <= 0
+    assert erros == []
+    ctx.close()
+
+
+def test_abas_novas_sem_json_dizem_dados_em_preparacao(browser, tmp_path_factory):
+    d = tmp_path_factory.mktemp("semc2")
+    for f in publicar.ORIG.iterdir():
+        if f.is_file() and f.name != "segundo_turno_conteudo.json":
+            shutil.copyfile(f, d / f.name)
+    srv, base = _servir(d)
+    ctx, pg, erros = abrir(browser, base, 1280, 900, hash_="#campanha-2t")
+    pg.wait_for_timeout(600)
+    assert "Dados em preparação" in pg.inner_text("#c2-intro-corpo")
+    assert pg.evaluate("!document.querySelector('[data-resumo-aba=\"campanha-2t\"]').hidden")
+    pg.evaluate("location.hash = '#democracia'")
+    pg.wait_for_timeout(600)
+    assert "Dados em preparação" in pg.inner_text("#dm-intro-corpo")
+    pg.evaluate("location.hash = '#segundo-turno'")
+    pg.wait_for_timeout(800)
+    assert pg.locator("#st2-visoes tbody tr").count() == 3          # as visões vêm de resultados_2t.json, não do conteúdo das notas
+    assert erros == []
+    ctx.close()
+    srv.shutdown()

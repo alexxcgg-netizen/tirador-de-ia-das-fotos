@@ -14,6 +14,7 @@ em `data/` traz fonte e data.
 pip install numpy pandas pytest                 # Python 3.10+
 python simulador/backtest.py                    # grade + LOEO + BACKTEST.md + data/backtest_saida.json (~13 min)
 python simulador/rodar.py                       # 500.000 simulações x 3 visões -> web/resultados.json (~45 s)
+python simulador/gerar_segundo_turno_json.py    # notas do 2º turno e do risco democrático -> web/segundo_turno_conteudo.json
 python simulador/publicar.py                    # cópia para artifact em web_publicar/ (+ resultados_alt.json)
 python simulador/resultado_1t.py --rodar-tudo   # noite da apuração: TSE -> avaliação -> 2º turno -> publicar (~30 s)
 python simulador/resultado_1t.py --ensaio-2022  # ensaio do pipeline com 2022 (+ validação 2014/2018) (~75 s)
@@ -360,8 +361,9 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   Rodada de 12/10 (TSE 100%, 500 mil): **P(Lula) 12,9%, Lula 47,85% (p10–p90 45,38–50,33), centro 47,84**. Visões:
   neutro 14,7% (48,01), viés pleno 4,7% (46,61).
 
-  **Chaves novas em `resultados_2t.json`** (todas em `segundo_turno`, só quando o par é Lula x Flávio; o painel ainda
-  não as mostra):
+  **Chaves novas em `resultados_2t.json`** (todas em `segundo_turno`, só quando o par é Lula x Flávio; o painel as mostra
+  em "Quem vai ganhar → 2º turno": seções "Pesquisas depois do 1º turno", "Quanto a premissa de viés muda" e
+  "Quem completa o mandato"):
   - `visoes_vies.visoes.{neutro,calibrado,vies_pleno}`: `p_a_vence`, `a_media`, `centro_a_pct`, `a_p10`, `a_p90`,
     `correcao_pre_1t`, `correcao_pos_1t`, `pesquisas_pre_1t_a_pct`, `pesquisas_pos_1t_a_pct`, `projecao_a_pct`,
     `peso_pesquisas_pos_1t`, `dp_nacional_pp`, `n`, `descricao` e `backtest` (`rmse_centro_pp`, `crps_medio_pp`,

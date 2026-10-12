@@ -255,3 +255,18 @@ Correções vindas de `revisao_advogado_governo_2t.md` e `revisao_advogado_oposi
 - Segmentos: padrão estável por região, renda e religião em cinco institutos; idade e sexo discordam muito entre DataTrends e PoderData, e católicos entre Atlas e Datafolha. Tudo de fonte secundária.
 - Pendentes: Quaest RJ e DF (12/10), PoderData (13/10), Datafolha (campo 13–15/10). Direct e Seta: resultado não encontrado.
 - Ainda não há pesquisa estadual de 2T pós-1T publicada.
+
+---
+
+## Verificação em fonte primária (12/10/2026, tarde)
+
+Nova tentativa de abrir as fontes primárias das pesquisas pós-1T. Nenhum número de 2º turno mudou; o CSV (`simulador/data/pesquisas_nacionais.csv`) só ganhou observações.
+
+| Instituto | Fonte aberta | O que confirma | Status |
+|---|---|---|---|
+| AtlasIntel | Relatório PDF do instituto ([cdn1.atlasintel.org](https://cdn1.atlasintel.org/pesquisa_atlas_bloomberg__nacional_261009_3da0d6d3d6d32fe1.pdf)) e página [atlasintel.org](https://atlasintel.org/poll/brazil-national-2026-10-09) | "Pesquisa Atlas/Bloomberg"; coleta 03/10/2026–08/10/2026; 5.026 respondentes; Atlas RDR; ±1 p.p. (95%); registro BR-03663/2026; 2T totais Flávio 51,1 × Lula 45,7, branco/nulo/não sei 3,2; válidos Flávio 52,8 × Lula 47,2 | **[fato, fonte primária]**; números iguais aos do CSV. O cabeçalho "Atlas/Bloomberg" pesa a favor da Exame no conflito de contratante (seção A), mas o relatório não diz quem pagou: continua **[disputado]** |
+| Datafolha | Duas matérias da Folha (contratante e dona do instituto) de 9/10 ([debates](https://www1.folha.uol.com.br/poder/2026/10/datafolha-78-consideram-muito-importante-que-flavio-e-lula-participem-de-debates-no-2o-turno.shtml), [vida com cada um](https://www1.folha.uol.com.br/poder/2026/10/datafolha-43-acham-que-vida-seguira-igual-com-lula-eleitor-se-divide-sobre-como-ficara-com-flavio.shtml)) | "O Datafolha foi às ruas na terça (6) e na quarta (7)"; registro BR-02949/2026; 2.520 eleitores em 153 municípios; margem de 2 pontos | **Conflito de datas resolvido: campo de 6 a 7/10** (como já estava no CSV). A versão 6 a 8/10 (Terra, BPMoney, Brasil de Fato, agendas) estava errada. O relatório no site do Datafolha não foi localizado |
+| Ipespe | Matéria da Folha de 10/10 ([link](https://www1.folha.uol.com.br/poder/2026/10/flavio-bolsonaro-tem-527-dos-votos-validos-no-2o-turno-contra-473-de-lula-diz-ipespe.shtml)) | telefone; 1.500 eleitores; 6 a 8/10; ±2,6 p.p.; registro BR-00933/2026; totais 49 × 44, BN 5, NS/NR 3 | Veículo, não relatório; modo e registro, antes só na agenda, agora em matéria de resultado |
+| PoderData, Vox Brasil, DataTrends | Poder360 e PesqEle (TSE) | – | **Não verificado**: Poder360 e PesqEle responderam 403 |
+
+**Resumo.** O relatório primário da AtlasIntel confirma datas, amostra, registro e números (válidos Flávio 52,8 × Lula 47,2). A Folha, dona do Datafolha, fixa o campo do Datafolha em 6 e 7/10, o que encerra o conflito de datas. Nenhum número de 2º turno mudou e o modelo foi rodado de novo só para registrar a verificação. PoderData, Vox e DataTrends seguem sem fonte primária aberta.

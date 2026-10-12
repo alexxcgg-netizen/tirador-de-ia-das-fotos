@@ -146,7 +146,7 @@ def test_cada_aba_termina_com_resumo():
     html = (publicar.ORIG / "index.html").read_text(encoding="utf-8")
     html = re.sub(r"\n\s*<!--.*?-->", "", html)       # marcadores CMP:* do comparador integrado
     paineis = re.findall(r'<div role="tabpanel"[^>]*data-painel="([^"]+)"[^>]*>([\s\S]*?)(?=\n  <div role="tabpanel"|\n  <footer)', html)
-    assert len(paineis) == 14   # 9 antigos + comece, indireto, propostas, cenarios, glossario
+    assert len(paineis) == 16   # 9 antigos + comece, indireto, propostas, cenarios, glossario, campanha-2t, democracia
     chaves_js = set(re.findall(r'^    "([a-z0-9-]+)": function', html, re.M))
     for nome, corpo in paineis:
         corpo = corpo.rstrip()

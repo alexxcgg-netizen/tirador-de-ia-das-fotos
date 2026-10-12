@@ -560,6 +560,40 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
   details.sec-det:not([open]) .sec-corpo { display: block; }
   a { text-decoration: underline; }
 }
+/* 2º turno pós-1T, campanha do 2º turno e risco democrático (conteúdo de segundo_turno_conteudo.json) */
+.c2-p { font-size: var(--fs-2); color: var(--text-2); margin: var(--s-2) 0; max-width: 82ch; overflow-wrap: anywhere; }
+.c2-p b, .c2-lista b { color: var(--text); }
+.c2-h { font-size: var(--fs-3); margin: var(--s-4) 0 var(--s-2); }
+.c2-lista { font-size: var(--fs-2); color: var(--text-2); margin: var(--s-2) 0; padding-left: 20px; max-width: 90ch; overflow-wrap: anywhere; }
+.c2-lista li { margin-bottom: 6px; }
+.c2-lista ul { margin: 4px 0 0; padding-left: 18px; }
+.c2-tw { max-height: 560px; margin: var(--s-2) 0; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface); }
+.c2-tab th, .c2-tab td { white-space: normal; text-align: left; vertical-align: top; min-width: 96px; max-width: 420px; overflow-wrap: anywhere; font-size: var(--fs-1); line-height: 1.45; }
+.c2-tab tbody th { color: var(--text); font-weight: 600; position: static; background: transparent; }
+.c2-tab tbody th { min-width: 88px; }
+.c2-tab tr.destaque th { background: var(--surface-2); }
+.c2-tab td { min-width: 150px; }
+#st2-visoes tbody th { min-width: 210px; }
+.c2-tab td.n, .c2-tab th.n { text-align: right; white-space: nowrap; min-width: 0; font-variant-numeric: tabular-nums; }
+.c2-tab tr.grp th { background: var(--surface-2); color: var(--text-2); font-size: var(--fs-1); text-transform: uppercase; letter-spacing: .04em; }
+.c2-tag { display: inline-block; font-size: var(--fs-1); padding: 0 6px; border-radius: 999px; border: 1px dashed var(--text-2); color: var(--text); background: var(--surface-2); white-space: nowrap; }
+.c2-tag.nv { border-style: solid; border-color: var(--warn-border); background: var(--warn-bg); }
+.c2-caixa { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2); padding: var(--s-3) var(--s-4); margin: var(--s-3) 0; min-width: 0; }
+.c2-caixa > h3 { font-size: var(--fs-3); margin: 0 0 var(--s-2); }
+.c2-caso { border-top: 1px solid var(--border); padding: var(--s-2) 0; font-size: var(--fs-2); }
+.c2-caso summary { color: var(--text); font-size: var(--fs-2); margin: 0; min-height: 32px; }
+.c2-caso .forca { margin-left: 6px; }
+.c2-placar td { min-width: 140px; }
+.c2-placar td ul { margin: 0; padding-left: 16px; }
+.st2-mand { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3); margin-top: var(--s-3); }
+@media (max-width: 760px) { .st2-mand { grid-template-columns: 1fr; } }
+.st2-mand .card { border-top: 4px solid var(--cand-n); }
+.st2-mand .card.f { border-top-color: var(--flavio); } .st2-mand .card.l { border-top-color: var(--lula); }
+.st2-mand dl { margin: var(--s-2) 0 0; display: grid; gap: var(--s-2); }
+.st2-mand dt { font-size: var(--fs-1); color: var(--text-2); }
+.st2-mand dd { margin: 0; font-size: var(--fs-4); font-weight: 650; font-variant-numeric: tabular-nums; }
+.st2-mand dd small { font-size: var(--fs-1); font-weight: 500; color: var(--text-2); }
+.st2-sep { border: 2px dashed var(--border); border-radius: var(--r-2); padding: var(--s-3) var(--s-4); margin-top: var(--s-2); }
 /* CMP:CSS:INICIO */
 #painel-propostas {
   --ink: var(--text); --muted: var(--text-2); --line: var(--border); --accent-soft: var(--surface-2); --on-accent: var(--bg); --warn-ink: var(--text);
@@ -783,6 +817,8 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
         <button role="tab" id="tab-nordeste" data-grupo="ganhar" data-tab="nordeste" aria-controls="painel-nordeste" aria-selected="false" tabindex="-1">Nordeste</button>
         <button role="tab" id="tab-realidade" data-grupo="checagem" data-tab="realidade" aria-controls="painel-realidade" aria-selected="false" tabindex="-1">Números e discursos</button>
         <button role="tab" id="tab-indireto" data-grupo="checagem" data-tab="indireto" aria-controls="painel-indireto" aria-selected="false" tabindex="-1">Indireto: o que cada um faz × diz</button>
+        <button role="tab" id="tab-campanha-2t" data-grupo="checagem" data-tab="campanha-2t" aria-controls="painel-campanha-2t" aria-selected="false" tabindex="-1">2º turno: campanha e indireto</button>
+        <button role="tab" id="tab-democracia" data-grupo="checagem" data-tab="democracia" aria-controls="painel-democracia" aria-selected="false" tabindex="-1">Risco democrático</button>
         <button role="tab" id="tab-propostas" data-grupo="propostas" data-tab="propostas" aria-controls="painel-propostas" aria-selected="false" tabindex="-1">Comparar propostas</button>
         <button role="tab" id="tab-cenarios" data-grupo="propostas" data-tab="cenarios" aria-controls="painel-cenarios" aria-selected="false" tabindex="-1">Cenários econômicos</button>
         <button role="tab" id="tab-pesquisas" data-grupo="dados" data-tab="pesquisas" aria-controls="painel-pesquisas" aria-selected="false" tabindex="-1">Pesquisas e mercado</button>
@@ -923,6 +959,27 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
       </details>
       <aside class="resumo" data-resumo="st-bast" hidden></aside>
     </div>
+  </section>
+  <section id="st2-pesquisas">
+    <h2>Pesquisas depois do 1º turno</h2>
+    <p class="sec-ap">Todas as pesquisas nacionais de 2º turno com campo terminando depois de 4/10 que o modelo usa, com o peso de cada uma, a mudança em relação à rodada anterior do mesmo instituto e o erro dele no 1º turno. Instituto por ordem de fim do campo.</p>
+    <div id="st2-pesq-tab"><p class="sub">Carregando…</p></div>
+    <div class="card" style="margin-top:12px">
+      <div class="chart-box"><canvas id="ch-st2-pesq" aria-label="Fatia de Flávio Bolsonaro e de Lula nos votos válidos em cada pesquisa depois do 1º turno"></canvas></div>
+    </div>
+    <div id="st2-pesq-extra"></div>
+    <aside class="resumo" data-resumo="st2-pesquisas" hidden></aside>
+  </section>
+  <section id="st2-vies">
+    <h2>Quanto a premissa de viés muda</h2>
+    <p class="sec-ap">O modelo precisa supor se as pesquisas erram para algum lado. Abaixo, as três suposições lado a lado, o teste de cada uma nas eleições de 2014, 2018 e 2022, e outras escolhas que poderiam mudar o resultado.</p>
+    <div id="st2-vies-corpo"><p class="sub">Carregando…</p></div>
+    <aside class="resumo" data-resumo="st2-vies" hidden></aside>
+  </section>
+  <section id="st2-mandato">
+    <h2>Quem completa o mandato (informativo, fora da chance de vencer)</h2>
+    <div id="st2-mandato-corpo"><p class="sub">Carregando…</p></div>
+    <aside class="resumo" data-resumo="st2-mandato" hidden></aside>
   </section>
   <aside class="resumo aba" data-resumo-aba="segundo-turno" hidden></aside>
   </div>
@@ -1209,6 +1266,91 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     <aside class="resumo" data-resumo="ind-simetria" hidden></aside>
   </section>
   <aside class="resumo aba" data-resumo-aba="indireto" hidden></aside>
+  </div>
+  <div role="tabpanel" class="painel" id="painel-campanha-2t" data-painel="campanha-2t" aria-labelledby="tab-campanha-2t" tabindex="-1">
+  <section id="c2-intro">
+    <h2>2º turno: campanha e indireto</h2>
+    <div id="c2-intro-corpo"><p class="sub">Carregando…</p></div>
+    <aside class="resumo" data-resumo="c2-intro" hidden></aside>
+  </section>
+  <section id="c2-linha">
+    <h2>Linha do tempo de 04/10 a 11/10</h2>
+    <div id="c2-linha-corpo"></div>
+    <aside class="resumo" data-resumo="c2-linha" hidden></aside>
+  </section>
+  <section id="c2-apoios">
+    <h2>Apoios e neutralidades</h2>
+    <div id="c2-apoios-corpo"></div>
+    <aside class="resumo" data-resumo="c2-apoios" hidden></aside>
+  </section>
+  <section id="c2-justica">
+    <h2>Decisões do TSE e da Justiça</h2>
+    <div id="c2-justica-corpo"></div>
+    <aside class="resumo" data-resumo="c2-justica" hidden></aside>
+  </section>
+  <section id="c2-mercados">
+    <h2>Mercados de previsão e preços de ativos</h2>
+    <div id="c2-mercados-corpo"></div>
+    <aside class="resumo" data-resumo="c2-mercados" hidden></aside>
+  </section>
+  <section id="c2-indireto">
+    <h2>O indireto no 2º turno: regra de força e placar</h2>
+    <div id="c2-indireto-corpo"></div>
+    <aside class="resumo" data-resumo="c2-indireto" hidden></aside>
+  </section>
+  <section id="c2-disputados">
+    <h2>Itens disputados e não verificados</h2>
+    <div id="c2-disputados-corpo"></div>
+    <aside class="resumo" data-resumo="c2-disputados" hidden></aside>
+  </section>
+  <aside class="resumo aba" data-resumo-aba="campanha-2t" hidden></aside>
+  </div>
+  <div role="tabpanel" class="painel" id="painel-democracia" data-painel="democracia" aria-labelledby="tab-democracia" tabindex="-1">
+  <section id="dm-intro">
+    <h2>Risco democrático: o que os dados dizem</h2>
+    <div id="dm-intro-corpo"><p class="sub">Carregando…</p></div>
+    <aside class="resumo" data-resumo="dm-intro" hidden></aside>
+  </section>
+  <section id="dm-vereditos">
+    <h2>Vereditos: forma forte e forma fraca de cada tese</h2>
+    <div id="dm-vereditos-corpo"></div>
+    <aside class="resumo" data-resumo="dm-vereditos" hidden></aside>
+  </section>
+  <section id="dm-evidencia">
+    <h2>A evidência mais forte de cada lado, lado a lado</h2>
+    <div id="dm-evidencia-corpo"></div>
+    <aside class="resumo" data-resumo="dm-evidencia" hidden></aside>
+  </section>
+  <section id="dm-freios">
+    <h2>Freios que valem para qualquer vencedor</h2>
+    <div id="dm-freios-corpo"></div>
+    <aside class="resumo" data-resumo="dm-freios" hidden></aside>
+  </section>
+  <section id="dm-indices">
+    <h2>Índices de democracia: V-Dem e Freedom House</h2>
+    <div class="tr-graf">
+      <div class="card"><div class="chart-box"><canvas id="ch-dm-vdem" aria-label="V-Dem, Brasil, 2014 a 2025: democracia liberal, liberdade de expressão e restrição judicial ao Executivo"></canvas></div></div>
+      <div class="card"><div class="chart-box"><canvas id="ch-dm-fh" aria-label="Freedom House, Liberdade no Mundo, Brasil, edições de 2018 a 2026"></canvas></div></div>
+    </div>
+    <div id="dm-indices-corpo"></div>
+    <aside class="resumo" data-resumo="dm-indices" hidden></aside>
+  </section>
+  <section id="dm-sinais">
+    <h2>Sinais a observar depois de 25/10, para os dois</h2>
+    <div id="dm-sinais-corpo"></div>
+    <aside class="resumo" data-resumo="dm-sinais" hidden></aside>
+  </section>
+  <section id="dm-peso">
+    <h2>Magnitude × probabilidade: por que os dois “parcialmente” não pesam igual</h2>
+    <div id="dm-peso-corpo"></div>
+    <aside class="resumo" data-resumo="dm-peso" hidden></aside>
+  </section>
+  <section id="dm-nv">
+    <h2>O que não foi verificado</h2>
+    <div id="dm-nv-corpo"></div>
+    <aside class="resumo" data-resumo="dm-nv" hidden></aside>
+  </section>
+  <aside class="resumo aba" data-resumo-aba="democracia" hidden></aside>
   </div>
   <!-- CMP:HTML:INICIO -->
   <div role="tabpanel" class="painel" id="painel-propostas" data-painel="propostas" aria-labelledby="tab-propostas" tabindex="-1">
@@ -1647,7 +1789,7 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     return fetch(vivo ? url + "?t=" + Date.now() : url, vivo ? { cache: "no-store" } : {}).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
   }
   function carregarT2() {
-    return jget("resultados_2t.json", true).then(function (a) { T2 = a; safe(renderComece); if (D) { safe(render2T); safe(renderApuracao); } })
+    return jget("resultados_2t.json", true).then(function (a) { T2 = a; safe(renderComece); safe(renderSt2); if (D) { safe(render2T); safe(renderApuracao); } })
       .catch(function () { if (!T2) { var el = document.getElementById("segundo-turno"); if (el) el.style.display = "none"; safe(renderComece); } });
   }
   function carregarNucleo() {
@@ -1869,6 +2011,9 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     "ch-mv": "probabilidade de vitória implícita nos preços de apostas ao longo do dia (horário de Brasília), normalizada para somar 100%. Linha contínua: Polymarket; tracejada: Kalshi.",
     "ch-cal": "se o modelo está bem calibrado, a curva fica sobre a diagonal “ideal”: um intervalo nominal de 80% deve conter o resultado em 80% dos casos.",
     "ch-pit": "cada barra conta quantos resultados reais caíram em cada décimo da distribuição prevista. Barras próximas da linha tracejada (10%) indicam ausência de viés sistemático; a faixa sombreada é a variação esperada por acaso.",
+    "ch-st2-pesq": "cada linha é um instituto; o losango é a fatia de Flávio e o círculo a de Lula nos votos válidos (os dois somam 100%). Tracejado: média ponderada do modelo; pontilhado: o 1º turno real entre os dois.",
+    "ch-dm-vdem": "cada linha é um índice do V-Dem de 0 a 1 (mais alto = mais democrático naquele quesito), por ano de referência. O eixo começa em 0,4.",
+    "ch-dm-fh": "pontuação da Freedom House de 0 a 100 por edição do relatório; cada edição cobre o ano anterior. O eixo começa em 60.",
     "ch-cur-serie": "abstenção é a % dos eleitores aptos que não votaram; brancos e nulos são a % dos votantes. Série do 1º turno para presidente."
   };
   var pendCh = {};
@@ -2993,6 +3138,44 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     return LN[lado] + " (" + n + " itens): " + RD.checagem.escala.map(function (e) { var k = rdConta(lado, e[0]); return k ? e[1].toLowerCase().replace(/ \(.*\)$/, "") + " " + k : null; }).filter(Boolean).join("; ") + ".";
   }
   var RESUMO = {
+    // 2º turno: pesquisas pós-1T, visões de viés e mandato (resultados_2t.json)
+    "st2-pesquisas": function () { var rows = st2Linhas(); if (!rows) return ["Sem pesquisas pós-1º turno nesta rodada."];
+      var M = st2Media(), R1 = st2Real1T(), S = t2S(), ms = S.pesquisas_2t.pos.media_sem_cada_instituto || {};
+      var mx = rows.slice().sort(function (a, b) { return b.flavio - a.flavio; }), sem = Object.keys(ms).map(function (k) { var l = S.par[0] === "Lula" ? ms[k] * 100 : 100 - ms[k] * 100; return { k: k, f: 100 - l }; }).sort(function (a, b) { return a.f - b.f; });
+      var parc = rows.filter(function (r) { return r.frac < 1; });
+      return [rows.length + " pesquisas nacionais com campo terminando depois do 1º turno; média ponderada do modelo nos válidos: Flávio " + FMT.n(M.flavio, 1) + "% × Lula " + FMT.n(M.lula, 1) + "%" + (R1 ? ", contra " + FMT.n(R1.flavio, 1) + "% × " + FMT.n(R1.lula, 1) + "% no 1º turno real entre os dois." : "."),
+        "Entre institutos, Flávio vai de " + FMT.n(mx[mx.length - 1].flavio, 1) + "% (" + mx[mx.length - 1].inst + ") a " + FMT.n(mx[0].flavio, 1) + "% (" + mx[0].inst + ") dos válidos.",
+        sem.length ? "Tirando um instituto por vez, a média de Flávio fica entre " + FMT.n(sem[0].f, 2) + "% (sem " + sem[0].k + ") e " + FMT.n(sem[sem.length - 1].f, 2) + "% (sem " + sem[sem.length - 1].k + "): nenhum instituto sozinho muda a média em mais de " + FMT.n(Math.max(Math.abs(sem[0].f - M.flavio), Math.abs(sem[sem.length - 1].f - M.flavio)), 1) + " p.p." : null,
+        parc.length ? parc.map(function (r) { return r.inst + " entra com " + r.dias[0] + "/" + r.dias[1] + " do peso que teria, porque só essa fração dos dias de campo foi depois do 1º turno (" + dmy(r.ini).slice(0, 5) + "–" + dmy(r.fim).slice(0, 5) + ")."; }).join(" ") : null,
+        S.centro && S.centro.peso_pesquisas_pos_1t != null ? "Peso das pesquisas pós-1º turno no centro da projeção: " + FMT.n(S.centro.peso_pesquisas_pos_1t * 100, 0) + "%." : null]; },
+    "st2-vies": function () { var S = t2S(); if (!S || !S.visoes_vies) return null; var V = S.visoes_vies.visoes, pl = function (v) { return S.par[0] === "Lula" ? v.p_a_vence : 1 - v.p_a_vence; };
+      var ks = VIS_ORD.filter(function (k) { return V[k[0]]; });
+      var cp = parFL(S, S.centro.centro_a_pct).f, var_ = (S.sensibilidade_pos_1t || []).concat((S.sensibilidade_endosso || {}).tabela || []).map(function (x) { return Math.abs(parFL(S, x.centro_a_pct).f - cp); });
+      var pior = ks.slice().sort(function (a, b) { return ((V[b[0]].backtest || {}).rmse_centro_pp || 0) - ((V[a[0]].backtest || {}).rmse_centro_pp || 0); })[0];
+      return ["Chance de Flávio: " + ks.map(function (k) { return k[1].toLowerCase() + " " + FMT.n((1 - pl(V[k[0]])) * 100, 1) + "%"; }).join(", ") + "; de Lula: " + ks.map(function (k) { return k[1].toLowerCase() + " " + FMT.n(pl(V[k[0]]) * 100, 1) + "%"; }).join(", ") + ".",
+        "Centro de Flávio nos válidos: " + ks.map(function (k) { return k[1].toLowerCase() + " " + FMT.n(parFL(S, V[k[0]].centro_a_pct).f, 1) + "%"; }).join(", ") + ".",
+        pior ? "No teste com 2014, 2018 e 2022, a suposição de " + pior[1].toLowerCase() + " teve o maior erro do centro (" + FMT.n(V[pior[0]].backtest.rmse_centro_pp, 2) + " p.p.) e sua faixa de 80% conteve o resultado em " + FMT.n(V[pior[0]].backtest.cob80 * 100, 0) + "% dos casos." : null,
+        var_.length ? "As outras escolhas testadas (excluir a pesquisa que atravessa o 1º turno, house effects, efeito dos apoios) mudam o centro de Flávio em no máximo " + FMT.n(Math.max.apply(null, var_), 2) + " p.p." : null]; },
+    "st2-mandato": function () { var S = t2S(), M = S ? S.mandato_2027_2030 : null; if (!M || !M.por_candidato) return null;
+      var ks = Object.keys(M.por_candidato).sort(ordemAlfa);
+      return ks.map(function (k) { var c = M.por_candidato[k], o = c.p_completa_se_eleito_pct; return "Se eleito, " + nomeC(k) + " (" + FMT.n(c.idade_na_posse, 1) + " anos na posse) completaria o mandato em " + FMT.n(o.central, 1) + "% dos casos (faixa " + FMT.faixa(Math.min(o.baixo, o.alto), Math.max(o.baixo, o.alto)) + "); quem assume se ele sair: " + c.vice + "."; })
+        .concat(["Informativo: não entra na chance de vencer; mesma tábua e mesmo método para os dois; estimativa atuarial, não previsão sobre uma pessoa."]); },
+    // Realidade × discurso: campanha do 2º turno e risco democrático (segundo_turno_conteudo.json)
+    "c2-intro": function () { return c2Res(function () { return C2.campanha_2t.cabecalho.filter(function (p) { return /^\*\*(Seleção|Revisão)/.test(p); }).map(function (p) { return p.replace(/\*\*/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/`/g, ""); }); }); },
+    "c2-linha": function () { return c2Res(function () { return C2.campanha_2t.linha_tempo.resumo; }); },
+    "c2-apoios": function () { return c2Res(function () { return C2.campanha_2t.apoios.resumo; }); },
+    "c2-justica": function () { return c2Res(function () { return C2.campanha_2t.justica.resumo; }); },
+    "c2-mercados": function () { return c2Res(function () { return C2.campanha_2t.mercados.resumo; }); },
+    "c2-indireto": function () { return c2Res(function () { return C2.campanha_2t.indireto.resumo; }); },
+    "c2-disputados": function () { return c2Res(function () { return C2.campanha_2t.disputados.resumo; }); },
+    "dm-intro": function () { return c2Res(function () { return [C2.risco_democratico.selecao.replace(/\*\*/g, "")]; }); },
+    "dm-vereditos": function () { return c2Res(function () { return C2.risco_democratico.vereditos.resumo; }); },
+    "dm-evidencia": function () { return c2Res(function () { return C2.risco_democratico.evidencia.resumo; }); },
+    "dm-freios": function () { return c2Res(function () { return C2.risco_democratico.freios.resumo; }); },
+    "dm-indices": function () { return c2Res(function () { return C2.risco_democratico.indices.resumo; }); },
+    "dm-sinais": function () { return c2Res(function () { return C2.risco_democratico.sinais.resumo; }); },
+    "dm-peso": function () { return c2Res(function () { return C2.risco_democratico.peso.resumo; }); },
+    "dm-nv": function () { return c2Res(function () { var n = C2.risco_democratico.nao_verificado; return [n.lista.length + " itens listados como não verificados na seção 11 da nota."].concat(n.resumo); }); },
     // 2º turno
     "st-hero": function () { var S = t2S(); if (!S) return null; var A = S.par[0], B = S.par[1], R1 = (T2.primeiro_turno_real || {}).nacional || {};
       return ["Probabilidade de vitória no modelo principal: " + curto(A) + " " + fmtPct(S.p_a_vence) + " e " + curto(B) + " " + fmtPct(S.p_b_vence) + ", em " + fmtN(S.n) + " simulações.",
@@ -3182,7 +3365,9 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     "propostas": function () { return window.__cmp ? window.__cmp.resumo("aba") : null; },
     "cenarios": function () { return prim("cen-intro", 2); },
     "glossario": function () { return [].concat(prim("gl-termos", 1), prim("gl-regras", 2)); },
-    "segundo-turno": function () { return [].concat(prim("st-hero"), prim("st-dist").slice(0, 1), prim("st-virada"), prim("st-fluxo"), prim("st-bast")); },
+    "segundo-turno": function () { return [].concat(prim("st-hero"), prim("st-dist").slice(0, 1), prim("st-virada"), prim("st-fluxo"), prim("st-bast"), prim("st2-pesquisas"), prim("st2-vies"), prim("st2-mandato", 2).slice(0, 2)); },
+    "campanha-2t": function () { return c2Res(function () { return C2.campanha_2t.resumo_aba; }); },
+    "democracia": function () { return c2Res(function () { return C2.risco_democratico.resumo_aba; }); },
     "primeiro-turno": function () { return [].concat(prim("resultado-1t", 2), prim("previsao-1t"), prim("p1-sens", 2)); },
     "estados": function () { return [].concat(prim("sec-estados", 2), prim("est-seg", 2)); },
     "nordeste": function () { return [].concat(prim("ne-resumo", 2), prim("ne-swing"), prim("ne-aritmetica"), prim("ne-trajetoria"), prim("ne-explicacoes")); },
@@ -3207,7 +3392,7 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
 
   // ---------- navegação em dois níveis: 5 áreas e suas seções (deep link com #âncora; lembra a última aba)
   function $(id) { return document.getElementById(id); }
-  var GRUPOS = { comece: ["comece"], ganhar: ["segundo-turno", "primeiro-turno", "estados", "nordeste"], checagem: ["realidade", "indireto"], propostas: ["propostas", "cenarios"], dados: ["pesquisas", "modelos", "bastidores", "curiosidades", "glossario"] };
+  var GRUPOS = { comece: ["comece"], ganhar: ["segundo-turno", "primeiro-turno", "estados", "nordeste"], checagem: ["realidade", "indireto", "campanha-2t", "democracia"], propostas: ["propostas", "cenarios"], dados: ["pesquisas", "modelos", "bastidores", "curiosidades", "glossario"] };
   var GRUPO_ORDEM = ["comece", "ganhar", "checagem", "propostas", "dados"];
   var TABS = [], GRUPO_DE = {}, ultimoSub = {};
   GRUPO_ORDEM.forEach(function (g) { GRUPOS[g].forEach(function (t) { TABS.push(t); GRUPO_DE[t] = g; }); });
@@ -3266,6 +3451,7 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     if (t === "realidade") uma("rd", function () { getJSON("realidade.json").then(function (r) { RD = r; safe(renderRealidade); }).catch(function (e) { var el = $("rd-intro-txt"); if (el) el.textContent = "Conteúdo indisponível (realidade.json: " + e.message + ")."; }); });
     if (t === "indireto") uma("ind", function () { getJSON("indireto.json").then(function (r) { IND = r; safe(renderIndireto); }).catch(function () { IND = null; safe(renderIndireto); }); });
     if (t === "glossario") carregarGlossario();
+    if (t === "segundo-turno" || t === "campanha-2t" || t === "democracia") carregarC2();
     if (t === "cenarios") safe(renderCenarios);
   }
 
@@ -3304,7 +3490,7 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
   // ---------- organização das abas longas: seções recolhíveis com Resumo sempre visível
   function organizarPainel(t) {
     var pn = $("painel-" + t); if (!pn || pn.dataset.org) return;
-    if (t !== "realidade" && t !== "nordeste" && t !== "segundo-turno") return;
+    if (t !== "realidade" && t !== "nordeste" && t !== "segundo-turno" && t !== "campanha-2t" && t !== "democracia") return;
     pn.dataset.org = "1";
     var abrirTudo = false; try { abrirTudo = localStorage.getItem("sec-expandir") === "1"; } catch (e) {}
     var dets = [];
@@ -3321,6 +3507,15 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
         else frag.appendChild(c);
       });
       corpo.appendChild(frag);
+      Array.prototype.slice.call(pn.children).filter(function (c) { return c.tagName === "SECTION" && c.id !== "segundo-turno"; }).forEach(function (sec) {   // seções pós-1T (st2-*): recolhidas, Resumo sempre visível
+        var h2 = sec.querySelector(":scope > h2"); if (!h2) return;
+        var res = sec.querySelector(":scope > aside.resumo");
+        var det = document.createElement("details"); det.className = "sec-det";
+        var sum = document.createElement("summary"); sum.appendChild(h2);
+        var cb = document.createElement("div"); cb.className = "sec-corpo";
+        Array.prototype.slice.call(sec.children).forEach(function (c) { if (c !== res) cb.appendChild(c); });
+        det.appendChild(sum); det.appendChild(cb); sec.insertBefore(det, res || null); det.open = false; dets.push(det);
+      });
     } else {
       var secs = Array.prototype.slice.call(pn.children).filter(function (c) { return c.tagName === "SECTION"; });
       secs.forEach(function (sec, i) {
@@ -3464,6 +3659,248 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     var av = $("cm-aviso"); if (av) { var fav = rows[0].p >= rows[1].p ? rows[0] : rows[1], und = fav === rows[0] ? rows[1] : rows[0];
       av.innerHTML = "<b>Estimativa, não certeza.</b> Em 10 disputas como esta, " + esc(curto(fav.id)) + " venceria em cerca de " + Math.round(fav.p * 10) + " e " + esc(curto(und.id)) + " em cerca de " + (10 - Math.round(fav.p * 10)) + ". Debates, apoios e pesquisas publicadas depois da última rodada não estão incluídos. <a href='#gl-monte-carlo'>O que isso significa</a>."; }
   }
+
+  // ---------- 2º turno pós-1T (resultados_2t.json) e conteúdo das notas (segundo_turno_conteudo.json, gerado por gerar_segundo_turno_json.py)
+  var C2 = null, C2_ERRO = false;
+  function carregarC2() {
+    uma("c2", function () {
+      getJSON("segundo_turno_conteudo.json").then(function (c) { C2 = c; renderC2Tudo(); })
+        .catch(function () { C2 = null; C2_ERRO = true; renderC2Tudo(); });
+    });
+  }
+  function renderC2Tudo() { safe(renderSt2); safe(renderCampanha2T); safe(renderDemocracia); }
+  var C2_PREP = "Dados em preparação: o arquivo segundo_turno_conteudo.json ainda não está disponível.";
+  // markdown leve das notas (negrito, link, código) -> HTML seguro; marcas [fato], [não verificado] etc. viram selos sem mudar o texto
+  function mdl(s) {
+    var h = esc(s == null ? "" : String(s));
+    h = h.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, function (_, t, u) { return "<a href='" + u + "' target='_blank' rel='noopener noreferrer'>" + t + "</a>"; });
+    h = h.replace(/\*\*([^*]+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>");
+    h = h.replace(/\[(fato|reportado|não verificado|disputado|inferência|leitura|calc|alegação|narrativa de [^\]]{1,40})((?:[,;] [^\]]{1,60})?)\]/g, function (m, t) { return "<span class='c2-tag" + (t === "não verificado" ? " nv" : "") + "'>" + m + "</span>"; });
+    return h;
+  }
+  function tabHTML(tb, cap, cls) {
+    if (!tb || !tb.cab) return "";
+    var cabLinha = !/Fl[áa]vio|Lula/.test(tb.cab[0]);    // 1ª coluna de um dos lados não vira cabeçalho em negrito (mesmo peso visual para os dois)
+    return "<div class='tbl-wrap c2-tw'><table class='c2-tab " + (cls || "") + "'>" + (cap ? "<caption>" + esc(cap) + "</caption>" : "") +
+      "<thead><tr>" + tb.cab.map(function (c) { return "<th scope='col'>" + mdl(c) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      tb.lin.map(function (r) { return "<tr>" + r.map(function (c, i) { return i === 0 && cabLinha ? "<th scope='row'>" + mdl(c) + "</th>" : "<td>" + mdl(c) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+  }
+  function listaHTML(itens, tag) {
+    return "<" + (tag || "ul") + " class='c2-lista'>" + (itens || []).map(function (it) {
+      return typeof it === "string" ? "<li>" + mdl(it) + "</li>" : "<li>" + mdl(it.md) + "<ul>" + (it.sub || []).map(function (x) { return "<li>" + mdl(x) + "</li>"; }).join("") + "</ul></li>";
+    }).join("") + "</" + (tag || "ul") + ">";
+  }
+  function blocosHTML(bs) {
+    return (bs || []).map(function (b) {
+      if (b.t === "p") return "<p class='c2-p'>" + mdl(b.md) + "</p>";
+      if (b.t === "h") return "<h4 class='c2-h'>" + mdl(b.md) + "</h4>";
+      if (b.t === "ul" || b.t === "ol") return listaHTML(b.itens, b.t);
+      if (b.t === "tab") return tabHTML(b);
+      return "";
+    }).join("");
+  }
+  function parasHTML(ps) { return (ps || []).map(function (p) { return "<p class='c2-p'>" + mdl(p) + "</p>"; }).join(""); }
+  function fonteHTML(f) { return "<p class='c2-p muted'>Fonte do texto: <code>" + esc(f) + "</code> (extraído sem reescrita por <code>simulador/gerar_segundo_turno_json.py</code>).</p>"; }
+  function put(id, h) { var el = $(id); if (el) el.innerHTML = h; }
+  function ordemAlfa(a, b) { return nomeC(a).localeCompare(nomeC(b), "pt-BR"); }
+
+  // --- 2º turno: pesquisas pós-1T, visões de viés, mandato
+  var D1T = "2026-10-04";
+  function diasEntre(a, b) { return Math.round((Date.parse(b + "T12:00:00Z") - Date.parse(a + "T12:00:00Z")) / 864e5); }
+  function st2Linhas() {
+    var S = t2S(); if (!S || !S.pesquisas_2t || !S.pesquisas_2t.pos || !S.pesquisas_2t.pos.tabela) return null;
+    var P = C2 ? C2.pesquisas_pos_1t : null, A = S.par[0];
+    var nota = {}, csv = {};
+    if (P) { (P.tabela || []).forEach(function (r) { nota[r.instituto] = r; }); (P.csv || []).forEach(function (r) { csv[r.instituto] = r; }); }
+    return S.pesquisas_2t.pos.tabela.map(function (r) {
+      var fa = A === "Lula" ? r.fatia_a_validos_pct : 100 - r.fatia_a_validos_pct;
+      var tot = diasEntre(r.campo_inicio, r.campo_fim) + 1, pos = Math.max(0, Math.min(tot, diasEntre(D1T, r.campo_fim)));
+      return { inst: r.instituto, ini: r.campo_inicio, fim: r.campo_fim, n: r.n, lula: fa, flavio: 100 - fa, peso: r.peso_rel, frac: r.fracao_pos_1t, dias: [pos, tot],
+        nota: nota[r.instituto] || null, csv: csv[r.instituto] || null, ant: P && P.anteriores ? P.anteriores[r.instituto] || null : null, ver: P && P.verificacao ? P.verificacao[r.instituto] || null : null };
+    }).sort(function (a, b) { return a.fim < b.fim ? -1 : a.fim > b.fim ? 1 : a.inst.localeCompare(b.inst, "pt-BR"); });
+  }
+  function st2Media() { var S = t2S(), q = S.pesquisas_2t.pos.q * 100; var l = S.par[0] === "Lula" ? q : 100 - q; return { lula: l, flavio: 100 - l }; }
+  function st2Real1T() { var R1 = (T2.primeiro_turno_real || {}).nacional || {}; if (R1.Lula == null || R1.Flavio == null) return null; var l = R1.Lula / (R1.Lula + R1.Flavio) * 100; return { lula: l, flavio: 100 - l }; }
+  function st2Pesq() {
+    var rows = st2Linhas(); if (!rows) { put("st2-pesq-tab", "<div class='vazio'><b>Sem pesquisas pós-1º turno nesta rodada.</b>A tabela aparece quando o modelo do 2º turno usar pesquisas com campo depois de 4/10.</div>"); return; }
+    var M = st2Media(), R1 = st2Real1T(), S = t2S(), pos = S.pesquisas_2t.pos;
+    var h = "<div class='tbl-wrap c2-tw'><table class='c2-tab' id='st2-pesq-tabela'><caption>Votos totais e válidos em %. Totais como publicados; válidos recalculados pelo modelo a partir dos totais (podem diferir 0,1 do publicado). Margem Lula − Flávio e erro no 1º turno como nas notas (positivo = a favor de Lula).</caption><thead><tr>" +
+      "<th scope='col'>Instituto</th><th scope='col'>Campo</th><th scope='col' class='n'>n</th><th scope='col'>Votos totais: Flávio · Lula · branco/nulo · não sabe</th><th scope='col'>Válidos: Flávio · Lula</th><th scope='col'>Peso no modelo</th><th scope='col'>Mudança desde a rodada anterior (margem Lula − Flávio)</th><th scope='col'>Erro de margem no 1º turno</th></tr></thead><tbody>";
+    rows.forEach(function (r) {
+      var nt = r.nota, cv = r.csv, tot = cv ? FMT.n(cv.t2_flavio, cv.t2_flavio % 1 ? 1 : 0) + " · " + FMT.n(cv.t2_lula, cv.t2_lula % 1 ? 1 : 0) : "–";
+      if (nt) tot += " · " + mdl(nt.branco_nulo) + " · " + mdl(nt.ns);
+      var peso = FMT.n(r.peso * 100, 1) + "%" + (r.frac < 1 ? "<br><span class='muted'>só " + r.dias[0] + "/" + r.dias[1] + " dos dias de campo depois do 1º turno (fração " + FMT.n(r.frac, 2) + ")</span>" : "");
+      h += "<tr><th scope='row'>" + esc(r.inst) + (nt && nt.modo ? "<br><span class='muted'>" + mdl(nt.modo) + "</span>" : "") + "</th><td>" + dmy(r.ini).slice(0, 5) + "–" + dmy(r.fim).slice(0, 5) + "</td><td class='n'>" + FMT.n(r.n) + "</td><td>" + tot + "</td><td>" +
+        FMT.n(r.flavio, 1) + " · " + FMT.n(r.lula, 1) + "</td><td>" + peso + "</td><td>" + (r.ant ? mdl(r.ant.mudanca) + "<br><span class='muted'>antes: " + mdl(r.ant.antes) + "</span>" : "–") + "</td><td>" + (r.ant ? mdl(r.ant.erro_1t) : "–") + "</td></tr>";
+    });
+    h += "<tr class='destaque'><th scope='row'>Média do modelo</th><td>–</td><td class='n'>–</td><td>–</td><td>" + FMT.n(M.flavio, 1) + " · " + FMT.n(M.lula, 1) + "</td><td>100%</td><td>–</td><td>–</td></tr>";
+    if (R1) h += "<tr><th scope='row'>1º turno real, só os dois</th><td>04/10</td><td class='n'>–</td><td>–</td><td>" + FMT.n(R1.flavio, 1) + " · " + FMT.n(R1.lula, 1) + "</td><td>–</td><td>–</td><td>–</td></tr>";
+    h += "</tbody></table></div>";
+    if (!C2) h += "<p class='c2-p muted'>" + esc(C2_ERRO ? C2_PREP : "Carregando totais, rodada anterior e erro no 1º turno…") + "</p>";
+    put("st2-pesq-tab", h);
+    // gráfico: fatia de cada um por instituto, com a média e o 1º turno
+    var nomes = rows.map(function (r) { return r.inst; });
+    var o = baseOpts("% dos votos válidos", "");
+    var lo = Math.floor(Math.min.apply(null, rows.map(function (r) { return r.lula; })) - 1.5), hi = Math.ceil(Math.max.apply(null, rows.map(function (r) { return r.flavio; })) + 1.5);
+    o.scales.x.min = Math.min(lo, 100 - hi); o.scales.x.max = Math.max(hi, 100 - lo); o.scales.x.ticks.callback = function (v) { return v + "%"; };
+    o.scales.y = { type: "linear", reverse: true, min: -0.6, max: rows.length - 0.4, grid: { display: false }, border: { display: false }, ticks: { stepSize: 1, autoSkip: false, color: css("--text-2"), font: { size: 12, family: FONTE }, callback: function (v) { return Number.isInteger(v) && nomes[v] ? nomes[v] : ""; } } };
+    o.layout = { padding: { top: 34 } };
+    var it = [{ t: "linha", x: 50, cor: css("--text") }];
+    it.push({ t: "linha", x: M.flavio, cor: css("--text-2"), dash: [5, 4], r: "média " + FMT.n(M.flavio, 1), align: "left", row: -1 });
+    it.push({ t: "linha", x: M.lula, cor: css("--text-2"), dash: [5, 4], r: "média " + FMT.n(M.lula, 1), align: "right", row: -1 });
+    if (R1) { it.push({ t: "linha", x: R1.flavio, cor: css("--text-3"), dash: [2, 3], r: "1º turno " + FMT.n(R1.flavio, 1), align: "left", row: -2 }); it.push({ t: "linha", x: R1.lula, cor: css("--text-3"), dash: [2, 3], r: "1º turno " + FMT.n(R1.lula, 1), align: "right", row: -2 }); }
+    o.plugins.anot = { itens: it };
+    o.plugins.tooltip.callbacks = { title: function (x) { return nomes[x[0].parsed.y]; }, label: function (x) { return x.dataset.label + ": " + FMT.n(x.parsed.x, 1) + "% dos válidos"; } };
+    o.interaction = { mode: "nearest", intersect: true };
+    setTitulo("ch-st2-pesq", "Pesquisas pós-1º turno: fatia de Flávio e de Lula nos válidos, por instituto", "Pontos: cada pesquisa. Tracejado: média do modelo (" + FMT.n(M.flavio, 1) + " × " + FMT.n(M.lula, 1) + "). Pontilhado: 1º turno real entre os dois" + (R1 ? " (" + FMT.n(R1.flavio, 1) + " × " + FMT.n(R1.lula, 1) + ")" : "") + ". Linha contínua: 50%.");
+    mk("ch-st2-pesq", { type: "scatter", plugins: [anot], data: { datasets: [
+      { label: "Flávio Bolsonaro", data: rows.map(function (r, i) { return { x: r.flavio, y: i }; }), backgroundColor: css("--flavio"), borderColor: css("--flavio"), pointRadius: 6, pointHoverRadius: 8, pointStyle: "rectRot" },
+      { label: "Lula", data: rows.map(function (r, i) { return { x: r.lula, y: i }; }), backgroundColor: css("--lula"), borderColor: css("--lula"), pointRadius: 6, pointHoverRadius: 8 }] }, options: o });
+    // média sem cada instituto + conferência das fontes
+    var ms = pos.media_sem_cada_instituto || {}, ks = Object.keys(ms).sort(function (a, b) { return a.localeCompare(b, "pt-BR"); });
+    var e = "<h3 class='st-h3'>Checagem: a média sem cada instituto</h3><p class='c2-p'>Se um instituto sozinho puxasse a média, tirá-lo mudaria muito o número. Cada linha recalcula a média ponderada sem aquele instituto.</p>";
+    e += "<div class='tbl-wrap c2-tw'><table class='c2-tab' id='st2-sem-cada'><thead><tr><th scope='col'>Sem</th><th scope='col' class='n'>Flávio</th><th scope='col' class='n'>Lula</th><th scope='col' class='n'>Diferença para a média com todos (Flávio, p.p.)</th></tr></thead><tbody>" +
+      ks.map(function (k) { var l = S.par[0] === "Lula" ? ms[k] * 100 : 100 - ms[k] * 100; return "<tr><th scope='row'>" + esc(k) + "</th><td class='n'>" + FMT.n(100 - l, 2) + "%</td><td class='n'>" + FMT.n(l, 2) + "%</td><td class='n'>" + FMT.pp(Math.round(((100 - l) - M.flavio) * 100) / 100 || 0, 2) + "</td></tr>"; }).join("") + "</tbody></table></div>";
+    if (C2 && C2.pesquisas_pos_1t) {
+      var P = C2.pesquisas_pos_1t;
+      e += "<p class='c2-p'>" + mdl(P.medias) + "</p>";
+      var vs = rows.filter(function (r) { return r.ver; });
+      if (vs.length) e += "<details class='c2-caixa'><summary>Conferência em fonte primária (12/10)</summary><ul class='c2-lista'>" + vs.map(function (r) { return "<li><b>" + esc(r.inst) + "</b>: " + mdl(r.ver.confirma) + " — " + mdl(r.ver.status) + "</li>"; }).join("") + "</ul>" + (P.verificacao_resumo ? "<p class='c2-p'>" + mdl(P.verificacao_resumo) + "</p>" : "") + "</details>";
+      e += "<details class='c2-caixa'><summary>Seleção e critério</summary>" + parasHTML(P.selecao) + "<p class='c2-p'>" + mdl(P.criterio) + "</p>" + fonteHTML(P.fonte) + "</details>";
+    }
+    put("st2-pesq-extra", e);
+  }
+  var VIS_ORD = [["neutro", "Neutro"], ["calibrado", "Calibrado (padrão)"], ["vies_pleno", "Viés pleno"]];
+  function parFL(S, a) { var l = S.par[0] === "Lula" ? a : 100 - a; return { l: l, f: 100 - l }; }
+  function st2Vies() {
+    var S = t2S(); if (!S || !S.visoes_vies || !S.visoes_vies.visoes) { put("st2-vies-corpo", "<div class='vazio'><b>Visões de viés indisponíveis nesta rodada.</b>Aparecem quando o modelo do 2º turno rodar com as três suposições.</div>"); return; }
+    var V = S.visoes_vies.visoes, pa = function (v) { return S.par[0] === "Lula" ? v.p_a_vence : 1 - v.p_a_vence; };
+    var h = "<div class='tbl-wrap c2-tw'><table class='c2-tab' id='st2-visoes'><caption>Chance de vencer, centro e faixa de 80% nos votos válidos. Teste: eleições de 2014, 2018 e 2022 (erro do centro, CRPS e quantas vezes a faixa de 80% conteve o resultado).</caption><thead><tr>" +
+      "<th scope='col'>Suposição sobre o viés</th><th scope='col' class='n'>Chance de Flávio</th><th scope='col' class='n'>Chance de Lula</th><th scope='col' class='n'>Centro: Flávio · Lula</th><th scope='col' class='n'>Faixa de 80%: Flávio</th><th scope='col' class='n'>Faixa de 80%: Lula</th><th scope='col' class='n'>Erro do centro no teste</th><th scope='col' class='n'>CRPS no teste</th><th scope='col' class='n'>Faixa de 80% acertou</th></tr></thead><tbody>";
+    VIS_ORD.forEach(function (k) {
+      var v = V[k[0]]; if (!v) return;
+      var pl = pa(v), c = parFL(S, v.centro_a_pct), q = [parFL(S, v.a_p10), parFL(S, v.a_p90)], b = v.backtest || {};
+      var fl = [Math.min(q[0].f, q[1].f), Math.max(q[0].f, q[1].f)], ll = [Math.min(q[0].l, q[1].l), Math.max(q[0].l, q[1].l)];
+      h += "<tr data-visao='" + k[0] + "'" + (k[0] === "calibrado" ? " class='destaque'" : "") + "><th scope='row'>" + esc(k[1]) + "<br><span class='muted' style='font-weight:400'>" + esc(v.descricao || "") + "</span></th><td class='n'>" + FMT.n((1 - pl) * 100, 1) + "%</td><td class='n'>" + FMT.n(pl * 100, 1) + "%</td><td class='n'>" + FMT.n(c.f, 1) + " · " + FMT.n(c.l, 1) + "</td><td class='n'>" + FMT.faixa(fl[0], fl[1]) + "</td><td class='n'>" + FMT.faixa(ll[0], ll[1]) + "</td><td class='n'>" + FMT.n(b.rmse_centro_pp, 2) + " p.p.</td><td class='n'>" + FMT.n(b.crps_medio_pp, 2) + "</td><td class='n'>" + FMT.n((b.cob80 || 0) * 100, 0) + "%</td></tr>";
+    });
+    h += "</tbody></table></div>";
+    var bt = S.backtest_pos_1t || {}, res = (bt.resumo || []), base = res.filter(function (r) { return r.variante === "padrao_sem_house"; })[0] || {};
+    var hz = (bt.horizontes || []).map(function (x) { return x === "vespera" ? "véspera" : x; });
+    var hzTxt = hz.length ? hz.filter(function (x) { return x !== "véspera"; }).join(", ").replace(/, ([^,]*)$/, " e $1") + " dias depois do 1º turno" + (hz.indexOf("véspera") >= 0 ? " e na véspera do 2º" : "") : "";
+    var vc = V.calibrado.backtest || {}, vn = V.neutro.backtest || {}, vp = (V.vies_pleno || {}).backtest || {};
+    h += "<h3 class='st-h3'>O teste no passado, em linguagem simples</h3><ul class='c2-lista'>" +
+      "<li>O modelo foi rodado de novo como se fosse " + esc(hzTxt) + " em 2014, 2018 e 2022 (" + FMT.n(base.casos || 0) + " casos), usando só as pesquisas que existiam em cada data.</li>" +
+      "<li>Erro típico do centro (raiz do erro quadrático médio): calibrado " + FMT.n(vc.rmse_centro_pp, 2) + " p.p., neutro " + FMT.n(vn.rmse_centro_pp, 2) + " p.p., viés pleno " + FMT.n(vp.rmse_centro_pp, 2) + " p.p.</li>" +
+      "<li>A faixa de 80% deveria conter o resultado real em cerca de 80% dos casos. Conteve em " + FMT.n((vc.cob80 || 0) * 100, 0) + "% (calibrado), " + FMT.n((vn.cob80 || 0) * 100, 0) + "% (neutro) e " + FMT.n((vp.cob80 || 0) * 100, 0) + "% (viés pleno).</li>" +
+      "<li>CRPS mede o erro da distribuição inteira, não só do centro (menor é melhor): " + FMT.n(vc.crps_medio_pp, 2) + " (calibrado), " + FMT.n(vn.crps_medio_pp, 2) + " (neutro), " + FMT.n(vp.crps_medio_pp, 2) + " (viés pleno).</li>";
+    var dec = bt.decisao || {}, dk = Object.keys(dec);
+    if (dk.length) { var passou = dk.filter(function (k) { return dec[k].passa; }); h += "<li>" + (passou.length ? "Passaram na regra de decisão (melhorar o CRPS na média e em pelo menos 2 das 3 eleições): " + esc(passou.join(", ")) + "." : "Nenhuma alternativa ao padrão passou na regra de decisão (melhorar o CRPS na média e em pelo menos 2 das 3 eleições); por isso ficam como sensibilidade.") + "</li>"; }
+    h += "<li>São só 3 eleições: diferenças pequenas entre as suposições cabem no acaso.</li></ul>";
+    // sensibilidades compactas
+    var cp = parFL(S, S.centro.centro_a_pct).f;
+    var linha = function (rot, x, p) { var c = parFL(S, x.centro_a_pct), pl = S.par[0] === "Lula" ? p : 1 - p; return "<tr><th scope='row'>" + esc(rot) + "</th><td class='n'>" + FMT.n((1 - pl) * 100, 1) + "%</td><td class='n'>" + FMT.n(pl * 100, 1) + "%</td><td class='n'>" + FMT.n(c.f, 2) + " · " + FMT.n(c.l, 2) + "</td><td class='n'>" + FMT.pp(Math.round((c.f - cp) * 100) / 100 || 0, 2) + "</td></tr>"; };
+    h += "<h3 class='st-h3'>Outras escolhas testadas</h3><div class='tbl-wrap c2-tw'><table class='c2-tab' id='st2-sens'><caption>Rodadas à parte; o padrão é a primeira linha de cada grupo. Diferença = centro de Flávio na variante menos o centro do padrão.</caption><thead><tr><th scope='col'>Variante</th><th scope='col' class='n'>Chance de Flávio</th><th scope='col' class='n'>Chance de Lula</th><th scope='col' class='n'>Centro: Flávio · Lula</th><th scope='col' class='n'>Diferença (p.p.)</th></tr></thead><tbody>";
+    var sp = S.sensibilidade_pos_1t || [];
+    if (sp.length) { h += "<tr class='grp'><th colspan='5'>Pesquisas pós-1º turno</th></tr>"; sp.forEach(function (x) { h += linha(x.variante + (x.institutos ? " (" + x.n_pesquisas_pos + " pesquisas)" : ""), x, x.p_a_vence); }); }
+    var se = S.sensibilidade_endosso;
+    if (se && se.tabela) { h += "<tr class='grp'><th colspan='5'>Efeito dos apoios de " + esc((se.candidatos || []).slice().sort(function (a, b) { return a.localeCompare(b, "pt-BR"); }).join(", ")) + " a " + esc(nomeC(se.para)) + "</th></tr>"; se.tabela.forEach(function (x) { h += linha(x.variante, x, x.p_a_vence); }); }
+    h += "</tbody></table></div>";
+    if (se && se.nota) h += "<details class='c2-caixa'><summary>Nota do modelo sobre os apoios</summary><p class='c2-p'>" + esc(se.nota) + "</p></details>";
+    if (S.visoes_vies.nota) h += "<p class='c2-p muted'>" + esc(S.visoes_vies.nota) + "</p>";
+    put("st2-vies-corpo", h);
+  }
+  function st2Mandato() {
+    var S = t2S(), M = S ? S.mandato_2027_2030 : null;
+    if (!M || !M.por_candidato) { put("st2-mandato-corpo", "<div class='vazio'><b>Estimativa indisponível nesta rodada.</b></div>"); return; }
+    var fx = function (o, d) { return o ? FMT.n(o.central, d == null ? 1 : d) + "%<small> (faixa " + FMT.faixa(Math.min(o.baixo, o.alto), Math.max(o.baixo, o.alto), d == null ? 1 : d) + ")</small>" : "–"; };
+    var ks = Object.keys(M.por_candidato).sort(ordemAlfa);
+    var h = "<div class='note st2-sep'><b>Separado da chance de vencer.</b> Estes números não entram na chance de vencer nem no centro da projeção. É uma estimativa atuarial (tábua de mortalidade do IBGE de 2024 pela idade, com faixa de ajuste, mais uma taxa de incapacidade grave), não uma previsão sobre a saúde de uma pessoa. O mesmo método vale para os dois.</div><div class='st2-mand'>";
+    ks.forEach(function (k) {
+      var c = M.por_candidato[k];
+      h += "<div class='card " + dotC(k) + "' data-cand='" + esc(k) + "'><div class='lab' style='display:flex;gap:6px;align-items:center;font-weight:650'><i class='dot " + dotC(k) + "'></i>" + esc(nomeC(k)) + "</div>" +
+        "<p class='c2-p' style='margin:4px 0 0'>" + FMT.n(c.idade_na_posse, 1) + " anos na posse · quem assume se ele sair: <b>" + esc(c.vice) + "</b></p><dl>" +
+        "<div><dt>Sai antes de 31/12/2030, se eleito</dt><dd>" + fx(c.p_saida_antecipada_pct) + "</dd></div>" +
+        "<div><dt>Completa o mandato, se eleito</dt><dd>" + fx(c.p_completa_se_eleito_pct) + "</dd></div>" +
+        "<div><dt>Morte no mandato pela tábua, sem ajuste</dt><dd>" + FMT.n(c.morte_no_mandato_tabua_pct, 2) + "%</dd></div></dl></div>";
+    });
+    h += "</div><p class='c2-p muted'>Faixa: do cenário de menor ao de maior risco de saída. " + esc(M.nota || "") + "</p>";
+    h += "<details class='c2-caixa'><summary>Método e fontes</summary><p class='c2-p'>" + esc(M.metodo || "") + "</p><ul class='c2-lista'>" + ks.map(function (k) { return "<li><b>" + esc(nomeC(k)) + "</b>: " + esc(M.por_candidato[k].fonte || "") + "</li>"; }).join("") + "</ul></details>";
+    put("st2-mandato-corpo", h);
+  }
+  function renderSt2() { if (!T2) return; [st2Pesq, st2Vies, st2Mandato].forEach(safe); }
+
+  // --- Realidade × discurso: 2º turno, campanha e indireto
+  function casoHTML(cs, cod) {
+    var c = cs[cod]; if (!c) return "<li>" + esc(cod) + "</li>";
+    return "<details class='c2-caso' data-caso='" + esc(cod) + "'><summary><b>" + esc(cod) + "</b> " + mdl(c.titulo) + (c.forca ? " <span class='vd forca'>" + esc(c.forca) + "</span>" : "") + "</summary>" +
+      (c.versoes || []).map(function (v) { return "<p class='c2-p'><b>" + esc(v.rotulo) + ":</b> " + mdl(v.titulo) + "</p>" + blocosHTML(v.blocos); }).join("") + "</details>";
+  }
+  function renderCampanha2T() {
+    if (!$("c2-intro-corpo")) return;
+    var K = C2 ? C2.campanha_2t : null;
+    if (!K) { put("c2-intro-corpo", "<div class='vazio'><b>Dados em preparação.</b>" + esc(C2_ERRO ? C2_PREP : "Carregando…") + "</div>"); return; }
+    put("c2-intro-corpo", "<p class='c2-p'><b>" + mdl(K.titulo) + "</b></p>" + parasHTML(K.cabecalho) + fonteHTML(K.fonte));
+    var L = K.linha_tempo;
+    put("c2-linha-corpo", "<div class='c2-caixa'><h3>Correções feitas depois (12/10)</h3>" + listaHTML(L.correcoes) + "</div>" +
+      tabHTML(L.ate_09, "De 04/10 a 09/10 (levantamento de 09/10; ver as correções acima)") + tabHTML(L.de_09_a_11, "De 09/10 a 11/10 (atualização de 12/10)"));
+    var A = K.apoios;
+    put("c2-apoios-corpo", tabHTML(A.eliminados, "Candidatos eliminados no 1º turno") + tabHTML(A.novos, "Apoios novos desde 09/10") + tabHTML(A.partidos, "Partidos") +
+      "<p class='c2-p'>" + mdl(A.governadores_base) + "</p>" + tabHTML(A.governadores, "Governadores e outros nomes") +
+      "<details class='c2-caixa'><summary>O que os apoios mudam na matriz de transferência do modelo</summary>" + blocosHTML(A.matriz) + "</details>");
+    var J = K.justica;
+    put("c2-justica-corpo", tabHTML(J.decisoes, "Decisões judiciais e investigações desde 04/10") + "<p class='c2-p'>" + mdl(J.atualizacao) + "</p>");
+    var Mk = K.mercados;
+    put("c2-mercados-corpo", tabHTML(Mk.previsao, "Mercados de previsão (vencedor da eleição)") + tabHTML(Mk.previsao_12_10, "Atualização de 12/10") + parasHTML(Mk.previsao_notas) +
+      tabHTML(Mk.ativos, "Ativos") + tabHTML(Mk.ativos_12_10, "Ativos, atualização de 12/10") + parasHTML(Mk.ativos_notas) +
+      "<details class='c2-caixa'><summary>Notas de bancos: o que elas condicionam</summary>" + tabHTML(Mk.bancos) + parasHTML(Mk.bancos_notas) + "</details>");
+    var I = K.indireto, cs = I.casos || {}, P = I.placar;
+    var plc = "<div class='tbl-wrap c2-tw'><table class='c2-tab c2-placar' id='c2-placar'><caption>Placar final da revisão de 12/10, mesma regra para os dois lados. Cada código abre o caso abaixo.</caption><thead><tr><th scope='col'>Força</th>" + P.colunas.map(function (c) { return "<th scope='col'>" + esc(c) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      P.linhas.map(function (l) { return "<tr><th scope='row'>" + esc(l.forca) + "</th>" + [l.flavio, l.lula].map(function (cods) { return "<td><ul>" + cods.map(function (cod) { return "<li><b>" + esc(cod) + "</b> " + mdl(cs[cod] ? cs[cod].titulo : "") + "</li>"; }).join("") + "</ul></td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+    var col = function (lado, rot) { var cods = []; P.linhas.forEach(function (l) { cods = cods.concat(l[lado]); }); return "<div class='ind-col'><h4>" + esc(rot) + " (" + cods.length + " casos)</h4>" + cods.map(function (cod) { return casoHTML(cs, cod); }).join("") + "</div>"; };
+    put("c2-indireto-corpo", "<p class='c2-p'>" + mdl(I.checklist) + "</p><div class='c2-caixa'><h3>Regra única de força (vale para os dois lados)</h3>" + listaHTML(I.regra) + "</div>" + plc + parasHTML(I.placar_notas) +
+      "<h3 class='st-h3'>Os casos, um a um</h3><div class='ind-duo'>" + col("flavio", "Flávio, PL, aliados e porta-vozes") + col("lula", "Lula, PT, governo e porta-vozes") + "</div>" +
+      "<div class='c2-caixa'><h3>Teste do espelho</h3>" + listaHTML(I.espelho) + "</div>" +
+      "<h3 class='st-h3'>" + esc(I.vorcaro.titulo) + "</h3>" + tabHTML(I.vorcaro.tabela) + parasHTML(I.vorcaro.notas) +
+      "<details class='c2-caixa'><summary>Conflitos entre as duas revisões e como foram resolvidos</summary>" + tabHTML(I.conflitos) + "</details>");
+    var Dp = K.disputados;
+    put("c2-disputados-corpo", listaHTML(Dp.lista) + "<p class='c2-p'>" + mdl(Dp.nao_verificado_12_10) + "</p><p class='c2-p'>" + mdl(Dp.nao_verificado_09_10) + "</p>");
+  }
+
+  // --- Realidade × discurso: risco democrático
+  function renderDemocracia() {
+    if (!$("dm-intro-corpo")) return;
+    var R = C2 ? C2.risco_democratico : null;
+    if (!R) { put("dm-intro-corpo", "<div class='vazio'><b>Dados em preparação.</b>" + esc(C2_ERRO ? C2_PREP : "Carregando…") + "</div>"); return; }
+    put("dm-intro-corpo", "<p class='c2-p'><b>" + mdl(R.titulo) + "</b></p><p class='c2-p'>" + mdl(R.data) + "</p><div class='c2-caixa'><h3>Convenções</h3>" + listaHTML(R.convencoes) + "</div><p class='c2-p'>" + mdl(R.selecao) + "</p>" + fonteHTML(R.fonte));
+    put("dm-vereditos-corpo", tabHTML(R.vereditos.tabela, "Resposta curta") + parasHTML(R.vereditos.notas));
+    var E = R.evidencia;
+    put("dm-evidencia-corpo", "<div class='ind-duo' id='dm-duo'><div class='ind-col' data-lado='flavio'><h4>" + mdl(E.flavio.titulo) + "</h4>" + blocosHTML(E.flavio.blocos) + "</div><div class='ind-col' data-lado='lula'><h4>" + mdl(E.lula.titulo) + "</h4>" + blocosHTML(E.lula.blocos) + "</div></div>" +
+      "<h3 class='st-h3'>Os quatro sinais de Levitsky e Ziblatt, com a mesma régua</h3>" + tabHTML(E.sinais_tabela) + "<p class='c2-p'>" + mdl(E.regua) + "</p>");
+    var F = R.freios;
+    put("dm-freios-corpo", tabHTML(F.quoruns, "Quóruns no Congresso eleito em 04/10/2026") + "<p class='c2-p'>" + mdl(F.quoruns_leitura) + "</p><p class='c2-p'>" + mdl(F.camara_fonte) + "</p><p class='c2-p'>" + mdl(F.senado) + "</p>" +
+      tabHTML(F.stf_projecao, "STF em 2031: projeção mecânica") + parasHTML(F.stf_notas) +
+      "<details class='c2-caixa'><summary>STF: quem indicou cada ministro e quando sai</summary>" + tabHTML(F.stf) + "</details>" +
+      "<details class='c2-caixa'><summary>Outros freios</summary>" + tabHTML(F.outros) + "</details><p class='c2-p'>" + mdl(F.sozinho) + "</p>");
+    var X = R.indices, vd = X.vdem, fh = X.freedom_house;
+    var ser = [["Democracia liberal (LDI)", "--text", []], ["Liberdade de expressão", "--text-2", [6, 4]], ["Restrição judicial ao Executivo", "--text-3", [2, 3]]];
+    var o = baseOpts("", "escala 0 a 1"); o.scales.x.min = vd.anos[0]; o.scales.x.max = vd.anos[vd.anos.length - 1]; o.scales.x.ticks.callback = function (v) { return String(v); }; o.scales.y.min = 0.4; o.scales.y.max = 1;
+    o.plugins.rotuloDireto = { itens: ser.map(function (s, i) { return { ds: i, texto: s[0].replace(" (LDI)", "") }; }) };
+    o.plugins.tooltip.callbacks = { title: function (x) { return String(x[0].parsed.x); }, label: function (x) { return x.dataset.label + ": " + FMT.n(x.parsed.y, 3); } };
+    o.layout = { padding: { right: 8 } };
+    setTitulo("ch-dm-vdem", "V-Dem: queda a partir de 2016, mínimo em 2019-22 e recuperação desde 2023", "Escala de 0 a 1; o eixo começa em 0,4. Dados v16 via Our World in Data (seção 4.1 da nota).");
+    mk("ch-dm-vdem", { type: "line", plugins: [rotuloDireto], data: { datasets: ser.map(function (s) { return { label: s[0], data: vd.anos.map(function (a, i) { return { x: a, y: vd.series[s[0]][i] }; }), borderColor: css(s[1]), backgroundColor: css(s[1]), borderDash: s[2], borderWidth: 2, pointRadius: 2, tension: 0 }; }) }, options: o });
+    var o2 = baseOpts("", "pontos de 0 a 100"); o2.scales.x.min = fh.anos[0]; o2.scales.x.max = fh.anos[fh.anos.length - 1]; o2.scales.x.ticks.callback = function (v) { return String(v); }; o2.scales.y.min = 60; o2.scales.y.max = 85;
+    o2.plugins.rotuloDireto = { itens: [{ ds: 0, texto: "Freedom House" }] };
+    o2.plugins.tooltip.callbacks = { title: function (x) { return "Edição " + x[0].parsed.x; }, label: function (x) { return FMT.n(x.parsed.y, 0) + " pontos"; } };
+    setTitulo("ch-dm-fh", "Freedom House: de 78 (edição de 2018) a 72-73 desde 2023", "Liberdade no Mundo, 0 a 100; a edição cobre o ano anterior. O eixo começa em 60.");
+    mk("ch-dm-fh", { type: "line", plugins: [rotuloDireto], data: { datasets: [{ label: fh.rotulo, data: fh.anos.map(function (a, i) { return { x: a, y: fh.valores[i] }; }), borderColor: css("--text"), backgroundColor: css("--text"), borderWidth: 2, pointRadius: 3, tension: 0 }] }, options: o2 });
+    put("dm-indices-corpo", parasHTML(X.vdem_nota) + "<h3 class='st-h3'>O que se moveu, e sob quem</h3>" + listaHTML(X.leitura, "ol") +
+      "<details class='c2-caixa'><summary>Freedom House, EIU, RSF e IDEA: tabela completa</summary>" + tabHTML(X.outros_indices) + "<p class='c2-p'>" + mdl(X.fontes_42) + "</p></details>");
+    put("dm-sinais-corpo", tabHTML(R.sinais.tabela, "Os dois lados, mesma estrutura"));
+    put("dm-peso-corpo", "<p class='c2-p'><b>" + mdl(R.peso.titulo) + "</b></p>" + blocosHTML(R.peso.blocos));
+    put("dm-nv-corpo", listaHTML(R.nao_verificado.lista));
+  }
+  function c2Res(f) { if (!C2) return [C2_ERRO ? C2_PREP : "Conteúdo carregando."]; try { return f(); } catch (e) { return null; } }
 
   // ---------- Indireto: o que cada um faz × diz (indireto.json)
   var IND = null, indF = { cat: "", lado: "", status: "", disp: "", vista: "lista", n: 12, montado: false };
