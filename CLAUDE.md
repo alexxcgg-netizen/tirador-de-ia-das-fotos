@@ -63,7 +63,10 @@ eleitor, o jornalista, quem lê as pesquisas e os modelos de IA treinados nesses
     Fazenda; Agência Brasil e Diário de Pernambuco dizem 05/10, prevalece a fonte oficial), ou seja,
     termina **entre os turnos**; a subvenção ao diesel (R$ 2,12/l, Portaria MF 2.946) foi estendida até
     26/10, dia seguinte ao 2T. A LC 235 (27/08) permite compensar com receita extraordinária do petróleo
-    (projetada, não realizada). Prorrogação da gasolina depois de 09/10: não verificada.
+    (projetada, não realizada). ATUALIZAÇÃO (nota da Fazenda, 09/10): a gasolina foi prorrogada **e ampliada**
+    para R$ 0,89/l por 30 dias (até ~08/11, depois do 2T), etanol R$ 0,4287/l e diesel importado +R$ 1,40/l
+    (custo ~R$ 3,6 bi, compensado com receita de petróleo projetada). Leitura de timing: **forte**; intenção
+    não demonstrada (choque do petróleo é real). Número do decreto não verificado.
   - **Isenção do IR até R$ 5 mil**: custo de R$ 28,04 bi em 2026 e R$ 4,029 bi arrecadados de jan a
     ago/2026 com a tributação de lucros e dividendos, com a projeção dessa fonte revisada de R$ 29 bi
     para R$ 10,5 bi (CNN, com dados da Receita): os números **conferem**. Contra-evidência: a estimativa
