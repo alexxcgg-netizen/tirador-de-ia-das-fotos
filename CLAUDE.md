@@ -58,7 +58,10 @@ eleitor, o jornalista, quem lê as pesquisas e os modelos de IA treinados nesses
     (reposição, sem ganho real) e a ação do PL no TSE (art. 73) foi extinta sem julgar o mérito, por
     ilegitimidade. Escala: o Auxílio de 2022 foi +50% (R$ 400 para R$ 600), R$ 41,25 bi fora do teto,
     com cláusula de "estado de emergência"; não é "a mesma coisa". O que resta: o pagamento coincide
-    com a campanha e a conta cheia cai em 2027. Leitura: **fraca**, não "o caso mais forte".
+    com a campanha e a conta cheia cai em 2027. Leitura (dividida na revisão adversarial de 12/10,
+    `Segundo turno 2026/campanha_2t_eventos.md`, L3a/L3b): **calendário de pagamento: fraca**, não "o caso
+    mais forte"; **data da decisão: média**: os valores ficaram cerca de 3,5 anos sem correção (desde
+    mar/2023) e a correção saiu por decreto 17 dias antes do 1º turno; a reposição explica o tamanho, não a data.
   - **Corte de imposto da gasolina**: R$ 0,63/l de 10/09 a **09/10/2026** (Decreto 13.116; Agência Gov e
     Fazenda; Agência Brasil e Diário de Pernambuco dizem 05/10, prevalece a fonte oficial), ou seja,
     termina **entre os turnos**; a subvenção ao diesel (R$ 2,12/l, Portaria MF 2.946) foi estendida até
