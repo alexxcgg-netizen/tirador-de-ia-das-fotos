@@ -129,3 +129,121 @@ A tabela inclui tudo o que foi achado com o critério de data. Não é uma escol
 - Os institutos que superestimaram Lula no 1º turno agora mostram o maior movimento para Flávio. A Vox, que errou menos, mostra o contrário, com 9,7% de indecisos. Não dá para separar movimento real de recalibração.
 - Ainda estão pendentes AtlasIntel (9/10, com campo desde 3/10), Ipespe (10/10), DataTrends, Direct e Seta (10 e 11/10), Quaest RJ e DF (12/10) e a 2ª rodada do PoderData (13/10).
 - Ainda não há pesquisa estadual de 2T pós-1º turno publicada.
+
+---
+
+## Atualização de 12/10/2026 (coleta feita na noite de 11/10, ~22h de Brasília)
+
+Mesmo critério de verificação: dois veículos independentes ou fonte primária. De novo, **nenhum relatório primário de instituto foi aberto** (Poder360 deu 403; PesqEle não consultado). Tudo abaixo vem de veículos.
+
+### A. Correções e esclarecimentos sobre a coleta de 9/10
+- **AtlasIntel, datas confirmadas**: campo de **3 a 8/10**, n = 5.026, registro BR-03663/2026 (Gazeta do Povo, Exame, Brasil de Fato, Terra, BPMoney). A agenda da seção 4 estava certa. A Wikipedia EN lista 3 a 8/10 também.
+- **AtlasIntel, contratante [disputado]**: a Exame diz "contratada pela Bloomberg"; o Brasil de Fato diz "recursos do próprio instituto". Não resolvido.
+- **Datafolha, data final [disputado, continua]**: Terra (10/10) e BPMoney (11/10) dizem 6 a 8/10; Gazeta do Povo e Wikipedia dizem 6 a 7/10. O CSV continua com 6 a 7/10 (linha antiga, não editada). Somando as duas coletas: Terra, BPMoney, Brasil de Fato e as agendas da Band e do Metrópoles dizem 6 a 8/10; Gazeta do Povo, Wikipedia e Gazeta Mercantil dizem 6 a 7/10. Não há relatório primário para desempatar.
+- **Datafolha anterior**: o Terra informa a rodada de 3/10 como 47 × 46 em totais (Lula à frente) e 45 × 42 em válidos **do 1º turno**; isso confirma a linha do CSV.
+
+### B. Tabela consolidada: todas as pesquisas nacionais de 2º turno com campo terminando depois do 1º turno
+
+| Instituto | Campo | Divulg. | n | Modo | Registro TSE | Lula (total) | Flávio (total) | Branco/nulo | NS | Lula válidos | Flávio válidos | Margem |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| AtlasIntel | **3–8/10** (começa antes do 1T) | 9/10 | 5.026 | online (RDR) | BR-03663/2026 | 45,7 | 51,1 | 3,2 (junto) | (junto) | 47,2 | 52,8 | ±1 |
+| PoderData/Aya | 5–7/10 | 8/10 | 3.000 | telefone | BR-08134/2026 | 44 | 49 | 5 | 2 | 47 | 53 | ±1,8 |
+| Vox Brasil | 5–7/10 | 9/10 | 2.100 | presencial | BR-09623/2026 | 44,2 | 42,7 | 3,4 | 9,7 | 50,86 (*) | 49,14 (*) | ±2,15 |
+| Datafolha | 6–7/10 ou 6–8/10 | 8/10 | 2.520 | presencial | BR-02949/2026 | 45 | 49 | 5 | 1 | 48 | 52 | ±2 |
+| Ipespe/Abrapel | 6–8/10 | 10/10 | 1.500 | telefone [agenda; a matéria não diz] | BR-00933/2026 [agenda] | 44 | 49 | 5 | 3 | 47,3 | 52,7 | ±2,6 |
+| DataTrends | 7–9/10 | 11/10 | 2.000 | telefone automatizado (URA) | BR-03576/2026 | 44 | 50 | 5 | 1 | 46,9 | 53,1 | ±2,19 |
+
+(*) calculado pelo Metrópoles; a Vox não publicou válidos.
+
+Fontes novas:
+- AtlasIntel: [Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/pesquisa-eleitoral-2026/atlasintel-presidente-outubro-2026-segundo-turno/), [Exame](https://exame.com/brasil/pesquisa-atlasintel-2o-turno-flavio-bolsonaro-abre-54-pontos-de-vantagem-sobre-lula/), [Brasil de Fato](https://www.brasildefato.com.br/2026/10/09/pesquisa-atlasintelbloomberg-mostra-flavio-bolsonaro-com-528-dos-votos-validos-no-2o-turno-e-lula-com-472/), [Forbes](https://forbes.com.br/geral/2026/10/flavio-tem-511-e-lula-457-das-intencoes-de-voto-no-2o-turno-mostra-atlas/).
+- Ipespe: [Exame](https://exame.com/brasil/pesquisa-presidente-2o-turno-flavio-bolsonaro-tem-49-e-lula-44-diz-ipespe/), [gcmais](https://gcmais.com.br/noticias/2026/10/10/ipespe-no-2-turno-flavio-bolsonaro-lidera-com-52-7-contra-47-3-de-lula), [Jamildo](https://jamildo.com/politica/pesquisa-ipespe-flavio-bolsonaro-tem-49-e-lula-44-no-segundo-turno.html), [A Crítica](https://acritica.net/eleicoes-2026/ipespe-flavio-lula-segundo-turno/). O registro BR-00933/2026 e o modo telefone vêm da agenda de 9/10 (CartaCapital, Metrópoles, Band); as matérias de resultado não os repetem.
+- DataTrends: [Times Brasil](https://timesbrasil.com.br/eleicoes-2026/pesquisa-datatrends-flavio-tem-531-contra-469-de-lula/) (metodologia completa), [Revista Fórum](https://revistaforum.com.br/politica/datatrends-pesquisa-lula-flavio-2o-turno/) (datas, n), [Poder360](https://www.poder360.com.br/poder-eleicoes-2026/flavio-tem-531-e-lula-tem-469-em-votos-validos-diz-datatrends/) (título; página 403). Um blog dá Lula 46,1% nos válidos; os demais, 46,9% (46,9 + 53,1 = 100, então 46,1 é erro).
+
+**Médias (válidos, Flávio)**: média simples das 6 = **52,1**; mediana = **52,75**; sem a AtlasIntel (campo começa antes do 1T) = **52,0**. Cinco das seis dão Flávio à frente fora ou no limite da margem; a Vox é a única com Lula à frente. Resultado do 1T entre os dois: Flávio 51,0 × Lula 49,0. **A média subiu de 51,4 (3 pesquisas, 9/10) para 52,1 (6 pesquisas)**, porque as três novas (Atlas, Ipespe, DataTrends) ficaram todas entre 52,7 e 53,1.
+
+Agregadores (só para contexto, não entram no CSV): BBC News Brasil/PollingData dava Flávio +3 em 9/10 de manhã (NC News, fonte única); o Poder360 registrou "Flávio à frente em 4 de 5" antes da DataTrends.
+
+### C. Rejeição, aprovação e outras perguntas (novas)
+
+| Instituto | Rejeição Lula | Rejeição Flávio | Aprovação Lula | Outros |
+|---|---|---|---|---|
+| AtlasIntel | não publicada | não publicada | aprova 44,7 / desaprova 53,4; governo ótimo/bom 36,9, ruim/péssimo 51,9 | confiança por tema (F × L): equilíbrio fiscal 52 × 42; crime 53 × 43; pobreza 48 × 48; meio ambiente 47 × 47 (Exame) |
+| Ipespe | 49 | 46 | aprova 43 / desaprova 50 | espontânea F48 L43; 97% de cada lado repetem o voto; quem tem "máxima disposição de ir votar": F50 L45 (53 × 47 válidos); governo Bolsonaro retrospectivo 44 aprova / 50 desaprova; 79% querem mudança total ou parcial |
+| DataTrends | não publicada | não publicada | aprova 45 / desaprova 53 | – |
+
+Na Ipespe a rejeição de Lula (49) passa a de Flávio (46); no Datafolha e no PoderData era 46 × 43; na Vox 45,2 × 44,2. Em todos os quatro institutos que publicaram, **Lula tem rejeição maior que Flávio**, de 1 a 3 pontos.
+
+### D. Recortes por segmento (novos; todos em votos totais, fonte única secundária por instituto)
+
+| Segmento | Atlas L × F | Ipespe L × F | DataTrends L × F | Datafolha (9/10) | PoderData (9/10) |
+|---|---|---|---|---|---|
+| Nordeste | 57,6 × nd | 63 × 29 | 67 × 28,6 | 61 × 35 | 52 × 41 |
+| Sudeste | nd | 40 × 52 | 35,8 × 56,8 | 42 × 50 | 41 × 51 |
+| Sul | nd × 64,5 | 30 × 63 | 33,8 × 60 | 35 × 58 | 36 × 58 |
+| Centro-Oeste | nd × 65,7 | 33 × 59 (N+CO) | 25,7 × 63,8 | nd | 39 × 54 |
+| Norte | nd | (junto com CO) | 40 × 50,9 | nd | 48 × 43 |
+| Homens | nd × 57,7 | 38 × 53 | 41,5 × 52,5 | nd | 37 × 57 |
+| Mulheres | 53,6 × nd | 49 × 44 | 45,7 × 46,9 | nd | 50 × 42 |
+| Evangélicos | 23,5 × 72,7 | 30 × 61 | nd | 25 × 69 | nd |
+| Católicos | 49,0 × 48,7 | nd | nd | 53 × 41 | nd |
+| Até 2 SM | nd | 51 × 40 | nd | 52 × 41 | 48 × 42 |
+| 2 a 5 SM | nd | 37 × 55 | nd | 38 × 56 | 39 × 57 |
+| Fundamental | nd | 51 × 41 | 50,2 × 45,1 | 55 × 41 | 53 × 39 |
+| Médio | nd | 39 × 53 | nd | nd | 38 × 55 |
+| Superior | nd | nd | 30,4 × 60 | nd | 45 × 51 |
+| 16–24 | nd | nd | 30,9 × 60,2 | nd | 52 × 40 |
+| 60+ | nd | nd | 51 × 43,2 | nd | 42 × 52 |
+
+Fontes: Atlas (Exame); Ipespe (Exame); DataTrends (Times Brasil). Subgrupos têm margem bem maior que a total.
+
+O que os recortes mostram, com a mesma régua:
+- **Concordância**: Nordeste para Lula (de +11 a +38), Sul e Centro-Oeste para Flávio (+20 a +38), evangélicos para Flávio (+31 a +49), até 2 SM para Lula (+6 a +11), 2 a 5 SM para Flávio (+18). Esse padrão aparece nos cinco institutos.
+- **Discordância forte em idade**: DataTrends tem jovens de 16–24 com Flávio +29 e 60+ com Lula +8; PoderData tem o contrário (16–24 Lula +12; 60+ Flávio +10). Os dois não podem estar certos ao mesmo tempo; a diferença é de ~40 pontos de margem no grupo jovem. Hipótese (não verificada): a URA da DataTrends alcança pouco o jovem que vota em Lula, ou a ponderação por idade difere. **Não usar recorte etário de nenhum dos dois no modelo sem a tabela primária.**
+- **Mulheres**: Ipespe L+5, Atlas Lula 53,6, PoderData L+8, mas DataTrends F+1,2. De novo a DataTrends é o ponto fora da curva.
+- **Católicos**: Atlas dá empate (49 × 48,7); o Datafolha dá Lula +12. Se o Atlas estiver certo, Lula perdeu a vantagem num grupo que em 2022 foi dele.
+- **Sudeste**: entre Flávio +8 (Datafolha) e +21 (DataTrends). Os três institutos mais recentes dão Flávio +10 ou mais.
+
+### E. Comparação com a rodada anterior de cada instituto (tendência)
+
+| Instituto | Antes (2T) | Agora (2T) | Mudança na margem L − F (totais) | Erro de margem no 1T (`avaliacao_1t.json`) |
+|---|---|---|---|---|
+| AtlasIntel | 27/9–2/10: válidos L 50,1 × F 49,9 | válidos L 47,2 × F 52,8 | +0,2 → −5,6 (válidos): **−5,8** | +4,76 (superestimou Lula) |
+| Datafolha | 3/10: 47 × 46 | 45 × 49 | +1 → −4: **−5** | +4,04 |
+| PoderData | 30/9–2/10: 46 × 46 | 44 × 49 | 0 → −5: **−5** | +2,93 |
+| DataTrends | divulgada 2/10 (campo não localizado): 45 × 45 | 44 × 50 | 0 → −6: **−6** | sem avaliação (não estava no ranking) |
+| Vox Brasil | 29/9–1/10: 45,2 × 48,2 | 44,2 × 42,7 | −3,0 → +1,5: **+4,5** | +0,98 |
+| Ipespe | sem rodada anterior comparável (1ª do tracking) | 44 × 49 | – | sem avaliação |
+
+Leitura:
+- Quatro institutos com série movem de 5 a 6 pontos para Flávio; a Vox move 4,5 para Lula. **O padrão da coleta de 9/10 se repete**: os três institutos avaliados que mais superestimaram Lula no 1T (Atlas +4,8, Datafolha +4,0, PoderData +2,9) são os que mais andaram para Flávio. Continua impossível separar movimento real de recalibração; nenhum instituto declarou mudança de método (não verificado).
+- A DataTrends não tem erro de 1T avaliado e também andou 6 pontos para Flávio; isso é um sinal de movimento que **não** depende de "correção de quem errou", mas é um instituto só, por URA, com recortes estranhos (ver D).
+- A Vox segue isolada. Ela tem 9,7% de NS (os outros, 1 a 3%). Se os indecisos da Vox se dividissem como os decididos, a margem dela não muda; logo o isolamento não é só "indeciso"; é diferença de amostra ou ponderação.
+- O teste do espelho: se fossem quatro institutos que erraram a favor de Flávio no 1T movendo 5 pontos para Lula, a leitura correta seria a mesma (não separável). Escrevo isso para não tratar o movimento como prova nem como artefato.
+
+### F. Pesquisas anunciadas e ainda não divulgadas (em 11/10, ~22h)
+
+| Instituto | Escopo | Registro | Campo | n | Divulgação | Fonte |
+|---|---|---|---|---|---|---|
+| Quaest | RJ | BR-02875/2026 | 8–11/10, presencial | 1.302, ±3 | 12/10 | Revista Fórum, BPMoney, DCM |
+| Quaest | DF | BR-06799/2026 | 8–11/10, presencial | 1.104, ±3 | 12/10 | Revista Fórum, DCM |
+| PoderData (2ª rodada) | nacional | nd | 10–12/10 | 3.000 | 13/10 (prev.) | coleta de 9/10 |
+| Datafolha (2ª rodada) | nacional | BR-00466/2026 | 13–15/10, presencial | 2.520, ±2 | após 15/10 | NC News (fonte única) |
+| Direct Pesquisas | não declarado | BR-02236/2026 | 6–10/10 | 1.200 | era 10/10 | agenda, fonte única; **resultado não encontrado** |
+| Seta | não declarado | BR-04487/2026 | 7–10/10 | 1.500 | era 11/10 | agenda, fonte única; **resultado não encontrado** |
+
+Procurados e **não encontrados** com campo pós-1T: Quaest nacional, Genial/Quaest, Paraná Pesquisas, Real Time Big Data (última nacional: divulgada 1/10, 46 × 45), Futura (última: 2–3/10, já no CSV), Ipec, MDA/CNT, Gerp, Ideia, Nexus, Palver. Pode haver pesquisa divulgada e não indexada; a busca do dia mostrou atraso de indexação de 1 a 2 dias.
+
+## Pesquisas estaduais de 2º turno (atualização)
+Até 11/10 à noite, **nenhuma** pesquisa estadual de 2T presidencial com campo pós-1T foi divulgada. As da Quaest (RJ e DF) saem em 12/10 e agora está confirmado (Revista Fórum, DCM) que o questionário inclui o 2T presidencial Lula × Flávio, com espontânea e estimulada. O `pesquisas_estaduais_2t.csv` não foi alterado: as duas linhas "anunciada" continuam válidas. Referência anterior para o RJ: Quaest 19–22/9, Flávio 44 × Lula 36 (CNN). Resultado do 1T no RJ: Flávio 53,0 × Lula 39,4 (válidos). As pesquisas do Paraná que aparecem nas buscas (Real Time Big Data, 52 × 35 e 52 × 34) são de agosto.
+
+## Seleção (brecha 9), de novo
+A tabela B tem tudo o que achei com campo terminando depois de 4/10; não escolhi institutos. Três das seis novas pesquisas usam telefone ou URA e uma é online; só duas são presenciais (Datafolha, Vox), e elas são as duas com Lula mais forte. Isso **pode** ser efeito de modo (o eleitor de Lula de baixa renda é mais alcançado em domicílio), mas o Datafolha presencial também dá Flávio +4. Não há como testar com estes dados.
+
+## Resumo da aba (atualização de 12/10)
+- Agora são **seis** pesquisas nacionais de 2T com campo depois do 1T (a AtlasIntel começa em 3/10). Em válidos, Flávio tem de 52,0 a 53,1 em cinco delas; a Vox dá Lula 50,9. Média 52,1, mediana 52,75, contra 51,0 do placar do 1T entre os dois.
+- Quatro institutos com série anterior andaram 5 a 6 pontos para Flávio; a Vox andou 4,5 para Lula. Os que mais erraram a favor de Lula no 1T são os que mais andaram; a DataTrends, sem avaliação, também andou 6.
+- Rejeição de Lula maior que a de Flávio nos quatro institutos que publicaram (1 a 3 pontos); aprovação de Lula entre 43 e 45.
+- Segmentos: padrão estável por região, renda e religião em cinco institutos; idade e sexo discordam muito entre DataTrends e PoderData, e católicos entre Atlas e Datafolha. Tudo de fonte secundária.
+- Pendentes: Quaest RJ e DF (12/10), PoderData (13/10), Datafolha (campo 13–15/10). Direct e Seta: resultado não encontrado.
+- Ainda não há pesquisa estadual de 2T pós-1T publicada.

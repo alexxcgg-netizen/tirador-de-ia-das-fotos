@@ -385,3 +385,140 @@ Incerteza que não dá para reduzir agora: o mercado de previsão (85-88% Flávi
   US$ 10,6 mi pagos por Vorcaro; áudio do Intercept; inquérito da PF no STF com parecer favorável da
   PGR) está hoje em estágio de evidência mais avançado (FB34/FB44). Os dois casos envolvem Vorcaro
   financiando filme de cada lado; os dois devem ser reavaliados quando houver documento.
+
+---
+
+## Atualização de 12/10/2026 (eventos de 09/10 a 11/10; coleta na noite de 11/10, ~22h de Brasília)
+
+Mesma legenda ([fato], [reportado], [não verificado], [disputado]). Muitas páginas (Poder360, Metrópoles) deram 403 e foram lidas por resumo de busca; isso está marcado. Pesquisas ficam em `pesquisas_pos_1t.md`.
+
+### U1. Correções explícitas ao texto acima
+- **Gasolina (seções 1, 3.3, 5 L4, 7 e Resumo):** a desoneração **foi prorrogada e ampliada** em 09/10. Onde está "vence em 09/10 sem prorrogação confirmada", vale o item U3.
+- **Debate da Record de 11/10 (seções 1 e 3.1):** **cancelado** em 09/10. Não houve debate em 11/10.
+- **Ratinho Jr. (seção 2.3, "sem posição pós-1T"):** declarou apoio a Flávio em 10/10 (U4).
+- **Vorcaro × filme de Lula (bloco "Atualização após 09/10"):** o trecho "a defesa de Vorcaro diz ter mensagens e registros de saques" **não se confirma**. O advogado atual, Daniel Bialski, disse "desconheço a gravação e desconheço o teor dessa história" (Brasil de Fato, citando ICL) e que Vorcaro "não prestou nenhum novo depoimento à Polícia Federal" sobre isso (Lupa). A Lupa não achou nenhuma afirmação da defesa sobre mensagens ou saques. As capturas de mensagens publicadas são da **Veja**, não da defesa. Data: o áudio saiu no site da Veja em **08/10** (ICL, Jornal Opção) e a capa em 09/10; [disputado] sobre qual é a "data de publicação".
+
+### U2. Linha do tempo 09/10 a 11/10
+
+| Data | Evento | Status | Fonte |
+|---|---|---|---|
+| 08-09/10 | Veja publica relato atribuído a Vorcaro: ~R$ 30 mi em espécie para o documentário de Oliver Stone sobre Lula, via Instituto Lula, em troca de acesso a fundos de pensão, com Vaccari como interlocutor. | [reportado] (relato não corroborado) | Lupa, Poder360 (título) |
+| 09/10 | PF: Vorcaro "não prestou depoimento com o teor relatado na matéria, tampouco entregou à instituição anexos, documentos ou informações com o conteúdo ali descrito". PGR: não houve depoimento oral "justamente por conta da rejeição da proposta". UOL (via Lupa): o anexo não estava em nenhuma das três propostas (maio, junho, agosto) e os celulares apreendidos (2012 a nov/2025) não mencionam patrocínio do filme de Lula; há só uma mensagem de 2022 ("Filme do Oliver Stone" / "Toppp"). Oliver Stone nega ter recebido de Vorcaro. | [fato] (notas da PF e da PGR, citadas literalmente por vários veículos) | [Lupa](https://www.agencialupa.org/reportagem/2026/10/09/vorcaro-patrocinou-filme-sobre-lula-o-que-se-sabe-ate-agora/), [Brasil de Fato](https://www.brasildefato.com.br/2026/10/09/defesa-de-vorcaro-desconhece-audio-pf-e-pgr-desmentem-relato-da-veja-sobre-lula/), [CNN](https://www.cnnbrasil.com.br/blogs/jussara-soares/politica/pf-nega-que-vorcaro-tenha-relatado-verba-para-filme-de-lula-em-depoimento/), [Revista Oeste](https://revistaoeste.com/politica/relato-de-vorcaro-filme-lula-pf/) |
+| 09/10 | Campanha de Lula e PT anunciam 5 medidas: direito de resposta no TSE (0602772-67.2026.6.00.0000; pede retirada em 12 h e resposta na capa), queixa-crime contra Vorcaro, indenização de R$ 100 mil contra a Editora Abril e o jornalista Robson Bonin, pedido de retirada de vídeo do PL. Relator sorteado no TSE: Nunes Marques. Sem decisão encontrada. | [reportado] (2+ veículos) | [Congresso em Foco](https://www.congressoemfoco.com.br/noticia/123157/campanha-de-lula-ajuiza-5-acoes-contra-veja-apos-materia-sobre-vorcaro), [Jovem Pan](https://jovempan.com.br/politica/pt-prepara-pedido-de-direito-de-resposta-apos-materia-sobre-relacao-de-vorcaro-com-grupo-de-lula/), Revista Fórum |
+| 09/10 | Advogados do grupo Prerrogativas (Marco Aurélio de Carvalho e Reinaldo Santos de Almeida) pedem à PF que apure suposta articulação entre Vorcaro e aliados de Flávio: um HD com depoimento atribuído a Vorcaro teria sido entregue a terceiros, com promessa de prisão domiciliar em 2027 e soltura do pai. Os próprios autores dizem não ter tido acesso à gravação. | [reportado]; **alegação sem prova**, de grupo alinhado ao PT | [ICL](https://iclnoticias.com.br/pf-e-acionada-suspeita-de-trama-entre-vorcaro/), [Jornal Opção](https://www.jornalopcao.com.br/ultimas-noticias/pf-e-acionada-por-suspeita-de-armacao-eleitoral-entre-vorcaro-e-aliados-de-flavio-bolsonaro-877257/) |
+| 09/10 | Record cancela o debate de 11/10 por "incompatibilidade" de agendas, sem dizer de qual candidato. | [fato] | [Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/record-cancela-debate-entre-flavio-e-lula/), [Poder360](https://www.poder360.com.br/poder-eleicoes-2026/record-cancela-debate-entre-lula-e-flavio-marcado-para-domingo/) (título), gcmais |
+| 09/10 | Governo prorroga por 30 dias e **amplia** a desoneração da gasolina (de R$ 0,63 para R$ 0,89/l) e do etanol; anuncia subvenção extra de R$ 1,40/l ao diesel importado por 30 dias a partir de 13/10. | [fato] (Ministério da Fazenda) | U3 |
+| 09/10 | Lula abre a campanha de rua em Ceilândia (DF): "Esse país não será governado pelo sócio do Banco Master, pelos parentes do Vorcaro"; "vai ter muito debate na televisão"; "o país não voltará a ser governado pelo fascismo". | [fato] (fala gravada, 3+ veículos) | [Metrópoles](https://www.metropoles.com/brasil/lula-ato-campanha-ceilandia-brasilia), [Vermelho](https://vermelho.org.br/2026/10/09/pais-nao-voltara-a-ser-governado-pelo-fascismo-diz-lula-em-ceilandia-df/), [Revista Fórum](https://revistaforum.com.br/politica/lula-em-ceilandia-bora-virada/) |
+| ~09/10 | TSE concede direito de resposta a Flávio contra vídeo no Instagram de Lula que lhe atribuía intenção de cortar programas sociais, por isso "não constar em seu plano de governo"; proíbe republicar, multa de R$ 10 mil. Data exata, relator e número do processo não informados. | [reportado] (fonte única, ND Mais) | [ND Mais](https://ndmais.com.br/politica/flavio-bolsonaro-direito-resposta-lula-multa-tse/) |
+| 09/10 | Ibovespa fecha em recorde, 209.066,90 (+1,38%); dólar R$ 4,9856 (−0,76%). | [fato] (2 veículos) | U6 |
+| 10/10 | Ratinho Jr. (PSD-PR) declara apoio a Flávio ("Vamos caminhar juntos"), depois de falar com Flávio (ligação de 08/10) e Tarcísio. Sandro Alex (PSD), candidato dele ao governo do PR, também. O PSD nacional segue neutro (Kassab). | [fato] | [Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/ratinho-junior-declara-apoio-a-flavio-bolsonaro-no-2o-turno/), [Estado de Minas](https://www.em.com.br/politica/2026/10/7518759-ratinho-jr-declara-apoio-a-flavio-no-2-turno-vamos-caminhar-juntos.html), Metrópoles, Revista Oeste; Poder360 data em 11/10 ([disputado], dia) |
+| 10/10 | Lula em Natal (ato previsto). | [reportado] (agenda) | Metrópoles |
+| 11/10 | Sem debate (Record cancelado). | [fato] | – |
+| 12/10 | Feriado (Nossa Senhora Aparecida): B3 fechada; o próximo pregão é 13/10. | [fato] | calendário B3 |
+
+### U3. Combustíveis: o que saiu em 09/10
+- **Gasolina**: com o fim do Decreto 13.116 em 09/10, novo ato zera PIS/Pasep, Cofins e Cide sobre a gasolina A por **30 dias**: desconto de **R$ 0,89/l** (R$ 0,79 de PIS/Cofins + R$ 0,10 de Cide), contra R$ 0,63 antes. "Vale por 30 dias e pode ser prorrogada" (Fazenda). O número do novo decreto não aparece na nota. Vencimento por inferência: **~08/11, duas semanas depois do 2º turno**. O Sindicombustíveis-DF diz que o ganho adicional na bomba é de R$ 0,26/l e que o repasse depende de distribuidoras e postos.
+- **Etanol**: isenção de PIS/Cofins prorrogada (R$ 0,19/l) e subvenção ampliada de R$ 0,251 para R$ 0,4287/l.
+- **Diesel**: portaria a ser publicada em **13/10** dá R$ 1,40/l a mais ao diesel A importado por 30 dias (soma-se aos R$ 2,12/l da Portaria MF 2.946), custo de R$ 1,6 bi; base: MP 1.391 (11/09). Vencimento por inferência: ~12/11.
+- **Custo e compensação**: gasolina ~R$ 2,4 bi por mês (resumo de busca); gasolina + etanol R$ 3,6 bi em 2026 (Fazenda), compensados com "receitas extraordinárias de petróleo da União" (projetadas). Movimento Econômico fala em pacote de R$ 5,2 bi (inclui diesel). [números da Fazenda = fato; os outros, reportados]
+- Fontes: [Ministério da Fazenda, 09/10](https://www.gov.br/fazenda/pt-br/assuntos/noticias/2026/outubro/governo-federal-prorroga-desoneracao-da-gasolina-e-do-etanol), [Correio Braziliense](https://www.correiobraziliense.com.br/cidades-df/2026/10/7518201-desoneracao-da-gasolina-reduz-rs-026-por-litro-diz-sindicombustiveis.html), [O Imparcial](https://oimparcial.com.br/economia/2026/10/governo-zera-impostos-federais-sobre-a-gasolina-e-amplia-desconto-para-r-089-por-litro/), [DGABC](https://www.dgabc.com.br/Noticia/4351915/governo-zera-tributos-federais-da-gasolina-por-30-dias), [Movimento Econômico](https://movimentoeconomico.com.br/economia/combustivel/2026/10/09/pacote-de-r-52-bilhoes-amplia-desoneracao-da-gasolina-e-subsidios-ao-diesel/).
+- **Nota de calendário (o CLAUDE.md não foi editado; fica o registro):** o CLAUDE.md diz "Prorrogação da gasolina depois de 09/10: não verificada". Agora está verificada (prorrogada e ampliada até ~08/11).
+
+### U4. Apoios (novos desde 09/10)
+
+| Nome | Lado | Data | Status |
+|---|---|---|---|
+| Ratinho Jr. (PSD, gov. PR) e Sandro Alex (PSD-PR) | Flávio | 10/10 | [fato] |
+| PSD nacional | neutro (Kassab; vale também para os 2T estaduais) | confirmado | [reportado] |
+| Helder Barbalho (MDB, senador eleito pelo PA) | **sem posição pública**; Diário do Poder (~09/10) registra o "silêncio"; o governador eleito do PA, Dr. Daniel (Podemos), está com Flávio. Em 2022 Helder apoiou Lula. | – | [reportado] (fonte única) |
+| MDB nacional | nenhuma decisão de 2º turno encontrada; em março, 23 diretórios pediram neutralidade | – | [não verificado] |
+| Renan Santos, PSDB, Eduardo Leite, Michelle Bolsonaro | nada novo encontrado | – | [não verificado] |
+
+Efeito na matriz: Ratinho Jr. não foi candidato; o efeito é de palanque no PR, onde Flávio já tinha 52 × 34-35 nas pesquisas estaduais de agosto. Não muda a matriz por candidato.
+
+### U5. Debates, PEC 6x1 e TSE
+- **Debates restantes**: 15/10 (pool SBT/RedeTV!/CNN e outros), 18/10 (Band, 20h), 23/10 (Globo). Lula disse que irá a todos (Poder360, [reportado]; "vai ter muito debate na televisão", [fato]). A campanha de Flávio não confirmou nenhum; em 05/10 aliados aconselhavam ir só ao da Globo ou a nenhum (O Globo e portal da Record, via Rio Times, [reportado]). Possível conflito: entrevista de Lula à Globo em 15/10 ([reportado], fonte única).
+- **Quem derrubou a Record?** Não dito por ninguém. A Record falou em "agendas"; nenhuma campanha assumiu. É um caso de "não dito" (brecha 3/9): qualquer atribuição a um lado seria especulação.
+- **PEC 6x1 (Senado)**: 3 das 5 sessões de discussão feitas (06, 07 e 08/10); 1º turno previsto para ~15/10 (precisa de 49 votos). Sem calendário especial, o 2º turno da PEC pode cair no dia 25/10 ou depois; o governo prepara requerimento de calendário especial para votar os dois turnos na mesma semana (Rádio Senado, 08/10). A oposição, com Rogério Marinho (líder da oposição **e coordenador da campanha de Flávio**), articula o adiamento para depois do 2T, chamando a pauta de "oportunista" e "desesperada" (SP Diário, 07/10). Alcolumbre diz que não quer que a PEC "afete" a eleição. Transição: 2 horas a menos dois meses depois da promulgação; o resto em um ano (Seu Dinheiro). A CNI (parte interessada) estima +6,2% em preços, R$ 267,2 bi de custo e −0,7% no PIB; não há estimativa oficial. Fontes: [Rádio Senado](https://www12.senado.leg.br/radio/1/noticia/2026/10/08/votacao-em-segundo-turno-da-pec-do-fim-da-escala-6x1-pode-ter-calendario-acelerado), [Seu Dinheiro](https://www.seudinheiro.com/2026/economia/fim-da-escala-6x1-nova-regra-pode-sair-do-papel-antes-do-segundo-turno-entenda-em-que-pe-esta-a-votacao-giov/), [SP Diário](https://spdiario.com.br/noticias/politica/oposicao-articula-no-senado-adiamento-da-pec-que-acaba-com-a-escala-6x1-para-depois-do-segundo-turno.html).
+- **TSE**: (a) direito de resposta a Flávio contra vídeo de Lula sobre "cortar programas sociais" (U2; fonte única); (b) ações de Lula contra a Veja e um vídeo do PL, relator Nunes Marques, pendentes; (c) nada novo encontrado sobre a ação de Renan contra o reajuste do Bolsa Família.
+- **Dark Horse**: o fato mais recente é a nova perícia da PF, por ordem de Flávio Dino (STF), em celulares, computadores e documentos da Operação Wi-Fi apreendidos pela polícia de SP (Gazeta do Povo, DCM; reportado por volta de 01/10, **não é de 9-11/10**). Inquérito autorizado por André Mendonça; Flávio diz que foi "financiamento privado para um filme igualmente privado". Nada novo de 09 a 11/10 encontrado.
+
+### U6. Mercados
+
+| Momento | Polymarket Flávio | Polymarket Lula | Kalshi Flávio | Kalshi Lula | Fonte |
+|---|---|---|---|---|---|
+| 09/10, 05h37 UTC (anterior) | 85,75% | 13,5% | 88¢ | 13¢ | acima |
+| **12/10, 01h11 UTC** (11/10, 22h11 Brasília) | **86,05%** (bid 86,0 / ask 86,1; último 86,1) | **12,5%** (bid 12 / ask 13) | **87¢** (bid 87 / ask 88; último 87) | **13¢** (bid 12 / ask 13) | API Gamma (`brazil-presidential-election`) e API Kalshi (`KXBRPRES`), consulta direta minha |
+
+Volume do evento principal da Polymarket: **US$ 180,2 mi** (era 178,0 em 09/10). Kalshi: ~2,64 mi de contratos em Flávio e ~2,79 mi em Lula. Movimento de 09/10 a 12/10: praticamente parado (±1 p.p.), apesar de três pesquisas novas pró-Flávio e da reportagem da Veja. As ressalvas da seção 4.1 valem (mercado proibido e bloqueado no Brasil; errou o 1º colocado do 1T).
+
+| Data | Ibovespa | Var. | USD/BRL | Var. | Fonte |
+|---|---|---|---|---|---|
+| 08/10 | 206.220 | +0,94% | R$ 5,024 | +0,17% | acima |
+| **09/10** | **209.066,90** (recorde de fechamento e intradia) | **+1,38%** | **R$ 4,9856** | **−0,76%** | [Forbes](https://forbes.com.br/forbes-money/2026/10/ibovespa-recorde-dolar-abaixo-5-reais-pesquisas-eleitorais/), [CNN](https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-9-outubro-2026/) (R$ 4,98), [Rio Times](https://www.riotimesonline.com/brazil-markets-ibovespa-real-friday-october-9-2026/) (~R$ 4,99) |
+| 10-12/10 | sem pregão (fim de semana e feriado de 12/10) | – | – | – | – |
+
+Alta na semana [disputado]: CNN "8%", Rio Times "mais de 8%", Forbes "11,17%". Pela conta com o fechamento de antes do 1T citado pelo Rio Times (192.115), dá **+8,8%**; os 11,17% da Forbes não batem com esse ponto de partida. Dólar na semana: −4,44% (Forbes). Motivo declarado pela imprensa: pesquisas com Flávio à frente no 2T (CNN, Forbes). Inflação a 4,58%, acima do teto (Rio Times).
+
+### U7. O indireto (atualização de L2, L4, L5, F3, F5 e o caso Vorcaro), mesma estrutura para os dois lados
+
+**L4 revisto. Combustíveis: prorrogação de 30 dias com ampliação, a 16 dias do 2T.**
+1. Ato: em 09/10, a desoneração da gasolina passa de R$ 0,63 para R$ 0,89/l (+41%), o etanol de R$ 0,251 para R$ 0,4287/l (+71%) e o diesel importado ganha R$ 1,40/l (+66% sobre R$ 2,12), tudo por 30 dias, vencendo por volta de 08-12/11.
+2. Incentivo: o aumento do desconto chega à bomba antes de 25/10; a próxima decisão (prorrogar ou deixar subir) cai depois do voto.
+3. Leituras: "proteção contra a guerra" (governo, choque de petróleo real); "compra de voto com imposto" (oposição). Saída pronta: "o prazo de 30 dias é o mesmo do decreto anterior".
+5. Antes/depois: benefício ampliado agora; custo (R$ 3,6 bi em 2026 só gasolina e etanol, mais R$ 1,6 bi do diesel) pago com receita de petróleo **projetada**, e a decisão de encerrar empurrada para depois da eleição.
+- Contra-evidência: a cadência de 30 dias repete a do Decreto 13.116; o choque de petróleo (Ormuz) é real; a compensação está prevista em lei (LC 235). Não é "a mesma coisa" que 2022 em escala: a PEC de 2022 pôs R$ 41,25 bi fora do teto (FB12).
+- Critério pré-registrado: a seção 5 dizia "se houver prorrogação curta, só até depois de 25/10, sobe para forte; se for prorrogado por prazo longo ou encerrado, cai". O que veio foi uma prorrogação de 30 dias (nem só até 25/10 nem longa) **com ampliação**, que o critério não previa. **Força: forte para o timing** (ato e números oficiais: benefício aumentado dentro da janela eleitoral, fim do prazo depois do voto); **intenção não demonstrada** (o choque de preço é real). Teste do espelho: se o governo Bolsonaro tivesse ampliado o desconto em 41% a 16 dias do 2T de 2022 com vencimento depois do voto, este arquivo chamaria de forte; logo, forte aqui também.
+
+**L2 atualizado. PEC 6x1.** Novo ato: o governo prepara o calendário especial para concluir os dois turnos antes de 25/10 (Rádio Senado). Isso confirma a busca de entrega antes do voto; a vigência real (2 h em dois meses, o resto em um ano) fica para depois. **Força: média** (sem mudança; a votação ainda não ocorreu).
+
+**L5 atualizado. "Discurso do medo".** Novo: o TSE deu direito de resposta a Flávio contra vídeo que lhe atribuía cortar programas sociais, por não estar no plano (fonte única). Em Ceilândia, Lula disse que Flávio planeja "meter a mão no bolso do trabalhador" (Revista Fórum). Isso reforça a contra-evidência já anotada: a extrapolação "vai cortar programas" não está demonstrada, e agora uma decisão liminar diz o mesmo. **Força: média** mantida; a decisão é liminar e de fonte única.
+
+**Novo, L6. Lula e o Master: "não será governado pelo sócio do Banco Master, pelos parentes do Vorcaro" (09/10).**
+1. Dito: ataque ao vínculo Flávio-Vorcaro (Dark Horse) no mesmo dia em que a Veja publica o relato contra ele.
+2. Incentivo: usar o Master contra Flávio neutraliza o tema que Flávio usa contra Lula (Moraes e o contrato do escritório da mulher dele, ponto **disputado** no CLAUDE.md).
+4. De quem nunca fala mal: no discurso, nenhuma menção a Moraes ou ao contrato do escritório da mulher dele com o Master; a crítica de 01/10 (L29) não foi repetida neste ato (não encontrei).
+- Contra-evidência: a relação Flávio-Vorcaro no Dark Horse tem inquérito no STF com parecer favorável da PGR (FB34/FB44); a frase tem base. "Parentes do Vorcaro" é hipérbole sem fato achado.
+- **Força: média** para a seletividade (o Master aparece só do lado do adversário); a base factual contra Flávio é real.
+
+**F3 atualizado. PEC 6x1.** Novo ato: o líder da oposição e **coordenador da campanha de Flávio**, Rogério Marinho, articula adiar a votação para depois do 2T (brecha 1, porta-voz). Com isso Flávio pode não ter de dar o voto nominal antes da eleição. Contra-evidência: Alcolumbre também não quer a PEC na eleição, e o argumento "não votar no pico da campanha" se aplica igualmente ao timing do governo (L2). **Força: média** (a escala não tem degrau intermediário), e sobe para forte se o adiamento passar e Flávio não declarar o voto até 25/10.
+
+**F5 atualizado. Alianças e alvos.** Novo: Ratinho Jr. (PSD) entra; nada novo sobre Ciro Nogueira. Flávio usa a reportagem da Veja contra Lula (o PL tem vídeo que a campanha de Lula pede para retirar no TSE) **enquanto** ele próprio é investigado no Dark Horse com o mesmo Vorcaro como financiador. **Força: média** (sem mudança).
+
+**O caso Vorcaro, os dois lados com a mesma régua**
+
+| | Contra Lula (Veja, 08-09/10) | Contra Flávio (Dark Horse) | Contra Flávio (Prerrogativas, 09/10) |
+|---|---|---|---|
+| O que se alega | R$ 30 mi em espécie para o filme de Oliver Stone, em troca de fundos de pensão | US$ 10,6 mi pagos por Vorcaro ao filme sobre Bolsonaro; pedido de ~US$ 24 mi | Acordo entre Vorcaro e aliados de Flávio para entregar um HD com acusações contra o governo |
+| Quem alega | Revista (áudio e capturas atribuídos a Vorcaro) | PF, áudio do Intercept, inquérito no STF | Grupo de advogados alinhado ao PT |
+| Documento | Nenhum pagamento achado; PF e PGR negam depoimento; UOL não acha nos celulares; Stone nega | Inquérito aberto; PGR favorável; nova perícia ordenada por Dino | Os autores dizem não ter acesso à gravação |
+| Negação | Lula, Instituto Lula, Padilha; defesa atual "desconhece" | Flávio admite pedir apoio, nega ilícito | Sem resposta da campanha de Flávio encontrada |
+| Estágio | **relato não corroborado; contestado por PF e PGR** | **investigação formal** | **alegação sem prova** |
+
+Leitura: o estágio de evidência é diferente. O caso Dark Horse está mais avançado que os outros dois; o relato contra Lula e a representação contra Flávio estão no mesmo nível baixo (sem documento). Teste do espelho: se a reportagem fosse contra Flávio, com PF e PGR negando o depoimento, este arquivo a chamaria de não corroborada; é o que se faz aqui. E se a representação do Prerrogativas fosse contra Lula, vinda de advogados alinhados ao PL, seria chamada de alegação sem prova; é o que se faz aqui.
+
+**Placar atualizado (depende da seleção, brecha 9)**
+
+| | Lula | Flávio |
+|---|---|---|
+| Forte | L4 (timing dos combustíveis) | F2 (duplicidade mercado × eleitor) |
+| Média | L1, L2, L5, L6 | F1, F3, F5 |
+| Fraca | L3 | F4 |
+
+O placar ficou 1-1 em "forte" porque L4 subiu com um ato oficial novo. Nenhum caso caiu. Não houve fato novo em F2 desde 08/10 (o texto original da Folha continua sem leitura).
+
+### U8. O que pode mexer (revisão da seção 7)
+- Gasolina: **saiu de cena até ~08/11** (prorrogada). Risco eleitoral de alta na bomba antes do voto: baixo.
+- Debates: o primeiro passa a ser **15/10** (pool). Nenhum debate até agora; Flávio, na frente, tem incentivo para escolher.
+- PEC 6x1: 1º turno no Senado ~15/10; o calendário especial e a manobra de adiamento decidem se há voto nominal de Flávio antes de 25/10.
+- Caso Vorcaro: decisões do TSE (relator Nunes Marques) sobre a Veja e o vídeo do PL; a nova perícia do Dark Horse.
+- Datas novas: Quaest RJ/DF (12/10), PoderData (13/10), portaria do diesel (13/10), Datafolha (campo 13–15/10), Bolsa Família (19/10).
+
+### Resumo (atualização de 12/10)
+- **Fatos novos**: gasolina prorrogada por 30 dias e ampliada para R$ 0,89/l (09/10), mais R$ 1,40/l no diesel importado a partir de 13/10, tudo vencendo depois do 2T; Record cancelou o debate de 11/10, então ainda não houve debate; Ratinho Jr. apoiou Flávio (10/10), com o PSD neutro; Helder e o MDB continuam sem posição pública.
+- **Vorcaro**: o relato da Veja contra Lula (R$ 30 mi para o filme) foi contestado por PF e PGR e a defesa atual diz desconhecer o áudio; a campanha de Lula abriu 5 ações. Do outro lado, o Dark Horse segue com inquérito e nova perícia, e o Prerrogativas pediu à PF que apure uma suposta articulação Vorcaro-aliados de Flávio (sem prova). Corrigi a frase anterior sobre "mensagens e registros de saques" da defesa.
+- **TSE**: direito de resposta a Flávio contra vídeo de Lula sobre cortes sociais (fonte única); ações de Lula contra a Veja pendentes.
+- **PEC 6x1**: 1º turno no Senado ~15/10; governo quer calendário especial; o coordenador da campanha de Flávio trabalha para adiar.
+- **Mercados**: Polymarket Flávio 86,05% × Lula 12,5% (US$ 180,2 mi); Kalshi 87 × 13; Ibovespa recorde de 209.067 em 09/10 (+1,38%) e dólar R$ 4,99 (−0,76%); sem pregão até 13/10.
+- **Indireto**: L4 sobe para forte (ampliação oficial do benefício dentro da janela, vencimento depois do voto, intenção não demonstrada); novo L6 (Master só do lado do adversário). Placar 1 forte para cada lado; depende da seleção.
+- **Não verificado**: número do novo decreto da gasolina; data e relator da decisão do TSE sobre o vídeo de Lula; quem derrubou o debate da Record; posição de Helder, MDB, Renan, PSDB e Michelle; resultado de Direct e Seta; texto original da Folha sobre a desindexação.
