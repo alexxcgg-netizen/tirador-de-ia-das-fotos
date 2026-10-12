@@ -96,6 +96,7 @@ def test_pesquisas_2t_2026_com_pos_1t(monkeypatch):
 
     def fake():
         df, *resto = base()
+        df = df[df.campo_fim <= pd.Timestamp("2026-10-04")]       # só o que havia antes das pesquisas pós-1T reais
         extra = pd.DataFrame([{"instituto": "Quaest", "campo_inicio": pd.Timestamp("2026-10-06"),
                                "campo_fim": pd.Timestamp("2026-10-08"), "n": 2000, "t2_lula": 46.0, "t2_flavio": 48.0}])
         return (pd.concat([df, extra], ignore_index=True), *resto)

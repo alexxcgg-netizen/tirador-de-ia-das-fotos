@@ -494,3 +494,105 @@ ele — zero nos três): Dilma 54,4 (real 51,6), Haddad 44,3 (44,9), Lula 53,1 (
 **Matriz de transferência de 2026** (mesma rodada): uma onda só da Quaest (2–3/10 para Caiado, Renan e Cury; Zema,
 ausente nela, de 24–27/9 com Dirichlet α = 10) e indecisos repartidos na proporção: Lula 47,84 contra 47,91 com a
 mistura antiga e 48,21 com só a onda de 24–27/9 (P(Lula) 22,9%, 23,6%, 26,7%; 100 mil simulações).
+
+## 2º turno: pesquisas pós-1T — campo que atravessa o 1º turno, house effects, visões de viés, apoios e mandato (12/10/2026)
+
+*Seção escrita à mão em 12/10/2026, fora do `backtest.py`; refazer com
+`python simulador/resultado_1t.py --backtest-pos-1t` (grava `data/backtest_pos_1t_2t.json`; também roda com
+`--backtest-2t`). Se `backtest.py` regenerar este arquivo, recolar esta seção.*
+
+**Teste.** Pipeline completo do 2º turno em datas *entre* os turnos de 2014, 2018 e 2022: 1º turno real + projeção
+(transferência regionalizada, pesquisas pré-1T com correção plena, calibração 2002–2022 sem o próprio ano) + as
+pesquisas pós-1T disponíveis na data, combinadas por precisão como em 2026. Datas: 4, 8, 12, 16 e 20 dias depois do
+1º turno e véspera do 2º (18 casos; o de 8 dias é a situação de 12/10/2026). Só entram pesquisas com fim de campo até
+a data − 1 dia (defasagem de divulgação; sem ela o teste usaria informação futura). 40 mil simulações por caso.
+Métrica principal (fixada antes): CRPS do nacional (escore próprio da distribuição inteira); também RMSE do centro,
+cobertura, PIT e Brier. Os 18 casos são **3 eleições** com 6 datas cada, muito correlacionadas.
+
+| Variante (pós-1T) | RMSE centro | MAE | CRPS | cob. 80% | cob. 95% | PIT médio | Brier | RMSE média pós-1T |
+|---|---|---|---|---|---|---|---|---|
+| só a projeção (sem pesquisas pós-1T) | 2,08 | 1,87 | 1,289 | 1,00 | 1,00 | 0,33 | 0,012 | – |
+| **padrão: sem house effects, sem correção** | **1,72** | **1,45** | **0,999** | 0,89 | 1,00 | 0,53 | 0,030 | 2,14 |
+| house effects, *partial pooling* | 1,64 | 1,42 | 0,964 | 0,89 | 1,00 | 0,52 | 0,029 | 2,04 |
+| house effects com prior do 1º turno | 1,63 | 1,34 | 0,945 | 0,89 | 1,00 | 0,54 | 0,032 | 2,04 |
+| correção relativa pelo 1º turno | 1,71 | 1,40 | 0,990 | 0,89 | 1,00 | 0,54 | 0,032 | 2,23 |
+| neutro (nenhuma correção, nem pré-1T) | 1,77 | 1,50 | 1,027 | 0,89 | 1,00 | 0,52 | 0,028 | 2,14 |
+| viés pleno (correção plena pré e pós-1T) | 3,63 | 2,91 | 2,220 | 0,50 | 0,56 | 0,78 | 0,325 | 5,63 |
+
+Diferença de CRPS para o padrão, por eleição (negativo = melhor):
+
+| Variante | 2014 | 2018 | 2022 | eleições melhores |
+|---|---|---|---|---|
+| house effects, pooling | +0,011 | **−0,129** | +0,013 | 1 de 3 |
+| house effects, prior do 1º turno | +0,011 | +0,065 | **−0,240** | 1 de 3 |
+| correção relativa | 0,000 | +0,138 | −0,167 | 1 de 3 |
+| neutro | 0,000 | −0,056 | +0,140 | 1 de 3 |
+| viés pleno | +3,479 | +0,603 | −0,419 | 1 de 3 |
+
+Só nas datas de 4 e 8 dias: CRPS 0,988 (padrão), 0,984 (pooling), 0,816 (prior 1T), 0,837 (relativa), 1,044 (neutro),
+1,876 (viés pleno), 1,289 (só projeção). O dp das pesquisas pós-1T (1,5 p.p. + 3 p.p. por 21 dias até o 2º turno)
+está calibrado: RMS de erro/dp = 1,06; 78% dos erros dentro de ±1,28 dp (nominal 80%).
+
+**Decisões.**
+
+1. *Pesquisas que atravessam o 1º turno* (AtlasIntel 3–8/10/2026, n = 5.026, BR-03663/2026; datas conferidas em
+   `pesquisas_pos_1t.md`: Gazeta do Povo, Exame, Brasil de Fato e Wikipedia EN dizem 3 a 8/10, igual ao CSV): peso =
+   fração dos dias de campo depois do dia da eleição (4/6; o dia 4/10 conta como antes, porque o resultado só sai à
+   noite). Nenhuma pesquisa de 2014, 2018 ou 2022 atravessa o 1º turno (0 de 15, 25 e 50), então o backtest fica
+   **idêntico** por construção: a regra não é estimada, é de princípio (supõe entrevistas uniformes nos dias de
+   campo; a AtlasIntel não publica a distribuição por dia). **Adotada** (`PARAM_2T["pesquisas_atravessando_1t"] =
+   "fracao"`, origem inferência). A regra antiga ("excluir") fica como sensibilidade. Teste do espelho: a regra vale
+   para qualquer instituto, e entraria do mesmo jeito se a AtlasIntel desse Lula à frente.
+2. *House effects pós-1T*: pela regra fixada antes (CRPS médio melhor e RMSE do centro no máximo 0,1 p.p. pior), as
+   duas variantes passariam. **Depois de ver a primeira rodada**, acrescentei a exigência de melhorar em pelo menos 2 das
+   3 eleições, e nenhuma passa: cada uma ganha em uma eleição só (pooling em 2018; prior do 1º turno em 2022), e na
+   véspera o prior do 1º turno piora 2018 e 2022, o mesmo resultado do `--backtest-institutos` (o desvio do instituto no
+   1º turno não persiste no 2º). A regra mudou depois de ver os dados e isso fica registrado aqui. A favor dela: com 3
+   eleições, uma melhora média puxada por um ano é ruído. Contra ela: pela regra original o padrão mudaria. O efeito em
+   2026 é quase nulo (centro +0,00 e +0,03 p.p.; P(Lula) 12,99% e 13,32% contra 12,97%), então a decisão quase não
+   muda o número publicado. **Padrão: sem house effects** (`house_effects_pos_1t = "nenhum"`). As duas variantes
+   ficam em `segundo_turno.sensibilidade_pos_1t`. Indecisos: todas as pesquisas entram pela razão dos válidos
+   a/(a + b), com a mesma regra para todos os institutos. A Vox Brasil, com 9,7% de NS/NR, fica com Lula 50,86%. Sem
+   ela a média pós-1T cairia de 47,84% para 47,39% (`pesquisas_2t.pos.media_sem_cada_instituto`).
+3. *Visões de viés do 2º turno* (espelham as do 1º): **neutro** (sem correção por instituto, pré e pós-1T),
+   **calibrado** (o padrão escolhido no backtest: pré-1T com correção plena, pós-1T sem correção) e **viés pleno** (erro
+   de cada instituto no 1º turno de 2026 aplicado a todas as pesquisas de 2º turno). O backtest mantém o padrão: viés
+   pleno é de longe o pior (CRPS 2,22, cobertura de 80% em 0,50) e o neutro fica um pouco pior que o calibrado (1,027
+   contra 0,999). Publicadas em `segundo_turno.visoes_vies`.
+4. *Apoios declarados* (Zema 05/10, Caiado 06/10, Cury 08/10 a Flávio; Renan neutro; Ratinho Jr. 10/10 não foi
+   candidato). Não achei pesquisa de 2ª opção dos eleitores dos eliminados com campo depois de 3/10: a Real Time Big
+   Data de 6–7/10 (400 eleitores de cada um) mediu só comparecimento e definição do voto, não o voto em Lula ou Flávio
+   (Brasil 247 e Terra/BBC, consultados em 12/10). A matriz continua a da Quaest. Sensibilidade (`efeito_endosso`,
+   desligada): uma fração k ~ U(0; 0,30) da coluna "fora" dos três passa a Flávio. Histórico (apoios citados de
+   memória, não conferidos na fonte primária): o sinal do apoio não previu o erro da projeção. Em 2002 e 2022 os
+   eliminados apoiaram o PT e o PT ficou abaixo da projeção (+1,5 e +2,2 p.p.). Em 2014 Marina apoiou Aécio e o PT
+   também ficou abaixo (+2,7). Não há base para pôr o efeito no padrão.
+5. *Mandato 2027–2030* (informativo, fora de P(vencer)): mesmo método para os dois, com tábua do IBGE 2024 e
+   multiplicador de acesso a cuidado de 0,6 / 0,75 / 1,0, mais incapacidade grave. Para Flávio, a incapacidade é a de
+   Lula escalada pela razão dos riscos de morte na tábua (a nota não estima incapacidade aos 45 anos). Caudas não
+   médicas (inquéritos, cassação) não são estimadas para nenhum dos dois. Saída na `segundo_turno.mandato_2027_2030`.
+
+**Efeito em 2026** (TSE 100%; `--rodar-tudo --fonte cache`, oficial com 500 mil simulações e sensibilidades com 100
+mil, mesma semente):
+
+| Variante | Média pós-1T (Lula) | Centro | P(Lula) |
+|---|---|---|---|
+| regra antiga (exclui a AtlasIntel), = publicado até 12/10 | 47,94 | 47,91 | 13,7% |
+| **nova regra (AtlasIntel com peso 4/6), padrão** | **47,84** | **47,84** | **12,9%** (oficial 12,92%) |
+| house effects, pooling | 47,84 | 47,84 | 13,0% |
+| house effects, prior do 1º turno | 47,88 | 47,87 | 13,3% |
+| apoio declarado, k ~ U(0; 0,30) | 47,84 | 47,80 | 12,6% |
+| apoio declarado, k = 0,30 fixo | 47,84 | 47,77 | 12,2% |
+
+Visões: neutro P(Lula) 14,7%, Lula 48,01% (p10–p90 45,53–50,49); **calibrado 12,9%, 47,85% (45,38–50,33)**; viés pleno
+4,7%, 46,61% (44,11–49,10). A hipótese sobre o viés dos institutos move P(Lula) em 10 pontos, de 4,7% a 14,7%.
+O apoio declarado mexe pouco, porque só desloca a projeção e as pesquisas pós-1T, feitas em boa parte depois dos
+apoios de Zema e Caiado, pesam 66%. Mandato: P(o vencedor completa o mandato) = 95,0% (93,1–96,1); Lula, se eleito,
+sai antes com 26,4% (20,6–35,8); Flávio com 1,8% (1,4–2,6).
+
+**Resumo.** A AtlasIntel entra com peso 4/6, por princípio: a regra não altera o backtest, porque não há caso
+histórico, e baixa P(Lula) de 13,7% para 12,9%. House effects e correção pelo 1º turno nas pesquisas pós-1T melhoram o
+backtest em média, mas cada variante só em uma das 3 eleições: ficam como sensibilidade. A exigência de "2 de 3" foi
+acrescentada depois de ver os dados (registrado acima), e o efeito em 2026 é de até 0,03 p.p. Viés pleno é a pior
+variante no backtest e vira só a visão pessimista para Lula (4,7%). Os apoios a Flávio, sem pesquisa nova, ficam como
+sensibilidade de −0,07 p.p. no máximo. A saída antecipada do mandato é informativa. Limite: 3 eleições.

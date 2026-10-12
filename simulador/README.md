@@ -252,7 +252,9 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   fora da projeção e são combinadas com ela **por precisão** (peso = (1/dp_pos²)/(1/dp_pos² + 1/dp_projeção²);
   dp_pos = 1,5 p.p. + deriva de 3 p.p. por 21 dias até o 2º turno), **sem** correção por instituto (não passou no
   backtest) e **sem** termo de viés (a média da véspera do 2º turno errou +0,69 / −1,14 / +0,10 p.p. em
-  2014/2018/2022). Antes de 5/10 elas entravam com peso fixo 0,5 e o viés era descontado do centro já misturado;
+  2014/2018/2022). Antes de 5/10 elas entravam com peso fixo 0,5 e o viés era descontado do centro já misturado.
+  Desde 12/10, a pesquisa cujo campo atravessa o 1º turno entra com peso pela fração de dias depois dele, e não há
+  house effects (ver "Pesquisas pós-1T" abaixo);
 - **termo sistemático da projeção e erro nacional (desde 5/10; `especificacao_vies_2t.py`, `--backtest-vies`,
   `data/backtest_vies_2t.json`)**: a projeção (1º turno real + o que se sabia na véspera) errou, na fatia do PT,
   +1,5 (2002), −7,2 (2006), +1,6 (2010), +2,7 (2014), −0,6 (2018), +2,2 (2022) p.p. Quatro especificações para o
@@ -340,9 +342,51 @@ eventos (1º lugar, ida ao 2º turno, decisão no 1º turno) e ranking das pesqu
   pequeno: a variação da abstenção quase não se correlaciona com o lean (r = −0,04, −0,04, −0,20) e a reponderação
   das UFs muda o PT nacional em ≤ 0,25 p.p.; os erros nacionais da abstenção (−1,0, −0,5, +1,5 p.p.) batem com o
   dp de 1 p.p. usado. Nada mudou.
+- **Pesquisas pós-1T, visões de viés, apoios e mandato (12/10/2026; `--backtest-pos-1t`,
+  `data/backtest_pos_1t_2t.json`, BACKTEST.md).** O backtest roda o pipeline completo em datas entre os turnos de
+  2014/2018/2022 (4, 8, 12, 16 e 20 dias depois do 1º turno e véspera; só pesquisas com fim de campo até a data − 1
+  dia) e mede o CRPS do nacional.
+  (1) Pesquisa cujo campo atravessa o 1º turno (AtlasIntel 3–8/10, n = 5.026) entra com peso igual à fração dos dias
+  de campo depois do dia da eleição (4/6; `PARAM_2T["pesquisas_atravessando_1t"] = "fracao"`; antes: excluída). Não há
+  caso histórico, então o backtest não muda; efeito em 2026: centro 47,91 → 47,84, P(Lula) 13,7% → 12,9%.
+  (2) House effects pós-1T (*partial pooling* em relação à média entre institutos, com ou sem prior do erro do 1º
+  turno): CRPS médio 0,999 → 0,964 / 0,945, mas cada variante só melhora 1 das 3 eleições. Com dados insuficientes,
+  ficam como sensibilidade (`house_effects_pos_1t = "nenhum"`). Indecisos: razão dos válidos a/(a + b) para todos os
+  institutos (Vox 50,86%).
+  (3) Três visões do 2º turno: neutro, calibrado (padrão) e viés pleno. O viés pleno é o pior no backtest (CRPS 2,22).
+  (4) Apoios declarados a Flávio: sem pesquisa nova de 2ª opção, a matriz não muda. Sensibilidade k ~ U(0; 0,30) da
+  coluna "fora" de Caiado/Zema/Cury indo a Flávio: −0,04 p.p. (k = 0,30: −0,07).
+  (5) Saída antecipada do mandato 2027–2030 (informativo, mesmo método para os dois).
+  Rodada de 12/10 (TSE 100%, 500 mil): **P(Lula) 12,9%, Lula 47,85% (p10–p90 45,38–50,33), centro 47,84**. Visões:
+  neutro 14,7% (48,01), viés pleno 4,7% (46,61).
+
+  **Chaves novas em `resultados_2t.json`** (todas em `segundo_turno`, só quando o par é Lula x Flávio; o painel ainda
+  não as mostra):
+  - `visoes_vies.visoes.{neutro,calibrado,vies_pleno}`: `p_a_vence`, `a_media`, `centro_a_pct`, `a_p10`, `a_p90`,
+    `correcao_pre_1t`, `correcao_pos_1t`, `pesquisas_pre_1t_a_pct`, `pesquisas_pos_1t_a_pct`, `projecao_a_pct`,
+    `peso_pesquisas_pos_1t`, `dp_nacional_pp`, `n`, `descricao` e `backtest` (`rmse_centro_pp`, `crps_medio_pp`,
+    `cob80`, `cob95`, `pit_medio`); `visoes_vies.par` e `visoes_vies.nota`. `calibrado` = a rodada principal.
+  - `sensibilidade_pos_1t`: lista com `variante`, `atravessa`, `house`, `n_pesquisas_pos`, `institutos`,
+    `pesquisas_pos_1t_a_pct`, `peso_pesquisas_pos_1t`, `centro_a_pct`, `a_media`, `a_p10`, `a_p90`, `p_a_vence`.
+  - `sensibilidade_endosso`: `candidatos`, `para`, `k_centro`, `k_meia_amplitude`, `nota` e `tabela` (`variante`,
+    `via_transferencia_a_pct`, `projecao_a_pct`, `centro_a_pct`, `a_media`, `a_p10`, `a_p90`, `p_a_vence`, `endosso`).
+  - `backtest_pos_1t`: `resumo` e `resumo_horizontes_4_8` (por variante: `rmse_centro_pp`, `mae_centro_pp`,
+    `crps_medio_pp`, `cob80`, `cob95`, `pit_medio`, `brier`, `rmse_media_pos_pp`, `casos`), `decisao` (por variante:
+    `d_crps_pp`, `d_rmse_centro_pp`, `d_crps_por_ano_pp`, `passa_media`, `passa_consistencia_2_de_3`, `passa`),
+    `calibracao_dp_pesquisas_pos`, `pesquisas_atravessando_1t`, `horizontes`, `n`, `gerado_em`.
+  - `mandato_2027_2030` (informativo, **não** entra em P(vencer)): `por_candidato.{Lula,Flavio}` com `vice`,
+    `idade_na_posse`, `morte_no_mandato_tabua_pct`, `incapacidade_pct`, `p_saida_antecipada_pct`,
+    `p_completa_se_eleito_pct`, `p_vencer_pct`, `p_eleito_e_completa_pct`, `p_eleito_e_vice_assume_pct` (cada um com
+    `baixo`/`central`/`alto` = menor/maior risco de saída) e `fonte`; `p_vencedor_completa_pct`, `p_vice_assume_pct`,
+    `metodo`, `multiplicadores`, `dias_ate_posse`, `nota`.
+  - `pesquisas_2t.pos` ganhou `tabela` (por instituto: `campo_inicio`, `campo_fim`, `n`, `fracao_pos_1t`,
+    `fatia_a_validos_pct`, `fatia_a_usada_pct`, `house_pp`, `peso_rel`), `atravessa`, `house`, `house_effects`,
+    `q_sem_house`, `dp_house_pp`, `dp_correcao_institutos_pp`, `media_sem_cada_instituto` e `dias_ate_2t`.
+  - `endosso` (em cada simulação; `null` no padrão).
 - **Ensaio a seco:** `--saida PASTA` grava `resultados_2t.json`, `avaliacao_1t.json` e `AVALIACAO_1T.md` na pasta e
   não roda `publicar.py`; `--fonte cache` lê só a última leitura gravada (sem rede); `--backtest-2t` imprime os
-  backtests acima; `--backtest-vies` refaz a escolha do termo sistemático (`data/backtest_vies_2t.json`).
+  backtests acima (e grava o das pesquisas pós-1T); `--backtest-vies` refaz a escolha do termo sistemático
+  (`data/backtest_vies_2t.json`); `--backtest-pos-1t` refaz só o das pesquisas pós-1T (`data/backtest_pos_1t_2t.json`).
 
 **Ensaio com 2022** (1º turno de 2022 como se fosse a noite de hoje; resultado lido de JSON no formato do TSE de
 2022, reconstruídos dos dados abertos em `tests/fixtures/tse/2022/`; regerado em 5/10 com o método atual: calibração
