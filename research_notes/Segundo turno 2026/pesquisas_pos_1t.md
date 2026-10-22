@@ -270,3 +270,57 @@ Nova tentativa de abrir as fontes primárias das pesquisas pós-1T. Nenhum núme
 | PoderData, Vox Brasil, DataTrends | Poder360 e PesqEle (TSE) | – | **Não verificado**: Poder360 e PesqEle responderam 403 |
 
 **Resumo.** O relatório primário da AtlasIntel confirma datas, amostra, registro e números (válidos Flávio 52,8 × Lula 47,2). A Folha, dona do Datafolha, fixa o campo do Datafolha em 6 e 7/10, o que encerra o conflito de datas. Nenhum número de 2º turno mudou e o modelo foi rodado de novo só para registrar a verificação. PoderData, Vox e DataTrends seguem sem fonte primária aberta.
+
+---
+
+## Atualização de 22/10/2026 (3 dias antes do 2T): 17 linhas novas no CSV
+
+Fontes: matérias de resultado (Congresso em Foco, CNN Brasil, SBT News, Midiamax, Tribuna de Jundiaí, Muita Informação, Transmissão Política) e o agregador Alex News; **nenhum relatório primário foi aberto** (Poder360 e PesqEle seguem em 403). Números por instituto são os da matéria; "total" é voto total, "válido" é Flávio × Lula.
+
+| Instituto | Campo | Divulg. | n / modo | Registro | Total Lula × Flávio | Válidos Flávio × Lula |
+|---|---|---|---|---|---|---|
+| Indexa | 13–14/10 | 15/10 | 2.000 / nd | – | 42 × 44 | 51 × 49 |
+| Palver | 10–13/10 | 15/10 | 5.000 / online | – | 49 × 50 | 50,5 × 49,5 (Poder360) |
+| CNT/MDA | 13–15/10 | 16/10 | 2.014 / nd | BR-00652/2026 | 45,9 × 46,8 | 50,5 × 49,5 |
+| Gerp | 14–16/10 | 16/10 | 2.400 / telefone | BR-05187/2026 | 45 × 50 | 52 × 48 |
+| Ipespe | 13–15/10 | 17/10 | 1.500 / telefone | BR-00223/2026 | 46 × 48 | 51,2 × 48,8 |
+| Vox Brasil | 15–17/10 | 18/10 | 2.100 / presencial | BR-04332/2026 | 46,4 × 44,6 | **49 × 51** (Lula à frente) |
+| PoderData/Aya | 16–18/10 | 19/10 | 3.000 / telefone | BR-02586/2026 | 46 × 49 | 52 × 48 |
+| BTG/Nexus | 16–18/10 | 19/10 | 2.002 / telefone | BR-04499/2026 | 45,9 × 46,5 | 50,3 × 49,7 |
+| AtlasIntel | 13–18/10 | 19/10 | 4.998 / online | BR-02418/2026 | 47,6 × 49,8 | 51,1 × 48,9 |
+| Real Time Big Data | 15–19/10 | 20/10 | 2.000 / telefone | BR-02952/2026 | 45 × 48 | 52 × 48 |
+| Instituto França | 16–20/10 | 20/10 | 3.000 / telefone | BR-07896/2026 | 39,65 × 40,95 (NS 8,84; BN 10,56) | 50,8 × 49,2 |
+| Palver | 18–20/10 | 21/10 | 5.000 / online | BR-04612/2026 | 48 × 50 | ~51 × 49 (calculado) |
+| Quaest | 17–20/10 | 21/10 | 2.154 / nd | BR-08535/2026 | 44 × 45 | ~50,6 × 49,4 (calculado pelo Congresso em Foco) |
+| Meio/Ideia | 15–19/10 | 21/10 | 1.500 / telefone | BR-08251/2026 | 46 × 48 | 51,1 × 48,9 |
+| Veritá | 15–19/10 | 21/10 | 15.554 / nd | não achado | – | 50,7 × 49,3 |
+| Futura/100% Cidades | 19–20/10 | 21/10 | 2.000 / telefone | BR-06614/2026 | – | 51,1 × 48,9 |
+| Gerp | 19–21/10 | 21/10 | 2.400 / telefone | BR-03835/2026 | 45 × 50 | 53 × 47 |
+
+**Checagens pedidas.** (1) PoderData 52 × 48 é rodada **nova**: campo 16–18/10, registro BR-02586/2026, 4ª pós-1T, divulgada 19/10; a anterior (13–15/10, BR-04258/2026) era 50 × 50. (2) Gerp 53 × 47 **não** é a de 13/10 (campo 8–12/10, 55 × 45 válidos) nem a de 16/10 (14–16/10, 52 × 48): é a de 19–21/10. Fonte conflitante: Transmissão Política diz campo 15–19/10 e divulgação 20/10 e registro não confirmado; prevalece a CNN (campo 19–21, divulgada 21/10 às 18h, BR-03835/2026). (3) Palver 10–13 e Indexa 13–14 (divulgadas 15/10), Gerp 14–16, CNT/MDA e Ipespe 13–15 estavam faltando no CSV e foram incluídas. (4) Datafolha: **nenhuma pesquisa nova achada** além da de 13–15/10 (51 × 49), já no CSV. (5) Quaest repete n = 2.154 da rodada de 10–13/10, mas com registro e campo diferentes (BR-08535/2026; 17–20/10); pode ser erro de matéria, **não verificado**.
+
+**Tendência por instituto (válidos de Flávio, rodada anterior → nova).**
+
+| Instituto | Anterior | Nova | Variação para Flávio |
+|---|---|---|---|
+| Gerp | 52 (14–16/10); 55 (8–12/10) | 53 | +1 (−2 vs 8–12/10) |
+| PoderData | 50 (13–15/10); 53 (5–7/10) | 52 | +2 (−1 vs 1ª) |
+| AtlasIntel | 52,8 | 51,1 | −1,7 |
+| BTG/Nexus | 52 (10–12/10) | 50,3 | −1,7 |
+| Ipespe | 52,7 | 51,2 | −1,5 |
+| Quaest | 51,1 (10–13/10) | ~50,6 | −0,5 |
+| Palver | 50,5 (10–13/10) | ~51 | +0,5 |
+| Futura | 50,8 (14–15/10); 51,8 (7–10/10) | 51,1 | +0,3 (−0,7 vs 1ª) |
+| Vox Brasil | Lula 50,9 (5–7/10) | Lula 51 | Lula +0,1 |
+| Datafolha | 51 (13–15/10) | sem nova | – |
+| Real Time, Ideia, CNT/MDA, Veritá, França | só rodada pré-1T ou nenhuma comparável | 52 / 51,1 / 50,5 / 50,7 / 50,8 | não comparável |
+
+**Média.** Última rodada de cada um dos 14 institutos com campo após 13/10 (acima, sem Datafolha e Indexa): Flávio **51,0** (mediana 51,1); o Congresso em Foco reporta 51,2 para 14 pesquisas de 19–21/10 (inclui Data Ranking/Fonte83, não achado por mim). Em 12/10 a média dos seis era 52,1: a vantagem de Flávio nos válidos caiu cerca de 1 ponto. Não é movimento uniforme: Atlas, Nexus e Ipespe andaram 1,5 a 1,7 pontos para Lula; PoderData e Gerp subiram para Flávio.
+
+**Não verificado / não incluído.** Data Ranking/Fonte83 (49,6 × 50,4 válidos, só no agregador do Congresso em Foco, sem campo, n ou registro); Alfa (15–19/10, n 2.700), DataTrends (15–17/10), Futura (16–17/10) e Veritá (12–16/10), que aparecem só na tabela da Wikipédia EN, sem matéria aberta; Genial/Quaest, Paraná Pesquisas, Ipec: nada achado. Dois registros (Indexa, Palver 10–13) e o campo/n da Veritá vêm de agregador ou do pedido do usuário. Totais da Veritá e da Futura (19–20) vindos da Wikipédia **não** entraram no CSV; ambos entraram como válidos.
+
+**Seleção (brecha 9).** Entrou o que tinha número com fonte aberta; excluí pesquisas só com dado de Wikipédia, para os dois lados. Quatro das cinco que ficaram de fora têm Flávio à frente por 1 a 3 pontos (Alfa 48,8 × 45,9, DataTrends 49 × 46, Futura 48,3 × 47,5, Veritá 49,7 × 47,7 em total, Wikipédia), então a exclusão não favorece Lula.
+
+**Modelo após as novas linhas** (500 mil simulações, semente 20261025): P(Lula) **19,9%** (antes 15,7%); centro **48,74%** (antes 48,36); p10–p90 46,79–50,70; votos (mediana) Flávio 61,04 mi × Lula 58,05 mi (antes 61,5 × 57,6). Três visões de viés: neutro (sem correção por instituto) 21,5% e centro 48,83; calibrado (padrão) 19,9% e 48,74; viés pleno (erro do 1T aplicado a todas) 4,6% e 47,27. As pesquisas pós-1T (17 institutos) dão Lula 48,94%, com peso 0,82 no centro.
+
+**Resumo.** Entraram 17 linhas (13 institutos), a maioria com registro. Os dois pontos em dúvida (PoderData 52 × 48 e Gerp 53 × 47) são rodadas novas. Em válidos a média está perto de 51,0 para Flávio, ~1 ponto menos que em 12/10; o modelo subiu de 15,7% para 19,9% para Lula, mas continua dependendo da hipótese de viés (4,6% a 21,5%).
