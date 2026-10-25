@@ -47,16 +47,22 @@ def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
             if fonte == "diretorio":
                 js = json.loads(next(Path(pasta).glob(f"{uf.lower()}-c0001-e*.json")).read_text(encoding="utf-8"))
             else:
-                js = R._baixar(R.urls_presidente(CICLO, CD2T, uf)[0], timeout=15, tentativas=1)
-                time.sleep(0.6)
+                js = None
+                for t in range(4):                       # 429 é intermitente: espera e tenta de novo
+                    try:
+                        js = R._baixar(R.urls_presidente(CICLO, CD2T, uf)[0], timeout=15, tentativas=1)
+                        break
+                    except Exception as ex2:             # noqa: BLE001
+                        if t == 3 or "429" not in str(ex2):
+                            raise
+                        time.sleep(2 + 2 * t)
+                time.sleep(1.2)
             out[uf] = R.parse_tse(js, R.NUMEROS[2026])
             cache[uf] = js
         except Exception as ex:                                  # noqa: BLE001
             erros.append(f"{uf}: {ex}")
             if uf in cache:
                 out[uf] = R.parse_tse(cache[uf], R.NUMEROS[2026])
-            if "429" in str(ex):
-                time.sleep(5)
     if fonte != "diretorio":
         CACHE_UF.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
     out["_erros"] = erros
@@ -202,7 +208,7 @@ def main():
     js["historico"] = hist
     saida.write_text(json.dumps(js, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"pst {p['pst']:.2f}% | Lula parcial {p['lula_pct'] if p['lula_pct'] is None else round(p['lula_pct'], 2)} | "
-          f"proj Lula {js['projecao']['lula_pct']:.2f}% | P(Lula) {js['projecao']['p_lula']:.3f}")
+          f"proj Lula {js['projecao']['lula_pct']:.2f}% | P(Lula) {js['projecao']['p_lula']:.3f} | falhas {len(erros)} | TSE {p['atualizado_tse']}")
 
 
 if __name__ == "__main__":
