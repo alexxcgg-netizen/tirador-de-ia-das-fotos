@@ -112,7 +112,7 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
             d_num += v * (vl / v - prior)
             d_den += v
         linhas.append({"uf": uf, "nome": u.get("nome", uf), "regiao": u["regiao"], "pst": p, "lula": vl, "flavio": vf,
-                       "prior": prior, "esperado_validos": u["validos_2t_media"], "eleitores": u["eleitores"]})
+                       "prior": prior, "lula_1t": round(100 * u["a_1t"] / (u["a_1t"] + u["b_1t"]), 2), "esperado_validos": u["validos_2t_media"], "eleitores": u["eleitores"]})
         obs_l += vl
         obs_v += v
     br = tse.get("BR")
@@ -174,7 +174,7 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
         bench = {"esperada": round(interp(traj, p_br, "esperada"), 2), "linha_empate": round(interp(traj, p_br, "linha_empate"), 2)}
     ufs_out = sorted([{"uf": r["uf"], "nome": r["nome"], "regiao": r["regiao"], "pst": round(r["pst"], 2),
                        "lula_pct": round(100 * r["lula"] / (r["lula"] + r["flavio"]), 2) if r["lula"] + r["flavio"] else None,
-                       "esperado_pct": round(100 * r["prior"], 2), "proj_pct": round(100 * r["lula_proj"], 2),
+                       "esperado_pct": round(100 * r["prior"], 2), "lula_1t_pct": r["lula_1t"], "proj_pct": round(100 * r["lula_proj"], 2),
                        "eleitores": r["eleitores"]} for r in linhas], key=lambda x: -x["eleitores"])
     return {"gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"), "parcial": parcial, "projecao": proj,
             "benchmark": bench, "trajetoria": traj, "k": round(k, 3),
