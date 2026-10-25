@@ -93,12 +93,16 @@ def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
             if uf in cache:
                 out[uf] = R.parse_tse(cache[uf], R.NUMEROS[2026])
     out["_ab"] = {}
-    idade_ab = time.time() - cache.get("_ab_em", 0)
+    def defasagem(uf):                                   # |% da UF − % da abrangência em cache|
+        js, t = cache.get("ab_" + uf), out.get(uf)
+        if not js or not t:
+            return 1.0
+        d = R.parse_ab(js)
+        te = float(d.te.fillna(0).sum())
+        return abs(float(t["pst"]) / 100 - (float(d.est.fillna(0).sum()) / te if te else 0.0))
     if fonte != "diretorio":                             # abrangência: quais municípios já foram apurados
-        for uf in (R.UFS if idade_ab > 240 else []):     # muda devagar: renova a cada ~4 min, senão usa o cache
-            cache["_ab_em"] = time.time()
-            if uf == "ZZ":
-                continue
+        pend = [uf for uf in R.UFS if uf != "ZZ" and (time.time() - cache.get("_ab_em_" + uf, 0) > 240 or defasagem(uf) > 0.01)]
+        for uf in sorted(pend, key=defasagem, reverse=True):   # as mais defasadas primeiro
             try:
                 js = None
                 for t in range(3):
@@ -111,6 +115,7 @@ def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
                         time.sleep(2 + 2 * t)
                 time.sleep(0.4)
                 cache["ab_" + uf] = js
+                cache["_ab_em_" + uf] = time.time()
             except Exception as ex:                      # noqa: BLE001
                 erros.append(f"ab {uf}: {ex}")
                 js = cache.get("ab_" + uf)
@@ -172,12 +177,14 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25, mun: dict
             frac, V, b = composicao(ab[uf], mun[uf], prior)
             te_ab = sum(float(x[1]) for x in ab[uf])
             p_ab = sum(float(x[2]) for x in ab[uf]) / te_ab if te_ab else 0.0
-            if p_ab > 0 and abs(p / 100 - p_ab) > 0.005:
+            if p_ab > 0 and abs(p / 100 - p_ab) > 0.03:
+                frac = None                      # defasada demais: a composição não serve, cai no método da UF
+            elif p_ab > 0 and abs(p / 100 - p_ab) > 0.005:
                 # abrangência mais velha que a parcial da UF (renovada a cada ~4 min ou com 429): reescala a fração
                 # apurada de cada município para bater com a % da UF, senão os votos que faltam saem inflados
                 frac = np.clip(frac * (p / 100) / p_ab, 0, 1)
-            cv = float((frac * V).sum())
-            if cv > 0.002 * V.sum():
+            cv = float((frac * V).sum()) if frac is not None else 0.0
+            if frac is not None and cv > 0.002 * V.sum():
                 r["comp"] = (frac, V, b, cv)
                 r["esperado_apurado"] = float((frac * V * b).sum() / cv)   # o que o modelo esperava NAS seções já apuradas
         base = r["esperado_apurado"] if r["esperado_apurado"] is not None else prior
@@ -194,6 +201,8 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25, mun: dict
     # choque comum da ordem de apuração dentro das UFs (capital/interior, urbano/rural): não some com o desvio
     # nacional medido, porque afeta igualmente as seções já apuradas que usamos para medi-lo
     sig_ordem = 0.03 * (1 - min(p_br, 100) / 100) ** 0.5
+    if any(r["uf"] in ("SP", "RJ", "BA") and r["pst"] < 30 for r in linhas):
+        sig_ordem = max(sig_ordem, 0.015)   # viés de ordem dentro dos municípios grandes ainda não medido
     choque_n = rng.normal(0, sig_n, n) + rng.normal(0, sig_ordem, n)
     tot_l = np.full(n, obs_l)
     tot_v = np.full(n, obs_v)
@@ -204,11 +213,11 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25, mun: dict
             # método municipal: votos que faltam = votos do 1º turno nos municípios (fração não apurada) x razão
             # 2º/1º turno observada; fatia = esperada em cada município deslocada pelo swing da UF já medido
             frac, V, b, cv = r["comp"]
-            razao = float(np.clip(v / cv, 0.7, 1.3))
+            razao = float(np.clip(v / cv, 0.85, 1.15))
             resto = razao * float(((1 - frac) * V).sum()) if p < 100 else 0.0
             sw_uf = float(R.M.logit(np.clip(s_obs, 0.01, 0.99)) - R.M.logit(np.clip(r["esperado_apurado"], 0.01, 0.99)))
             sw_nac = desvio / max(r["prior"] * (1 - r["prior"]), 0.05)
-            w = p / (p + 3)
+            w = p / (p + 15)
             sw = w * sw_uf + (1 - w) * sw_nac
             rest_w = (1 - frac) * V
             s_rest = float((rest_w * R.M.expit(R.M.logit(b) + sw)).sum() / rest_w.sum()) if rest_w.sum() > 0 else s_obs
