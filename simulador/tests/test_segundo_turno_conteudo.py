@@ -111,12 +111,14 @@ def test_series_dos_indices():
 def test_pesquisas_pos_1t_batem_com_o_csv():
     P = JS["pesquisas_pos_1t"]
     nota = {r["instituto"]: r for r in P["tabela"]}
-    csvp = {r["instituto"]: r for r in P["csv"]}
-    assert set(nota) == set(csvp) == {"AtlasIntel", "Datafolha", "DataTrends", "Ipespe", "PoderData", "Vox Brasil"}
-    for k, r in csvp.items():
-        assert float(nota[k]["flavio_total"].replace(",", ".")) == r["t2_flavio"], k
-        assert float(nota[k]["lula_total"].replace(",", ".")) == r["t2_lula"], k
-    assert csvp["Datafolha"]["campo_fim"] == "2026-10-07" and csvp["AtlasIntel"]["campo_inicio"] == "2026-10-03"
+    primeira = {}                                   # a nota de 12/10 descreve a 1ª rodada pós-1T de cada instituto
+    for r in sorted(P["csv"], key=lambda r: r["campo_fim"]):
+        primeira.setdefault(r["instituto"], r)
+    assert set(nota) == {"AtlasIntel", "Datafolha", "DataTrends", "Ipespe", "PoderData", "Vox Brasil"} and set(nota) <= set(primeira)
+    for k in nota:
+        assert float(nota[k]["flavio_total"].replace(",", ".")) == primeira[k]["t2_flavio"], k
+        assert float(nota[k]["lula_total"].replace(",", ".")) == primeira[k]["t2_lula"], k
+    assert primeira["Datafolha"]["campo_fim"] == "2026-10-07" and primeira["AtlasIntel"]["campo_inicio"] == "2026-10-03"
     assert "fonte primária" in P["verificacao"]["AtlasIntel"]["status"]
 
 
