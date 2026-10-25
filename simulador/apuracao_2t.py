@@ -265,6 +265,11 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25, mun: dict
         v = s["votos"]
         proj.update({"margem_votos_p50": v["margem_quantis"][3], "margem_votos_p10": v["margem_quantis"][1],
                      "margem_votos_p90": v["margem_quantis"][5]})
+    resto_v = float(np.median(tot_v)) - vb
+    if vb and resto_v > 0:                      # para virar: fatia que Flávio precisa em tudo o que falta
+        proj["virada"] = {"faltam_validos": resto_v,
+                          "flavio_precisa_pct": 100 * (resto_v + parcial["lula"] - parcial["flavio"]) / (2 * resto_v),
+                          "flavio_projetado_pct": 100 - 100 * (proj["lula_pct"] / 100 * float(np.median(tot_v)) - parcial["lula"]) / resto_v}
     bench = None
     if vb:
         bench = {"esperada": round(interp(traj, p_br, "esperada"), 2), "linha_empate": round(interp(traj, p_br, "linha_empate"), 2)}
@@ -306,7 +311,7 @@ def main():
     js["historico"] = hist
     saida.write_text(json.dumps(js, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"pst {p['pst']:.2f}% | Lula parcial {p['lula_pct'] if p['lula_pct'] is None else round(p['lula_pct'], 2)} | "
-          f"proj Lula {js['projecao']['lula_pct']:.2f}% | P(Lula) {js['projecao']['p_lula']:.3f} | falhas {len(erros)} | TSE {p['atualizado_tse']}")
+          f"proj Lula {js['projecao']['lula_pct']:.2f}% | P(Lula) {js['projecao']['p_lula']:.3f} | virada: Flavio precisa {js['projecao'].get('virada', {}).get('flavio_precisa_pct', float('nan')):.1f}% do resto (projetado {js['projecao'].get('virada', {}).get('flavio_projetado_pct', float('nan')):.1f}%) | falhas {len(erros)} | TSE {p['atualizado_tse']}")
 
 
 if __name__ == "__main__":
