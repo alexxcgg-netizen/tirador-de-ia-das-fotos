@@ -34,6 +34,35 @@ NNE = {"N", "NE"}
 
 
 CACHE_UF = Path(__file__).resolve().parent / "data" / "tse_2t_2026_ultimo.json"
+MUN_1T = Path(__file__).resolve().parent / "data" / "municipios_1t_2026.csv"   # TSE, votacao_candidato_munzona_2026
+
+
+def carregar_mun() -> dict:
+    """1º turno por município (Lula e Flávio): {uf: (códigos TSE, votos Lula, votos Flávio)}."""
+    import csv
+    m = {}
+    for r in csv.DictReader(open(MUN_1T, encoding="utf-8")):
+        l, f = int(r["lula"]), int(r["flavio"])
+        if l + f:
+            m.setdefault(r["uf"], []).append((int(r["cd_municipio"]), l, f))
+    return {uf: (np.array([x[0] for x in v]), np.array([x[1] for x in v], float), np.array([x[2] for x in v], float))
+            for uf, v in m.items()}
+
+
+def composicao(ab: list, mun: tuple, prior_uf: float):
+    """Fração apurada de cada município (eleitorado totalizado / eleitorado, do arquivo de abrangência), peso
+    (votos dos dois no 1º turno) e fatia de Lula esperada no município: a do 1º turno deslocada, em logito, pelo
+    quanto o modelo espera que a UF mude do 1º para o 2º turno."""
+    cds, L, F = mun
+    a = {int(c): (te, est) for c, te, est in ab}
+    te = np.array([a.get(int(c), (0.0, 0.0))[0] for c in cds], float)
+    est = np.array([a.get(int(c), (0.0, 0.0))[1] for c in cds], float)
+    frac = np.clip(np.where(te > 0, est / np.where(te > 0, te, 1), 0.0), 0, 1)
+    V = L + F
+    t = np.clip(L / V, 0.01, 0.99)
+    t_uf = L.sum() / V.sum()
+    b = R.M.expit(R.M.logit(t) + R.M.logit(prior_uf) - R.M.logit(t_uf))
+    return frac, V, b
 
 
 def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
@@ -63,7 +92,29 @@ def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
             erros.append(f"{uf}: {ex}")
             if uf in cache:
                 out[uf] = R.parse_tse(cache[uf], R.NUMEROS[2026])
-    if fonte != "diretorio":
+    out["_ab"] = {}
+    if fonte != "diretorio":                             # abrangência: quais municípios já foram apurados
+        for uf in R.UFS:
+            if uf == "ZZ":
+                continue
+            try:
+                js = None
+                for t in range(3):
+                    try:
+                        js = R._baixar(R.url_ab(CICLO, CD2T, uf), timeout=15, tentativas=1)
+                        break
+                    except Exception as ex2:             # noqa: BLE001
+                        if t == 2 or "429" not in str(ex2):
+                            raise
+                        time.sleep(2 + 2 * t)
+                time.sleep(1.0)
+                cache["ab_" + uf] = js
+            except Exception as ex:                      # noqa: BLE001
+                erros.append(f"ab {uf}: {ex}")
+                js = cache.get("ab_" + uf)
+            if js:
+                d = R.parse_ab(js)
+                out["_ab"][uf] = list(zip(d.cd, d.te.fillna(0), d.est.fillna(0)))
         CACHE_UF.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
     out["_erros"] = erros
     return out
@@ -96,10 +147,12 @@ def interp(traj: list, pst: float, chave: str) -> float:
     return float(np.interp(pst, xs, ys))          # antes de 32% fica no valor de 32% (2022 não tem pontos antes)
 
 
-def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
+def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25, mun: dict | None = None) -> dict:
     s = modelo["segundo_turno"]
     ufs = {u["uf"]: u for u in s["ufs"]}
     rng = np.random.default_rng(seed)
+    ab = tse.get("_ab", {})
+    mun = carregar_mun() if mun is None and MUN_1T.exists() else (mun or {})
     linhas, obs_l, obs_v, d_num, d_den = [], 0.0, 0.0, 0.0, 0.0
     for uf, u in ufs.items():
         t = tse.get(uf)
@@ -108,11 +161,20 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
         vf = float(t["votos"].get("Flavio", 0.0)) if t else 0.0
         v = vl + vf
         prior = u["a_media"] / 100
-        if p >= 10 and v > 0 and uf != "ZZ":       # desvio nacional (exterior não representa o país) do modelo, medido onde já há apuração
-            d_num += v * (vl / v - prior)
+        r = {"uf": uf, "nome": u.get("nome", uf), "regiao": u["regiao"], "pst": p, "lula": vl, "flavio": vf, "prior": prior,
+             "lula_1t": round(100 * u["a_1t"] / (u["a_1t"] + u["b_1t"]), 2), "esperado_validos": u["validos_2t_media"],
+             "eleitores": u["eleitores"], "comp": None, "esperado_apurado": None}
+        if uf in ab and uf in mun and v > 0:
+            frac, V, b = composicao(ab[uf], mun[uf], prior)
+            cv = float((frac * V).sum())
+            if cv > 0.002 * V.sum():
+                r["comp"] = (frac, V, b, cv)
+                r["esperado_apurado"] = float((frac * V * b).sum() / cv)   # o que o modelo esperava NAS seções já apuradas
+        base = r["esperado_apurado"] if r["esperado_apurado"] is not None else prior
+        if v > 0 and uf != "ZZ" and (p >= 10 or (r["comp"] is not None and p >= 3)):
+            d_num += v * (vl / v - base)         # desvio do modelo descontada a composição do que já foi apurado
             d_den += v
-        linhas.append({"uf": uf, "nome": u.get("nome", uf), "regiao": u["regiao"], "pst": p, "lula": vl, "flavio": vf,
-                       "prior": prior, "lula_1t": round(100 * u["a_1t"] / (u["a_1t"] + u["b_1t"]), 2), "esperado_validos": u["validos_2t_media"], "eleitores": u["eleitores"]})
+        linhas.append(r)
         obs_l += vl
         obs_v += v
     br = tse.get("BR")
@@ -127,15 +189,30 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
     tot_v = np.full(n, obs_v)
     for r in linhas:
         p, v = r["pst"], r["lula"] + r["flavio"]
-        if p > 0 and v > 0:
-            w = min(1.0, p / 30)
-            total = w * v / (p / 100) + (1 - w) * r["esperado_validos"]
-        else:
-            total = r["esperado_validos"]
-        resto = max(total - v, 0.0) if p < 100 else 0.0
-        lam = p / (p + 25) if v > 0 else 0.0     # primeiras seções (capitais) podem não representar a UF
         s_obs = r["lula"] / v if v > 0 else r["prior"]
-        s_rest = lam * s_obs + (1 - lam) * (r["prior"] + desvio)
+        if r["comp"] is not None:
+            # método municipal: votos que faltam = votos do 1º turno nos municípios (fração não apurada) x razão
+            # 2º/1º turno observada; fatia = esperada em cada município deslocada pelo swing da UF já medido
+            frac, V, b, cv = r["comp"]
+            razao = float(np.clip(v / cv, 0.7, 1.3))
+            resto = razao * float(((1 - frac) * V).sum()) if p < 100 else 0.0
+            sw_uf = float(R.M.logit(np.clip(s_obs, 0.01, 0.99)) - R.M.logit(np.clip(r["esperado_apurado"], 0.01, 0.99)))
+            sw_nac = desvio / max(r["prior"] * (1 - r["prior"]), 0.05)
+            w = p / (p + 3)
+            sw = w * sw_uf + (1 - w) * sw_nac
+            rest_w = (1 - frac) * V
+            s_rest = float((rest_w * R.M.expit(R.M.logit(b) + sw)).sum() / rest_w.sum()) if rest_w.sum() > 0 else s_obs
+            r["metodo"] = "municipal"
+        else:
+            if p > 0 and v > 0:
+                w = min(1.0, p / 30)
+                total = w * v / (p / 100) + (1 - w) * r["esperado_validos"]
+            else:
+                total = r["esperado_validos"]
+            resto = max(total - v, 0.0) if p < 100 else 0.0
+            lam = p / (p + 25) if v > 0 else 0.0     # primeiras seções (capitais) podem não representar a UF
+            s_rest = lam * s_obs + (1 - lam) * (r["prior"] + desvio)
+            r["metodo"] = "uf"
         r.update({"faltam_validos": resto, "lula_resto": s_rest,
                   "lula_proj": (r["lula"] + resto * s_rest) / (v + resto) if v + resto > 0 else r["prior"]})
         if resto > 0:
@@ -154,13 +231,13 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
     vb = parcial["lula"] + parcial["flavio"]
     parcial["lula_pct"] = 100 * parcial["lula"] / vb if vb else None
     parcial["margem"] = (2 * parcial["lula_pct"] - 100) if vb else None
-    antes = p_br < 5       # abaixo de 5% a parcial é ruído de ordem de apuração: mostra o modelo
+    antes = p_br < 3       # abaixo de 3% a parcial é ruído de ordem de apuração: mostra o modelo
     proj = {"p_lula": s["p_a_vence"] if antes else p_lula,
             "lula_pct": s["a_media"] if antes else float(100 * np.median(q)),
             "lula_p10": s["a_quantis"][1] if antes else float(100 * np.quantile(q, 0.1)),
             "lula_p90": s["a_quantis"][5] if antes else float(100 * np.quantile(q, 0.9)),
             "validos": float(np.median(tot_v)), "desvio_modelo_pp": 100 * desvio,
-            "fonte": "modelo da véspera (com menos de 5% apurado a parcial ainda não diz nada)" if antes else "parcial do TSE + modelo"}
+            "fonte": "modelo da véspera (com menos de 3% apurado a parcial ainda não diz nada)" if antes else "parcial do TSE + modelo"}
     if not antes:
         proj["margem_votos_p50"] = float(np.median(2 * tot_l - tot_v))
         proj["margem_votos_p10"] = float(np.quantile(2 * tot_l - tot_v, 0.1))
@@ -174,7 +251,9 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
         bench = {"esperada": round(interp(traj, p_br, "esperada"), 2), "linha_empate": round(interp(traj, p_br, "linha_empate"), 2)}
     ufs_out = sorted([{"uf": r["uf"], "nome": r["nome"], "regiao": r["regiao"], "pst": round(r["pst"], 2),
                        "lula_pct": round(100 * r["lula"] / (r["lula"] + r["flavio"]), 2) if r["lula"] + r["flavio"] else None,
-                       "esperado_pct": round(100 * r["prior"], 2), "lula_1t_pct": r["lula_1t"], "proj_pct": round(100 * r["lula_proj"], 2),
+                       "esperado_pct": round(100 * r["prior"], 2),
+                       "esperado_apurado_pct": None if r["esperado_apurado"] is None else round(100 * r["esperado_apurado"], 2),
+                       "metodo": r["metodo"], "lula_1t_pct": r["lula_1t"], "proj_pct": round(100 * r["lula_proj"], 2),
                        "eleitores": r["eleitores"]} for r in linhas], key=lambda x: -x["eleitores"])
     return {"gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds"), "parcial": parcial, "projecao": proj,
             "benchmark": bench, "trajetoria": traj, "k": round(k, 3),
