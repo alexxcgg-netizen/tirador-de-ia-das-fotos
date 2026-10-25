@@ -170,6 +170,12 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25, mun: dict
              "eleitores": u["eleitores"], "comp": None, "esperado_apurado": None}
         if uf in ab and uf in mun and v > 0:
             frac, V, b = composicao(ab[uf], mun[uf], prior)
+            te_ab = sum(float(x[1]) for x in ab[uf])
+            p_ab = sum(float(x[2]) for x in ab[uf]) / te_ab if te_ab else 0.0
+            if p_ab > 0 and abs(p / 100 - p_ab) > 0.005:
+                # abrangência mais velha que a parcial da UF (renovada a cada ~4 min ou com 429): reescala a fração
+                # apurada de cada município para bater com a % da UF, senão os votos que faltam saem inflados
+                frac = np.clip(frac * (p / 100) / p_ab, 0, 1)
             cv = float((frac * V).sum())
             if cv > 0.002 * V.sum():
                 r["comp"] = (frac, V, b, cv)
