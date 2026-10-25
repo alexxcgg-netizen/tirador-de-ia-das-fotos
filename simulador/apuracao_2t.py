@@ -33,17 +33,32 @@ FINAL_2022 = 1.80
 NNE = {"N", "NE"}
 
 
+CACHE_UF = Path(__file__).resolve().parent / "data" / "tse_2t_2026_ultimo.json"
+
+
 def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
+    """Uma tentativa por UF, com pausa entre pedidos (o TSE devolve 429 a quem pede rápido demais). UF que falhar
+    fica com a última leitura boa (cache local), para a projeção não perder o estado inteiro."""
+    import time
+    cache = json.loads(CACHE_UF.read_text(encoding="utf-8")) if CACHE_UF.exists() else {}
     out, erros = {}, []
     for uf in ["BR"] + R.UFS:
         try:
             if fonte == "diretorio":
                 js = json.loads(next(Path(pasta).glob(f"{uf.lower()}-c0001-e*.json")).read_text(encoding="utf-8"))
             else:
-                js = R._baixar(R.urls_presidente(CICLO, CD2T, uf)[0], timeout=15, tentativas=2)
+                js = R._baixar(R.urls_presidente(CICLO, CD2T, uf)[0], timeout=15, tentativas=1)
+                time.sleep(0.6)
             out[uf] = R.parse_tse(js, R.NUMEROS[2026])
+            cache[uf] = js
         except Exception as ex:                                  # noqa: BLE001
             erros.append(f"{uf}: {ex}")
+            if uf in cache:
+                out[uf] = R.parse_tse(cache[uf], R.NUMEROS[2026])
+            if "429" in str(ex):
+                time.sleep(5)
+    if fonte != "diretorio":
+        CACHE_UF.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
     out["_erros"] = erros
     return out
 
