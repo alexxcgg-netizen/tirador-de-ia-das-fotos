@@ -85,7 +85,7 @@ def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
                         if t == 3 or "429" not in str(ex2):
                             raise
                         time.sleep(2 + 2 * t)
-                time.sleep(1.2)
+                time.sleep(0.4)
             out[uf] = R.parse_tse(js, R.NUMEROS[2026])
             cache[uf] = js
         except Exception as ex:                                  # noqa: BLE001
@@ -93,8 +93,10 @@ def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
             if uf in cache:
                 out[uf] = R.parse_tse(cache[uf], R.NUMEROS[2026])
     out["_ab"] = {}
+    idade_ab = time.time() - cache.get("_ab_em", 0)
     if fonte != "diretorio":                             # abrangência: quais municípios já foram apurados
-        for uf in R.UFS:
+        for uf in (R.UFS if idade_ab > 240 else []):     # muda devagar: renova a cada ~4 min, senão usa o cache
+            cache["_ab_em"] = time.time()
             if uf == "ZZ":
                 continue
             try:
@@ -107,12 +109,14 @@ def baixar_tse(fonte: str = "tse", pasta: Path | None = None) -> dict:
                         if t == 2 or "429" not in str(ex2):
                             raise
                         time.sleep(2 + 2 * t)
-                time.sleep(1.0)
+                time.sleep(0.4)
                 cache["ab_" + uf] = js
             except Exception as ex:                      # noqa: BLE001
                 erros.append(f"ab {uf}: {ex}")
                 js = cache.get("ab_" + uf)
-            if js:
+        for uf in R.UFS:
+            js = cache.get("ab_" + uf)
+            if js and uf != "ZZ":
                 d = R.parse_ab(js)
                 out["_ab"][uf] = list(zip(d.cd, d.te.fillna(0), d.est.fillna(0)))
         CACHE_UF.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
