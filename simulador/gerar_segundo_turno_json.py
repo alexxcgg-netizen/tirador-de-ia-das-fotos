@@ -236,7 +236,8 @@ def pesquisas(md: str) -> dict:
             if r["campo_fim"] > DATA_1T and r["t2_lula"] and not r["lula"]:
                 csvp.append({"instituto": r["instituto"], "campo_inicio": r["campo_inicio"], "campo_fim": r["campo_fim"],
                              "n": int(r["n"]) if r["n"] else None, "modo": r["modo"], "t2_lula": float(r["t2_lula"]),
-                             "t2_flavio": float(r["t2_flavio"])})
+                             "t2_flavio": float(r["t2_flavio"]),
+                             "validos": "VOTOS VALIDOS" in r["obs"].upper()})   # mesma regra do modelo (resultado_1t.py)
     medias = paragrafo(b, "**Médias (válidos, Flávio)**")
     sel = blocos(secao(md, "Seleção (brecha 9), de novo"))
     return {

@@ -1,6 +1,6 @@
 {
  "meta": {
-  "gerado_em": "2026-10-12T17:28:33Z",
+  "gerado_em": "2026-10-25T06:45:31Z",
   "gerador": "simulador/gerar_segundo_turno_json.py",
   "regra": "Texto extraído das notas sem reescrita; colunas por candidato na ordem Flávio Bolsonaro, Lula."
  },
@@ -184,7 +184,8 @@
     "n": 2520,
     "modo": "presencial",
     "t2_lula": 45.0,
-    "t2_flavio": 49.0
+    "t2_flavio": 49.0,
+    "validos": false
    },
    {
     "instituto": "PoderData",
@@ -193,7 +194,8 @@
     "n": 3000,
     "modo": "telefone",
     "t2_lula": 44.0,
-    "t2_flavio": 49.0
+    "t2_flavio": 49.0,
+    "validos": false
    },
    {
     "instituto": "Vox Brasil",
@@ -202,7 +204,8 @@
     "n": 2100,
     "modo": "presencial",
     "t2_lula": 44.2,
-    "t2_flavio": 42.7
+    "t2_flavio": 42.7,
+    "validos": false
    },
    {
     "instituto": "AtlasIntel",
@@ -211,7 +214,8 @@
     "n": 5026,
     "modo": "online (RDR)",
     "t2_lula": 45.7,
-    "t2_flavio": 51.1
+    "t2_flavio": 51.1,
+    "validos": false
    },
    {
     "instituto": "Ipespe",
@@ -220,7 +224,8 @@
     "n": 1500,
     "modo": "telefone (agenda; nao confirmado na materia)",
     "t2_lula": 44.0,
-    "t2_flavio": 49.0
+    "t2_flavio": 49.0,
+    "validos": false
    },
    {
     "instituto": "DataTrends",
@@ -229,7 +234,518 @@
     "n": 2000,
     "modo": "telefone automatizado (URA)",
     "t2_lula": 44.0,
-    "t2_flavio": 50.0
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-12",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 49.0,
+    "t2_flavio": 51.0,
+    "validos": true
+   },
+   {
+    "instituto": "Nexus/BTG",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-12",
+    "n": 2002,
+    "modo": "telefone",
+    "t2_lula": 48.0,
+    "t2_flavio": 52.0,
+    "validos": true
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-08",
+    "campo_fim": "2026-10-12",
+    "n": 2400,
+    "modo": "",
+    "t2_lula": 44.0,
+    "t2_flavio": 53.0,
+    "validos": false
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-07",
+    "campo_fim": "2026-10-10",
+    "n": 2000,
+    "modo": "",
+    "t2_lula": 48.2,
+    "t2_flavio": 51.8,
+    "validos": true
+   },
+   {
+    "instituto": "Quaest",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-13",
+    "n": 2154,
+    "modo": "",
+    "t2_lula": 44.0,
+    "t2_flavio": 46.0,
+    "validos": false
+   },
+   {
+    "instituto": "Datafolha",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-14",
+    "n": 2520,
+    "modo": "presencial",
+    "t2_lula": 49.0,
+    "t2_flavio": 51.0,
+    "validos": true
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-15",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 47.0,
+    "t2_flavio": 47.0,
+    "validos": false
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-14",
+    "campo_fim": "2026-10-15",
+    "n": 2000,
+    "modo": "",
+    "t2_lula": 49.2,
+    "t2_flavio": 50.8,
+    "validos": true
+   },
+   {
+    "instituto": "Indexa",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-14",
+    "n": 2000,
+    "modo": "",
+    "t2_lula": 42.0,
+    "t2_flavio": 44.0,
+    "validos": false
+   },
+   {
+    "instituto": "Palver",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-13",
+    "n": 5000,
+    "modo": "online",
+    "t2_lula": 49.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "CNT/MDA",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-15",
+    "n": 2014,
+    "modo": "nd (uma materia diz presencial)",
+    "t2_lula": 45.9,
+    "t2_flavio": 46.8,
+    "validos": false
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-14",
+    "campo_fim": "2026-10-16",
+    "n": 2400,
+    "modo": "telefone",
+    "t2_lula": 45.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Ipespe",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-15",
+    "n": 1500,
+    "modo": "telefone (nao confirmado)",
+    "t2_lula": 46.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Vox Brasil",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-17",
+    "n": 2100,
+    "modo": "presencial domiciliar",
+    "t2_lula": 46.4,
+    "t2_flavio": 44.6,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-18",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Nexus/BTG",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-18",
+    "n": 2002,
+    "modo": "telefone",
+    "t2_lula": 45.9,
+    "t2_flavio": 46.5,
+    "validos": false
+   },
+   {
+    "instituto": "AtlasIntel",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-18",
+    "n": 4998,
+    "modo": "online (RDR)",
+    "t2_lula": 47.6,
+    "t2_flavio": 49.8,
+    "validos": false
+   },
+   {
+    "instituto": "Real Time Big Data",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 2000,
+    "modo": "telefone (entrevistadores)",
+    "t2_lula": 45.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Instituto Franca",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-20",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 39.65,
+    "t2_flavio": 40.95,
+    "validos": false
+   },
+   {
+    "instituto": "Palver",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-20",
+    "n": 5000,
+    "modo": "online (recrutamento por anuncios em redes sociais; nao probabilistica)",
+    "t2_lula": 48.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Quaest",
+    "campo_inicio": "2026-10-17",
+    "campo_fim": "2026-10-20",
+    "n": 2154,
+    "modo": "nd",
+    "t2_lula": 44.0,
+    "t2_flavio": 45.0,
+    "validos": false
+   },
+   {
+    "instituto": "Ideia (Meio/Ideia)",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 1500,
+    "modo": "telefone",
+    "t2_lula": 46.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 15554,
+    "modo": "nd",
+    "t2_lula": 49.3,
+    "t2_flavio": 50.7,
+    "validos": true
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-20",
+    "n": 2000,
+    "modo": "telefone",
+    "t2_lula": 48.9,
+    "t2_flavio": 51.1,
+    "validos": true
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-21",
+    "n": 2400,
+    "modo": "telefone",
+    "t2_lula": 45.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-12",
+    "campo_fim": "2026-10-16",
+    "n": 15554,
+    "modo": "nd",
+    "t2_lula": 48.9,
+    "t2_flavio": 51.1,
+    "validos": true
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-17",
+    "n": 2000,
+    "modo": "telefone",
+    "t2_lula": 49.6,
+    "t2_flavio": 50.4,
+    "validos": true
+   },
+   {
+    "instituto": "DataTrends",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-17",
+    "n": 2000,
+    "modo": "telefone automatizado (URA)",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Alfa Inteligencia",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 2700,
+    "modo": "presencial",
+    "t2_lula": 45.9,
+    "t2_flavio": 48.8,
+    "validos": false
+   },
+   {
+    "instituto": "Data Ranking",
+    "campo_inicio": "2026-10-14",
+    "campo_fim": "2026-10-16",
+    "n": 2100,
+    "modo": "presencial domiciliar",
+    "t2_lula": 45.4,
+    "t2_flavio": 44.6,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-21",
+    "n": 4000,
+    "modo": "telefone (URA)",
+    "t2_lula": 48.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Indexa",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-21",
+    "n": 2000,
+    "modo": "telefone",
+    "t2_lula": 44.1,
+    "t2_flavio": 45.2,
+    "validos": false
+   },
+   {
+    "instituto": "Datafolha",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-22",
+    "n": 2520,
+    "modo": "presencial (nao confirmado nesta rodada)",
+    "t2_lula": 46.0,
+    "t2_flavio": 47.0,
+    "validos": false
+   },
+   {
+    "instituto": "Vox Brasil",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-22",
+    "n": 2100,
+    "modo": "presencial domiciliar",
+    "t2_lula": 45.4,
+    "t2_flavio": 44.3,
+    "validos": false
+   },
+   {
+    "instituto": "Alfa Inteligencia",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-22",
+    "n": 2700,
+    "modo": "presencial",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.9,
+    "validos": false
+   },
+   {
+    "instituto": "Real Time Big Data",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-22",
+    "n": 2000,
+    "modo": "telefone e internet",
+    "t2_lula": 45.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Ipespe",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-22",
+    "n": 1500,
+    "modo": "telefone",
+    "t2_lula": 47.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "DataTrends",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-21",
+    "n": 2000,
+    "modo": "nd (URA na rodada anterior)",
+    "t2_lula": 46.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-22",
+    "n": 15554,
+    "modo": "URA (voz automatizada)",
+    "t2_lula": 47.5,
+    "t2_flavio": 50.2,
+    "validos": false
+   },
+   {
+    "instituto": "Instituto Franca",
+    "campo_inicio": "2026-10-21",
+    "campo_fim": "2026-10-23",
+    "n": 1537,
+    "modo": "nd",
+    "t2_lula": 43.1,
+    "t2_flavio": 45.6,
+    "validos": false
+   },
+   {
+    "instituto": "CNT/MDA",
+    "campo_inicio": "2026-10-21",
+    "campo_fim": "2026-10-23",
+    "n": 2032,
+    "modo": "presencial",
+    "t2_lula": 45.0,
+    "t2_flavio": 46.3,
+    "validos": false
+   },
+   {
+    "instituto": "Colectta",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-23",
+    "n": 3000,
+    "modo": "presencial domiciliar",
+    "t2_lula": 46.5,
+    "t2_flavio": 46.0,
+    "validos": false
+   },
+   {
+    "instituto": "Nexus/BTG",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 2000,
+    "modo": "telefone (Metropoles diz presencial)",
+    "t2_lula": 46.0,
+    "t2_flavio": 47.0,
+    "validos": false
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-22",
+    "campo_fim": "2026-10-24",
+    "n": 2400,
+    "modo": "telefone",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Palver",
+    "campo_inicio": "2026-10-22",
+    "campo_fim": "2026-10-24",
+    "n": 5000,
+    "modo": "online (questionario online; amostra nao probabilistica)",
+    "t2_lula": 49.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Datafolha",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 4050,
+    "modo": "presencial",
+    "t2_lula": 47.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Quaest",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 3702,
+    "modo": "presencial (CartaCapital)",
+    "t2_lula": 45.0,
+    "t2_flavio": 46.0,
+    "validos": false
+   },
+   {
+    "instituto": "AtlasIntel",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-23",
+    "n": 4990,
+    "modo": "online (RDR)",
+    "t2_lula": 48.4,
+    "t2_flavio": 49.9,
+    "validos": false
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 2000,
+    "modo": "telefone (CATI)",
+    "t2_lula": 47.9,
+    "t2_flavio": 48.2,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-23",
+    "n": 15554,
+    "modo": "URA (unidade automatizada de respostas)",
+    "t2_lula": 46.46,
+    "t2_flavio": 49.44,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 4000,
+    "modo": "telefone (URA)",
+    "t2_lula": 49.0,
+    "t2_flavio": 51.0,
+    "validos": true
    }
   ],
   "medias": "**Médias (válidos, Flávio)**: média simples das 6 = **52,1**; mediana = **52,75**; sem a AtlasIntel (campo começa antes do 1T) = **52,0**. Pela convenção da imprensa (diferença até o dobro da margem declarada = empate técnico), em votos totais: **três fora da margem** com Flávio à frente (AtlasIntel 51,1 × 45,7, diferença 5,4 contra limite 2; PoderData 49 × 44, 5 contra 3,6; DataTrends 50 × 44, 6 contra 4,38); **duas em empate técnico com Flávio numericamente à frente** (Datafolha 49 × 45, diferença 4 contra limite 4; Ipespe 49 × 44, diferença 5 contra limite 5,2); **uma em empate técnico com Lula numericamente à frente** (Vox 44,2 × 42,7). (Corrigido na revisão de 12/10; a versão anterior dizia \"cinco das seis fora ou no limite da margem\".)",

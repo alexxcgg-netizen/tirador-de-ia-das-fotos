@@ -302,9 +302,20 @@ def test_secoes_novas_renderizam_com_resumo_e_flavio_antes(browser, site):
     pg.wait_for_timeout(800)
     _abrir_secao(pg, "painel-segundo-turno")
     assert pg.locator("#st2-pesq-tabela tbody tr").count() >= 7          # 6 pesquisas + média (+ 1º turno real)
-    peso_atlas = pg.evaluate("[...document.querySelectorAll('#st2-pesq-tabela tbody tr')].find(r => r.textContent.startsWith('AtlasIntel')).textContent")
-    assert "4/6 dos dias de campo" in peso_atlas
-    assert pg.locator("#st2-sem-cada tbody tr").count() == 6
+    pos = json.loads((publicar.ORIG / "resultados_2t.json").read_text(encoding="utf-8"))["segundo_turno"]["pesquisas_2t"]["pos"]
+    csv_c2 = {(c["instituto"], c["campo_inicio"], c["campo_fim"]): c
+              for c in json.loads((publicar.ORIG / "segundo_turno_conteudo.json").read_text(encoding="utf-8"))["pesquisas_pos_1t"]["csv"]}
+    linhas = pg.eval_on_selector_all("#st2-pesq-tabela tbody tr", "e => e.map(x => x.textContent)")
+    fmt = lambda v: f"{v:.1f}".replace(".", ",") if v % 1 else f"{v:.0f}"
+    for r in pos["tabela"]:
+        t = next(x for x in linhas if x.startswith(r["instituto"]))
+        assert ("dos dias de campo" in t) == (r["fracao_pos_1t"] < 1), t
+        c = csv_c2[(r["instituto"], r["campo_inicio"], r["campo_fim"])]   # totais da MESMA rodada que o modelo usa
+        if c["validos"]:
+            assert "só válidos divulgados" in t, t
+        elif all(abs(v * 10 - round(v * 10)) < 1e-9 for v in (c["t2_flavio"], c["t2_lula"])):
+            assert f"{fmt(c['t2_flavio'])} · {fmt(c['t2_lula'])}" in t, t
+    assert pg.locator("#st2-sem-cada tbody tr").count() == len(pos["media_sem_cada_instituto"])
     cards = pg.eval_on_selector_all(".st2-mand .card", "e => e.map(x => x.dataset.cand)")
     assert cards == ["Flavio", "Lula"]
     assert "não entram na chance de vencer" in pg.inner_text("#st2-mandato-corpo")

@@ -3704,12 +3704,17 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
     var S = t2S(); if (!S || !S.pesquisas_2t || !S.pesquisas_2t.pos || !S.pesquisas_2t.pos.tabela) return null;
     var P = C2 ? C2.pesquisas_pos_1t : null, A = S.par[0];
     var nota = {}, csv = {};
-    if (P) { (P.tabela || []).forEach(function (r) { nota[r.instituto] = r; }); (P.csv || []).forEach(function (r) { csv[r.instituto] = r; }); }
+    if (P) { (P.tabela || []).forEach(function (r) { nota[r.instituto] = r; }); (P.csv || []).forEach(function (r) { (csv[r.instituto] = csv[r.instituto] || []).push(r); }); }
+    Object.keys(csv).forEach(function (k) { csv[k].sort(function (a, b) { return a.campo_fim < b.campo_fim ? -1 : a.campo_fim > b.campo_fim ? 1 : 0; }); });
     return S.pesquisas_2t.pos.tabela.map(function (r) {
       var fa = A === "Lula" ? r.fatia_a_validos_pct : 100 - r.fatia_a_validos_pct;
       var tot = diasEntre(r.campo_inicio, r.campo_fim) + 1, pos = Math.max(0, Math.min(tot, diasEntre(D1T, r.campo_fim)));
+      var rod = csv[r.instituto] || [], i = rod.findIndex(function (c) { return c.campo_inicio === r.campo_inicio && c.campo_fim === r.campo_fim; });
+      // as notas de 12/10 descrevem só a 1ª rodada pós-1T de cada instituto: brancos, modo, mudança e conferência dela não valem para as seguintes
+      var primeira = i === 0, ant = P && P.anteriores ? P.anteriores[r.instituto] || null : null;
       return { inst: r.instituto, ini: r.campo_inicio, fim: r.campo_fim, n: r.n, lula: fa, flavio: 100 - fa, peso: r.peso_rel, frac: r.fracao_pos_1t, dias: [pos, tot],
-        nota: nota[r.instituto] || null, csv: csv[r.instituto] || null, ant: P && P.anteriores ? P.anteriores[r.instituto] || null : null, ver: P && P.verificacao ? P.verificacao[r.instituto] || null : null };
+        nota: primeira ? nota[r.instituto] || null : null, csv: i >= 0 ? rod[i] : null, prev: i > 0 ? rod[i - 1] : null, ant: primeira ? ant : null,
+        erro1t: ant ? ant.erro_1t : null, ver: primeira && P && P.verificacao ? P.verificacao[r.instituto] || null : null };
     }).sort(function (a, b) { return a.fim < b.fim ? -1 : a.fim > b.fim ? 1 : a.inst.localeCompare(b.inst, "pt-BR"); });
   }
   function st2Media() { var S = t2S(), q = S.pesquisas_2t.pos.q * 100; var l = S.par[0] === "Lula" ? q : 100 - q; return { lula: l, flavio: 100 - l }; }
@@ -3717,14 +3722,22 @@ details.sec-det .sec-corpo { margin-top: var(--s-2); }
   function st2Pesq() {
     var rows = st2Linhas(); if (!rows) { put("st2-pesq-tab", "<div class='vazio'><b>Sem pesquisas pós-1º turno nesta rodada.</b>A tabela aparece quando o modelo do 2º turno usar pesquisas com campo depois de 4/10.</div>"); return; }
     var M = st2Media(), R1 = st2Real1T(), S = t2S(), pos = S.pesquisas_2t.pos;
-    var h = "<div class='tbl-wrap c2-tw'><table class='c2-tab' id='st2-pesq-tabela'><caption>Votos totais e válidos em %. Totais como publicados; válidos recalculados pelo modelo a partir dos totais (podem diferir 0,1 do publicado). Margem Lula − Flávio e erro no 1º turno como nas notas (positivo = a favor de Lula).</caption><thead><tr>" +
+    var h = "<div class='tbl-wrap c2-tw'><table class='c2-tab' id='st2-pesq-tabela'><caption>Votos totais e válidos em %. Totais como publicados (quando o instituto só divulgou válidos, a coluna diz isso); válidos recalculados pelo modelo a partir dos totais (podem diferir 0,1 do publicado). Mudança: margem Lula − Flávio nos válidos contra a rodada anterior do mesmo instituto (a 1ª rodada pós-1T é comparada, como nas notas, com a última antes do 1º turno). Erro no 1º turno como nas notas (positivo = a favor de Lula).</caption><thead><tr>" +
       "<th scope='col'>Instituto</th><th scope='col'>Campo</th><th scope='col' class='n'>n</th><th scope='col'>Votos totais: Flávio · Lula · branco/nulo · não sabe</th><th scope='col'>Válidos: Flávio · Lula</th><th scope='col'>Peso no modelo</th><th scope='col'>Mudança desde a rodada anterior (margem Lula − Flávio)</th><th scope='col'>Erro de margem no 1º turno</th></tr></thead><tbody>";
     rows.forEach(function (r) {
-      var nt = r.nota, cv = r.csv, tot = cv ? FMT.n(cv.t2_flavio, cv.t2_flavio % 1 ? 1 : 0) + " · " + FMT.n(cv.t2_lula, cv.t2_lula % 1 ? 1 : 0) : "–";
-      if (nt) tot += " · " + mdl(nt.branco_nulo) + " · " + mdl(nt.ns);
+      var nt = r.nota, cv = r.csv, tot = "–";
+      if (cv && cv.validos) tot = "<span class='muted'>só válidos divulgados</span>";
+      else if (cv) { tot = FMT.n(cv.t2_flavio, cv.t2_flavio % 1 ? 1 : 0) + " · " + FMT.n(cv.t2_lula, cv.t2_lula % 1 ? 1 : 0); if (nt) tot += " · " + mdl(nt.branco_nulo) + " · " + mdl(nt.ns); }
       var peso = FMT.n(r.peso * 100, 1) + "%" + (r.frac < 1 ? "<br><span class='muted'>só " + r.dias[0] + "/" + r.dias[1] + " dos dias de campo depois do 1º turno (fração " + FMT.n(r.frac, 2) + ")</span>" : "");
-      h += "<tr><th scope='row'>" + esc(r.inst) + (nt && nt.modo ? "<br><span class='muted'>" + mdl(nt.modo) + "</span>" : "") + "</th><td>" + dmy(r.ini).slice(0, 5) + "–" + dmy(r.fim).slice(0, 5) + "</td><td class='n'>" + FMT.n(r.n) + "</td><td>" + tot + "</td><td>" +
-        FMT.n(r.flavio, 1) + " · " + FMT.n(r.lula, 1) + "</td><td>" + peso + "</td><td>" + (r.ant ? mdl(r.ant.mudanca) + "<br><span class='muted'>antes: " + mdl(r.ant.antes) + "</span>" : "–") + "</td><td>" + (r.ant ? mdl(r.ant.erro_1t) : "–") + "</td></tr>";
+      var modo = cv && cv.modo ? esc(cv.modo) : nt && nt.modo ? mdl(nt.modo) : "";
+      var mud = "–";
+      if (r.prev && cv) {
+        var mg = function (c) { return 100 * (c.t2_lula - c.t2_flavio) / (c.t2_lula + c.t2_flavio); }, m0 = mg(r.prev), m1 = mg(cv);
+        mud = FMT.sinal(m0, 1) + " → " + FMT.sinal(m1, 1) + ": <b>" + FMT.sinal(Math.round((m1 - m0) * 10) / 10 || 0, 1) + "</b><br><span class='muted'>antes: " + dmy(r.prev.campo_inicio).slice(0, 5) + "–" + dmy(r.prev.campo_fim).slice(0, 5) +
+          ", válidos Flávio " + FMT.n(100 - (50 + m0 / 2), 1) + " × Lula " + FMT.n(50 + m0 / 2, 1) + "</span>";
+      } else if (r.ant) mud = mdl(r.ant.mudanca) + "<br><span class='muted'>antes: " + mdl(r.ant.antes) + "</span>";
+      h += "<tr><th scope='row'>" + esc(r.inst) + (modo ? "<br><span class='muted'>" + modo + "</span>" : "") + "</th><td>" + dmy(r.ini).slice(0, 5) + "–" + dmy(r.fim).slice(0, 5) + "</td><td class='n'>" + FMT.n(r.n) + "</td><td>" + tot + "</td><td>" +
+        FMT.n(r.flavio, 1) + " · " + FMT.n(r.lula, 1) + "</td><td>" + peso + "</td><td>" + mud + "</td><td>" + (r.erro1t ? mdl(r.erro1t) : "–") + "</td></tr>";
     });
     h += "<tr class='destaque'><th scope='row'>Média do modelo</th><td>–</td><td class='n'>–</td><td>–</td><td>" + FMT.n(M.flavio, 1) + " · " + FMT.n(M.lula, 1) + "</td><td>100%</td><td>–</td><td>–</td></tr>";
     if (R1) h += "<tr><th scope='row'>1º turno real, só os dois</th><td>04/10</td><td class='n'>–</td><td>–</td><td>" + FMT.n(R1.flavio, 1) + " · " + FMT.n(R1.lula, 1) + "</td><td>–</td><td>–</td><td>–</td></tr>";
