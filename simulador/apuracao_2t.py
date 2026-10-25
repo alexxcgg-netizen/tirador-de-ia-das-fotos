@@ -108,7 +108,7 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
         vf = float(t["votos"].get("Flavio", 0.0)) if t else 0.0
         v = vl + vf
         prior = u["a_media"] / 100
-        if p >= 10 and v > 0:                      # desvio nacional do modelo, medido onde já há apuração
+        if p >= 10 and v > 0 and uf != "ZZ":       # desvio nacional (exterior não representa o país) do modelo, medido onde já há apuração
             d_num += v * (vl / v - prior)
             d_den += v
         linhas.append({"uf": uf, "nome": u.get("nome", uf), "regiao": u["regiao"], "pst": p, "lula": vl, "flavio": vf,
@@ -133,7 +133,7 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
         else:
             total = r["esperado_validos"]
         resto = max(total - v, 0.0) if p < 100 else 0.0
-        lam = p / (p + 10) if v > 0 else 0.0
+        lam = p / (p + 25) if v > 0 else 0.0     # primeiras seções (capitais) podem não representar a UF
         s_obs = r["lula"] / v if v > 0 else r["prior"]
         s_rest = lam * s_obs + (1 - lam) * (r["prior"] + desvio)
         r.update({"faltam_validos": resto, "lula_resto": s_rest,
@@ -154,13 +154,13 @@ def projetar(tse: dict, modelo: dict, n: int = 40_000, seed: int = 25) -> dict:
     vb = parcial["lula"] + parcial["flavio"]
     parcial["lula_pct"] = 100 * parcial["lula"] / vb if vb else None
     parcial["margem"] = (2 * parcial["lula_pct"] - 100) if vb else None
-    antes = p_br < 0.5
+    antes = p_br < 5       # abaixo de 5% a parcial é ruído de ordem de apuração: mostra o modelo
     proj = {"p_lula": s["p_a_vence"] if antes else p_lula,
             "lula_pct": s["a_media"] if antes else float(100 * np.median(q)),
             "lula_p10": s["a_quantis"][1] if antes else float(100 * np.quantile(q, 0.1)),
             "lula_p90": s["a_quantis"][5] if antes else float(100 * np.quantile(q, 0.9)),
             "validos": float(np.median(tot_v)), "desvio_modelo_pp": 100 * desvio,
-            "fonte": "modelo da véspera (sem apuração)" if antes else "parcial do TSE + modelo"}
+            "fonte": "modelo da véspera (com menos de 5% apurado a parcial ainda não diz nada)" if antes else "parcial do TSE + modelo"}
     if not antes:
         proj["margem_votos_p50"] = float(np.median(2 * tot_l - tot_v))
         proj["margem_votos_p10"] = float(np.quantile(2 * tot_l - tot_v, 0.1))
