@@ -15,3 +15,8 @@ pasta temporária da sessão (`SCRATCH` / caminhos absolutos no topo de cada scr
   Brusque (283 urnas) e da amostra de 310 urnas (votos depois das 17h, biometria, eventos). Só contagens por seção.
 
 Uso: `python3 -I <script>` de fora das pastas com arquivos baixados (dados não confiáveis).
+
+## Todas as urnas (27/10/2026)
+- `crawl_bu.py` (2T, aceita `CRAWL_SHARD=k/n`) e `crawl_bu_1t.py` (1º turno, só as seções de `alvos_1t.csv` via `CRAWL_ALVO`) leem o BU de cada seção. Caminhos absolutos apontam para o scratchpad da sessão: ajustar `S`/`U` antes de rodar em outra máquina.
+- `analise_urnas.py` (estatística do 2T) e `analise_1t2t.py` (cruza 1T × 2T por seção; `faz_alvos.py` gera o sorteio). Rodar com `python3 -P` (o `-I` ignora pandas instalado no usuário).
+- Resultado e limites: `RELATORIO_COMPLETO.md`.

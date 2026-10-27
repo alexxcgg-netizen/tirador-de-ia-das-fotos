@@ -143,6 +143,10 @@ def main():
                         if 'nsp' in s: continue  # secao agregada a outra: sem urna propria
                         plan.append((m['cd'], m.get('nm', ''), z['cd'], s['ns'], ';'.join(s.get('nsa', []))))
         todo = [p for p in plan if (uf, p[0], p[2], p[3]) not in done]
+        sh = os.environ.get('CRAWL_SHARD')      # 'k/n': so as secoes com (mun+zona+secao) % n == k (estavel entre reinicios)
+        if sh:
+            k, n = map(int, sh.split('/'))
+            todo = [p for p in todo if (int(p[0]) + int(p[2]) + int(p[3])) % n == k]
         prog[uf] = {'total': len(plan), 'feitas': len(plan) - len(todo)}
         log('UF', uf, 'total', len(plan), 'faltam', len(todo))
         for i, (mun, nm, z, s, ag) in enumerate(todo):
