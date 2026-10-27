@@ -1,0 +1,80 @@
+{
+"ele": "544",
+"tpabr": "UF",
+"cdabr": "SP",
+"carper": "1",
+"md": "N",
+"t": "1",
+"f": "O",
+"dg": "02/10/2022",
+"hg": "23:59:59",
+"dt": "02/10/2022",
+"ht": "23:59:59",
+"dv": "S",
+"tf": "S",
+"s": "",
+"st": "",
+"pst": "100,00",
+"si": "",
+"psi": "100,00",
+"e": "34684927",
+"c": "27189714",
+"a": "7495213",
+"vb": "571257",
+"tvn": "962123",
+"vv": "25656334",
+"tv": "27189714",
+"_nota": "Reconstruído de data/resultados_uf_2002_2022.csv (TSE dados abertos), formato dados-simplificados 2022",
+"cand": [
+{
+"seq": "1",
+"n": "22",
+"nm": "JAIR BOLSONARO",
+"e": "N",
+"st": "",
+"dvt": "Válido",
+"vap": "12239996",
+"pvap": "47,71"
+},
+{
+"seq": "2",
+"n": "13",
+"nm": "LULA",
+"e": "N",
+"st": "",
+"dvt": "Válido",
+"vap": "10490028",
+"pvap": "40,89"
+},
+{
+"seq": "3",
+"n": "15",
+"nm": "SIMONE TEBET",
+"e": "N",
+"st": "",
+"dvt": "Válido",
+"vap": "1625585",
+"pvap": "6,34"
+},
+{
+"seq": "4",
+"n": "12",
+"nm": "CIRO GOMES",
+"e": "N",
+"st": "",
+"dvt": "Válido",
+"vap": "898536",
+"pvap": "3,50"
+},
+{
+"seq": "5",
+"n": "0",
+"nm": "DEMAIS CANDIDATOS",
+"e": "N",
+"st": "",
+"dvt": "Válido",
+"vap": "402189",
+"pvap": "1,57"
+}
+]
+}

@@ -1,0 +1,219 @@
+fonte,referencia,faixa_renda,indicador,valor,unidade,observacao
+BCB SGS 29034,2026-07,Todas (agregado nacional),comprometimento_renda_servico_divida_dessaz,28.72,%,RNDBF = renda nacional disponivel bruta das familias
+BCB SGS 29035,2026-07,Todas (agregado nacional),comprometimento_renda_servico_divida_exceto_habitacional_dessaz,26.43,%,RNDBF = renda nacional disponivel bruta das familias
+BCB SGS 29036,2026-07,Todas (agregado nacional),comprometimento_renda_amortizacao_dessaz,17.89,%,RNDBF = renda nacional disponivel bruta das familias
+BCB SGS 29264,2026-07,Todas (agregado nacional),comprometimento_renda_juros_sem_ajuste,10.51,%,RNDBF = renda nacional disponivel bruta das familias
+BCB SGS 29265,2026-07,Todas (agregado nacional),comprometimento_renda_servico_divida_sem_ajuste,27.75,%,RNDBF = renda nacional disponivel bruta das familias
+BCB SGS 29037,2026-07,Todas (agregado nacional),endividamento_familias_sfn_renda_12m,49.86,%,RNDBF = renda nacional disponivel bruta das familias
+BCB SGS 29038,2026-07,Todas (agregado nacional),endividamento_familias_exceto_habitacional_renda_12m,30.81,%,RNDBF = renda nacional disponivel bruta das familias
+BCB SGS 21084,2026-08,Todas (agregado nacional),inadimplencia_carteira_pf_total_90d,6.03,%,
+BCB SGS 21112,2026-08,Todas (agregado nacional),inadimplencia_carteira_pf_recursos_livres_90d,8.01,%,
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Sem rendimento,scr_carteira_ativa_rs_bi,29.11,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Sem rendimento,scr_pct_carteira_pf,0.63,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Sem rendimento,scr_pct_inadimplencia_90d,18.62,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Sem rendimento,scr_pct_vencido_15d,12.43,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Sem rendimento,scr_pct_ativo_problematico,21.05,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Até 1 salário mínimo,scr_carteira_ativa_rs_bi,274.48,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Até 1 salário mínimo,scr_pct_carteira_pf,5.97,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Até 1 salário mínimo,scr_pct_inadimplencia_90d,9.89,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Até 1 salário mínimo,scr_pct_vencido_15d,8.28,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Até 1 salário mínimo,scr_pct_ativo_problematico,13.42,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_ativa_rs_bi,611.47,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 1 a 2 salários mínimos,scr_pct_carteira_pf,13.31,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 1 a 2 salários mínimos,scr_pct_inadimplencia_90d,7.6,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 1 a 2 salários mínimos,scr_pct_vencido_15d,5.78,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 1 a 2 salários mínimos,scr_pct_ativo_problematico,12.0,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_ativa_rs_bi,478.32,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 2 a 3 salários mínimos,scr_pct_carteira_pf,10.41,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 2 a 3 salários mínimos,scr_pct_inadimplencia_90d,5.83,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 2 a 3 salários mínimos,scr_pct_vencido_15d,4.35,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 2 a 3 salários mínimos,scr_pct_ativo_problematico,10.2,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_ativa_rs_bi,683.24,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 3 a 5 salários mínimos,scr_pct_carteira_pf,14.87,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 3 a 5 salários mínimos,scr_pct_inadimplencia_90d,5.17,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 3 a 5 salários mínimos,scr_pct_vencido_15d,3.77,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 3 a 5 salários mínimos,scr_pct_ativo_problematico,8.75,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_ativa_rs_bi,844.1,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 5 a 10 salários mínimos,scr_pct_carteira_pf,18.37,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 5 a 10 salários mínimos,scr_pct_inadimplencia_90d,4.31,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 5 a 10 salários mínimos,scr_pct_vencido_15d,3.06,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 5 a 10 salários mínimos,scr_pct_ativo_problematico,7.37,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_ativa_rs_bi,601.29,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 10 a 20 salários mínimos,scr_pct_carteira_pf,13.09,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 10 a 20 salários mínimos,scr_pct_inadimplencia_90d,4.15,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 10 a 20 salários mínimos,scr_pct_vencido_15d,3.04,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Mais de 10 a 20 salários mínimos,scr_pct_ativo_problematico,6.6,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Acima de 20 salários mínimos,scr_carteira_ativa_rs_bi,979.83,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Acima de 20 salários mínimos,scr_pct_carteira_pf,21.33,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Acima de 20 salários mínimos,scr_pct_inadimplencia_90d,5.7,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Acima de 20 salários mínimos,scr_pct_vencido_15d,4.71,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Acima de 20 salários mínimos,scr_pct_ativo_problematico,9.33,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Indisponível,scr_carteira_ativa_rs_bi,92.36,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Indisponível,scr_pct_carteira_pf,2.01,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Indisponível,scr_pct_inadimplencia_90d,10.16,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Indisponível,scr_pct_vencido_15d,7.58,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,Indisponível,scr_pct_ativo_problematico,14.21,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,TOTAL PF,scr_carteira_ativa_rs_bi,4594.2,R$ bilhoes,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,TOTAL PF,scr_pct_carteira_pf,100.0,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,TOTAL PF,scr_pct_inadimplencia_90d,5.85,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,TOTAL PF,scr_pct_vencido_15d,4.47,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), cliente=PF, por porte (renda do tomador)",2026-07,TOTAL PF,scr_pct_ativo_problematico,9.39,%,inadimplencia_90d = carteira_inadimplida_arrastada/carteira_ativa
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_inadimplencia_90d__Cartão de crédito,4.99,%,carteira R$ 95.2 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_carteira_rs_bi__Cartão de crédito,95.18,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_inadimplencia_90d__Empréstimo com consignação em folha,1.91,%,carteira R$ 32.6 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_carteira_rs_bi__Empréstimo com consignação em folha,32.63,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_inadimplencia_90d__Empréstimo sem consignação em folha,7.89,%,carteira R$ 77.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_carteira_rs_bi__Empréstimo sem consignação em folha,77.27,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_inadimplencia_90d__Habitacional,0.6,%,carteira R$ 152.5 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_carteira_rs_bi__Habitacional,152.49,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_inadimplencia_90d__Outros créditos,8.21,%,carteira R$ 99.7 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_carteira_rs_bi__Outros créditos,99.73,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_inadimplencia_90d__Rural e agroindustrial,6.9,%,carteira R$ 491.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_carteira_rs_bi__Rural e agroindustrial,491.14,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_inadimplencia_90d__Veículos,4.3,%,carteira R$ 31.4 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Acima de 20 salários mínimos,scr_carteira_rs_bi__Veículos,31.39,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_inadimplencia_90d__Cartão de crédito,13.49,%,carteira R$ 65.6 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_carteira_rs_bi__Cartão de crédito,65.56,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_inadimplencia_90d__Empréstimo com consignação em folha,4.53,%,carteira R$ 104.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_carteira_rs_bi__Empréstimo com consignação em folha,104.27,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_inadimplencia_90d__Empréstimo sem consignação em folha,19.53,%,carteira R$ 40.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_carteira_rs_bi__Empréstimo sem consignação em folha,40.32,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_inadimplencia_90d__Habitacional,2.78,%,carteira R$ 31.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_carteira_rs_bi__Habitacional,31.35,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_inadimplencia_90d__Outros créditos,20.25,%,carteira R$ 9.5 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_carteira_rs_bi__Outros créditos,9.52,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_inadimplencia_90d__Rural e agroindustrial,20.56,%,carteira R$ 9.4 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_carteira_rs_bi__Rural e agroindustrial,9.45,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_inadimplencia_90d__Veículos,6.85,%,carteira R$ 14.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Até 1 salário mínimo,scr_carteira_rs_bi__Veículos,14.02,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_inadimplencia_90d__Cartão de crédito,11.45,%,carteira R$ 15.6 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_carteira_rs_bi__Cartão de crédito,15.6,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_inadimplencia_90d__Empréstimo com consignação em folha,8.71,%,carteira R$ 15.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_carteira_rs_bi__Empréstimo com consignação em folha,15.01,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_inadimplencia_90d__Empréstimo sem consignação em folha,16.89,%,carteira R$ 6.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_carteira_rs_bi__Empréstimo sem consignação em folha,5.96,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_inadimplencia_90d__Habitacional,3.2,%,carteira R$ 13.4 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_carteira_rs_bi__Habitacional,13.45,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_inadimplencia_90d__Outros créditos,25.03,%,carteira R$ 8.9 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_carteira_rs_bi__Outros créditos,8.9,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_inadimplencia_90d__Rural e agroindustrial,20.97,%,carteira R$ 9.2 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_carteira_rs_bi__Rural e agroindustrial,9.16,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_inadimplencia_90d__Veículos,2.88,%,carteira R$ 24.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Indisponível,scr_carteira_rs_bi__Veículos,24.27,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_inadimplencia_90d__Cartão de crédito,13.4,%,carteira R$ 112.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_rs_bi__Cartão de crédito,112.8,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_inadimplencia_90d__Empréstimo com consignação em folha,5.52,%,carteira R$ 139.4 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_rs_bi__Empréstimo com consignação em folha,139.4,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_inadimplencia_90d__Empréstimo sem consignação em folha,12.89,%,carteira R$ 61.7 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_rs_bi__Empréstimo sem consignação em folha,61.69,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_inadimplencia_90d__Habitacional,2.33,%,carteira R$ 214.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_rs_bi__Habitacional,214.08,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_inadimplencia_90d__Outros créditos,16.92,%,carteira R$ 23.5 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_rs_bi__Outros créditos,23.47,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_inadimplencia_90d__Rural e agroindustrial,9.38,%,carteira R$ 11.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_rs_bi__Rural e agroindustrial,11.13,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_inadimplencia_90d__Veículos,11.69,%,carteira R$ 48.9 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 1 a 2 salários mínimos,scr_carteira_rs_bi__Veículos,48.91,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_inadimplencia_90d__Cartão de crédito,6.01,%,carteira R$ 107.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_rs_bi__Cartão de crédito,107.34,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_inadimplencia_90d__Empréstimo com consignação em folha,1.97,%,carteira R$ 81.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_rs_bi__Empréstimo com consignação em folha,81.79,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_inadimplencia_90d__Empréstimo sem consignação em folha,8.67,%,carteira R$ 45.6 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_rs_bi__Empréstimo sem consignação em folha,45.57,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_inadimplencia_90d__Habitacional,0.62,%,carteira R$ 221.7 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_rs_bi__Habitacional,221.71,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_inadimplencia_90d__Outros créditos,10.13,%,carteira R$ 34.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_rs_bi__Outros créditos,34.1,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_inadimplencia_90d__Rural e agroindustrial,9.81,%,carteira R$ 62.9 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_rs_bi__Rural e agroindustrial,62.95,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_inadimplencia_90d__Veículos,4.05,%,carteira R$ 47.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 10 a 20 salários mínimos,scr_carteira_rs_bi__Veículos,47.84,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_inadimplencia_90d__Cartão de crédito,11.68,%,carteira R$ 77.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_rs_bi__Cartão de crédito,76.98,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_inadimplencia_90d__Empréstimo com consignação em folha,4.28,%,carteira R$ 90.5 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_rs_bi__Empréstimo com consignação em folha,90.5,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_inadimplencia_90d__Empréstimo sem consignação em folha,12.04,%,carteira R$ 35.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_rs_bi__Empréstimo sem consignação em folha,35.26,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_inadimplencia_90d__Habitacional,1.71,%,carteira R$ 204.5 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_rs_bi__Habitacional,204.52,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_inadimplencia_90d__Outros créditos,13.94,%,carteira R$ 18.4 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_rs_bi__Outros créditos,18.43,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_inadimplencia_90d__Rural e agroindustrial,9.34,%,carteira R$ 12.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_rs_bi__Rural e agroindustrial,12.02,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_inadimplencia_90d__Veículos,8.82,%,carteira R$ 40.6 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 2 a 3 salários mínimos,scr_carteira_rs_bi__Veículos,40.62,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_inadimplencia_90d__Cartão de crédito,9.99,%,carteira R$ 107.4 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_rs_bi__Cartão de crédito,107.35,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_inadimplencia_90d__Empréstimo com consignação em folha,3.52,%,carteira R$ 132.5 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_rs_bi__Empréstimo com consignação em folha,132.52,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_inadimplencia_90d__Empréstimo sem consignação em folha,10.41,%,carteira R$ 47.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_rs_bi__Empréstimo sem consignação em folha,47.11,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_inadimplencia_90d__Habitacional,1.21,%,carteira R$ 252.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_rs_bi__Habitacional,252.81,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_inadimplencia_90d__Outros créditos,12.67,%,carteira R$ 28.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_rs_bi__Outros créditos,28.26,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_inadimplencia_90d__Rural e agroindustrial,9.53,%,carteira R$ 24.7 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_rs_bi__Rural e agroindustrial,24.73,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_inadimplencia_90d__Veículos,6.7,%,carteira R$ 90.5 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 3 a 5 salários mínimos,scr_carteira_rs_bi__Veículos,90.46,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_inadimplencia_90d__Cartão de crédito,7.84,%,carteira R$ 127.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_rs_bi__Cartão de crédito,127.09,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_inadimplencia_90d__Empréstimo com consignação em folha,2.52,%,carteira R$ 151.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_rs_bi__Empréstimo com consignação em folha,151.1,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_inadimplencia_90d__Empréstimo sem consignação em folha,9.38,%,carteira R$ 54.4 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_rs_bi__Empréstimo sem consignação em folha,54.43,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_inadimplencia_90d__Habitacional,1.03,%,carteira R$ 311.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_rs_bi__Habitacional,311.77,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_inadimplencia_90d__Outros créditos,11.45,%,carteira R$ 37.6 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_rs_bi__Outros créditos,37.55,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_inadimplencia_90d__Rural e agroindustrial,8.61,%,carteira R$ 59.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_rs_bi__Rural e agroindustrial,59.34,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_inadimplencia_90d__Veículos,4.79,%,carteira R$ 102.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Mais de 5 a 10 salários mínimos,scr_carteira_rs_bi__Veículos,102.82,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_inadimplencia_90d__Cartão de crédito,15.12,%,carteira R$ 9.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_carteira_rs_bi__Cartão de crédito,9.76,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_inadimplencia_90d__Empréstimo com consignação em folha,9.75,%,carteira R$ 7.7 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_carteira_rs_bi__Empréstimo com consignação em folha,7.73,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_inadimplencia_90d__Empréstimo sem consignação em folha,16.69,%,carteira R$ 1.6 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_carteira_rs_bi__Empréstimo sem consignação em folha,1.6,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_inadimplencia_90d__Habitacional,14.74,%,carteira R$ 0.1 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_carteira_rs_bi__Habitacional,0.12,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_inadimplencia_90d__Outros créditos,15.36,%,carteira R$ 1.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_carteira_rs_bi__Outros créditos,1.04,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_inadimplencia_90d__Rural e agroindustrial,5.67,%,carteira R$ 0.9 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_carteira_rs_bi__Rural e agroindustrial,0.87,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_inadimplencia_90d__Veículos,33.7,%,carteira R$ 8.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,Sem rendimento,scr_carteira_rs_bi__Veículos,8.0,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_inadimplencia_90d__Cartão de crédito,9.49,%,carteira R$ 717.7 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_carteira_rs_bi__Cartão de crédito,717.65,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_inadimplencia_90d__Empréstimo com consignação em folha,3.85,%,carteira R$ 754.9 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_carteira_rs_bi__Empréstimo com consignação em folha,754.95,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_inadimplencia_90d__Empréstimo sem consignação em folha,11.21,%,carteira R$ 369.2 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_carteira_rs_bi__Empréstimo sem consignação em folha,369.2,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_inadimplencia_90d__Habitacional,1.31,%,carteira R$ 1402.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_carteira_rs_bi__Habitacional,1402.27,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_inadimplencia_90d__Outros créditos,11.64,%,carteira R$ 261.0 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_carteira_rs_bi__Outros créditos,261.01,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_inadimplencia_90d__Rural e agroindustrial,7.88,%,carteira R$ 680.8 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_carteira_rs_bi__Rural e agroindustrial,680.79,R$ bilhoes,
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_inadimplencia_90d__Veículos,6.84,%,carteira R$ 408.3 bi
+"BCB SCR.data (planilha_202607.csv), PF por porte x modalidade",2026-07,TOTAL PF,scr_carteira_rs_bi__Veículos,408.34,R$ bilhoes,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Ate 3 SM,peic_pct_familias_endividadas,85.1,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Ate 3 SM,peic_pct_familias_contas_em_atraso,38.8,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Ate 3 SM,peic_pct_sem_condicoes_de_pagar,18.3,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,3 a 5 SM,peic_pct_familias_endividadas,83.7,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,3 a 5 SM,peic_pct_familias_contas_em_atraso,28.0,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,5 a 10 SM,peic_pct_familias_endividadas,77.2,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,5 a 10 SM,peic_pct_familias_contas_em_atraso,20.3,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,5 a 10 SM,peic_pct_sem_condicoes_de_pagar,7.8,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Mais de 10 SM,peic_pct_familias_endividadas,72.3,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Mais de 10 SM,peic_pct_familias_contas_em_atraso,14.9,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Total,peic_pct_familias_endividadas,82.0,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Total,peic_pct_familias_contas_em_atraso,29.9,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Total,peic_pct_sem_condicoes_de_pagar,12.5,% familias,
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Total,peic_pct_renda_comprometida_media,29.5,% renda,media entre endividados
+"CNC Peic ago/2026 (divulgada 10/09/2026, portaldocomercio.org.br)",2026-08,Total,peic_pct_familias_mais_50pct_renda_comprometida,19.2,% familias,
+CNC Peic jul/2026 (Agencia Brasil 07/08/2026),2026-07,Total,peic_tempo_medio_atraso,64.6,dias,
+CNC Peic jul/2026 (Agencia Brasil 07/08/2026),2026-07,Ate 3 SM,peic_pct_familias_contas_em_atraso,38.5,% familias,
+CNC Peic jul/2026 (Agencia Brasil 07/08/2026),2026-07,Mais de 10 SM,peic_pct_familias_contas_em_atraso,15.1,% familias,
+Serasa Mapa da Inadimplencia (via imprensa; fonte privada),2026-08,Total,serasa_pessoas_negativadas,83.9,milhoes de pessoas,recorde da serie; sem recorte por renda; fonte secundaria

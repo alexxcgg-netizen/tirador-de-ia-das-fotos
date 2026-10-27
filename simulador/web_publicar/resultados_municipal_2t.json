@@ -1,0 +1,832 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-05T02:01:47+00:00",
+  "descricao": "Projeção do 2º turno 2026 (Lula x Flávio Bolsonaro, 25/10) só com a estrutura municipal do 1º turno: sem pesquisas e sem Polymarket/mercados.",
+  "modelo_principal": "EI6_uf",
+  "treino": "2018 + 2022 (1º -> 2º turno, por município)",
+  "n_municipios_2026": 5757,
+  "fontes": [
+   "resultados.tse.jus.br ele2026/6257 (arquivos por município)",
+   "cdn.tse.jus.br votacao_candidato_munzona / detalhe_votacao_munzona 2018 e 2022"
+  ]
+ },
+ "primeiro_turno_2026": {
+  "lula_pct_validos": 45.16,
+  "flavio_pct_validos": 47.03,
+  "terceiros_esquerda_pct_validos": 0.17,
+  "terceiros_nao_esquerda_pct_validos": 7.64,
+  "aptos_mi": 158.746,
+  "comparecimento_mi": 125.274,
+  "validos_mi": 119.299
+ },
+ "nacional": {
+  "p_lula": 0.0817,
+  "lula_pct_projetado": 46.04,
+  "lula_pct_media_sim": 46.04,
+  "lula_pct_dp": 2.84,
+  "lula_pct_quantis": {
+   "2.5": 40.48,
+   "5": 41.37,
+   "10": 42.41,
+   "25": 44.12,
+   "50": 46.04,
+   "75": 47.95,
+   "90": 49.68,
+   "95": 50.71,
+   "97.5": 51.6
+  },
+  "validos_mi": 118.964,
+  "comparecimento_mi": 124.665,
+  "comparecimento_pct_aptos": 78.53,
+  "lula_votos_mi": 54.775,
+  "flavio_votos_mi": 64.19,
+  "n_sim": 500000,
+  "dp_componentes_pp": {
+   "nacional": 2.792,
+   "regional": 0.916,
+   "uf": 0.702,
+   "municipal": 1.19,
+   "municipal_agregado_no_pais": 0.09
+  }
+ },
+ "coeficientes_nacionais_2018_2022": {
+  "categorias_1t": [
+   "x_pt",
+   "x_opp",
+   "x_terc_esq",
+   "x_terc_nesq",
+   "x_bn",
+   "x_abs"
+  ],
+  "fracao_para_lula": [
+   0.97,
+   0.0,
+   0.828,
+   0.0,
+   0.394,
+   0.0
+  ],
+  "fracao_para_opositor": [
+   0.008,
+   1.0,
+   0.033,
+   0.642,
+   0.0,
+   0.044
+  ]
+ },
+ "uf": {
+  "AC": {
+   "fatia_lula_pct": 29.33,
+   "media_sim_pct": 29.33,
+   "p_lula": 0.0,
+   "validos_mi": 0.46,
+   "comparecimento_mi": 0.473
+  },
+  "AL": {
+   "fatia_lula_pct": 55.87,
+   "media_sim_pct": 55.87,
+   "p_lula": 0.9736,
+   "validos_mi": 1.814,
+   "comparecimento_mi": 1.945
+  },
+  "AM": {
+   "fatia_lula_pct": 48.25,
+   "media_sim_pct": 48.24,
+   "p_lula": 0.2847,
+   "validos_mi": 2.09,
+   "comparecimento_mi": 2.198
+  },
+  "AP": {
+   "fatia_lula_pct": 46.56,
+   "media_sim_pct": 46.56,
+   "p_lula": 0.1337,
+   "validos_mi": 0.442,
+   "comparecimento_mi": 0.454
+  },
+  "BA": {
+   "fatia_lula_pct": 67.25,
+   "media_sim_pct": 67.25,
+   "p_lula": 1.0,
+   "validos_mi": 8.603,
+   "comparecimento_mi": 9.129
+  },
+  "CE": {
+   "fatia_lula_pct": 62.93,
+   "media_sim_pct": 62.93,
+   "p_lula": 1.0,
+   "validos_mi": 5.638,
+   "comparecimento_mi": 5.853
+  },
+  "DF": {
+   "fatia_lula_pct": 39.14,
+   "media_sim_pct": 39.13,
+   "p_lula": 0.0004,
+   "validos_mi": 1.752,
+   "comparecimento_mi": 1.819
+  },
+  "ES": {
+   "fatia_lula_pct": 38.34,
+   "media_sim_pct": 38.34,
+   "p_lula": 0.0001,
+   "validos_mi": 2.235,
+   "comparecimento_mi": 2.35
+  },
+  "GO": {
+   "fatia_lula_pct": 32.99,
+   "media_sim_pct": 32.98,
+   "p_lula": 0.0,
+   "validos_mi": 3.74,
+   "comparecimento_mi": 3.866
+  },
+  "MA": {
+   "fatia_lula_pct": 65.18,
+   "media_sim_pct": 65.18,
+   "p_lula": 1.0,
+   "validos_mi": 3.965,
+   "comparecimento_mi": 4.075
+  },
+  "MG": {
+   "fatia_lula_pct": 44.05,
+   "media_sim_pct": 44.05,
+   "p_lula": 0.0247,
+   "validos_mi": 11.959,
+   "comparecimento_mi": 12.477
+  },
+  "MS": {
+   "fatia_lula_pct": 35.27,
+   "media_sim_pct": 35.27,
+   "p_lula": 0.0,
+   "validos_mi": 1.47,
+   "comparecimento_mi": 1.539
+  },
+  "MT": {
+   "fatia_lula_pct": 29.66,
+   "media_sim_pct": 29.66,
+   "p_lula": 0.0,
+   "validos_mi": 1.999,
+   "comparecimento_mi": 2.046
+  },
+  "PA": {
+   "fatia_lula_pct": 50.63,
+   "media_sim_pct": 50.63,
+   "p_lula": 0.5823,
+   "validos_mi": 4.752,
+   "comparecimento_mi": 4.875
+  },
+  "PB": {
+   "fatia_lula_pct": 62.46,
+   "media_sim_pct": 62.46,
+   "p_lula": 1.0,
+   "validos_mi": 2.529,
+   "comparecimento_mi": 2.707
+  },
+  "PE": {
+   "fatia_lula_pct": 64.54,
+   "media_sim_pct": 64.54,
+   "p_lula": 1.0,
+   "validos_mi": 5.622,
+   "comparecimento_mi": 5.995
+  },
+  "PI": {
+   "fatia_lula_pct": 71.78,
+   "media_sim_pct": 71.78,
+   "p_lula": 1.0,
+   "validos_mi": 2.131,
+   "comparecimento_mi": 2.205
+  },
+  "PR": {
+   "fatia_lula_pct": 31.88,
+   "media_sim_pct": 31.88,
+   "p_lula": 0.0,
+   "validos_mi": 6.654,
+   "comparecimento_mi": 6.888
+  },
+  "RJ": {
+   "fatia_lula_pct": 40.09,
+   "media_sim_pct": 40.09,
+   "p_lula": 0.0006,
+   "validos_mi": 9.393,
+   "comparecimento_mi": 9.799
+  },
+  "RN": {
+   "fatia_lula_pct": 59.82,
+   "media_sim_pct": 59.82,
+   "p_lula": 0.9994,
+   "validos_mi": 2.082,
+   "comparecimento_mi": 2.154
+  },
+  "RO": {
+   "fatia_lula_pct": 26.05,
+   "media_sim_pct": 26.04,
+   "p_lula": 0.0,
+   "validos_mi": 0.956,
+   "comparecimento_mi": 0.989
+  },
+  "RR": {
+   "fatia_lula_pct": 23.73,
+   "media_sim_pct": 23.73,
+   "p_lula": 0.0,
+   "validos_mi": 0.317,
+   "comparecimento_mi": 0.323
+  },
+  "RS": {
+   "fatia_lula_pct": 36.06,
+   "media_sim_pct": 36.06,
+   "p_lula": 0.0,
+   "validos_mi": 6.371,
+   "comparecimento_mi": 6.665
+  },
+  "SC": {
+   "fatia_lula_pct": 25.47,
+   "media_sim_pct": 25.46,
+   "p_lula": 0.0,
+   "validos_mi": 4.505,
+   "comparecimento_mi": 4.652
+  },
+  "SE": {
+   "fatia_lula_pct": 64.08,
+   "media_sim_pct": 64.08,
+   "p_lula": 1.0,
+   "validos_mi": 1.345,
+   "comparecimento_mi": 1.42
+  },
+  "SP": {
+   "fatia_lula_pct": 39.65,
+   "media_sim_pct": 39.65,
+   "p_lula": 0.0003,
+   "validos_mi": 24.892,
+   "comparecimento_mi": 26.482
+  },
+  "TO": {
+   "fatia_lula_pct": 43.87,
+   "media_sim_pct": 43.87,
+   "p_lula": 0.0219,
+   "validos_mi": 0.909,
+   "comparecimento_mi": 0.936
+  },
+  "ZZ": {
+   "fatia_lula_pct": 47.61,
+   "media_sim_pct": 47.6,
+   "p_lula": 0.2149,
+   "validos_mi": 0.339,
+   "comparecimento_mi": 0.352
+  }
+ },
+ "validacao": {
+  "EI6_uf": {
+   "2018->2022": {
+    "erro_nacional_pp": 1.8181857655657718,
+    "fatia_prev_pct": 52.72059088273793,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -1.2821733369282273,
+    "validos_prev_mi": 117.03230633953297,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 1.8007643271703928,
+    "mae_uf_pp": 1.8656413669867007,
+    "rmse_uf_sem_nacional_pp": 0.6453464615341552,
+    "dp_regiao_pp": 0.49522610216893276,
+    "dp_uf_na_regiao_pp": 0.46009381215198564,
+    "rmse_mun_pp": 1.9205919917729453,
+    "mae_mun_pp": 1.6935857811289357,
+    "dp_mun_na_uf_pp": 0.7569529101216392,
+    "dp_mun_na_uf_pp_sem_peso": 1.7813788194640594,
+    "n_municipios": 5709,
+    "erros_uf_pp": {
+     "AC": 3.02,
+     "AL": 2.2,
+     "AM": 1.07,
+     "AP": 1.83,
+     "BA": 1.48,
+     "CE": 2.77,
+     "DF": 0.89,
+     "ES": 2.22,
+     "GO": 2.45,
+     "MA": 1.54,
+     "MG": 1.1,
+     "MS": 1.89,
+     "MT": 2.2,
+     "PA": 0.47,
+     "PB": 2.14,
+     "PE": 2.4,
+     "PI": 1.16,
+     "PR": 2.66,
+     "RJ": 1.16,
+     "RN": 1.84,
+     "RO": 2.46,
+     "RR": 2.67,
+     "RS": 2.65,
+     "SC": 1.79,
+     "SE": 0.96,
+     "SP": 1.39,
+     "TO": 1.97,
+     "ZZ": 2.12
+    }
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -3.5042186952600196,
+    "fatia_prev_pct": 41.3655500247094,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 3.6030525032052507,
+    "validos_prev_mi": 108.61614831429569,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 3.632367920767661,
+    "mae_uf_pp": 3.5316519832659075,
+    "rmse_uf_sem_nacional_pp": 1.4708093069133905,
+    "dp_regiao_pp": 1.196305243159756,
+    "dp_uf_na_regiao_pp": 0.8802158016233771,
+    "rmse_mun_pp": 3.947057572184436,
+    "mae_mun_pp": 3.623473273704619,
+    "dp_mun_na_uf_pp": 1.50252663381982,
+    "dp_mun_na_uf_pp_sem_peso": 2.113292117658039,
+    "n_municipios": 5708,
+    "erros_uf_pp": {
+     "AC": 3.16,
+     "AL": -5.35,
+     "AM": -1.85,
+     "AP": -4.21,
+     "BA": -3.78,
+     "CE": -7.6,
+     "DF": -2.04,
+     "ES": -3.01,
+     "GO": -3.47,
+     "MA": -4.42,
+     "MG": -2.71,
+     "MS": -2.6,
+     "MT": -2.68,
+     "PA": -2.95,
+     "PB": -5.81,
+     "PE": -5.86,
+     "PI": -4.06,
+     "PR": -3.13,
+     "RJ": -2.44,
+     "RN": -4.6,
+     "RO": -0.82,
+     "RR": -3.56,
+     "RS": -3.33,
+     "SC": -1.46,
+     "SE": -4.99,
+     "SP": -2.47,
+     "TO": -2.99,
+     "ZZ": -4.31
+    }
+   }
+  },
+  "EI6_regiao_uf": {
+   "2018->2022": {
+    "erro_nacional_pp": 1.7231039687043759,
+    "fatia_prev_pct": 52.62550908587653,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -1.5133084968567023,
+    "validos_prev_mi": 116.75829016882744,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 1.7298217598767818,
+    "mae_uf_pp": 1.7714197400470655,
+    "rmse_uf_sem_nacional_pp": 0.7601979615480062,
+    "dp_regiao_pp": 0.6675888027025266,
+    "dp_uf_na_regiao_pp": 0.41793709514904337,
+    "rmse_mun_pp": 1.8626355119435989,
+    "mae_mun_pp": 1.6575619060029667,
+    "dp_mun_na_uf_pp": 0.7678542588927221,
+    "dp_mun_na_uf_pp_sem_peso": 1.7864733255615544,
+    "n_municipios": 5709
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -3.5092571366290626,
+    "fatia_prev_pct": 41.360511583340354,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 3.5539513556136715,
+    "validos_prev_mi": 108.56467128345197,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 3.6106922280172644,
+    "mae_uf_pp": 3.5039571840074077,
+    "rmse_uf_sem_nacional_pp": 1.426443808169184,
+    "dp_regiao_pp": 1.165959724003295,
+    "dp_uf_na_regiao_pp": 0.8473541989341055,
+    "rmse_mun_pp": 3.9278137082471893,
+    "mae_mun_pp": 3.59065837469353,
+    "dp_mun_na_uf_pp": 1.5076583339998906,
+    "dp_mun_na_uf_pp_sem_peso": 2.1157091841989293,
+    "n_municipios": 5708
+   }
+  },
+  "EI6_uf_porte": {
+   "2018->2022": {
+    "erro_nacional_pp": 1.8391756143700144,
+    "fatia_prev_pct": 52.74158073154217,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -1.149697897318025,
+    "validos_prev_mi": 117.18935909033796,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 1.8194113559012566,
+    "mae_uf_pp": 1.8764458345126453,
+    "rmse_uf_sem_nacional_pp": 0.6098618524439005,
+    "dp_regiao_pp": 0.46034915991376635,
+    "dp_uf_na_regiao_pp": 0.4426646002137743,
+    "rmse_mun_pp": 1.9414785729305535,
+    "mae_mun_pp": 1.7572267174045968,
+    "dp_mun_na_uf_pp": 0.7666680780970355,
+    "dp_mun_na_uf_pp_sem_peso": 1.783155882115434,
+    "n_municipios": 5709
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -3.472112464749333,
+    "fatia_prev_pct": 41.397656255220085,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 3.6267802196669585,
+    "validos_prev_mi": 108.64102415634952,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 3.618811608513613,
+    "mae_uf_pp": 3.522824245150782,
+    "rmse_uf_sem_nacional_pp": 1.4855757830514673,
+    "dp_regiao_pp": 1.2278559362891222,
+    "dp_uf_na_regiao_pp": 0.8617025053559443,
+    "rmse_mun_pp": 3.9241899682262953,
+    "mae_mun_pp": 3.6003755005503972,
+    "dp_mun_na_uf_pp": 1.4826310439212154,
+    "dp_mun_na_uf_pp_sem_peso": 2.1057357184356524,
+    "n_municipios": 5708
+   }
+  },
+  "EI6_nacional": {
+   "2018->2022": {
+    "erro_nacional_pp": 1.9509842852872161,
+    "fatia_prev_pct": 52.85338940245937,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -0.9370104200927099,
+    "validos_prev_mi": 117.44150509912491,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 1.9264560396415416,
+    "mae_uf_pp": 1.882846368136372,
+    "rmse_uf_sem_nacional_pp": 0.5314710704198619,
+    "dp_regiao_pp": 0.3334999031059015,
+    "dp_uf_na_regiao_pp": 0.4320758374028088,
+    "rmse_mun_pp": 2.0166390255787805,
+    "mae_mun_pp": 1.8282776616139857,
+    "dp_mun_na_uf_pp": 0.7283949865389248,
+    "dp_mun_na_uf_pp_sem_peso": 1.7649355044681656,
+    "n_municipios": 5709
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -3.556000405365123,
+    "fatia_prev_pct": 41.313768314604296,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 3.608163789935581,
+    "validos_prev_mi": 108.62150692356602,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 3.7106476189001945,
+    "mae_uf_pp": 3.5595013368577613,
+    "rmse_uf_sem_nacional_pp": 1.4911567531482388,
+    "dp_regiao_pp": 1.2922277751412177,
+    "dp_uf_na_regiao_pp": 0.7663273388338396,
+    "rmse_mun_pp": 4.0107581750341,
+    "mae_mun_pp": 3.5965389751666565,
+    "dp_mun_na_uf_pp": 1.4831664743914303,
+    "dp_mun_na_uf_pp_sem_peso": 2.089250034234315,
+    "n_municipios": 5708
+   }
+  },
+  "EI5_uf": {
+   "2018->2022": {
+    "erro_nacional_pp": 2.404639523732499,
+    "fatia_prev_pct": 53.30704464090466,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -0.5923945343225046,
+    "validos_prev_mi": 117.85005534051729,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 2.4093902069174398,
+    "mae_uf_pp": 2.6913272593871373,
+    "rmse_uf_sem_nacional_pp": 0.808704323590076,
+    "dp_regiao_pp": 0.49106092410169316,
+    "dp_uf_na_regiao_pp": 0.6723140148696859,
+    "rmse_mun_pp": 2.5500330856687614,
+    "mae_mun_pp": 1.8894575606129351,
+    "dp_mun_na_uf_pp": 0.9106741051218447,
+    "dp_mun_na_uf_pp_sem_peso": 1.4190741671731208,
+    "n_municipios": 5709
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -7.145019791970353,
+    "fatia_prev_pct": 37.724748927999066,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 1.8104008078914768,
+    "validos_prev_mi": 106.73675463129536,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 7.894740954137849,
+    "mae_uf_pp": 6.936359757124804,
+    "rmse_uf_sem_nacional_pp": 3.7638407217972434,
+    "dp_regiao_pp": 2.2900715776693468,
+    "dp_uf_na_regiao_pp": 2.979376826782127,
+    "rmse_mun_pp": 8.389261920433192,
+    "mae_mun_pp": 5.834115588736303,
+    "dp_mun_na_uf_pp": 2.683879258894126,
+    "dp_mun_na_uf_pp_sem_peso": 3.1994043200132998,
+    "n_municipios": 5708
+   }
+  },
+  "EI5_nacional": {
+   "2018->2022": {
+    "erro_nacional_pp": 2.713824305379886,
+    "fatia_prev_pct": 53.61622942255204,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -0.22353073642283894,
+    "validos_prev_mi": 118.28735205229249,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 2.8555279750399114,
+    "mae_uf_pp": 2.6491461015406577,
+    "rmse_uf_sem_nacional_pp": 1.0547059672338244,
+    "dp_regiao_pp": 0.9914110710995304,
+    "dp_uf_na_regiao_pp": 0.3891883471630959,
+    "rmse_mun_pp": 2.9288235911001976,
+    "mae_mun_pp": 2.2791905774203722,
+    "dp_mun_na_uf_pp": 0.8285978059182262,
+    "dp_mun_na_uf_pp_sem_peso": 1.3895957883197625,
+    "n_municipios": 5709
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -7.216477031113505,
+    "fatia_prev_pct": 37.65329168885591,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 1.8177036731430896,
+    "validos_prev_mi": 106.74441086415843,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 8.145462993850698,
+    "mae_uf_pp": 6.987754644333688,
+    "rmse_uf_sem_nacional_pp": 4.0658398525064605,
+    "dp_regiao_pp": 2.611878844877334,
+    "dp_uf_na_regiao_pp": 3.1014474479201506,
+    "rmse_mun_pp": 8.623214870910632,
+    "mae_mun_pp": 5.803060273053366,
+    "dp_mun_na_uf_pp": 2.6825312395265217,
+    "dp_mun_na_uf_pp_sem_peso": 3.212525006890975,
+    "n_municipios": 5708
+   }
+  },
+  "LOGIT_uf": {
+   "2018->2022": {
+    "erro_nacional_pp": 3.9591570048173153,
+    "fatia_prev_pct": 54.86156212198947,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -6.361060584418343,
+    "validos_prev_mi": 111.0111660014165,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 4.196096668875499,
+    "mae_uf_pp": 3.956892353818548,
+    "rmse_uf_sem_nacional_pp": 1.716040743698164,
+    "dp_regiao_pp": 0.5271078948193094,
+    "dp_uf_na_regiao_pp": 1.6450265521607903,
+    "rmse_mun_pp": 4.511180407742692,
+    "mae_mun_pp": 2.2685261674064376,
+    "dp_mun_na_uf_pp": 1.67134213751074,
+    "dp_mun_na_uf_pp_sem_peso": 2.382821579127834,
+    "n_municipios": 5709
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -7.856935907084528,
+    "fatia_prev_pct": 37.01283281288489,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 7.847153811399199,
+    "validos_prev_mi": 113.0656112018629,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 7.938752178504492,
+    "mae_uf_pp": 6.621844690961718,
+    "rmse_uf_sem_nacional_pp": 2.6912011647085907,
+    "dp_regiao_pp": 1.3657382912469693,
+    "dp_uf_na_regiao_pp": 2.3119293421781903,
+    "rmse_mun_pp": 8.63575855884965,
+    "mae_mun_pp": 4.540548809230284,
+    "dp_mun_na_uf_pp": 3.3974427026055003,
+    "dp_mun_na_uf_pp_sem_peso": 4.1782475132414865,
+    "n_municipios": 5708
+   }
+  },
+  "LOGIT_sem_efeito": {
+   "2018->2022": {
+    "erro_nacional_pp": 4.05828455215026,
+    "fatia_prev_pct": 54.96068966932241,
+    "fatia_real_pct": 50.90240511717216,
+    "erro_validos_pct": -4.29134339115188,
+    "validos_prev_mi": 113.46486443447945,
+    "validos_real_mi": 118.552353,
+    "rmse_uf_pp": 4.3841080813657864,
+    "mae_uf_pp": 3.7212412859020207,
+    "rmse_uf_sem_nacional_pp": 1.645735242922085,
+    "dp_regiao_pp": 1.5225908536851143,
+    "dp_uf_na_regiao_pp": 0.6466132801912748,
+    "rmse_mun_pp": 4.66963604213902,
+    "mae_mun_pp": 2.3307069664537097,
+    "dp_mun_na_uf_pp": 1.7344119058769039,
+    "dp_mun_na_uf_pp_sem_peso": 2.4798689385701267,
+    "n_municipios": 5709
+   },
+   "2022->2018": {
+    "erro_nacional_pp": -8.077833761929787,
+    "fatia_prev_pct": 36.79193495803963,
+    "fatia_real_pct": 44.869768719969414,
+    "erro_validos_pct": 6.202132111114467,
+    "validos_prev_mi": 111.34099096470497,
+    "validos_real_mi": 104.838753,
+    "rmse_uf_pp": 8.188111711159406,
+    "mae_uf_pp": 6.819977690169984,
+    "rmse_uf_sem_nacional_pp": 2.8253658863097706,
+    "dp_regiao_pp": 1.3974259660572308,
+    "dp_uf_na_regiao_pp": 2.4548261993591125,
+    "rmse_mun_pp": 8.923640018603182,
+    "mae_mun_pp": 4.75047629698421,
+    "dp_mun_na_uf_pp": 3.429863464234668,
+    "dp_mun_na_uf_pp_sem_peso": 4.179629273389361,
+    "n_municipios": 5708
+   }
+  }
+ },
+ "validacao_resumo": {
+  "EI6_uf": {
+   "rmse_nacional_pp": 2.79,
+   "rmse_uf_pp": 2.87,
+   "rmse_municipal_pp": 3.1,
+   "erro_validos_rms_pct": 2.7
+  },
+  "EI6_regiao_uf": {
+   "rmse_nacional_pp": 2.76,
+   "rmse_uf_pp": 2.83,
+   "rmse_municipal_pp": 3.07,
+   "erro_validos_rms_pct": 2.73
+  },
+  "EI6_uf_porte": {
+   "rmse_nacional_pp": 2.78,
+   "rmse_uf_pp": 2.86,
+   "rmse_municipal_pp": 3.1,
+   "erro_validos_rms_pct": 2.69
+  },
+  "EI6_nacional": {
+   "rmse_nacional_pp": 2.87,
+   "rmse_uf_pp": 2.96,
+   "rmse_municipal_pp": 3.17,
+   "erro_validos_rms_pct": 2.64
+  },
+  "EI5_uf": {
+   "rmse_nacional_pp": 5.33,
+   "rmse_uf_pp": 5.84,
+   "rmse_municipal_pp": 6.2,
+   "erro_validos_rms_pct": 1.35
+  },
+  "EI5_nacional": {
+   "rmse_nacional_pp": 5.45,
+   "rmse_uf_pp": 6.1,
+   "rmse_municipal_pp": 6.44,
+   "erro_validos_rms_pct": 1.29
+  },
+  "LOGIT_uf": {
+   "rmse_nacional_pp": 6.22,
+   "rmse_uf_pp": 6.35,
+   "rmse_municipal_pp": 6.89,
+   "erro_validos_rms_pct": 7.14
+  },
+  "LOGIT_sem_efeito": {
+   "rmse_nacional_pp": 6.39,
+   "rmse_uf_pp": 6.57,
+   "rmse_municipal_pp": 7.12,
+   "erro_validos_rms_pct": 5.33
+  }
+ },
+ "variantes_2026": {
+  "EI6_uf": {
+   "treino_2018": {
+    "lula_pct": 47.4,
+    "validos_mi": 117.648
+   },
+   "treino_2022": {
+    "lula_pct": 45.98,
+    "validos_mi": 119.749
+   },
+   "treino_2018_2022": {
+    "lula_pct": 46.04,
+    "validos_mi": 118.964
+   }
+  },
+  "EI6_regiao_uf": {
+   "treino_2018": {
+    "lula_pct": 47.31,
+    "validos_mi": 117.416
+   },
+   "treino_2022": {
+    "lula_pct": 45.98,
+    "validos_mi": 119.73
+   },
+   "treino_2018_2022": {
+    "lula_pct": 46.05,
+    "validos_mi": 118.96
+   }
+  },
+  "EI6_uf_porte": {
+   "treino_2018": {
+    "lula_pct": 47.41,
+    "validos_mi": 117.788
+   },
+   "treino_2022": {
+    "lula_pct": 46.02,
+    "validos_mi": 119.777
+   },
+   "treino_2018_2022": {
+    "lula_pct": 46.07,
+    "validos_mi": 119.01
+   }
+  },
+  "EI6_nacional": {
+   "treino_2018": {
+    "lula_pct": 47.49,
+    "validos_mi": 117.99
+   },
+   "treino_2022": {
+    "lula_pct": 45.96,
+    "validos_mi": 119.616
+   },
+   "treino_2018_2022": {
+    "lula_pct": 46.17,
+    "validos_mi": 118.694
+   }
+  },
+  "EI5_uf": {
+   "treino_2018": {
+    "lula_pct": 49.73,
+    "validos_mi": 119.271
+   },
+   "treino_2022": {
+    "lula_pct": 47.55,
+    "validos_mi": 120.173
+   },
+   "treino_2018_2022": {
+    "lula_pct": 48.13,
+    "validos_mi": 120.244
+   }
+  },
+  "EI5_nacional": {
+   "treino_2018": {
+    "lula_pct": 49.96,
+    "validos_mi": 119.582
+   },
+   "treino_2022": {
+    "lula_pct": 47.55,
+    "validos_mi": 120.046
+   },
+   "treino_2018_2022": {
+    "lula_pct": 48.49,
+    "validos_mi": 120.236
+   }
+  },
+  "LOGIT_uf": {
+   "treino_2018": {
+    "lula_pct": 51.38,
+    "validos_mi": 112.834
+   },
+   "treino_2022": {
+    "lula_pct": 47.14,
+    "validos_mi": 120.572
+   },
+   "treino_2018_2022": {
+    "lula_pct": 47.82,
+    "validos_mi": 119.601
+   }
+  },
+  "LOGIT_sem_efeito": {
+   "treino_2018": {
+    "lula_pct": 51.25,
+    "validos_mi": 114.999
+   },
+   "treino_2022": {
+    "lula_pct": 47.12,
+    "validos_mi": 120.375
+   },
+   "treino_2018_2022": {
+    "lula_pct": 47.75,
+    "validos_mi": 119.376
+   }
+  }
+ },
+ "sensibilidade_nao_esquerda": [
+  {
+   "fracao_nao_esquerda_para_lula": 0.2,
+   "lula_pct": 46.99
+  },
+  {
+   "fracao_nao_esquerda_para_lula": 0.3,
+   "lula_pct": 47.48
+  },
+  {
+   "fracao_nao_esquerda_para_lula": 0.4,
+   "lula_pct": 47.97
+  },
+  {
+   "fracao_nao_esquerda_para_lula": 0.5,
+   "lula_pct": 48.46
+  },
+  {
+   "fracao_nao_esquerda_para_lula": 0.6,
+   "lula_pct": 48.95
+  }
+ ],
+ "comparacao_modelo_principal": {
+  "simulador_lula_pct": 47.14,
+  "simulador_p_lula": 0.13
+ }
+}

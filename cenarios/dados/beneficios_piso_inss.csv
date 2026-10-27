@@ -1,0 +1,38 @@
+indicador,valor,unidade,referencia,fonte,observacao
+salario_minimo_2026,1621.00,R$/mes,2026,BCB SGS 1619,piso previdenciario = SM
+beneficios_emitidos_total_inss,42660183,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 16,RGPS + assistenciais + legislacao especial (BLE)
+beneficios_emitidos_igual_1_piso_total,29485803,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 16,faixa '=1' piso previdenciario
+beneficios_emitidos_igual_1_piso_pct_total,69.12,%,ago/2026,BEPS Vol.32 n.08 Quadro 16,
+beneficios_emitidos_abaixo_1_piso,1046279,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 16,ex.: auxilio-acidente/salario-familia/cotas de pensao (nao vinculados ao piso)
+beneficios_emitidos_ate_1_piso_pct_acumulado,71.57,%,ago/2026,BEPS Vol.32 n.08 Quadro 16,
+rgps_beneficios_emitidos,36043553,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 16,
+rgps_igual_1_piso,22895366,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 16,
+rgps_igual_1_piso_pct,63.52,%,ago/2026,calculo (22.895.366/36.043.553),
+rgps_valor_mensal_total_mr,79832175761,R$/mes,ago/2026,BEPS Vol.32 n.08 Quadro 16,valor da mensalidade reajustada
+rgps_valor_mensal_igual_1_piso,37113388286,R$/mes,ago/2026,BEPS Vol.32 n.08 Quadro 16,46.5% da folha mensal do RGPS
+rgps_igual_1_piso_rural,10415295,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 17,de 10.596.445 RGPS rurais (98.3%)
+rgps_igual_1_piso_urbano,12480071,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 17,de 25.447.108 RGPS urbanos (49.0%)
+assistenciais_emitidos_total,6601428,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 15/20,
+assistenciais_igual_1_piso,6589328,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 16,
+bpc_loas_deficiencia,3807375,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 20 especie 87,
+bpc_loas_idoso,2747664,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 20 especie 88,
+bpc_loas_total,6555039,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 20 (87+88),valor 1 SM cada
+rmv_total,44778,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 20 especies 11+12+30+40,Renda Mensal Vitalicia
+rgps_igual_1_piso_norte,1474750,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 18,de 1.843.712 RGPS na regiao (80.0%)
+rgps_igual_1_piso_nordeste,7685087,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 18,de 9.342.209 (82.3%)
+rgps_igual_1_piso_sudeste,8294462,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 18,de 15.910.414 (52.1%)
+rgps_igual_1_piso_sul,4024567,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 18,de 6.786.136 (59.3%)
+rgps_igual_1_piso_centro_oeste,1416495,beneficios,ago/2026,BEPS Vol.32 n.08 Quadro 18,de 2.161.074 (65.5%)
+concessoes_igual_1_piso_pct,66.27,%,ago/2026,BEPS Vol.32 n.08 Quadro 06,fluxo de concessoes do mes (844.389 concedidos)
+custo_R1_SM_total_despesas,413.2,R$ milhoes/ano,2027,PLDO 2027 Anexo V (Riscos Fiscais) Tabela 10; Nota Tecnica Conjunta CONOF/CONORF n.3/2026 (mai/2026),impacto de +R$1 no SM sobre a despesa primaria anual
+custo_R1_SM_beneficios_previdenciarios,308.4,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,RGPS (beneficios de 1 SM)
+custo_R1_SM_arrecadacao_previdenciaria,8.2,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,receita adicional (efeito contribuicao)
+custo_R1_SM_deficit_rgps,300.2,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,
+custo_R1_SM_bpc_loas,74.0,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,
+custo_R1_SM_rmv,0.5,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,
+custo_R1_SM_abono_salarial,20.0,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,
+custo_R1_SM_seguro_desemprego,10.2,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,
+custo_R1_SM_resultado_primario,405.0,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,despesas - receitas
+custo_0.1pp_INPC_despesas,1353.2,R$ milhoes/ano,2027,PLDO 2027 Anexo V Tabela 10,inclui beneficios acima de 1 SM (597.0) e seguro-desemprego
+sm_2027_pldo,1717.00,R$/mes,2027,PLDO 2027 Anexo IV.2 (abr/2026),INPC 3.55% + PIB 2025 2.3%
+sm_2027_ploa,1741.00,R$/mes,2027,PLOA 2027 (ago/2026) - via imprensa (CNN/Poder360),+R$120 vs 2026; ~R$49.6 bi pela sensibilidade de R$413.2 mi

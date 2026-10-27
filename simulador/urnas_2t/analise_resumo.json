@@ -1,0 +1,349 @@
+{
+ "secoes": 499178,
+ "lula": 64255787,
+ "flavio": 59825688,
+ "validos": 124081475,
+ "lula_pct": 51.79,
+ "soma_diferente_comparecimento": 0,
+ "comparecimento_maior_que_aptos": 148,
+ "ultimo_digito": {
+  "lula_13": {
+   "n": 347454,
+   "p_chi2": 2.4046954174606263e-69,
+   "freq_pct": [
+    10.53,
+    10.36,
+    10.29,
+    10.15,
+    10.05,
+    9.91,
+    9.83,
+    9.74,
+    9.55,
+    9.58
+   ]
+  },
+  "flavio_22": {
+   "n": 328991,
+   "p_chi2": 4.074008990339364e-53,
+   "freq_pct": [
+    10.38,
+    10.34,
+    10.22,
+    10.23,
+    10.03,
+    9.96,
+    9.95,
+    9.73,
+    9.73,
+    9.44
+   ]
+  }
+ },
+ "residuo": {
+  "secoes": 495858,
+  "z_mediana": -0.0758337461908302,
+  "z_desvio": 2.440608011585474,
+  "z_gt_5_lula": 13291,
+  "z_lt_m5_flavio": 9259,
+  "z_gt_8_lula": 1719,
+  "z_lt_m8_flavio": 939
+ },
+ "unanimes": {
+  "lula_ge_99": 162,
+  "flavio_ge_99": 4,
+  "lula_ge_95": 1509,
+  "flavio_ge_95": 30
+ },
+ "comparecimento": {
+  "media": 0.8093,
+  "ge_98": 233,
+  "eq_100": 160,
+  "le_50": 1074
+ },
+ "corr_comparecimento_pctlula_municipios": {
+  "n": 5340,
+  "pearson": -0.04185883121094207,
+  "spearman": -0.02835501574091483
+ },
+ "sem_biometria": {
+  "media_pct": 5.66,
+  "secoes_ge_30pct": 6794
+ },
+ "corr_sembio_pctlula_municipios": -0.011065647746964363,
+ "encerramento": {
+  "apos_18h_local": 7089,
+  "sem_horario": 0
+ },
+ "flags": {
+  "tipoUrna=contingenciaSecao": 5712,
+  "tipoArquivo=votacaoRED": 16,
+  "tipoUrna=contingenciaEncerrandoSecao": 2
+ },
+ "por_uf": {
+  "ac": {
+   "secoes": 2270,
+   "lula_pct": 33.43
+  },
+  "al": {
+   "secoes": 7101,
+   "lula_pct": 60.77
+  },
+  "am": {
+   "secoes": 8157,
+   "lula_pct": 54.02
+  },
+  "ap": {
+   "secoes": 1914,
+   "lula_pct": 52.88
+  },
+  "ba": {
+   "secoes": 35476,
+   "lula_pct": 71.31
+  },
+  "ce": {
+   "secoes": 23765,
+   "lula_pct": 68.93
+  },
+  "df": {
+   "secoes": 6969,
+   "lula_pct": 45.72
+  },
+  "es": {
+   "secoes": 9844,
+   "lula_pct": 43.63
+  },
+  "go": {
+   "secoes": 15686,
+   "lula_pct": 40.34
+  },
+  "ma": {
+   "secoes": 18093,
+   "lula_pct": 69.54
+  },
+  "mg": {
+   "secoes": 52062,
+   "lula_pct": 50.43
+  },
+  "ms": {
+   "secoes": 7106,
+   "lula_pct": 40.4
+  },
+  "mt": {
+   "secoes": 8287,
+   "lula_pct": 33.94
+  },
+  "pa": {
+   "secoes": 20827,
+   "lula_pct": 55.02
+  },
+  "pb": {
+   "secoes": 10712,
+   "lula_pct": 67.46
+  },
+  "pe": {
+   "secoes": 21418,
+   "lula_pct": 69.2
+  },
+  "pi": {
+   "secoes": 10225,
+   "lula_pct": 75.88
+  },
+  "pr": {
+   "secoes": 27142,
+   "lula_pct": 37.42
+  },
+  "rj": {
+   "secoes": 37675,
+   "lula_pct": 46.9
+  },
+  "rn": {
+   "secoes": 8115,
+   "lula_pct": 65.72
+  },
+  "ro": {
+   "secoes": 4698,
+   "lula_pct": 30.39
+  },
+  "rr": {
+   "secoes": 1519,
+   "lula_pct": 27.54
+  },
+  "rs": {
+   "secoes": 27547,
+   "lula_pct": 42.16
+  },
+  "sc": {
+   "secoes": 17326,
+   "lula_pct": 30.58
+  },
+  "se": {
+   "secoes": 5923,
+   "lula_pct": 69.53
+  },
+  "sp": {
+   "secoes": 103656,
+   "lula_pct": 46.15
+  },
+  "to": {
+   "secoes": 4384,
+   "lula_pct": 48.63
+  },
+  "zz": {
+   "secoes": 1281,
+   "lula_pct": 53.85
+  }
+ },
+ "top_residuos": [
+  {
+   "uf": "mt",
+   "municipio": "CONFRESA",
+   "zona": "0028",
+   "secao": "0200",
+   "lula_13": 309,
+   "flavio_22": 0,
+   "p_mun": 0.258,
+   "z": 29.839
+  },
+  {
+   "uf": "mt",
+   "municipio": "QUERÊNCIA",
+   "zona": "0053",
+   "secao": "0163",
+   "lula_13": 281,
+   "flavio_22": 5,
+   "p_mun": 0.252,
+   "z": 28.469
+  },
+  {
+   "uf": "mt",
+   "municipio": "JUÍNA",
+   "zona": "0035",
+   "secao": "0321",
+   "lula_13": 337,
+   "flavio_22": 15,
+   "p_mun": 0.281,
+   "z": 28.23
+  },
+  {
+   "uf": "pa",
+   "municipio": "SÃO FÉLIX DO XINGU",
+   "zona": "0053",
+   "secao": "0218",
+   "lula_13": 273,
+   "flavio_22": 0,
+   "p_mun": 0.276,
+   "z": 26.741
+  },
+  {
+   "uf": "mt",
+   "municipio": "MARCELÂNDIA",
+   "zona": "0032",
+   "secao": "0279",
+   "lula_13": 202,
+   "flavio_22": 1,
+   "p_mun": 0.219,
+   "z": 26.726
+  },
+  {
+   "uf": "rr",
+   "municipio": "UIRAMUTÃ",
+   "zona": "0007",
+   "secao": "0056",
+   "lula_13": 25,
+   "flavio_22": 294,
+   "p_mun": 0.729,
+   "z": -26.122
+  },
+  {
+   "uf": "mt",
+   "municipio": "QUERÊNCIA",
+   "zona": "0053",
+   "secao": "0165",
+   "lula_13": 229,
+   "flavio_22": 4,
+   "p_mun": 0.252,
+   "z": 25.707
+  },
+  {
+   "uf": "mt",
+   "municipio": "GUARANTÃ DO NORTE",
+   "zona": "0044",
+   "secao": "0284",
+   "lula_13": 145,
+   "flavio_22": 0,
+   "p_mun": 0.182,
+   "z": 25.568
+  },
+  {
+   "uf": "ro",
+   "municipio": "JI-PARANÁ",
+   "zona": "0030",
+   "secao": "0125",
+   "lula_13": 234,
+   "flavio_22": 2,
+   "p_mun": 0.268,
+   "z": 25.101
+  },
+  {
+   "uf": "mt",
+   "municipio": "JUARA",
+   "zona": "0027",
+   "secao": "0124",
+   "lula_13": 199,
+   "flavio_22": 6,
+   "p_mun": 0.234,
+   "z": 24.907
+  },
+  {
+   "uf": "ro",
+   "municipio": "JI-PARANÁ",
+   "zona": "0030",
+   "secao": "0138",
+   "lula_13": 228,
+   "flavio_22": 6,
+   "p_mun": 0.268,
+   "z": 24.402
+  },
+  {
+   "uf": "rr",
+   "municipio": "ALTO ALEGRE",
+   "zona": "0003",
+   "secao": "0226",
+   "lula_13": 235,
+   "flavio_22": 3,
+   "p_mun": 0.283,
+   "z": 24.124
+  },
+  {
+   "uf": "mt",
+   "municipio": "CANARANA",
+   "zona": "0031",
+   "secao": "0139",
+   "lula_13": 176,
+   "flavio_22": 16,
+   "p_mun": 0.211,
+   "z": 23.939
+  },
+  {
+   "uf": "mt",
+   "municipio": "PARANATINGA",
+   "zona": "0057",
+   "secao": "0084",
+   "lula_13": 222,
+   "flavio_22": 3,
+   "p_mun": 0.286,
+   "z": 23.272
+  },
+  {
+   "uf": "mt",
+   "municipio": "JUARA",
+   "zona": "0027",
+   "secao": "0135",
+   "lula_13": 191,
+   "flavio_22": 18,
+   "p_mun": 0.234,
+   "z": 23.208
+  }
+ ]
+}

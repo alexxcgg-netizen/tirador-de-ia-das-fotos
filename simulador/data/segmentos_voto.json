@@ -1,0 +1,517 @@
+{
+ "titulo": "Voto por segmento: 2022 (2º turno) x 2026 (1º turno)",
+ "data_referencia": "2026-10-03",
+ "totais": {
+  "voto_2022_2t": {
+   "lula": 52,
+   "bolsonaro": 48,
+   "resultado_tse_lula": 50.9
+  },
+  "voto_2026_1t": {
+   "lula": 39,
+   "flavio": 36,
+   "fatia_lula_2p": 52.0
+  },
+  "abstencao_2022_1t_pct": 20.91
+ },
+ "fontes": {
+  "datafolha_2022_2t": {
+   "descricao": "Datafolha 28-29/10/2022, véspera do 2º turno, votos válidos Lula x Bolsonaro (BR-08297/2022)",
+   "url": "https://static.poder360.com.br/2022/12/datafolha-BR-082972022-1.pdf"
+  },
+  "datafolha_2026_1t": {
+   "descricao": "Datafolha 15-17/09/2026, 1º turno, Lula/(Lula+Flávio) a partir dos votos totais (BR-04029/2026)",
+   "url": "https://ncnews.com.br/2026/09/18/datafolha-revela-onde-lula-e-flavio-bolsonaro-concentram-forca-veja-os-recortes-por-idade-renda-religiao-e-regiao/"
+  },
+  "tse_eleitorado_2026": "https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitorado/perfil_eleitorado_2026.zip",
+  "censo_2022_religiao": "https://apisidra.ibge.gov.br/values/t/9537/n1/all/v/1000140/p/2022/c133/95263,95277,2836/c2/6794/c58/95253",
+  "mds_bolsa_familia_set2026": "https://aplicacoes.mds.gov.br/sagi/servicos/misocial?q=*:*&wt=json&fq=anomes_s:202609&rows=6000&fl=sigla_uf,qtd_familias_beneficiarias_bolsa_familia,valor_repassado_bolsa_familia_f",
+  "tse_comparecimento_2022": "https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_comparecimento_abstencao/perfil_comparecimento_abstencao_2022.zip"
+ },
+ "avisos": [
+  "2022 é 2º turno em votos válidos; 2026 é 1º turno em votos totais (com ~25% em outros e brancos/nulos/indecisos): compare ordem e sinal das margens, não o tamanho.",
+  "Margem de erro dos segmentos é maior que a do total (Datafolha 2026: n = 2.002; subgrupos de 250-1.000 entrevistas).",
+  "Evangélicos e gênero variam muito entre institutos (presencial x online).",
+  "Tamanhos: TSE 2026 para gênero/idade/escolaridade/região (escolaridade do cadastro é desatualizada e mais baixa que a das pesquisas); Censo 2022 para religião; renda e Bolsa Família = amostra Datafolha 2022."
+ ],
+ "dimensoes": [
+  {
+   "dimensao": "genero",
+   "rotulo": "Gênero",
+   "categorias": [
+    {
+     "categoria": "Mulheres",
+     "tamanho_pct": 52.84,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 55,
+      "bolsonaro": 45,
+      "margem_lula": 10
+     },
+     "voto_2026_1t": {
+      "lula": 41,
+      "flavio": 32,
+      "margem_lula": 9,
+      "fatia_lula_2p": 56.2
+     },
+     "outras_2026": [
+      {
+       "pesquisa": "AtlasIntel 23-28/09/2026, 1º turno",
+       "lula": 57.4,
+       "adversario": 32.9,
+       "fonte_url": "https://www.gazetadopovo.com.br/eleicoes/2026/pesquisa-eleitoral-2026/atlasintel-presidente-setembro-2026-4/"
+      }
+     ],
+     "abstencao_2022_1t_pct": 20.0,
+     "abstencao_2022_2t_pct": 19.9
+    },
+    {
+     "categoria": "Homens",
+     "tamanho_pct": 47.15,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 50,
+      "bolsonaro": 50,
+      "margem_lula": 0
+     },
+     "voto_2026_1t": {
+      "lula": 37,
+      "flavio": 39,
+      "margem_lula": -2,
+      "fatia_lula_2p": 48.7
+     },
+     "outras_2026": [
+      {
+       "pesquisa": "AtlasIntel 23-28/09/2026, 1º turno (só Flávio publicado)",
+       "lula": null,
+       "adversario": 52.4,
+       "fonte_url": "https://www.gazetadopovo.com.br/eleicoes/2026/pesquisa-eleitoral-2026/atlasintel-presidente-setembro-2026-4/"
+      }
+     ],
+     "abstencao_2022_1t_pct": 22.0,
+     "abstencao_2022_2t_pct": 21.3
+    }
+   ]
+  },
+  {
+   "dimensao": "idade",
+   "rotulo": "Idade",
+   "categorias": [
+    {
+     "categoria": "16-24",
+     "tamanho_pct": 12.11,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 57,
+      "bolsonaro": 43,
+      "margem_lula": 14
+     },
+     "voto_2026_1t": {
+      "lula": 39,
+      "flavio": 29,
+      "margem_lula": 10,
+      "fatia_lula_2p": 57.4
+     },
+     "abstencao_2022_1t_pct": 21.1,
+     "abstencao_2022_2t_pct": 22.0
+    },
+    {
+     "categoria": "25-34",
+     "tamanho_pct": 19.0,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 51,
+      "bolsonaro": 49,
+      "margem_lula": 2
+     },
+     "voto_2026_1t": {
+      "lula": 37,
+      "flavio": 39,
+      "margem_lula": -2,
+      "fatia_lula_2p": 48.7
+     },
+     "abstencao_2022_1t_pct": 21.2,
+     "abstencao_2022_2t_pct": 21.6
+    },
+    {
+     "categoria": "35-44",
+     "tamanho_pct": 19.69,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 50,
+      "bolsonaro": 50,
+      "margem_lula": 0
+     },
+     "voto_2026_1t": {
+      "lula": 41,
+      "flavio": 35,
+      "margem_lula": 6,
+      "fatia_lula_2p": 53.9
+     },
+     "abstencao_2022_1t_pct": 16.4,
+     "abstencao_2022_2t_pct": 16.2
+    },
+    {
+     "categoria": "45-59",
+     "tamanho_pct": 25.6,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 53,
+      "bolsonaro": 47,
+      "margem_lula": 6
+     },
+     "voto_2026_1t": {
+      "lula": 35,
+      "flavio": 39,
+      "margem_lula": -4,
+      "fatia_lula_2p": 47.3
+     },
+     "abstencao_2022_1t_pct": 12.9,
+     "abstencao_2022_2t_pct": 12.6
+    },
+    {
+     "categoria": "60+",
+     "tamanho_pct": 23.6,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 52,
+      "bolsonaro": 48,
+      "margem_lula": 4
+     },
+     "voto_2026_1t": {
+      "lula": 43,
+      "flavio": 33,
+      "margem_lula": 10,
+      "fatia_lula_2p": 56.6
+     },
+     "abstencao_2022_1t_pct": 34.4,
+     "abstencao_2022_2t_pct": 32.2
+    }
+   ]
+  },
+  {
+   "dimensao": "escolaridade",
+   "rotulo": "Escolaridade",
+   "categorias": [
+    {
+     "categoria": "Fundamental",
+     "tamanho_pct": 36.84,
+     "fonte_tamanho": "TSE 2026 (cadastro: analfabeto a fundamental completo; amostra Datafolha 2022: 28%)",
+     "voto_2022_2t": {
+      "lula": 61,
+      "bolsonaro": 39,
+      "margem_lula": 22
+     },
+     "voto_2026_1t": {
+      "lula": 47,
+      "flavio": 30,
+      "margem_lula": 17,
+      "fatia_lula_2p": 61.0
+     },
+     "abstencao_2022_1t_pct": 25.6,
+     "abstencao_2022_2t_pct": 25.0
+    },
+    {
+     "categoria": "Médio",
+     "tamanho_pct": 46.1,
+     "fonte_tamanho": "TSE 2026 (cadastro: médio incompleto e completo; amostra Datafolha 2022: 46%)",
+     "voto_2022_2t": {
+      "lula": 49,
+      "bolsonaro": 51,
+      "margem_lula": -2
+     },
+     "voto_2026_1t": {
+      "lula": 36,
+      "flavio": 38,
+      "margem_lula": -2,
+      "fatia_lula_2p": 48.6
+     },
+     "abstencao_2022_1t_pct": 15.3,
+     "abstencao_2022_2t_pct": 15.3
+    },
+    {
+     "categoria": "Superior",
+     "tamanho_pct": 17.05,
+     "fonte_tamanho": "TSE 2026 (cadastro: superior incompleto e completo; amostra Datafolha 2022: 26%)",
+     "voto_2022_2t": {
+      "lula": 49,
+      "bolsonaro": 51,
+      "margem_lula": -2
+     },
+     "voto_2026_1t": {
+      "lula": 36,
+      "flavio": 37,
+      "margem_lula": -1,
+      "fatia_lula_2p": 49.3
+     },
+     "abstencao_2022_1t_pct": 13.4,
+     "abstencao_2022_2t_pct": 13.4
+    }
+   ]
+  },
+  {
+   "dimensao": "renda",
+   "rotulo": "Renda familiar mensal",
+   "categorias": [
+    {
+     "categoria": "Até 2 SM",
+     "tamanho_pct": 46.0,
+     "fonte_tamanho": "amostra Datafolha 2022 (renda familiar)",
+     "voto_2022_2t": {
+      "lula": 61,
+      "bolsonaro": 39,
+      "margem_lula": 22
+     },
+     "voto_2026_1t": {
+      "lula": 46,
+      "flavio": 29,
+      "margem_lula": 17,
+      "fatia_lula_2p": 61.3
+     }
+    },
+    {
+     "categoria": "2 a 5 SM",
+     "tamanho_pct": 36.0,
+     "fonte_tamanho": "amostra Datafolha 2022",
+     "voto_2022_2t": {
+      "lula": 45,
+      "bolsonaro": 55,
+      "margem_lula": -10
+     },
+     "voto_2026_1t": {
+      "lula": 33,
+      "flavio": 41,
+      "margem_lula": -8,
+      "fatia_lula_2p": 44.6
+     }
+    },
+    {
+     "categoria": "Mais de 5 SM",
+     "tamanho_pct": 15.0,
+     "fonte_tamanho": "amostra Datafolha 2022 (5-10 SM 11% + 10+ SM 4%)",
+     "voto_2022_2t": {
+      "lula": 41,
+      "bolsonaro": 59,
+      "margem_lula": -18
+     },
+     "voto_2026_1t": {
+      "lula": 28,
+      "flavio": 44,
+      "margem_lula": -16,
+      "fatia_lula_2p": 38.9
+     }
+    }
+   ]
+  },
+  {
+   "dimensao": "religiao",
+   "rotulo": "Religião",
+   "categorias": [
+    {
+     "categoria": "Católicos",
+     "tamanho_pct": 56.75,
+     "fonte_tamanho": "Censo 2022 (10 anos ou mais)",
+     "voto_2022_2t": {
+      "lula": 59,
+      "bolsonaro": 41,
+      "margem_lula": 18
+     },
+     "voto_2026_1t": {
+      "lula": 43,
+      "flavio": 32,
+      "margem_lula": 11,
+      "fatia_lula_2p": 57.3
+     },
+     "outras_2026": [
+      {
+       "pesquisa": "Quaest 24-27/09/2026, 1º turno",
+       "lula": 48,
+       "adversario": 29,
+       "fonte_url": "https://www.em.com.br/politica/2026/09/7509823-quaest-lula-avanca-entre-catolicos-e-evangelicos-apos-polemica.html"
+      },
+      {
+       "pesquisa": "Quaest 24-27/09/2026, 2º turno",
+       "lula": 50,
+       "adversario": 37,
+       "fonte_url": "https://www.em.com.br/politica/2026/09/7509823-quaest-lula-avanca-entre-catolicos-e-evangelicos-apos-polemica.html"
+      }
+     ]
+    },
+    {
+     "categoria": "Evangélicos",
+     "tamanho_pct": 26.85,
+     "fonte_tamanho": "Censo 2022 (10 anos ou mais)",
+     "voto_2022_2t": {
+      "lula": 31,
+      "bolsonaro": 69,
+      "margem_lula": -38
+     },
+     "voto_2026_1t": {
+      "lula": 26,
+      "flavio": 48,
+      "margem_lula": -22,
+      "fatia_lula_2p": 35.1
+     },
+     "outras_2026": [
+      {
+       "pesquisa": "Quaest 24-27/09/2026, 1º turno",
+       "lula": 27,
+       "adversario": 46,
+       "fonte_url": "https://www.em.com.br/politica/2026/09/7509823-quaest-lula-avanca-entre-catolicos-e-evangelicos-apos-polemica.html"
+      },
+      {
+       "pesquisa": "Quaest 24-27/09/2026, 2º turno",
+       "lula": 30,
+       "adversario": 54,
+       "fonte_url": "https://www.em.com.br/politica/2026/09/7509823-quaest-lula-avanca-entre-catolicos-e-evangelicos-apos-polemica.html"
+      },
+      {
+       "pesquisa": "AtlasIntel 23-28/09/2026, 1º turno",
+       "lula": 20.8,
+       "adversario": 62.7,
+       "fonte_url": "https://www.gazetadopovo.com.br/eleicoes/2026/pesquisa-eleitoral-2026/atlasintel-presidente-setembro-2026-4/"
+      }
+     ]
+    },
+    {
+     "categoria": "Sem religião",
+     "tamanho_pct": 9.28,
+     "fonte_tamanho": "Censo 2022 (10 anos ou mais)"
+    }
+   ]
+  },
+  {
+   "dimensao": "regiao",
+   "rotulo": "Região",
+   "categorias": [
+    {
+     "categoria": "Sudeste",
+     "tamanho_pct": 41.78,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 48,
+      "bolsonaro": 52,
+      "margem_lula": -4
+     },
+     "voto_2026_1t": {
+      "lula": 34,
+      "flavio": 37,
+      "margem_lula": -3,
+      "fatia_lula_2p": 47.9
+     }
+    },
+    {
+     "categoria": "Nordeste",
+     "tamanho_pct": 27.42,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 71,
+      "bolsonaro": 29,
+      "margem_lula": 42
+     },
+     "voto_2026_1t": {
+      "lula": 56,
+      "flavio": 26,
+      "margem_lula": 30,
+      "fatia_lula_2p": 68.3
+     }
+    },
+    {
+     "categoria": "Sul",
+     "tamanho_pct": 14.4,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 40,
+      "bolsonaro": 60,
+      "margem_lula": -20
+     },
+     "voto_2026_1t": {
+      "lula": 27,
+      "flavio": 45,
+      "margem_lula": -18,
+      "fatia_lula_2p": 37.5
+     }
+    },
+    {
+     "categoria": "Norte",
+     "tamanho_pct": 8.26,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 48,
+      "bolsonaro": 52,
+      "margem_lula": -4
+     }
+    },
+    {
+     "categoria": "Centro-Oeste",
+     "tamanho_pct": 7.56,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2022_2t": {
+      "lula": 39,
+      "bolsonaro": 61,
+      "margem_lula": -22
+     }
+    },
+    {
+     "categoria": "Centro-Oeste + Norte",
+     "tamanho_pct": 15.82,
+     "fonte_tamanho": "TSE 2026",
+     "voto_2026_1t": {
+      "lula": 35,
+      "flavio": 41,
+      "margem_lula": -6,
+      "fatia_lula_2p": 46.1
+     }
+    }
+   ]
+  },
+  {
+   "dimensao": "bolsa_familia",
+   "rotulo": "Bolsa Família",
+   "categorias": [
+    {
+     "categoria": "Beneficiários",
+     "tamanho_pct": 23.0,
+     "fonte_tamanho": "amostra Datafolha 2022 (recebia Auxílio Brasil); MDS set/2026: 19,3 mi de famílias = 12,2 por 100 eleitores",
+     "voto_2026_1t": {
+      "lula": 53,
+      "flavio": 28,
+      "margem_lula": 25,
+      "fatia_lula_2p": 65.4
+     },
+     "outras_2026": [
+      {
+       "pesquisa": "Datafolha 2022, quem recebia Auxílio Brasil (votos totais, 2º turno)",
+       "lula": 57,
+       "adversario": 26,
+       "fonte_url": "https://www.terra.com.br/noticias/brasil/politica/datafolha-lula-tem-57-contra-26-de-bolsonaro-entre-quem-recebe-auxilio,637a7ccd640613cb7f3f190b32ab687fsuh932g0.html"
+      }
+     ]
+    },
+    {
+     "categoria": "Não beneficiários",
+     "tamanho_pct": 77.0,
+     "fonte_tamanho": "complemento",
+     "voto_2026_1t": {
+      "lula": 36,
+      "flavio": 37,
+      "margem_lula": -1,
+      "fatia_lula_2p": 49.3
+     }
+    }
+   ]
+  }
+ ],
+ "ajuste_comparecimento_nacional_2026": {
+  "turno_1": {
+   "ajuste_central_pp": -0.422,
+   "ajuste_pp": -0.374,
+   "dp_ajuste_pp": 0.165
+  },
+  "turno_2": {
+   "ajuste_central_pp": -0.304,
+   "ajuste_pp": -0.245,
+   "dp_ajuste_pp": 0.163
+  }
+ }
+}

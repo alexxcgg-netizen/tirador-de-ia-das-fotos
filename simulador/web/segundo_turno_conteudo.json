@@ -1,0 +1,3125 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-25T06:45:31Z",
+  "gerador": "simulador/gerar_segundo_turno_json.py",
+  "regra": "Texto extraído das notas sem reescrita; colunas por candidato na ordem Flávio Bolsonaro, Lula."
+ },
+ "pesquisas_pos_1t": {
+  "fonte": "research_notes/Segundo turno 2026/pesquisas_pos_1t.md (seções B, E e verificação) e simulador/data/pesquisas_nacionais.csv",
+  "criterio": "Mesmo critério de verificação: dois veículos independentes ou fonte primária. De novo, **nenhum relatório primário de instituto foi aberto** (Poder360 deu 403; PesqEle não consultado). Tudo abaixo vem de veículos.",
+  "tabela": [
+   {
+    "instituto": "AtlasIntel",
+    "instituto_nota": "AtlasIntel",
+    "campo": "**3–8/10** (começa antes do 1T)",
+    "divulgacao": "9/10",
+    "n": "5.026",
+    "modo": "online (RDR)",
+    "registro": "BR-03663/2026",
+    "lula_total": "45,7",
+    "flavio_total": "51,1",
+    "branco_nulo": "3,2 (junto)",
+    "ns": "(junto)",
+    "lula_validos": "47,2",
+    "flavio_validos": "52,8",
+    "margem": "±1"
+   },
+   {
+    "instituto": "PoderData",
+    "instituto_nota": "PoderData/Aya",
+    "campo": "5–7/10",
+    "divulgacao": "8/10",
+    "n": "3.000",
+    "modo": "telefone",
+    "registro": "BR-08134/2026",
+    "lula_total": "44",
+    "flavio_total": "49",
+    "branco_nulo": "5",
+    "ns": "2",
+    "lula_validos": "47",
+    "flavio_validos": "53",
+    "margem": "±1,8"
+   },
+   {
+    "instituto": "Vox Brasil",
+    "instituto_nota": "Vox Brasil",
+    "campo": "5–7/10",
+    "divulgacao": "9/10",
+    "n": "2.100",
+    "modo": "presencial",
+    "registro": "BR-09623/2026",
+    "lula_total": "44,2",
+    "flavio_total": "42,7",
+    "branco_nulo": "3,4",
+    "ns": "9,7",
+    "lula_validos": "50,86 (*)",
+    "flavio_validos": "49,14 (*)",
+    "margem": "±2,15"
+   },
+   {
+    "instituto": "Datafolha",
+    "instituto_nota": "Datafolha",
+    "campo": "6–7/10 ou 6–8/10",
+    "divulgacao": "8/10",
+    "n": "2.520",
+    "modo": "presencial",
+    "registro": "BR-02949/2026",
+    "lula_total": "45",
+    "flavio_total": "49",
+    "branco_nulo": "5",
+    "ns": "1",
+    "lula_validos": "48",
+    "flavio_validos": "52",
+    "margem": "±2"
+   },
+   {
+    "instituto": "Ipespe",
+    "instituto_nota": "Ipespe/Abrapel",
+    "campo": "6–8/10",
+    "divulgacao": "10/10",
+    "n": "1.500",
+    "modo": "telefone [agenda; a matéria não diz]",
+    "registro": "BR-00933/2026 [agenda]",
+    "lula_total": "44",
+    "flavio_total": "49",
+    "branco_nulo": "5",
+    "ns": "3",
+    "lula_validos": "47,3",
+    "flavio_validos": "52,7",
+    "margem": "±2,6"
+   },
+   {
+    "instituto": "DataTrends",
+    "instituto_nota": "DataTrends",
+    "campo": "7–9/10",
+    "divulgacao": "11/10",
+    "n": "2.000",
+    "modo": "telefone automatizado (URA)",
+    "registro": "BR-03576/2026",
+    "lula_total": "44",
+    "flavio_total": "50",
+    "branco_nulo": "5",
+    "ns": "1",
+    "lula_validos": "46,9",
+    "flavio_validos": "53,1",
+    "margem": "±2,19"
+   }
+  ],
+  "anteriores": {
+   "AtlasIntel": {
+    "antes": "27/9–2/10: válidos L 50,1 × F 49,9",
+    "agora": "válidos L 47,2 × F 52,8",
+    "mudanca": "+0,2 → −5,6 (válidos): **−5,8**",
+    "erro_1t": "+4,76 (superestimou Lula)"
+   },
+   "Datafolha": {
+    "antes": "3/10: 47 × 46",
+    "agora": "45 × 49",
+    "mudanca": "+1 → −4: **−5**",
+    "erro_1t": "+4,04"
+   },
+   "PoderData": {
+    "antes": "30/9–2/10: 46 × 46",
+    "agora": "44 × 49",
+    "mudanca": "0 → −5: **−5**",
+    "erro_1t": "+2,93"
+   },
+   "DataTrends": {
+    "antes": "divulgada 2/10 (campo não localizado): 45 × 45",
+    "agora": "44 × 50",
+    "mudanca": "0 → −6: **−6**",
+    "erro_1t": "sem avaliação (não estava no ranking)"
+   },
+   "Vox Brasil": {
+    "antes": "29/9–1/10: 45,2 × 48,2",
+    "agora": "44,2 × 42,7",
+    "mudanca": "−3,0 → +1,5: **+4,5**",
+    "erro_1t": "+0,98"
+   },
+   "Ipespe": {
+    "antes": "sem rodada anterior comparável (1ª do tracking)",
+    "agora": "44 × 49",
+    "mudanca": "–",
+    "erro_1t": "sem avaliação"
+   }
+  },
+  "verificacao": {
+   "AtlasIntel": {
+    "fonte": "Relatório PDF do instituto ([cdn1.atlasintel.org](https://cdn1.atlasintel.org/pesquisa_atlas_bloomberg__nacional_261009_3da0d6d3d6d32fe1.pdf)) e página [atlasintel.org](https://atlasintel.org/poll/brazil-national-2026-10-09)",
+    "confirma": "\"Pesquisa Atlas/Bloomberg\"; coleta 03/10/2026–08/10/2026; 5.026 respondentes; Atlas RDR; ±1 p.p. (95%); registro BR-03663/2026; 2T totais Flávio 51,1 × Lula 45,7, branco/nulo/não sei 3,2; válidos Flávio 52,8 × Lula 47,2",
+    "status": "**[fato, fonte primária]**; números iguais aos do CSV. O cabeçalho \"Atlas/Bloomberg\" pesa a favor da Exame no conflito de contratante (seção A), mas o relatório não diz quem pagou: continua **[disputado]**"
+   },
+   "Datafolha": {
+    "fonte": "Duas matérias da Folha (contratante e dona do instituto) de 9/10 ([debates](https://www1.folha.uol.com.br/poder/2026/10/datafolha-78-consideram-muito-importante-que-flavio-e-lula-participem-de-debates-no-2o-turno.shtml), [vida com cada um](https://www1.folha.uol.com.br/poder/2026/10/datafolha-43-acham-que-vida-seguira-igual-com-lula-eleitor-se-divide-sobre-como-ficara-com-flavio.shtml))",
+    "confirma": "\"O Datafolha foi às ruas na terça (6) e na quarta (7)\"; registro BR-02949/2026; 2.520 eleitores em 153 municípios; margem de 2 pontos",
+    "status": "**Conflito de datas resolvido: campo de 6 a 7/10** (como já estava no CSV). A versão 6 a 8/10 (Terra, BPMoney, Brasil de Fato, agendas) estava errada. O relatório no site do Datafolha não foi localizado"
+   },
+   "Ipespe": {
+    "fonte": "Matéria da Folha de 10/10 ([link](https://www1.folha.uol.com.br/poder/2026/10/flavio-bolsonaro-tem-527-dos-votos-validos-no-2o-turno-contra-473-de-lula-diz-ipespe.shtml))",
+    "confirma": "telefone; 1.500 eleitores; 6 a 8/10; ±2,6 p.p.; registro BR-00933/2026; totais 49 × 44, BN 5, NS/NR 3",
+    "status": "Veículo, não relatório; modo e registro, antes só na agenda, agora em matéria de resultado"
+   },
+   "PoderData": {
+    "fonte": "Poder360 e PesqEle (TSE)",
+    "confirma": "–",
+    "status": "**Não verificado**: Poder360 e PesqEle responderam 403"
+   },
+   "Vox Brasil": {
+    "fonte": "Poder360 e PesqEle (TSE)",
+    "confirma": "–",
+    "status": "**Não verificado**: Poder360 e PesqEle responderam 403"
+   },
+   "DataTrends": {
+    "fonte": "Poder360 e PesqEle (TSE)",
+    "confirma": "–",
+    "status": "**Não verificado**: Poder360 e PesqEle responderam 403"
+   }
+  },
+  "verificacao_resumo": "O relatório primário da AtlasIntel confirma datas, amostra, registro e números (válidos Flávio 52,8 × Lula 47,2). A Folha, dona do Datafolha, fixa o campo do Datafolha em 6 e 7/10, o que encerra o conflito de datas. Nenhum número de 2º turno mudou e o modelo foi rodado de novo só para registrar a verificação. PoderData, Vox e DataTrends seguem sem fonte primária aberta.",
+  "csv": [
+   {
+    "instituto": "Datafolha",
+    "campo_inicio": "2026-10-06",
+    "campo_fim": "2026-10-07",
+    "n": 2520,
+    "modo": "presencial",
+    "t2_lula": 45.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-05",
+    "campo_fim": "2026-10-07",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 44.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Vox Brasil",
+    "campo_inicio": "2026-10-05",
+    "campo_fim": "2026-10-07",
+    "n": 2100,
+    "modo": "presencial",
+    "t2_lula": 44.2,
+    "t2_flavio": 42.7,
+    "validos": false
+   },
+   {
+    "instituto": "AtlasIntel",
+    "campo_inicio": "2026-10-03",
+    "campo_fim": "2026-10-08",
+    "n": 5026,
+    "modo": "online (RDR)",
+    "t2_lula": 45.7,
+    "t2_flavio": 51.1,
+    "validos": false
+   },
+   {
+    "instituto": "Ipespe",
+    "campo_inicio": "2026-10-06",
+    "campo_fim": "2026-10-08",
+    "n": 1500,
+    "modo": "telefone (agenda; nao confirmado na materia)",
+    "t2_lula": 44.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "DataTrends",
+    "campo_inicio": "2026-10-07",
+    "campo_fim": "2026-10-09",
+    "n": 2000,
+    "modo": "telefone automatizado (URA)",
+    "t2_lula": 44.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-12",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 49.0,
+    "t2_flavio": 51.0,
+    "validos": true
+   },
+   {
+    "instituto": "Nexus/BTG",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-12",
+    "n": 2002,
+    "modo": "telefone",
+    "t2_lula": 48.0,
+    "t2_flavio": 52.0,
+    "validos": true
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-08",
+    "campo_fim": "2026-10-12",
+    "n": 2400,
+    "modo": "",
+    "t2_lula": 44.0,
+    "t2_flavio": 53.0,
+    "validos": false
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-07",
+    "campo_fim": "2026-10-10",
+    "n": 2000,
+    "modo": "",
+    "t2_lula": 48.2,
+    "t2_flavio": 51.8,
+    "validos": true
+   },
+   {
+    "instituto": "Quaest",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-13",
+    "n": 2154,
+    "modo": "",
+    "t2_lula": 44.0,
+    "t2_flavio": 46.0,
+    "validos": false
+   },
+   {
+    "instituto": "Datafolha",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-14",
+    "n": 2520,
+    "modo": "presencial",
+    "t2_lula": 49.0,
+    "t2_flavio": 51.0,
+    "validos": true
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-15",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 47.0,
+    "t2_flavio": 47.0,
+    "validos": false
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-14",
+    "campo_fim": "2026-10-15",
+    "n": 2000,
+    "modo": "",
+    "t2_lula": 49.2,
+    "t2_flavio": 50.8,
+    "validos": true
+   },
+   {
+    "instituto": "Indexa",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-14",
+    "n": 2000,
+    "modo": "",
+    "t2_lula": 42.0,
+    "t2_flavio": 44.0,
+    "validos": false
+   },
+   {
+    "instituto": "Palver",
+    "campo_inicio": "2026-10-10",
+    "campo_fim": "2026-10-13",
+    "n": 5000,
+    "modo": "online",
+    "t2_lula": 49.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "CNT/MDA",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-15",
+    "n": 2014,
+    "modo": "nd (uma materia diz presencial)",
+    "t2_lula": 45.9,
+    "t2_flavio": 46.8,
+    "validos": false
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-14",
+    "campo_fim": "2026-10-16",
+    "n": 2400,
+    "modo": "telefone",
+    "t2_lula": 45.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Ipespe",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-15",
+    "n": 1500,
+    "modo": "telefone (nao confirmado)",
+    "t2_lula": 46.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Vox Brasil",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-17",
+    "n": 2100,
+    "modo": "presencial domiciliar",
+    "t2_lula": 46.4,
+    "t2_flavio": 44.6,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-18",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Nexus/BTG",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-18",
+    "n": 2002,
+    "modo": "telefone",
+    "t2_lula": 45.9,
+    "t2_flavio": 46.5,
+    "validos": false
+   },
+   {
+    "instituto": "AtlasIntel",
+    "campo_inicio": "2026-10-13",
+    "campo_fim": "2026-10-18",
+    "n": 4998,
+    "modo": "online (RDR)",
+    "t2_lula": 47.6,
+    "t2_flavio": 49.8,
+    "validos": false
+   },
+   {
+    "instituto": "Real Time Big Data",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 2000,
+    "modo": "telefone (entrevistadores)",
+    "t2_lula": 45.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Instituto Franca",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-20",
+    "n": 3000,
+    "modo": "telefone",
+    "t2_lula": 39.65,
+    "t2_flavio": 40.95,
+    "validos": false
+   },
+   {
+    "instituto": "Palver",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-20",
+    "n": 5000,
+    "modo": "online (recrutamento por anuncios em redes sociais; nao probabilistica)",
+    "t2_lula": 48.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Quaest",
+    "campo_inicio": "2026-10-17",
+    "campo_fim": "2026-10-20",
+    "n": 2154,
+    "modo": "nd",
+    "t2_lula": 44.0,
+    "t2_flavio": 45.0,
+    "validos": false
+   },
+   {
+    "instituto": "Ideia (Meio/Ideia)",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 1500,
+    "modo": "telefone",
+    "t2_lula": 46.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 15554,
+    "modo": "nd",
+    "t2_lula": 49.3,
+    "t2_flavio": 50.7,
+    "validos": true
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-20",
+    "n": 2000,
+    "modo": "telefone",
+    "t2_lula": 48.9,
+    "t2_flavio": 51.1,
+    "validos": true
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-21",
+    "n": 2400,
+    "modo": "telefone",
+    "t2_lula": 45.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-12",
+    "campo_fim": "2026-10-16",
+    "n": 15554,
+    "modo": "nd",
+    "t2_lula": 48.9,
+    "t2_flavio": 51.1,
+    "validos": true
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-16",
+    "campo_fim": "2026-10-17",
+    "n": 2000,
+    "modo": "telefone",
+    "t2_lula": 49.6,
+    "t2_flavio": 50.4,
+    "validos": true
+   },
+   {
+    "instituto": "DataTrends",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-17",
+    "n": 2000,
+    "modo": "telefone automatizado (URA)",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Alfa Inteligencia",
+    "campo_inicio": "2026-10-15",
+    "campo_fim": "2026-10-19",
+    "n": 2700,
+    "modo": "presencial",
+    "t2_lula": 45.9,
+    "t2_flavio": 48.8,
+    "validos": false
+   },
+   {
+    "instituto": "Data Ranking",
+    "campo_inicio": "2026-10-14",
+    "campo_fim": "2026-10-16",
+    "n": 2100,
+    "modo": "presencial domiciliar",
+    "t2_lula": 45.4,
+    "t2_flavio": 44.6,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-21",
+    "n": 4000,
+    "modo": "telefone (URA)",
+    "t2_lula": 48.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Indexa",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-21",
+    "n": 2000,
+    "modo": "telefone",
+    "t2_lula": 44.1,
+    "t2_flavio": 45.2,
+    "validos": false
+   },
+   {
+    "instituto": "Datafolha",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-22",
+    "n": 2520,
+    "modo": "presencial (nao confirmado nesta rodada)",
+    "t2_lula": 46.0,
+    "t2_flavio": 47.0,
+    "validos": false
+   },
+   {
+    "instituto": "Vox Brasil",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-22",
+    "n": 2100,
+    "modo": "presencial domiciliar",
+    "t2_lula": 45.4,
+    "t2_flavio": 44.3,
+    "validos": false
+   },
+   {
+    "instituto": "Alfa Inteligencia",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-22",
+    "n": 2700,
+    "modo": "presencial",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.9,
+    "validos": false
+   },
+   {
+    "instituto": "Real Time Big Data",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-22",
+    "n": 2000,
+    "modo": "telefone e internet",
+    "t2_lula": 45.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Ipespe",
+    "campo_inicio": "2026-10-20",
+    "campo_fim": "2026-10-22",
+    "n": 1500,
+    "modo": "telefone",
+    "t2_lula": 47.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "DataTrends",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-21",
+    "n": 2000,
+    "modo": "nd (URA na rodada anterior)",
+    "t2_lula": 46.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-22",
+    "n": 15554,
+    "modo": "URA (voz automatizada)",
+    "t2_lula": 47.5,
+    "t2_flavio": 50.2,
+    "validos": false
+   },
+   {
+    "instituto": "Instituto Franca",
+    "campo_inicio": "2026-10-21",
+    "campo_fim": "2026-10-23",
+    "n": 1537,
+    "modo": "nd",
+    "t2_lula": 43.1,
+    "t2_flavio": 45.6,
+    "validos": false
+   },
+   {
+    "instituto": "CNT/MDA",
+    "campo_inicio": "2026-10-21",
+    "campo_fim": "2026-10-23",
+    "n": 2032,
+    "modo": "presencial",
+    "t2_lula": 45.0,
+    "t2_flavio": 46.3,
+    "validos": false
+   },
+   {
+    "instituto": "Colectta",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-23",
+    "n": 3000,
+    "modo": "presencial domiciliar",
+    "t2_lula": 46.5,
+    "t2_flavio": 46.0,
+    "validos": false
+   },
+   {
+    "instituto": "Nexus/BTG",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 2000,
+    "modo": "telefone (Metropoles diz presencial)",
+    "t2_lula": 46.0,
+    "t2_flavio": 47.0,
+    "validos": false
+   },
+   {
+    "instituto": "Gerp",
+    "campo_inicio": "2026-10-22",
+    "campo_fim": "2026-10-24",
+    "n": 2400,
+    "modo": "telefone",
+    "t2_lula": 46.0,
+    "t2_flavio": 49.0,
+    "validos": false
+   },
+   {
+    "instituto": "Palver",
+    "campo_inicio": "2026-10-22",
+    "campo_fim": "2026-10-24",
+    "n": 5000,
+    "modo": "online (questionario online; amostra nao probabilistica)",
+    "t2_lula": 49.0,
+    "t2_flavio": 50.0,
+    "validos": false
+   },
+   {
+    "instituto": "Datafolha",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 4050,
+    "modo": "presencial",
+    "t2_lula": 47.0,
+    "t2_flavio": 48.0,
+    "validos": false
+   },
+   {
+    "instituto": "Quaest",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 3702,
+    "modo": "presencial (CartaCapital)",
+    "t2_lula": 45.0,
+    "t2_flavio": 46.0,
+    "validos": false
+   },
+   {
+    "instituto": "AtlasIntel",
+    "campo_inicio": "2026-10-18",
+    "campo_fim": "2026-10-23",
+    "n": 4990,
+    "modo": "online (RDR)",
+    "t2_lula": 48.4,
+    "t2_flavio": 49.9,
+    "validos": false
+   },
+   {
+    "instituto": "Futura",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 2000,
+    "modo": "telefone (CATI)",
+    "t2_lula": 47.9,
+    "t2_flavio": 48.2,
+    "validos": false
+   },
+   {
+    "instituto": "Verita",
+    "campo_inicio": "2026-10-19",
+    "campo_fim": "2026-10-23",
+    "n": 15554,
+    "modo": "URA (unidade automatizada de respostas)",
+    "t2_lula": 46.46,
+    "t2_flavio": 49.44,
+    "validos": false
+   },
+   {
+    "instituto": "PoderData",
+    "campo_inicio": "2026-10-23",
+    "campo_fim": "2026-10-24",
+    "n": 4000,
+    "modo": "telefone (URA)",
+    "t2_lula": 49.0,
+    "t2_flavio": 51.0,
+    "validos": true
+   }
+  ],
+  "medias": "**Médias (válidos, Flávio)**: média simples das 6 = **52,1**; mediana = **52,75**; sem a AtlasIntel (campo começa antes do 1T) = **52,0**. Pela convenção da imprensa (diferença até o dobro da margem declarada = empate técnico), em votos totais: **três fora da margem** com Flávio à frente (AtlasIntel 51,1 × 45,7, diferença 5,4 contra limite 2; PoderData 49 × 44, 5 contra 3,6; DataTrends 50 × 44, 6 contra 4,38); **duas em empate técnico com Flávio numericamente à frente** (Datafolha 49 × 45, diferença 4 contra limite 4; Ipespe 49 × 44, diferença 5 contra limite 5,2); **uma em empate técnico com Lula numericamente à frente** (Vox 44,2 × 42,7). (Corrigido na revisão de 12/10; a versão anterior dizia \"cinco das seis fora ou no limite da margem\".)",
+  "selecao": [
+   "A tabela B tem tudo o que achei com campo terminando depois de 4/10; não escolhi institutos. Três das seis novas pesquisas usam telefone ou URA e uma é online; só duas são presenciais (Datafolha, Vox), e elas são as duas com Lula mais forte. Há duas hipóteses de efeito de modo, em sentidos opostos (brecha 11): (a) o eleitor de Lula de baixa renda é mais alcançado em domicílio; (b) na entrevista face a face, o viés de desejabilidade social pode reduzir o voto declarado no candidato mais estigmatizado no ambiente do entrevistado. O 1º turno não decide entre as duas: o Datafolha (presencial) errou +4,04 a favor de Lula e a AtlasIntel (online) +4,76 (`avaliacao_1t.json`). E o Datafolha presencial também dá Flávio +4. Não há como testar com estes dados."
+  ],
+  "resumo_aba": [
+   "Agora são seis pesquisas nacionais de 2T com campo depois do 1T (a AtlasIntel começa em 3/10). Em válidos, Flávio tem de 52,0 a 53,1 em cinco delas; a Vox dá Lula 50,9. Média 52,1, mediana 52,75, contra 51,0 do placar do 1T entre os dois. Três estão fora da margem com Flávio à frente; Datafolha e Ipespe são empate técnico com Flávio numericamente à frente; a Vox é empate técnico com Lula à frente.",
+   "Quatro institutos com série anterior andaram 5 a 6 pontos para Flávio; a Vox andou 4,5 para Lula. Os que mais erraram a favor de Lula no 1T são os que mais andaram; a DataTrends, sem avaliação, também andou 6.",
+   "Rejeição de Lula maior que a de Flávio nos quatro institutos que publicaram (1 a 3 pontos); aprovação de Lula entre 43 e 45.",
+   "Segmentos: padrão estável por região, renda e religião em cinco institutos; idade e sexo discordam muito entre DataTrends e PoderData, e católicos entre Atlas e Datafolha. Tudo de fonte secundária.",
+   "Pendentes: Quaest RJ e DF (12/10), PoderData (13/10), Datafolha (campo 13–15/10). Direct e Seta: resultado não encontrado.",
+   "Ainda não há pesquisa estadual de 2T pós-1T publicada."
+  ]
+ },
+ "campanha_2t": {
+  "fonte": "research_notes/Segundo turno 2026/campanha_2t_eventos.md",
+  "titulo": "Campanha do 2º turno 2026: eventos, apoios, mercados e o indireto (4/10 a 9/10/2026)",
+  "cabecalho": [
+   "Levantamento de 09/10/2026, cerca de 05h40 UTC (02h40 em Brasília). Cobre o que mudou na disputa **Flávio Bolsonaro (PL) × Lula (PT)** depois do 1º turno de 04/10 (Flávio 47,03% × Lula 45,16% dos válidos, TSE 100%). O 2º turno é em 25/10.",
+   "**As pesquisas não estão aqui.** Outro agente cuida delas (`pesquisas_pos_1t.md`). Só cito uma pesquisa quando ela é o motivo declarado de um movimento de mercado.",
+   "Legenda: **[fato]** = documento oficial, fala gravada ou nota citada literalmente por mais de um veículo; **[reportado]** = um veículo, sem documento primário; **[não verificado]** = procurado e não confirmado; **[disputado]** = fontes se contradizem.",
+   "Fontes de vários campos: Gazeta do Povo, Revista Oeste, Jovem Pan, O Antagonista (direita/centro-direita); CNN, Poder360, Band, SBT, O Tempo, InfoMoney, Exame, Terra (centro); CartaCapital, Brasil 247, Brasil de Fato, DCM, Fórum, ICL (esquerda); Agência Brasil/Agência Gov e Ministério da Fazenda (oficiais). Muitas páginas deram 403 e foram lidas por resumo de busca; isso está marcado.",
+   "**Revisão adversarial dupla aplicada em 12/10/2026** (`revisao_advogado_governo_2t.md` e `revisao_advogado_oposicao_2t.md`). As correções foram feitas **no corpo** (Cury, decisões do TSE de 08/10, defesa de Vorcaro, Wagner, Zettel, PEC 6x1 na Câmara, João Campos, \"R$ 350 bi\", L1, L3, L5, F1, F2, F6). A regra única de força, os conflitos entre as revisões e o placar final estão na seção **R** no fim do arquivo.",
+   "**Seleção (brecha 9 do CLAUDE.md):** escolhi 5 falas ou atos de cada lado pelo peso eleitoral e pela documentação disponível; a revisão acrescentou F6 e dividiu L3 em dois casos. Ficaram de fora, por falta de fonte de outubro: Michelle Bolsonaro na campanha, prefeitos de capitais, Eduardo Bolsonaro, Trump além da fala de 5/10, novas fases da PF. A ausência deles aqui não quer dizer que nada aconteceu."
+  ],
+  "linha_tempo": {
+   "ate_09": {
+    "t": "tab",
+    "cab": [
+     "Data",
+     "Evento",
+     "Status",
+     "Fonte"
+    ],
+    "lin": [
+     [
+      "04/10 (noite)",
+      "Lula em São Bernardo: \"a partir de amanhã, a gente começa uma nova campanha\"; \"nós vamos ganhar esta eleição\".",
+      "[fato]",
+      "[Brasil 247](https://www.brasil247.com/poder/amanha-comeca-uma-nova-eleicao-diz-lula-apos-resultado-do-primeiro-turno/), [Brasil de Fato](https://www.brasildefato.com.br/2026/10/04/apos-primeiro-turno-lula-afirma-que-disputa-entra-em-nova-fase-e-defende-continuidade-de-projeto/)"
+     ],
+     [
+      "04/10",
+      "Cury (Avante, 2,89%) se recusa a apoiar qualquer lado e diz que vai deixar a política: \"Eu me silencio completamente\" (mudou em 08/10: apoiou Flávio, ver abaixo). Renan Santos (Missão, 2,24%) libera os eleitores: \"Façam o que vocês quiserem... Essa eleição é do Flávio Bolsonaro\". Zema diz que fica contra o PT em qualquer 2º turno.",
+      "[fato]",
+      "[Gazeta do Povo 06/10](https://www.gazetadopovo.com.br/eleicoes/2026/candidatos-derrotados-no-1o-turno-comecam-a-definir-apoio-a-flavio-e-lula/), [Band](https://www.band.com.br/politica/eleicoes/flavio-x-lula-veja-mapa-de-aliancas-apoios-e-neutralidades-para-2o-turno)"
+     ],
+     [
+      "05/10",
+      "Zema grava vídeo: \"Voto contra o PT, voto no Flávio Bolsonaro\".",
+      "[fato]",
+      "Gazeta do Povo, [InfoMoney](https://www.infomoney.com.br/politica/caiado-e-zema-anunciam-apoio-a-flavio-na-disputa-com-lula-no-2o-turno-da-eleicao/)"
+     ],
+     [
+      "05/10",
+      "Lula, em reunião com aliados em Brasília: \"Estamos carregando nas costas uma coisa muito grave que é a promiscuidade\" no STF; \"Só tenho um candidato que é antissistema, que somos nós\"; Flávio \"é a cara do sistema\". Defende reforma do Judiciário (critérios de escolha e mandatos para o STF).",
+      "[fato]",
+      "[O Tempo 05/10](https://www.otempo.com.br/eleicoes/2026/presidentes/2026/10/5/estamos-carregando-a-promiscuidade-da-suprema-corte-nas-costas-diz-lula), [CNN](https://www.cnnbrasil.com.br/eleicoes/lula-sobe-tom-de-criticas-ao-stf-de-olho-no-2o-turno/)"
+     ],
+     [
+      "05/10",
+      "Lula define metas: ampliar votos no Nordeste e reduzir a abstenção. Camilo Santana (coordenação política), Rui Costa (agenda) e Rafael Fonteles (comunicação) entram no comando; Edinho Silva segue como coordenador-geral. Meta reportada: CE de 63% para 70% e PI de ~71% para 80%.",
+      "[reportado]",
+      "[JB 06/10](https://www.jb.com.br/brasil/politica/2026/10/1061130-lula-define-estrategia-para-o-2-turno-e-mira-nordeste.html), [CNN 07/10](https://www.cnnbrasil.com.br/eleicoes/lula-traca-como-meta-reduzir-abstencao-para-aumentar-margem-no-nordeste/), Meio News"
+     ],
+     [
+      "05/10",
+      "Tarcísio (reeleito em SP) à CBN: vai fazer \"toda a força\" para o Republicanos apoiar Flávio; chama de \"erro\" não apoiar.",
+      "[reportado]",
+      "[Midiamax](https://midiamax.com.br/brasil/2026/tarcisio-diz-fara-toda-forca-republicanos-apoie-flavio-bolsonaro/)"
+     ],
+     [
+      "05/10",
+      "Trump na Casa Branca: \"é uma grande vitória... Muito apertada, mas impressionante\". Sem apoio formal. Rubio: \"todos esperavam 2º turno\".",
+      "[fato]",
+      "[JB](https://www.jb.com.br/mundo/2026/10/1061128-trump-diz-que-lideranca-de-flavio-bolsonaro-foi-grande-vitoria.html), [Band](https://www.band.com.br/internacional/rubio-diz-que-todos-esperavam-2o-turno-no-brasil-ao-comentar-eleicao)"
+     ],
+     [
+      "05/10",
+      "Mercado: Ibovespa +7,7% (206.912, recorde), dólar −4,1% (perto de R$ 5,00), EWZ +13,3% a +13,7%, DIs caem mais de 100 pb.",
+      "[fato]",
+      "ver seção 4"
+     ],
+     [
+      "06/10",
+      "Caiado (PSD) declara apoio a Flávio em Goiânia, com Tarcísio e o governador reeleito Daniel Vilela (MDB-GO): \"Vamos transformar o Brasil e devolver o país aos brasileiros de bem\".",
+      "[fato]",
+      "Gazeta do Povo 06/10"
+     ],
+     [
+      "06/10",
+      "PSD (Kassab) anuncia neutralidade e libera diretórios. Federação União Progressista (União Brasil + PP) fecha apoio a Flávio (\"decisão unânime\", Tereza Cristina).",
+      "[fato]",
+      "[CartaCapital](https://www.cartacapital.com.br/politica/psd-anuncia-neutralidade-no-2o-turno-e-libera-diretorios-para-apoiar-lula-ou-flavio/), [Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/uniao-brasil-e-pp-anunciam-apoio-a-flavio-bolsonaro-no-segundo-turno/), [Brasil 247](https://www.brasil247.com/poder/uniao-brasil-e-pp-fecham-apoio-a-flavio-bolsonaro-no-2-turno/)"
+     ],
+     [
+      "06/10",
+      "Eduardo Leite (PSD-RS): \"Eu me inclino pela não manifestação\".",
+      "[fato]",
+      "[Jornal do Comércio 06/10](https://www.jornaldocomercio.com/politica/2026/10/1265981-eduardo-leite-indica-neutralidade-no-segundo-turno-entre-lula-e-flavio-bolsonaro.html)"
+     ],
+     [
+      "06/10",
+      "Flávio em coletiva: Lula \"está isolado\"; PEC do fim da 6x1 é \"oportunista\"; promete um \"tesouraço\" para cortar impostos; diz ter proposta \"melhor\" que a PEC (jornada escolhida pelo trabalhador, voucher de creche).",
+      "[reportado] (Estadão Conteúdo)",
+      "[Tribuna do Sertão](https://tribunadosertao.com.br/politica/2026/10/06/991696-flavio-bolsonaro-fala-sobre-apoio-de-partidos-e-propostas-para-o-segundo-turno)"
+     ],
+     [
+      "06/10",
+      "Alcolumbre anuncia calendário da PEC 6x1 no Senado: cinco sessões de discussão, votação em 1º turno possivelmente em **15/10** (entre os turnos).",
+      "[fato]",
+      "[Agência Brasil](https://agenciabrasil.ebc.com.br/politica/noticia/2026-10/alcolumbre-anuncia-sessoes-para-discutir-e-votar-fim-da-escala-6x1), [Jornal do Comércio](https://www.jornaldocomercio.com/politica/2026/10/1265942-alcolumbre-esta-determinado-e-pec-da-6x1-sera-votada-antes-do-2-turno-diz-ministro.html)"
+     ],
+     [
+      "06/10",
+      "Band muda seu debate de 11/10 para 18/10.",
+      "[fato]",
+      "[BBC via O Povo](https://www.opovo.com.br/agencia/bbc/2026/10/06/debates-no-segundo-turno-datas-o-que-se-sabe-e-o-que-falta-definir-sobre-a-participacao-de-lula-e-flavio-bolsonaro.html)"
+     ],
+     [
+      "07/10",
+      "Republicanos formaliza apoio a Flávio (Marcos Pereira), sem fechar questão: Hugo Motta (presidente da Câmara, PB) deve seguir com Lula.",
+      "[fato]",
+      "[Poder360](https://www.poder360.com.br/poder-eleicoes-2026/republicanos-define-apoio-a-flavio-no-2o-turno-contra-lula/), [O Tempo 08/10](https://www.otempo.com.br/eleicoes/2026/presidentes/2026/10/8/lula-x-flavio-bolsonaro-veja-quais-partidos-ja-declararam-apoio-no-segundo-turno)"
+     ],
+     [
+      "07/10",
+      "Presidente do TSE, Nunes Marques, nega direito de resposta a Lula e mantém vídeos de Flávio que associam Lula a Moraes (\"dividiu o poder\"), Lulinha ao \"Careca do INSS\" e o governo ao endividamento. Decisão liminar, não de mérito.",
+      "[fato]",
+      "[O Tempo 07/10](https://www.otempo.com.br/eleicoes/2026/presidentes/2026/10/7/nunes-marques-mantem-videos-de-ataques-de-flavio-a-lula-e-moraes-e-nega-direito-de-resposta), [DCM](https://www.diariodocentrodomundo.com.br/nunes-marques-mantem-videos-flavio-bolsonaro-lula-moraes), [ICL](https://iclnoticias.com.br/kassio-nunes-marques-libera-propaganda/)"
+     ],
+     [
+      "07/10",
+      "Moody's: o vencedor herda posição fiscal \"ainda mais vulnerável\"; com Lula, espera manutenção do arcabouço; com Flávio, mais chance de \"cortes expressivos de despesas\"; resultado provavelmente apertado.",
+      "[reportado]",
+      "[BP Money](https://bpmoney.com.br/economia/moodys-compara-cenarios-lula-flavio-bolsonaro-segundo-turno-riscos/)"
+     ],
+     [
+      "07/10",
+      "Emissoras fixam debates: Record 11/10 (21h); pool de 11 veículos (CNN, SBT, Metrópoles, RedeTV! e outros) 15/10 (20h); Band 18/10 (20h); Globo 23/10 (depois do JN). Nenhum candidato confirmou oficialmente.",
+      "[fato] (datas)",
+      "[CartaCapital 07/10](https://www.cartacapital.com.br/politica/emissoras-confirmam-datas-dos-debates-entre-lula-e-flavio-bolsonaro/), [Band B](https://www.bandab.com.br/politica/eleicoes-2026/vai-ter-debate-no-2o-turno-band-record-e-globo-marcam-datas-veja-o-que-ja-foi-confirmado/)"
+     ],
+     [
+      "07-08/10",
+      "Folha: equipe econômica de Flávio estuda limitar o reajuste de aposentadorias e BPC ao INPC e trocar os pisos de saúde e educação por correção pela inflação, com economia de até R$ 250 bi. Campanha nega que seja proposta oficial; Flávio chama de \"fake news do PT\" e diz que aposentadorias terão ganho acima da inflação.",
+      "[reportado] (texto original da Folha não lido; repercussão em EM, Diário de Pernambuco, Terra)",
+      "[EM](https://www.em.com.br/politica/2026/10/7516985-flavio-considera-limitar-reajuste-de-aposentadorias-e-bpc.html), [EM](https://www.em.com.br/politica/2026/10/7517170-flavio-bolsonaro-contradiz-equipe-economica-e-nega-corte-em-aposentadorias.html), [Terra 08/10](https://terra.com.br/economia/dolar-tem-variacao-modesta-ante-o-real-com-eleicao-no-radar,d59632ef54a750b99c4f1057763716df20tas970.html)"
+     ],
+     [
+      "08/10",
+      "Dario Durigan (ministro da Fazenda, coordena o plano econômico de Lula): o plano de Flávio vende \"ilusão\" ao mercado e ignora atividade e emprego.",
+      "[fato] (Reuters)",
+      "[Investing/Reuters](https://br.investing.com/news/economy-news/durigan-diz-que-plano-de-flavio-vende-ilusao-ao-mercado-e-nao-olha-para-atividade-e-empregos-2087213)"
+     ],
+     [
+      "08/10",
+      "Adolfo Sachsida (coordenador econômico de Flávio), em vídeo: \"não existirão privatizações de empresas. Nenhuma dessas empresas será tocada\" (Petrobras, BB, Caixa); \"vamos fortalecer os programas sociais\".",
+      "[fato] (vídeo)",
+      "[Forbes 08/10](https://forbes.com.br/forbes-money/2026/10/petrobras-bb-e-caixa-serao-privatizados-veja-o-que-diz-coordenador-de-flavio-bolsonaro/)"
+     ],
+     [
+      "08/10",
+      "Podemos formaliza apoio a Flávio (Renata Abreu ao lado dele). Flávio: Bolsa Família \"tem de ser a primeira coisa que um governo faz pelas pessoas e não a última\"; \"o Nordeste acordou\"; \"em 2030 nenhum parente meu pode ser candidato\"; diz que Lula gastou R$ 350 bi para se reeleger.",
+      "[reportado] (Estadão Conteúdo; em agosto o Podemos tinha ficado neutro no 1º turno). \"R$ 350 bi\": **[não verificado]**, nenhuma fonte achada com esse número; as contas publicadas são R$ 187,2 bi em medidas fora do limite do arcabouço (Marcos Mendes, via Poder360), R$ 190 bi (coluna da Gazeta do Povo, opinião) e R$ 403,2 bi somando orçamentos inteiros de programas que já existiam, inclusive R$ 158,6 bi do Bolsa Família ([Poder360](https://www.poder360.com.br/poder-economia/pacote-de-bondades-de-lula-soma-r-4032-bi-em-ano-eleitoral/)). Leitura: exagerado frente às medidas novas; só cabe no critério mais amplo, que conta gasto que existiria sem eleição.",
+      "[O Liberal/Estadão 08/10](https://www.oliberal.com/politica/bolsa-familia-tem-de-ser-a-primeira-coisa-que-um-governo-faz-diz-flavio-bolsonaro-1.1178723), O Tempo 08/10"
+     ],
+     [
+      "08/10",
+      "**Cury declara apoio a Flávio.** Flávio assina termo público de 8 pontos (fim da reeleição, telemedicina, proteção às mulheres, professores, crédito a microempresas, cooperativas, produção de alimentos, \"pacificação nacional\"). Cury: \"Meu apoio não é um cheque em branco\"; não terá cargo; \"voto de confiança condicionado\". Em 10/09 ele tinha dito que só apoiaria Flávio se este explicasse para onde foi o dinheiro de Vorcaro no \"Dark Horse\"; a nota de apoio lida não menciona o Dark Horse (ver F7 na seção R).",
+      "[fato]",
+      "[DGABC/Estadão](https://www.dgabc.com.br/Noticia/4351753/cury-oficializa-apoio-a-flavio-bolsonaro-sob-condicao-de-pacificacao-nacional), [SBT News](https://sbtnews.sbt.com.br/noticia/eleicoes/cury-apoia-flavio-e-alerta-nao-e-cheque-em-branco), [Jornal Opção](https://www.jornalopcao.com.br/ultimas-noticias/apos-receber-34-milhoes-de-votos-augusto-cury-declara-apoio-a-flavio-bolsonaro-877170/), Poder360, Exame; condição de 10/09: [Bahia Notícias](https://www.bahianoticias.com.br/noticia/320980-augusto-cury-diz-que-so-apoia-flavio-se-ele-explicar-como-foi-gasto-dinheiro-de-vorcaro-para-o-dark-horse)"
+     ],
+     [
+      "08/10",
+      "**TSE, quatro liminares contra peças do campo de Lula** (pedidos de Flávio): André Mendonça manda remover em 3 h (a) o vídeo de Lula que atribui a Flávio corte de R$ 200 bi em Pé-de-Meia, Farmácia Popular, MCMV e Gás do Povo (\"sem indicar fundamento concreto\"; multa de R$ 10 mil por republicação), (b) a peça \"Se Flávio vence, você perde\" (\"narrativa unitária, de acentuado caráter alarmista\"; o bordão pode continuar), (c) cinco posts de André Janones e Lindbergh Farias que atribuíam a Flávio aposentadoria aos 70 anos, jornada de 12 h e privatizar a Petrobras; Nunes Marques manda remover em 24 h (d) vídeo de Janja. **O direito de resposta pedido por Flávio não foi decidido**: será analisado depois das defesas e do parecer da Procuradoria-Geral Eleitoral. Todas liminares, a referendar no plenário.",
+      "[fato] (3+ veículos)",
+      "[SBT News](https://sbtnews.sbt.com.br/noticia/eleicoes/tse-manda-remover-posts-de-lula-janja-e-aliados), [Imirante](https://m.imirante.com/noticias/brasil/2026/10/09/ipolitica-tse-manda-apagar-posts-lula-janja-flavio-b), [Investidor10](https://investidor10.com.br/noticias/tse-manda-apagar-videos-de-lula-e-janja-com-ataques-a-flavio-bolsonaro-123167/)"
+     ],
+     [
+      "08/10",
+      "**TSE, plenário, por unanimidade** (7 ministros, relator Mendonça; processo 0600955-65.2026): Flávio tem 24 h para retirar do X três posts que ligam Lula ao PCC e ao CV, um deles com imagem de IA sem rótulo (\"Trump, deixe nossos bandidos em paz\"). A multa de R$ 5 mil a Flávio é de **outro processo** (0601016-23.2026, relator Nunes Marques, 28/09, propaganda antecipada negativa por chamar Lula de \"defensor\" das facções; o post já tinha sido removido em agosto por 5×2 no plenário).",
+      "[fato]",
+      "[Congresso em Foco](https://www.congressoemfoco.com.br/noticia/123128/flavio-e-multado-por-associar-lula-ao-pcc-e-tem-tres-posts-barrados), [Imirante](https://m.imirante.com/noticias/brasil/2026/10/09/ipolitica-tse-multa-flavio-bolsonaro-posts-lula-r-5-mil)"
+     ],
+     [
+      "08/10",
+      "PSDB (nota de Aécio Neves) fica neutro e libera filiados; diz que a maioria dos diretórios se dividiu entre neutralidade e Flávio.",
+      "[fato]",
+      "[O Tempo 08/10](https://www.otempo.com.br/eleicoes/2026/presidentes/2026/10/8/psdb-anuncia-neutralidade-e-libera-filiados-para-apoiar-lula-ou-flavio-bolsonaro-no-segundo-turno)"
+     ],
+     [
+      "08/10",
+      "Renan Santos no SBT: \"Não consigo me misturar com essa gente\"; recusa apoio a Flávio; já tinha chamado os dois de \"bandidos\".",
+      "[fato]",
+      "[SBT News](https://sbtnews.sbt.com.br/noticia/eleicoes/renan-santos-rejeita-apoio-a-flavio-no-segundo-turno)"
+     ],
+     [
+      "08/10",
+      "Senado faz a 3ª sessão de discussão da PEC 6x1; sem data fechada de votação.",
+      "[reportado]",
+      "[O Tempo 08/10](https://www.otempo.com.br/politica/congresso/2026/10/8/senado-avanca-com-pec-do-fim-da-escala-6x1-mas-governo-e-oposicao-divergem-sobre-votacao)"
+     ],
+     [
+      "09/10",
+      "Começa o horário eleitoral do 2º turno (até 23/10), com tempo igual: 5 min por candidato nos blocos e 25 min diários de inserções.",
+      "[reportado]",
+      "[SBT News](https://sbtnews.sbt.com.br/noticia/eleicoes/2-turno-que-dia-o-horario-eleitoral-obrigatorio-volta)"
+     ],
+     [
+      "09/10",
+      "Vence o corte de PIS/Cofins da gasolina (R$ 0,63/l) e do etanol (R$ 0,19/l), Decreto 13.116. Até 02h40 de 09/10 não achei decreto de prorrogação; um site diz que o governo \"prepara\" a renovação.",
+      "[fato] (vencimento); [não verificado] (prorrogação)",
+      "[Fazenda](https://www.gov.br/fazenda/pt-br/assuntos/noticias/2026/setembro/governo-federal-adota-novas-medidas-para-combustiveis-frente-a-oscilacoes-do-petroleo), [Minaspetro 08/10](https://minaspetro.com.br/gasolina-e-etanol-desoneracao-pode-terminar-em-9-de-outubro/)"
+     ],
+     [
+      "11/10",
+      "Fim da suspensão de 90 dias das visitas de Flávio ao pai; Moraes pediu parecer da PGR sobre o novo pedido.",
+      "[reportado]",
+      "[Metrópoles](https://www.metropoles.com/brasil/moraes-pede-parecer-da-pgr-sobre-pedido-de-bolsonaro-para-receber-flavio)"
+     ],
+     [
+      "15/10 (prev.)",
+      "Votação da PEC 6x1 em 1º turno no Senado (precisa de 49 votos).",
+      "previsão",
+      "Agência Brasil"
+     ],
+     [
+      "19/10 a 30/10",
+      "Pagamento do Bolsa Família de outubro, o 1º com +15,04%: NIS 1 a 5 de 19 a 23/10 (antes do 2T), NIS 6 a 0 de 26 a 30/10.",
+      "[fato] (calendário padrão)",
+      "[br104](https://www.br104.com.br/variedades/servicos/bolsa-familia-outubro-2026-calendario-reajuste), Serasa"
+     ],
+     [
+      "~26-27/10",
+      "Vence a subvenção ao diesel (R$ 2,12/l, Portaria MF 2.946, 30 dias a partir de 27/09).",
+      "[fato] (portaria); data final por contagem",
+      "[Jovem Pan](https://jovempan.com.br/economia/governo-prorroga-subvencao-ao-diesel-em-r-212-por-litro-por-30-dias/), [Mix Vale](https://www.mixvale.com.br/2026/09/28/governo-federal-prorroga-subvencao-ao-oleo-diesel-por-30-dias/)"
+     ],
+     [
+      "25/10",
+      "2º turno. Passe livre no transporte coletivo (Res. TSE 23.751/2026, decisão do STF de 2023); cada cidade define horários.",
+      "[fato]",
+      "[Portal do Trânsito](https://www.portaldotransito.com.br/noticias/mobilidade-e-tecnologia/mobilidade-urbana/transporte-gratuito-nas-eleicoes-veja-como-funcionara-o-deslocamento-para-votar-no-domingo/)"
+     ]
+    ]
+   },
+   "de_09_a_11": {
+    "t": "tab",
+    "cab": [
+     "Data",
+     "Evento",
+     "Status",
+     "Fonte"
+    ],
+    "lin": [
+     [
+      "08-09/10",
+      "Veja publica relato atribuído a Vorcaro: ~R$ 30 mi em espécie para o documentário de Oliver Stone sobre Lula, via Instituto Lula, em troca de acesso a fundos de pensão, com Vaccari como interlocutor.",
+      "[reportado] (relato não corroborado)",
+      "Lupa, Poder360 (título)"
+     ],
+     [
+      "09/10",
+      "PF: Vorcaro \"não prestou depoimento com o teor relatado na matéria, tampouco entregou à instituição anexos, documentos ou informações com o conteúdo ali descrito\". PGR: não houve depoimento oral \"justamente por conta da rejeição da proposta\". UOL (via Lupa): o anexo não estava em nenhuma das três propostas (maio, junho, agosto) e os celulares apreendidos (2012 a nov/2025) não mencionam patrocínio do filme de Lula; há só uma mensagem de 2022 (\"Filme do Oliver Stone\" / \"Toppp\"). Oliver Stone nega ter recebido de Vorcaro.",
+      "[fato] (notas da PF e da PGR, citadas literalmente por vários veículos)",
+      "[Lupa](https://www.agencialupa.org/reportagem/2026/10/09/vorcaro-patrocinou-filme-sobre-lula-o-que-se-sabe-ate-agora/), [Brasil de Fato](https://www.brasildefato.com.br/2026/10/09/defesa-de-vorcaro-desconhece-audio-pf-e-pgr-desmentem-relato-da-veja-sobre-lula/), [CNN](https://www.cnnbrasil.com.br/blogs/jussara-soares/politica/pf-nega-que-vorcaro-tenha-relatado-verba-para-filme-de-lula-em-depoimento/), [Revista Oeste](https://revistaoeste.com/politica/relato-de-vorcaro-filme-lula-pf/)"
+     ],
+     [
+      "09/10",
+      "Campanha de Lula e PT anunciam 5 medidas: direito de resposta no TSE (0602772-67.2026.6.00.0000; pede retirada em 12 h e resposta na capa), queixa-crime contra Vorcaro, indenização de R$ 100 mil contra a Editora Abril e o jornalista Robson Bonin, pedido de retirada de vídeo do PL. Relator sorteado no TSE: Nunes Marques. Sem decisão encontrada.",
+      "[reportado] (2+ veículos)",
+      "[Congresso em Foco](https://www.congressoemfoco.com.br/noticia/123157/campanha-de-lula-ajuiza-5-acoes-contra-veja-apos-materia-sobre-vorcaro), [Jovem Pan](https://jovempan.com.br/politica/pt-prepara-pedido-de-direito-de-resposta-apos-materia-sobre-relacao-de-vorcaro-com-grupo-de-lula/), Revista Fórum"
+     ],
+     [
+      "09/10",
+      "Advogados do grupo Prerrogativas (Marco Aurélio de Carvalho e Reinaldo Santos de Almeida) pedem à PF que apure suposta articulação entre Vorcaro e aliados de Flávio: um HD com depoimento atribuído a Vorcaro teria sido entregue a terceiros, com promessa de prisão domiciliar em 2027 e soltura do pai. Os próprios autores dizem não ter tido acesso à gravação.",
+      "[reportado]; **alegação sem prova**, de grupo alinhado ao PT",
+      "[ICL](https://iclnoticias.com.br/pf-e-acionada-suspeita-de-trama-entre-vorcaro/), [Jornal Opção](https://www.jornalopcao.com.br/ultimas-noticias/pf-e-acionada-por-suspeita-de-armacao-eleitoral-entre-vorcaro-e-aliados-de-flavio-bolsonaro-877257/)"
+     ],
+     [
+      "09/10",
+      "Record cancela o debate de 11/10 por \"incompatibilidade\" de agendas, sem dizer de qual candidato.",
+      "[fato]",
+      "[Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/record-cancela-debate-entre-flavio-e-lula/), [Poder360](https://www.poder360.com.br/poder-eleicoes-2026/record-cancela-debate-entre-lula-e-flavio-marcado-para-domingo/) (título), gcmais"
+     ],
+     [
+      "09/10",
+      "Governo prorroga por 30 dias e **amplia** a desoneração da gasolina (de R$ 0,63 para R$ 0,89/l) e do etanol; anuncia subvenção extra de R$ 1,40/l ao diesel importado por 30 dias a partir de 13/10.",
+      "[fato] (Ministério da Fazenda)",
+      "U3"
+     ],
+     [
+      "09/10",
+      "Lula abre a campanha de rua em Ceilândia (DF): \"Esse país não será governado pelo sócio do Banco Master, pelos parentes do Vorcaro\"; \"vai ter muito debate na televisão\"; \"o país não voltará a ser governado pelo fascismo\".",
+      "[fato] (fala gravada, 3+ veículos)",
+      "[Metrópoles](https://www.metropoles.com/brasil/lula-ato-campanha-ceilandia-brasilia), [Vermelho](https://vermelho.org.br/2026/10/09/pais-nao-voltara-a-ser-governado-pelo-fascismo-diz-lula-em-ceilandia-df/), [Revista Fórum](https://revistaforum.com.br/politica/lula-em-ceilandia-bora-virada/)"
+     ],
+     [
+      "08/10 (divulgado 09/10)",
+      "**Corrigido na revisão de 12/10.** Não houve direito de resposta: o ministro André Mendonça mandou remover, em liminar, o vídeo de Lula no Instagram que atribuía a Flávio corte de R$ 200 bi em programas sociais (multa de R$ 10 mil por republicação), além de outras três peças (seção 1). O pedido de direito de resposta de Flávio segue pendente (defesas e parecer da PGE). A fonte única anterior (ND Mais) misturou remoção com direito de resposta.",
+      "[fato]",
+      "[SBT News](https://sbtnews.sbt.com.br/noticia/eleicoes/tse-manda-remover-posts-de-lula-janja-e-aliados), [Imirante](https://m.imirante.com/noticias/brasil/2026/10/09/ipolitica-tse-manda-apagar-posts-lula-janja-flavio-b)"
+     ],
+     [
+      "09/10",
+      "A **AGU** anuncia que pedirá à Veja direito de resposta e retificação da reportagem \"Primeiras Confissões\", a pedido da Casa Civil e do Ministério da Saúde. Instrumento legal, mas é órgão de Estado numa disputa da campanha com a imprensa (brecha 1).",
+      "[fato]",
+      "[Congresso em Foco](https://www.congressoemfoco.com.br/noticia/123153/agu-cobra-direito-de-resposta-a-veja-por-materia-envolvendo-vorcaro)"
+     ],
+     [
+      "09/10",
+      "Ibovespa fecha em recorde, 209.066,90 (+1,38%); dólar R$ 4,9856 (−0,76%).",
+      "[fato] (2 veículos)",
+      "U6"
+     ],
+     [
+      "10/10",
+      "Ratinho Jr. (PSD-PR) declara apoio a Flávio (\"Vamos caminhar juntos\"), depois de falar com Flávio (ligação de 08/10) e Tarcísio. Sandro Alex (PSD), candidato dele ao governo do PR, também. O PSD nacional segue neutro (Kassab).",
+      "[fato]",
+      "[Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/ratinho-junior-declara-apoio-a-flavio-bolsonaro-no-2o-turno/), [Estado de Minas](https://www.em.com.br/politica/2026/10/7518759-ratinho-jr-declara-apoio-a-flavio-no-2-turno-vamos-caminhar-juntos.html), Metrópoles, Revista Oeste; Poder360 data em 11/10 ([disputado], dia)"
+     ],
+     [
+      "10/10",
+      "Lula em Natal (ato previsto).",
+      "[reportado] (agenda)",
+      "Metrópoles"
+     ],
+     [
+      "11/10",
+      "Sem debate (Record cancelado).",
+      "[fato]",
+      "–"
+     ],
+     [
+      "12/10",
+      "Feriado (Nossa Senhora Aparecida): B3 fechada; o próximo pregão é 13/10.",
+      "[fato]",
+      "calendário B3"
+     ]
+    ]
+   },
+   "correcoes": [
+    "**Gasolina (seções 1, 3.3, 5 L4, 7 e Resumo):** a desoneração **foi prorrogada e ampliada** em 09/10. Onde está \"vence em 09/10 sem prorrogação confirmada\", vale o item U3.",
+    "**Debate da Record de 11/10 (seções 1 e 3.1):** **cancelado** em 09/10. Não houve debate em 11/10.",
+    "**Ratinho Jr. (seção 2.3, \"sem posição pós-1T\"):** declarou apoio a Flávio em 10/10 (U4).",
+    "**Cury (seções 1, 2.1, 2.4, 7 e Resumos):** apoiou Flávio em 08/10; corrigido no corpo na revisão de 12/10.",
+    "**TSE em 08/10 (U2, U5, L5):** não houve direito de resposta a Flávio; houve quatro liminares de remoção contra peças do campo de Lula e uma decisão de plenário contra posts de Flávio; corrigido no corpo (seções 1, 3.2) e abaixo.",
+    "**Vorcaro × filme de Lula (bloco \"Atualização após 09/10\"):** o trecho \"a defesa de Vorcaro diz ter mensagens e registros de saques\" **não se confirma**. O advogado atual, Daniel Bialski, disse \"desconheço a gravação e desconheço o teor dessa história\" (Brasil de Fato, citando ICL) e que Vorcaro \"não prestou nenhum novo depoimento à Polícia Federal\" sobre isso (Lupa). A Lupa não achou nenhuma afirmação da defesa sobre mensagens ou saques. As capturas de mensagens publicadas são da **Veja**, não da defesa. Data: o áudio saiu no site da Veja em **08/10** (ICL, Jornal Opção) e a capa em 09/10; [disputado] sobre qual é a \"data de publicação\"."
+   ],
+   "resumo": [
+    "Atualização de 12/10: gasolina prorrogada por 30 dias e ampliada para R$ 0,89/l (09/10), mais R$ 1,40/l no diesel importado a partir de 13/10, tudo vencendo depois do 2T; Record cancelou o debate de 11/10, então ainda não houve debate; Ratinho Jr. apoiou Flávio (10/10), com o PSD neutro; Helder e o MDB continuam sem posição pública.",
+    "Levantamento de 09/10 (o que mudou depois está no quadro de correções): Em cinco dias a direita organizada (Republicanos, União Brasil, PP, Novo, Podemos, Caiado, Zema, Tarcísio) fechou com Flávio; o centro ficou neutro (PSD, MDB, PSDB); Renan ficou neutro e hostil aos dois, e Cury, que em 04/10 disse que se calaria, apoiou Flávio em 08/10 com um termo de 8 pontos. No mesmo 08/10 o TSE mandou remover, em liminar, quatro peças do campo de Lula (campanha, Janja, Janones, Lindbergh) e, em plenário e por unanimidade, três posts de Flávio que ligavam Lula a facções. Lula mudou o tom contra o STF, colocou o comando no Nordeste e aposta na abstenção. O calendário entre os turnos tem quatro marcos com data: debates (11, 15, 18 e 23/10), votação da PEC 6x1 (prevista para 15/10), Bolsa Família reajustado (19/10) e fim da desoneração da gasolina (09/10, prorrogação não confirmada)."
+   ]
+  },
+  "apoios": {
+   "eliminados": {
+    "t": "tab",
+    "cab": [
+     "Candidato",
+     "% válidos 1T",
+     "Votos (aprox.)",
+     "Posição no 2T",
+     "Data",
+     "Fonte"
+    ],
+    "lin": [
+     [
+      "Augusto Cury (Avante)",
+      "2,89",
+      "~3,45 mi",
+      "**Flávio** (termo público de 8 pontos; \"não é um cheque em branco\"; sem cargo). Em 04/10 tinha dito \"me silencio completamente\"; em 10/09 condicionara o apoio a Flávio explicar o dinheiro do Dark Horse",
+      "08/10 (04/10 neutro)",
+      "DGABC/Estadão, SBT News, Poder360, Exame; Gazeta do Povo e Band (04/10)"
+     ],
+     [
+      "Renan Santos (Missão)",
+      "2,24",
+      "~2,68 mi",
+      "Neutro e hostil aos dois (\"bandidos\"); recusou o PL em 08/10; disse que \"a eleição é do Flávio\"",
+      "04/10 e 08/10",
+      "SBT, Gazeta do Povo"
+     ],
+     [
+      "Ronaldo Caiado (PSD)",
+      "2,18",
+      "~2,60 mi",
+      "**Flávio** (ato em Goiânia)",
+      "06/10",
+      "Gazeta do Povo"
+     ],
+     [
+      "Romeu Zema (Novo)",
+      "0,27",
+      "~0,33 mi",
+      "**Flávio** (\"voto contra o PT\")",
+      "05/10",
+      "InfoMoney, Band"
+     ],
+     [
+      "Samara (UP), Hertz Dias (PSTU), Edmilson Costa (PCB), Rui Costa Pimenta (PCO), Clariana Barão (DC), Wilson Grassi (Democrata)",
+      "0,22 somados",
+      "~0,26 mi",
+      "Nenhuma posição encontrada",
+      "–",
+      "[não verificado]"
+     ]
+    ]
+   },
+   "partidos": {
+    "t": "tab",
+    "cab": [
+     "Partido",
+     "Posição",
+     "Data",
+     "Detalhe"
+    ],
+    "lin": [
+     [
+      "PL",
+      "Flávio",
+      "–",
+      "candidato"
+     ],
+     [
+      "Republicanos",
+      "Flávio",
+      "07/10",
+      "sem fechar questão; Hugo Motta (PB) deve ficar com Lula; Tarcísio pressionou"
+     ],
+     [
+      "União Brasil + PP (federação)",
+      "Flávio",
+      "06/10",
+      "\"fecharam questão\" (Tereza Cristina); Ciro Nogueira (PP), derrotado ao Senado no PI e alvo da PF no caso Master (FB62), defendeu o apoio em 05/10"
+     ],
+     [
+      "Novo",
+      "Flávio",
+      "05/10",
+      "via Zema e Girão"
+     ],
+     [
+      "Podemos",
+      "Flávio",
+      "08/10",
+      "[reportado] Estadão Conteúdo e O Tempo; neutro no 1º turno (04/08)"
+     ],
+     [
+      "PT, PCdoB, PV, PSB, PDT, PSOL, Rede",
+      "Lula",
+      "mantêm o 1º turno",
+      "nenhuma adesão nacional nova até 07/10 (O Tempo)"
+     ],
+     [
+      "PSD",
+      "Neutro, diretórios liberados",
+      "06/10",
+      "Caiado (Flávio) e Mitidieri (SE, Lula) em lados opostos"
+     ],
+     [
+      "MDB",
+      "Sem posição nacional, filiados liberados",
+      "até 08/10",
+      "Temer e Daniel Vilela (GO) com Flávio; maioria dos diretórios pró-Flávio segundo integrantes ([reportado]); Helder Barbalho disse em 01/06 que tendia a ser \"solidário\" a Lula, sem fala no 2T encontrada"
+     ],
+     [
+      "PSDB",
+      "Neutro, filiados liberados",
+      "08/10",
+      "nota de Aécio; só \"pequena parcela\" pró-Lula"
+     ],
+     [
+      "Avante, Missão",
+      "Sem orientação",
+      "04/10",
+      "seguem os candidatos"
+     ]
+    ]
+   },
+   "governadores": {
+    "t": "tab",
+    "cab": [
+     "Lado",
+     "Nomes (UF, partido)"
+    ],
+    "lin": [
+     [
+      "Flávio",
+      "Tarcísio (SP, Rep.; \"apoio incondicional\", agenda em ao menos 8 cidades fora de SP, [reportado] BNews), Cleitinho (MG, Rep.), Otaviano Pivetta (MT, Rep.), Eduardo Riedel (MS, PP), Jorginho Mello (SC, PL), Luciano Zucco (RS, PL), Sergio Moro (PR, PL), Marcos Rogério (RO, PL), Arthur Henrique (RR, PL), Dr. Daniel (PA, Podemos), Daniel Vilela (GO, MDB). Ex-governadores: Caiado, Zema."
+     ],
+     [
+      "Lula",
+      "Jerônimo Rodrigues (BA, PT), Elmano de Freitas (CE, PT), Rafael Fonteles (PI, PT), Fábio Mitidieri (SE, PSD), Lucas Ribeiro (PB, PP, contra a orientação da federação). Senadores eleitos Rui Costa e Jaques Wagner (BA) e Camilo Santana na coordenação. Wagner foi alvo da 9ª fase da Operação Compliance Zero (caso Master, 18/06/2026; US$ 49 mil apreendidos num quarto de hotel em Brasília), deixou a liderança do governo no Senado em 24/06, nega irregularidade e não é réu; em 01/08 Lula pediu voto para ele ([IstoÉ Dinheiro](https://istoedinheiro.com.br/jaques-wagner-deixa-lideranca-do-governo-no-senado), [Band](https://www.band.com.br/politica/noticias/jaques-wagner-nega-irregularidades-e-justifica-dolares-apreendidos-pela-pf-202606181802), [Jornal de Brasília](https://jornaldebrasilia.com.br/noticias/politica-e-poder/lula-pede-voto-para-jaques-wagner-em-meio-a-crise-do-master-e-chama-aliado-de-lider-do-governo/))."
+     ],
+     [
+      "Neutros",
+      "JHC (AL, PSDB), Eduardo Braide (MA, PSD), Dr. Furlan (AP, PSD), Raquel Lyra (PE, PSD, cortejada pelos dois)."
+     ],
+     [
+      "Sem posição pós-1T encontrada (em 09/10)",
+      "Ratinho Jr. (PR, PSD, sai do governo; **apoiou Flávio em 10/10**, U4): em 29/09 disse que \"tende\" a apoiar Flávio num 2º turno e em agosto que iria \"com quem for\" para derrotar Lula ([Esmael Morais](https://www.esmaelmorais.com.br/ratinho-junior-apoio-flavio-bolsonaro-contra-lula/), [Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/ratinho-junior-diz-que-vai-com-quem-for-para-derrotar-lula/)); a disputa com Moro no PR complica. Eduardo Leite (RS, PSD): inclina-se a não se manifestar (06/10). Helder Barbalho (MDB, senador eleito pelo PA): nada no 2T."
+     ],
+     [
+      "Prefeitos e ex-prefeitos",
+      "Ricardo Nunes (SP), Eduardo Paes (disputa o 2T ao governo do RJ contra Douglas Ruas, PL, que teve 49,31% a 42,72%): nenhuma posição presidencial encontrada [não verificado]. **João Campos não é mais prefeito**: deixou o Recife para disputar o governo de Pernambuco e perdeu no 1º turno para Raquel Lyra (PSD), reeleita com 53,27% contra 44,78% ([CartaCapital](https://www.cartacapital.com.br/?p=636906), [Acessa/Agência Brasil](https://www.acessa.com/politica/2026/10/341634-raquel-lyra-e-reeleita-governadora-em-pernambuco-no-primeiro-turno.html)); preside o PSB, que está com Lula desde o 1º turno."
+     ]
+    ]
+   },
+   "governadores_base": "Base: [Gazeta do Povo 06/10](https://www.gazetadopovo.com.br/eleicoes/2026/flavio-avanca-segundo-turno-apoio-governadores/) (10 a 5 para Flávio entre eleitos/reeleitos já definidos, 4 neutros), completada pela Band.",
+   "novos": {
+    "t": "tab",
+    "cab": [
+     "Nome",
+     "Lado",
+     "Data",
+     "Status"
+    ],
+    "lin": [
+     [
+      "Ratinho Jr. (PSD, gov. PR) e Sandro Alex (PSD-PR)",
+      "Flávio",
+      "10/10",
+      "[fato]"
+     ],
+     [
+      "PSD nacional",
+      "neutro (Kassab; vale também para os 2T estaduais)",
+      "confirmado",
+      "[reportado]"
+     ],
+     [
+      "Helder Barbalho (MDB, senador eleito pelo PA)",
+      "**sem posição pública**; Diário do Poder (~09/10) registra o \"silêncio\"; o governador eleito do PA, Dr. Daniel (Podemos), está com Flávio. Em 2022 Helder apoiou Lula.",
+      "–",
+      "[reportado] (fonte única)"
+     ],
+     [
+      "MDB nacional",
+      "nenhuma decisão de 2º turno encontrada; em março, 23 diretórios pediram neutralidade",
+      "–",
+      "[não verificado]"
+     ],
+     [
+      "Renan Santos, PSDB, Eduardo Leite, Michelle Bolsonaro",
+      "nada novo encontrado",
+      "–",
+      "[não verificado]"
+     ]
+    ]
+   },
+   "matriz": [
+    {
+     "t": "p",
+     "md": "A matriz em uso (`simulador/resultado_1t.py`, `TRANSF_LF_2026`) vem da Quaest de 2-3/10 (Caiado, Renan, Cury) e de 24-27/09 (Zema), linhas [Lula, Flávio, fora]; `transferencia_regional.py` só redistribui essas linhas entre UFs pelo lean da UF, mantendo o nacional. Aplicando a matriz às fatias do 1º turno (cálculo meu, sem abstenção diferencial e sem pesquisas de 2º turno, que o modelo mistura com peso 0,5):"
+    },
+    {
+     "t": "tab",
+     "cab": [
+      "Eliminado",
+      "% válidos",
+      "Linha [Lula, Flávio, fora]",
+      "Vai a Lula (p.p.)",
+      "Vai a Flávio (p.p.)",
+      "Fica fora (p.p.)",
+      "Apoio declarado"
+     ],
+     "lin": [
+      [
+       "Cury",
+       "2,89",
+       "0,235 / 0,347 / 0,418",
+       "0,68",
+       "1,00",
+       "1,21",
+       "Flávio (08/10; neutro até então)"
+      ],
+      [
+       "Renan",
+       "2,24",
+       "0,112 / 0,612 / 0,276",
+       "0,25",
+       "1,37",
+       "0,62",
+       "neutro, hostil aos dois"
+      ],
+      [
+       "Caiado",
+       "2,18",
+       "0,194 / 0,439 / 0,367",
+       "0,42",
+       "0,96",
+       "0,80",
+       "Flávio"
+      ],
+      [
+       "Zema",
+       "0,27",
+       "0,09 / 0,81 / 0,10",
+       "0,02",
+       "0,22",
+       "0,03",
+       "Flávio"
+      ],
+      [
+       "Outros",
+       "0,22",
+       "0,30 / 0,30 / 0,40",
+       "0,07",
+       "0,07",
+       "0,09",
+       "nenhum"
+      ],
+      [
+       "**Total**",
+       "7,80",
+       "",
+       "**1,44**",
+       "**3,62**",
+       "2,74",
+       ""
+      ]
+     ]
+    },
+    {
+     "t": "p",
+     "md": "Resultado da via de transferência pura: Lula 46,60 × Flávio 50,65, ou **Lula 47,9% dos válidos**. Flávio ganha ~2,2 p.p. líquidos dos eliminados, o equivalente a ~2,6 milhões de votos, que se somam aos 2,26 milhões da vantagem do 1º turno."
+    },
+    {
+     "t": "p",
+     "md": "Implicações:"
+    },
+    {
+     "t": "ol",
+     "itens": [
+      "**Os apoios de Caiado e Zema confirmam a matriz, não a mudam.** As linhas deles já davam 44% e 81% a Flávio antes do anúncio. O que o anúncio pode fazer é tirar gente da coluna \"fora\" (37% dos eleitores de Caiado). Não há estimativa publicada desse efeito para 2026; em 2022 não há dado comparável na pasta. Leitura: [inferência], efeito provavelmente de décimos.",
+      "**O bloco de Cury** (2,89%, 42% \"fora\", e a linha mais favorável a Lula entre os eliminados) era o maior sem orientação até 08/10, quando Cury apoiou Flávio. A BBC/O Povo descreve esse eleitorado como \"mais aberto a Lula\" ([O Povo/BBC](https://www.opovo.com.br/agencia/bbc/2026/10/05/amp/perda-de-votos-no-nordeste-e-outros-obstaculos-de-lula-para-tentar-virada-inedita-no-2-turno.html)), mas a própria matriz dá 35% a Flávio contra 23% a Lula. O apoio confirma a direção da linha; o efeito possível é tirar gente da coluna \"fora\", sem estimativa publicada. Com isso, Cury, Caiado e Zema (5,34% dos válidos) estão com Flávio; Renan (2,24%) ficou neutro; nenhum eliminado com mais de 0,1% apoiou Lula.",
+      "**Renan:** a neutralidade dele não altera a linha (61% Flávio), que é a mais pró-Flávio depois de Zema; a hostilidade pública ao PL pode aumentar a parcela \"fora\" (27%).",
+      "**Partidos de centro neutros** (PSD, MDB, PSDB) não entram na matriz, que é por candidato. O efeito deles passa pelos palanques estaduais: Mitidieri (SE) e Lucas Ribeiro (PB) com Lula, a maioria do Sul, Sudeste e Centro-Oeste com Flávio. Isso é coerente com o `beta` regional do modelo (eleitor de terceira via em UF onde o PT é fraco vai mais para o adversário do PT).",
+      "**Nada do que aconteceu até 09/10 pede mudança na matriz.** A informação nova relevante para o modelo virá das pesquisas pós-1º turno com cruzamento por voto no 1º turno (com o outro agente)."
+     ]
+    },
+    {
+     "t": "p",
+     "md": "**Resumo.** Flávio somou quase todo o campo de direita e centro-direita organizado; Lula manteve a esquerda e ganhou só governadores do Nordeste, dois deles fora do PT. Dos dois maiores eliminados, Cury apoiou Flávio em 08/10 (depois de dizer em 04/10 que se calaria) e Renan ficou neutro. Pela matriz do modelo, a transferência sozinha leva a Lula 47,9% dos válidos; os apoios declarados confirmam a direção que a matriz já tinha e não pedem ajuste."
+    }
+   ],
+   "resumo": [
+    "Flávio somou quase todo o campo de direita e centro-direita organizado; Lula manteve a esquerda e ganhou só governadores do Nordeste, dois deles fora do PT. Dos dois maiores eliminados, Cury apoiou Flávio em 08/10 (depois de dizer em 04/10 que se calaria) e Renan ficou neutro. Pela matriz do modelo, a transferência sozinha leva a Lula 47,9% dos válidos; os apoios declarados confirmam a direção que a matriz já tinha e não pedem ajuste.",
+    "Flávio recebeu Caiado (06/10), Zema (05/10), Cury (08/10, termo de 8 pontos), Tarcísio e mais 10 governadores, Republicanos (07/10), União Brasil + PP (06/10), Novo e Podemos (08/10, reportado), e depois Ratinho Jr. (10/10, U4). Lula manteve PT, PSB, PDT, PSOL, PCdoB, PV e Rede e tem 5 governadores, todos no Nordeste (BA, CE, PI, SE, PB). Ficaram neutros PSD, MDB, PSDB, Renan, Eduardo Leite e mais 4 governadores."
+   ]
+  },
+  "justica": {
+   "decisoes": {
+    "t": "tab",
+    "cab": [
+     "Data",
+     "Órgão",
+     "Decisão",
+     "Leitura"
+    ],
+    "lin": [
+     [
+      "07/10",
+      "TSE (Nunes Marques, presidente)",
+      "Nega direito de resposta a Lula; mantém vídeos de Flávio sobre Moraes, Lulinha/\"Careca do INSS\" e endividamento: não haveria afirmação \"flagrantemente inverídica\", e sim \"leitura política sobre fatos\" do debate público.",
+      "Liminar, não julga se as acusações são verdadeiras. Nunes Marques foi indicado ao STF por Bolsonaro (2020): é fato, não prova de viés; vale a mesma régua para Gilmar Mendes (indicado por FHC), que validou o reajuste do Bolsa Família no STF em setembro, a pedido da AGU ([Gazeta do Povo](https://www.gazetadopovo.com.br/republica/gilmar-mendes-valida-reajuste-do-bolsa-familia-feito-por-lula-antes-das-eleicoes/))."
+     ],
+     [
+      "08/10",
+      "TSE (Mendonça e Nunes Marques, liminares)",
+      "Remoção de quatro peças do campo de Lula: vídeo dos \"R$ 200 bi\" e peça \"Se Flávio vence, você perde\" (campanha), cinco posts de Janones e Lindbergh (\"70 anos\", \"12 horas\", Petrobras), vídeo de Janja. Direito de resposta pedido por Flávio **pendente** (defesas e parecer da PGE).",
+      "Liminares, a referendar. Três das quatro decisões atingem porta-vozes (brecha 1). Para o vídeo dos \"R$ 200 bi\" há base **reportada** (Folha, out.: estudos de até R$ 250 bi; Correio Braziliense, abr.: ~2% do PIB), então \"sem fundamento concreto\" é contestável para essa peça; para \"70 anos\" e \"12 horas\" não achei base."
+     ],
+     [
+      "08/10",
+      "TSE (plenário, 7×0, relator Mendonça)",
+      "Flávio deve retirar em 24 h três posts que ligam Lula ao PCC e ao CV (um com IA sem rótulo).",
+      "Decisão colegiada. Mesma linha de agosto (5×2 no plenário) e da condenação de 28/09 (Nunes Marques, multa de R$ 5 mil)."
+     ],
+     [
+      "02/09",
+      "TSE (Nunes Marques)",
+      "Nega a Flávio a retirada da propaganda do PT que o liga ao Master: crítica política sem \"premissa objetivamente falsa\"; cita que o próprio Flávio admitiu pedir dinheiro a Vorcaro.",
+      "[fato] ([O Hoje](https://ohoje.com/2026/09/02/tse-nega-pedido-de-flavio-bolsonaro-para-retirar-campanha-de-lula-que-associa-o-senador-ao-master/), [Imirante](https://m.imirante.com/noticias/brasil/2026/09/02/ipolitica-nunes-marques-nega-acao-de-flavio-bolsonaro-contra-lula)). Mesma régua: as decisões de 07 e 08/10 que favoreceram Flávio são de ministros indicados por Bolsonaro, e o mesmo ministro decidiu contra ele em 02/09 e 28/09; é fato, não prova de viés em nenhum sentido."
+     ],
+     [
+      "set-out",
+      "TSE (Mendonça relator)",
+      "Ação de Renan Santos pede suspender o reajuste do Bolsa Família até a posse; sem decisão de mérito encontrada. A do deputado Zé Trovão (PL-SC) foi extinta por ilegitimidade.",
+      "[fato] para a distribuição; desfecho [não verificado]."
+     ],
+     [
+      "08-11/10",
+      "STF (Moraes) / PGR",
+      "Pedido de Jair para receber Flávio vai à PGR; suspensão de visitas de 90 dias termina em 11/10.",
+      "[reportado] Metrópoles."
+     ],
+     [
+      "depois do 2T",
+      "STF (Nunes Marques)",
+      "Revisão criminal pedida pela defesa de Jair deve ser julgada só após o 2º turno.",
+      "[reportado] [InfoMoney](https://www.infomoney.com.br/politica/vitoria-de-flavio-abriria-caminho-para-libertar-bolsonaro-entenda-as-possibilidades/)."
+     ],
+     [
+      "08/10",
+      "Debate jurídico",
+      "Juristas dizem que o STF já tem precedente contra indulto/anistia a crimes contra o Estado democrático de direito, o que dificulta a promessa de Flávio de soltar o pai antes da posse.",
+      "[Conjur 08/10](https://conjur.com.br/2026-out-08/perdao-de-flavio-a-jair-bolsonaro-esbarra-em-controle-de-constitucionalidade-do-stf/)."
+     ],
+     [
+      "–",
+      "PF",
+      "Nenhuma operação nova ligada a candidatos entre 04 e 09/10 encontrada. Crise do STF (Moraes × Mendonça, relatório da PF sobre Vorcaro) segue com pedido de vista de Dino (90 dias).",
+      "[não verificado] para fatos novos."
+     ]
+    ]
+   },
+   "atualizacao": "**TSE**: (a) em 08/10, quatro liminares de remoção contra peças do campo de Lula (Mendonça e Nunes Marques) e uma decisão unânime do plenário contra três posts de Flávio (seção 1); o direito de resposta pedido por Flávio está pendente; (b) ações de Lula contra a Veja e um vídeo do PL, relator Nunes Marques, pendentes; (c) nada novo encontrado sobre a ação de Renan contra o reajuste do Bolsa Família.",
+   "resumo": [
+    "O TSE manteve os vídeos de Flávio que ligam Lula a Moraes e Lulinha ao INSS (liminar, 07/10); em 08/10 mandou remover, em liminares de Mendonça e Nunes Marques, quatro peças do campo de Lula (direito de resposta de Flávio ainda pendente) e, no plenário, por unanimidade, três posts de Flávio que ligam Lula a facções. O reajuste do Bolsa Família está validado no STF (Gilmar), e a ação de Renan no TSE está pendente.",
+    "Em 08/10, quatro liminares contra peças do campo de Lula (direito de resposta de Flávio pendente) e decisão unânime do plenário contra três posts de Flávio sobre facções; ações de Lula contra a Veja pendentes."
+   ]
+  },
+  "mercados": {
+   "previsao": {
+    "t": "tab",
+    "cab": [
+     "Momento",
+     "Polymarket Flávio",
+     "Polymarket Lula",
+     "Kalshi Flávio",
+     "Kalshi Lula",
+     "Fonte"
+    ],
+    "lin": [
+     [
+      "01/10",
+      "62,3%",
+      "36,5%",
+      "–",
+      "–",
+      "Rio Times"
+     ],
+     [
+      "03/10 (fech. diário)",
+      "59,4%",
+      "40,5%",
+      "–",
+      "–",
+      "`simulador/data/polymarket_historico_diario.csv`"
+     ],
+     [
+      "04/10, manhã",
+      "63%",
+      "36,5%",
+      "~63-64¢",
+      "~36¢",
+      "Rio Times; repo `mercado_ao_vivo.csv` 17h38 UTC: 63,05% × 37,5%"
+     ],
+     [
+      "05/10, após apuração",
+      "84,8%",
+      "14,5%",
+      "82%",
+      "18%",
+      "Rio Times"
+     ],
+     [
+      "06/10, ~14h ET",
+      "84,3%",
+      "15,5%",
+      "–",
+      "–",
+      "Rio Times"
+     ],
+     [
+      "08/10, 04h06 ET",
+      "84,0%",
+      "15,5%",
+      "–",
+      "–",
+      "Rio Times"
+     ],
+     [
+      "**09/10, 05h37 UTC**",
+      "**85,75%** (bid 85,7 / ask 85,8)",
+      "**13,5%**",
+      "**88¢** (bid 87 / ask 88)",
+      "**13¢**",
+      "API Gamma e API Kalshi, consulta direta minha"
+     ]
+    ]
+   },
+   "previsao_12_10": {
+    "t": "tab",
+    "cab": [
+     "Momento",
+     "Polymarket Flávio",
+     "Polymarket Lula",
+     "Kalshi Flávio",
+     "Kalshi Lula",
+     "Fonte"
+    ],
+    "lin": [
+     [
+      "09/10, 05h37 UTC (anterior)",
+      "85,75%",
+      "13,5%",
+      "88¢",
+      "13¢",
+      "acima"
+     ],
+     [
+      "**12/10, 01h11 UTC** (11/10, 22h11 Brasília)",
+      "**86,05%** (bid 86,0 / ask 86,1; último 86,1)",
+      "**12,5%** (bid 12 / ask 13)",
+      "**87¢** (bid 87 / ask 88; último 87)",
+      "**13¢** (bid 12 / ask 13)",
+      "API Gamma (`brazil-presidential-election`) e API Kalshi (`KXBRPRES`), consulta direta minha"
+     ]
+    ]
+   },
+   "previsao_notas": [
+    "Volume do mercado principal da Polymarket: **US$ 178,0 mi** (API, 09/10). Mercado de margem (Polymarket, ~US$ 7.500, raso): Flávio por 4-8 p.p. 49,5%; Flávio por menos de 4 p.p. 33,5%; Lula por menos de 4 p.p. 13% (08/10, Rio Times). Outros (05/10, Rio Times): Trump apoia Flávio antes do 2T 55%; Moraes sai do STF até o fim de 2026 ~20% (Polymarket) e 26% (Kalshi).",
+    "Cuidados: contratos eleitorais estão proibidos no Brasil desde 04/05/2026 (Res. CMN 5.298) e a Anatel bloqueou Polymarket e Kalshi em 24/04, então o preço é formado sobretudo fora do Brasil; o mesmo mercado deu 71-72% a Lula em 1º no 1º turno, e errou ([Rio Times](https://www.riotimesonline.com/brazil-runoff-prediction-markets-polymarket-kalshi-odds/); `simulador/AVALIACAO_1T.md`, Brier 0,51-0,52). O salto de ~63% para ~85% veio do resultado do 1º turno, não de evento de campanha.",
+    "Volume do evento principal da Polymarket: **US$ 180,2 mi** (era 178,0 em 09/10). Kalshi: ~2,64 mi de contratos em Flávio e ~2,79 mi em Lula. Movimento de 09/10 a 12/10: praticamente parado (±1 p.p.), apesar de três pesquisas novas pró-Flávio e da reportagem da Veja. As ressalvas da seção 4.1 valem (mercado proibido e bloqueado no Brasil; errou o 1º colocado do 1T)."
+   ],
+   "ativos": {
+    "t": "tab",
+    "cab": [
+     "Data",
+     "Ibovespa",
+     "Var.",
+     "USD/BRL",
+     "Var.",
+     "Outros",
+     "Fonte"
+    ],
+    "lin": [
+     [
+      "05/10",
+      "206.912 (recorde; máx. intradia citada entre 207.954 e 209.605, [disputado])",
+      "+7,7% (Bloomberg Línea fala em +9% no intradia)",
+      "~R$ 5,00",
+      "−4,1%",
+      "EWZ +13,3% a +13,7%; DIs −100 pb ou mais",
+      "[Arevista](https://arevista.com.br/economia/flavio-bolsonaro-largou-na-frente-ibovespa-explodiu-e-agora-investidores-encaram-a-pergunta-de-r-372-bilhoes/), [Bloomberg Línea](https://www.bloomberglinea.com.br/mercados/lideranca-de-flavio-no-primeiro-turno-abre-espaco-para-rali-do-mercado-dizem-gestores/), [24/7 Wall St](https://247wallst.com/investing/2026/10/05/stanley-druckenmillers-brazil-bet-appears-to-pay-off-after-election-shock-brazils-biggest-etf-soars-13-on-the-news/)"
+     ],
+     [
+      "06/10",
+      "205.835",
+      "−0,52%",
+      "menor em ~5 meses",
+      "queda",
+      "realização de lucros",
+      "[CNN Brasil](https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/)"
+     ],
+     [
+      "07/10",
+      "204.302",
+      "−0,7%",
+      "–",
+      "–",
+      "Vale em queda",
+      "Rio Times (manchete)"
+     ],
+     [
+      "08/10",
+      "206.220",
+      "+0,94%",
+      "R$ 5,024",
+      "+0,17%",
+      "DI jan/28 12,54% (−5 pb), jan/35 12,60% (−18 pb); dólar −3,70% desde o 1º turno, −8,47% no ano",
+      "[Rio Times](https://riotimesonline.com/brazil-markets-ibovespa-real-thursday-october-8-2026), [Terra](https://terra.com.br/economia/dolar-tem-variacao-modesta-ante-o-real-com-eleicao-no-radar,d59632ef54a750b99c4f1057763716df20tas970.html)"
+     ]
+    ]
+   },
+   "ativos_12_10": {
+    "t": "tab",
+    "cab": [
+     "Data",
+     "Ibovespa",
+     "Var.",
+     "USD/BRL",
+     "Var.",
+     "Fonte"
+    ],
+    "lin": [
+     [
+      "08/10",
+      "206.220",
+      "+0,94%",
+      "R$ 5,024",
+      "+0,17%",
+      "acima"
+     ],
+     [
+      "**09/10**",
+      "**209.066,90** (recorde de fechamento e intradia)",
+      "**+1,38%**",
+      "**R$ 4,9856**",
+      "**−0,76%**",
+      "[Forbes](https://forbes.com.br/forbes-money/2026/10/ibovespa-recorde-dolar-abaixo-5-reais-pesquisas-eleitorais/), [CNN](https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-9-outubro-2026/) (R$ 4,98), [Rio Times](https://www.riotimesonline.com/brazil-markets-ibovespa-real-friday-october-9-2026/) (~R$ 4,99)"
+     ],
+     [
+      "10-12/10",
+      "sem pregão (fim de semana e feriado de 12/10)",
+      "–",
+      "–",
+      "–",
+      "–"
+     ]
+    ]
+   },
+   "ativos_notas": [
+    "Motivos declarados em 08/10: petróleo em alta (Petrobras), pesquisa PoderData com Flávio 53 × 47 nos válidos, expectativa de ajuste fiscal com Flávio \"embora ele não tenha apresentado propostas concretas de ajuste\" (Terra).",
+    "Alta na semana [disputado]: CNN \"8%\", Rio Times \"mais de 8%\", Forbes \"11,17%\". Pela conta com o fechamento de antes do 1T citado pelo Rio Times (192.115), dá **+8,8%**; os 11,17% da Forbes não batem com esse ponto de partida. Dólar na semana: −4,44% (Forbes). Motivo declarado pela imprensa: pesquisas com Flávio à frente no 2T (CNN, Forbes). Inflação a 4,58%, acima do teto (Rio Times)."
+   ],
+   "bancos": {
+    "t": "tab",
+    "cab": [
+     "Instituição",
+     "Data",
+     "Visão",
+     "Condição declarada"
+    ],
+    "lin": [
+     [
+      "JPMorgan",
+      "após 05/10",
+      "Real e juros em overweight; dólar R$ 4,70-4,80; ações overweight, MSCI Brasil +12% a +20%; P/L de 8,9x para 10,9x",
+      "\"cenário político favorável\" e vencedor com compromissos fiscais claros e caminho \"politicamente crível\"; estresse: opções compatíveis com ~R$ 5,50 se o resultado for lido como contrário à consolidação ([InfoMoney](https://www.infomoney.com.br/mercados/dolar-a-r-490-ou-r-550-jpmorgan-traca-cenarios-para-cambio-com-eleicao-no-brasil/), [BP Money](https://bpmoney.com.br/mercado/cambio/jpmorgan-eleva-aposta-real-dolar-4-70-4-80/))"
+     ],
+     [
+      "Goldman Sachs",
+      "07/10",
+      "Real pode seguir apreciando; R$ 4,50-4,80; juros como principal aposta",
+      "cenário \"market-friendly\" de disciplina fiscal; cita 2018 (real se valorizou entre os turnos). O \"R$ 5,80 se o ajuste não andar\" vem de coluna, não do relatório [não verificado] ([InfoMoney](https://www.infomoney.com.br/mercados/o-que-os-bancos-estrangeiros-esperam-da-bolsa-e-do-dolar-apos-1o-turno/), [Brazil Economy](https://brazileconomy.com.br/economia/2026/10/goldman-sachs-ve-juros-como-principal-aposta-para-reacao-a-eleicao-presidencial/))"
+     ],
+     [
+      "Morgan Stanley",
+      "07/10",
+      "Brasil overweight; +15% a +20% até o fim de 2026; otimista: Ibovespa 250 mil e R$ 4,50",
+      "queda de juros e de prêmio de risco; migração da renda fixa para ações"
+     ],
+     [
+      "Moody's",
+      "07/10",
+      "vencedor herda fiscal pior; mais de 90% do orçamento vinculado",
+      "execução e Congresso indefinidos nos dois cenários"
+     ],
+     [
+      "XP, BTG",
+      "–",
+      "nada pós-1T encontrado",
+      "[não verificado]"
+     ]
+    ]
+   },
+   "bancos_notas": [
+    "O que os bancos **não** dizem: nenhum condiciona a tese a um plano fiscal publicado por Flávio, porque não existe plano com números (o programa não quantifica economias nem o custo dos cortes de impostos, segundo a Forbes). O preço embute a **expectativa** de ajuste. As duas notícias de 07-08/10 puxam em sentidos opostos para essa expectativa: a Folha diz que a equipe estuda R$ 250 bi de desindexação, e Flávio e Sachsida negam cortes de aposentadoria e BPC e privatização das três estatais, enquanto Sachsida fala de ajuste \"focado nos excessos\" e em supersalários (ver F1 e F2 na seção 5). Mesma régua para o outro lado: a nota da Moody's que espera \"manutenção do arcabouço\" com Lula convive com medidas pré-eleitorais pagas com receita de petróleo **projetada** (L4) e com ~R$ 22 bi/ano a mais de Bolsa Família a partir de 2027, sem fonte de custeio publicada.",
+    "**Resumo.** Mercados de previsão: Flávio 85,75% (Polymarket) e 88% (Kalshi) em 09/10, contra ~63% na manhã do 1º turno. Ativos: o rali de 05/10 (Ibovespa +7,7%, dólar −4,1%, EWZ +13%) se manteve, e o dólar está em ~R$ 5,02. Os bancos condicionam tudo a um compromisso fiscal crível que nenhum candidato detalhou: o mercado precifica um ajuste que Flávio não detalhou (e cujas partes mais impopulares ele nega), e a expectativa de arcabouço com Lula convive com gasto novo financiado por receita projetada."
+   ],
+   "resumo": [
+    "Mercados de previsão: Flávio 85,75% (Polymarket) e 88% (Kalshi) em 09/10, contra ~63% na manhã do 1º turno. Ativos: o rali de 05/10 (Ibovespa +7,7%, dólar −4,1%, EWZ +13%) se manteve, e o dólar está em ~R$ 5,02. Os bancos condicionam tudo a um compromisso fiscal crível que nenhum candidato detalhou: o mercado precifica um ajuste que Flávio não detalhou (e cujas partes mais impopulares ele nega), e a expectativa de arcabouço com Lula convive com gasto novo financiado por receita projetada.",
+    "Polymarket Flávio 86,05% × Lula 12,5% (US$ 180,2 mi); Kalshi 87 × 13; Ibovespa recorde de 209.067 em 09/10 (+1,38%) e dólar R$ 4,99 (−0,76%); sem pregão até 13/10."
+   ]
+  },
+  "indireto": {
+   "checklist": "Mesmas perguntas do checklist do CLAUDE.md para todos: (1) o que foi dito ou feito; (2) quem perderia voto ou dinheiro se dissesse direto; (3) leituras por público e saída de \"não foi isso\"; (4) de quem nunca fala mal; (5) benefício antes e conta depois; e então a contra-evidência e a força da leitura (forte, média, fraca), que só sobe com ato ou número verificável.",
+   "regra": [
+    "**Forte**: (a) o fato central está em documento, ato oficial, fala gravada ou **decisão colegiada**; (b) o elemento indireto (timing, duplicidade, seletividade, insinuação) aparece nos próprios fatos, não só na inferência; (c) nenhuma contra-evidência com número explica a parte central (no caso de benefício: há ampliação ou ganho real dentro da janela, não só reposição).",
+    "**Média**: falta um dos três: fato central só reportado (mesmo em 2+ veículos, sem documento), decisão apenas **liminar monocrática**, ausência apoiada só em busca limitada, ou contra-evidência com número que explica parte relevante.",
+    "**Fraca**: a contra-evidência explica a maior parte, ou a tensão é de ênfase, sem contradição literal."
+   ],
+   "placar": {
+    "colunas": [
+     "Flávio",
+     "Lula"
+    ],
+    "linhas": [
+     {
+      "forca": "Forte",
+      "flavio": [
+       "F6"
+      ],
+      "lula": [
+       "L4"
+      ]
+     },
+     {
+      "forca": "Média",
+      "flavio": [
+       "F1",
+       "F2",
+       "F3",
+       "F5",
+       "F7"
+      ],
+      "lula": [
+       "L1",
+       "L2",
+       "L3b",
+       "L5",
+       "L6"
+      ]
+     },
+     {
+      "forca": "Fraca",
+      "flavio": [
+       "F4"
+      ],
+      "lula": [
+       "L3a"
+      ]
+     }
+    ]
+   },
+   "placar_notas": [
+    "O que mudou desde 12/10 de manhã: F2 forte → média; F6 entrou como forte; F7 entrou como média; L3 virou L3a (fraca) e L3b (média); L5 e L6 mantiveram \"média\" com os fatos corrigidos. Total: 7 casos para cada lado (contando L3a e L3b separados). O placar depende da seleção (brecha 9) e da regra R1; com a regra de O para liminares (contar como forte), L5 subiria e Lula ficaria com 2 fortes; com a regra de G para F2 (dois veículos bastam), Flávio também ficaria com 2."
+   ],
+   "espelho": [
+    "Espelho por frase: \"Lula muda de posição sobre o STF quando o custo eleitoral aparece\" e \"Flávio muda de posição sobre o PP de Ciro quando o benefício eleitoral aparece\" são a mesma frase; as duas ficaram como \"média\". \"Lula usa o Master contra Flávio com Wagner no palanque\" (L6) e \"Flávio usa o Master contra Lula com Ciro na aliança\" (F5) também: as duas médias.",
+    "Por que cada lado tem um \"forte\": L4 e F6 são os dois casos em que o fato central está em ato oficial ou decisão colegiada e a contra-evidência não explica a parte central. F2 caiu para média porque o fato central (o estudo) é só reportado; L5 fica em média porque as decisões contra o campo de Lula são liminares.",
+    "**O placar depende da seleção** (brecha 9): escolhi os temas mais citados na semana, e a revisão acrescentou F6 e F7 e dividiu L3; outro recorte daria outro placar.",
+    "Viés pró-poder (regra 5): L3a \"fraca\" se apoia na análise já revisada (L09) e na validação do STF; o fato de Gilmar, e não um tribunal eleitoral no mérito, ter decidido, é limite dessa leitura. A data da decisão (L3b) foi separada justamente para não deixar a defesa do calendário cobrir a escolha do momento."
+   ],
+   "casos": {
+    "L1": {
+     "codigo": "L1",
+     "lado": "lula",
+     "titulo": "Virada contra o STF: de defensor de Moraes a \"promiscuidade\" na Corte e \"antissistema\" (05/10).",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Virada contra o STF: de defensor de Moraes a \"promiscuidade\" na Corte e \"antissistema\" (05/10).",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Dito: a defesa documentada é de 08/08/2025, em Rio Branco: Moraes estaria \"garantindo a democracia\", e Lula pediu ao senador Sérgio Petecão que não assinasse o pedido de impeachment ([Poder360](https://www.poder360.com.br/poder-governo/lula-pede-a-petecao-que-nao-apoie-impeachment-de-moraes/), [SBT News](https://sbtnews.sbt.com.br/noticia/politica/lula-diz-que-moraes-garante-a-democracia-e-que-parlamentares-da-oposicao-deveriam-ter-impeachment-traidores-da-patria), [Jovem Pan](https://jovempan.com.br/?p=16858)). Uma defesa em 17/09/2026, que esta nota citava de fonte secundária (F5 Conchal), fica **[não verificado]**. Em 01/10 cobrou explicação de Moraes no Flow (L29) e, na mesma entrevista, defendeu o pedido de vista de Flávio Dino no processo sobre investigar Moraes, que adiou a decisão por até 90 dias, para depois da eleição ([Correio da Manhã](https://www.correiodamanha.com.br/politica/2026/10/324054-lula-revela-cobranca-a-moraes-sobre-caso-master-voce-deve-uma-explicacao-a-sociedade.html); uma coluna do SBT News diz, com fontes anônimas, que em privado ele criticou Dino [reportado]); em 05/10 falou em \"promiscuidade\" na Suprema Corte sem citar nomes e propôs mandatos para ministros. Aliados avisaram Fachin que as críticas iriam crescer e mirariam \"condutas de ministros\", não a instituição (UOL, via CNN e F5).",
+          "Incentivo: analistas da CNN dizem que a imagem de Moraes está \"atrelada\" a Lula. Criticar antes do 1º turno custava apoio de quem via Moraes como defensor da democracia; depois do 1º turno, o custo de **não** criticar ficou maior.",
+          "Leituras: o eleitor anti-STF ouve \"Lula também está contra\"; a base ouve \"é só sobre alguns ministros\"; o STF ouve, por recado prévio a Fachin, que não é contra a instituição. A saída já está pronta (\"critiquei condutas, não a Corte\"). \"Antissistema\", dito pelo presidente em exercício há quatro anos, é palavra-senha (brecha 5).",
+          "Nunca fala mal: na fala de 05/10, nenhum ministro foi nomeado. Em 01/10 ele citou Moraes, Toffoli (que indicou) e Nunes Marques.",
+          "Antes/depois: a reforma do Judiciário (mandatos, critérios) é promessa para depois da eleição, sem texto."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: a crítica nominal a Moraes veio antes do voto (01/10, L29), então a virada não é só reação ao resultado do 1º turno; reforma com mandatos é proposta verificável, não só palavra.",
+          "Duplo sentido a favor da leitura (concessão do revisor do governo): no mesmo 01/10, cobrar explicação de Moraes e apoiar o adiamento do processo que poderia investigá-lo (pergunta 3 do checklist).",
+          "**Força: média.** O que se verifica é a sequência (defesa em ago/2025, cobrança e apoio à vista em 01/10, ataque genérico em 05/10) e o recado prévio a Fachin, que é o mecanismo do duplo sentido."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "L2": {
+     "codigo": "L2",
+     "lado": "lula",
+     "titulo": "PEC do fim da escala 6x1 votada entre os turnos (prevista para 15/10).",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "PEC do fim da escala 6x1 votada entre os turnos (prevista para 15/10).",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Ato: o governo não levou a PEC ao plenário em 02/09 por falta de votos seguros; Alcolumbre a pautou dois dias depois do 1º turno; o ministro José Guimarães ligou para Alcolumbre em 05/10 e disse que ela \"será votada antes do 2º turno\". Lula usa o tema para cobrar o PL.",
+          "Incentivo: se aprovada, é benefício visível antes de 25/10; se rejeitada, vira acusação contra a oposição. Os dois resultados servem à campanha.",
+          "Leituras: trabalhador ouve \"mais folga\"; empresário ouve \"custo\"; a saída é \"a pauta é antiga\" (aprovada na CCJ em setembro).",
+          "Antes/depois: aprovação no Senado não é vigência (há segundo turno no Senado e regras de transição); o custo para as empresas e o efeito em emprego informal ficam para depois. Não achei estimativa oficial de custo."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: a PEC passou na **Câmara em 27/05/2026, por 472×22 no 1º turno e 461×19 no 2º**, fora da janela eleitoral, com 65 votos do PT e **83 sim e 11 não do PL** ([SBT News](https://sbtnews.sbt.com.br/noticia/politica/fim-da-escala-6x1-veja-como-votou-cada-partido-no-plenario), [Investidor10](https://investidor10.com.br/noticias/fim-da-6x1-como-votou-cada-deputado-e-o-que-falta-para-comecar-a-valer-120634/)); já tinha passado na CCJ do Senado; o adiamento de setembro foi por falta de votos, e quem pauta o Senado é Alcolumbre. Isso reduz a parte \"o governo escolheu a data\". O que fica contra o governo é o empenho em concluir os dois turnos no Senado antes de 25/10 (Guimarães; calendário especial, U5).",
+          "**Força: média** (empenho de data verificado; intenção não demonstrada)."
+         ]
+        }
+       ]
+      },
+      {
+       "rotulo": "Atualização de 12/10 (U7)",
+       "titulo": "PEC 6x1.",
+       "blocos": [
+        {
+         "t": "p",
+         "md": "Novo ato: o governo prepara o calendário especial para concluir os dois turnos antes de 25/10 (Rádio Senado). Isso confirma a busca de entrega antes do voto; a vigência real (2 h em dois meses, o resto em um ano) fica para depois. **Força: média** (sem mudança; a votação ainda não ocorreu)."
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "L3": {
+     "codigo": "L3",
+     "lado": "lula",
+     "titulo": "Bolsa Família reajustado (Decreto 13.120, 17/09) e pago a partir de 19/10. Dividido em dois casos pela revisão de 12/10.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Bolsa Família reajustado (Decreto 13.120, 17/09) e pago a partir de 19/10. Dividido em dois casos pela revisão de 12/10.",
+       "blocos": [
+        {
+         "t": "ul",
+         "itens": [
+          "**L3a. Calendário de pagamento: fraca.** Já analisado em L09 e no CLAUDE.md: o pagamento de 19/10 abre o calendário padrão (últimos dez dias úteis, por final de NIS); os 15,04% são o INPC acumulado (reposição, sem ganho real); escala de 15% contra 50% do Auxílio de 2022. Novo desde 04/10: Gilmar validou o decreto no STF; a ação de Renan no TSE não foi julgada. Metade das famílias (NIS 1 a 5) recebe antes do 2T.",
+          "**L3b. Data da decisão: média.** Fato: o piso de R$ 600 e os demais valores ficaram sem correção desde a reformulação do programa (mar/2023; algumas fontes dizem jan/2023 como data-base do INPC), cerca de **3,5 anos**, e a correção saiu por decreto em **17/09/2026, 17 dias antes do 1º turno** ([Diário do Comércio](https://diariodocomercio.com.br/economia/bolsa-familia-aumento-valor/), [SBT News](https://sbtnews.sbt.com.br/noticia/economia/bolsa-familia-veja-calendario-de-outubro-com-novo-reajuste)). A defesa (\"é só reposição; em ano eleitoral só cabe inflação\") explica o **tamanho**, não a **data**: nas fontes lidas, nenhuma regra é citada que obrigasse a esperar até setembro de 2026 em vez de corrigir em 2024 ou 2025 (busca limitada; não procurei a lei do programa). A escolha de quando decidir é o ato (brechas 2 e 3). Repercussão nos dois campos: Bloomberg Línea (\"surpreende\"), Gazeta do Povo (professor da FGV), PL (Itatiaia) [reportado, lidos pelo revisor da oposição].",
+          "Mesma régua: em 2022 Lula disse que Bolsonaro tentava \"comprar o povo\" com benefício de três meses ([Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/pt-criticou-pec-do-desespero-de-bolsonaro-mas-lula-reajusta-bolsa-familia-a-17-dias-da-eleicao/)). A diferença de escala é real (15% de reposição × 50% de aumento com estado de emergência) e é ela que impede \"forte\" em L3b; a coincidência de calendário existe nos dois casos.",
+          "**Força: L3a fraca; L3b média.** Regra (seção R): há ato oficial com data, mas a contra-evidência com número (15,04% = INPC acumulado, reposição sem ganho real, contra +50% em 2022) explica parte relevante; por isso não é forte."
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "L4": {
+     "codigo": "L4",
+     "lado": "lula",
+     "titulo": "Combustíveis: prorrogação de 30 dias com ampliação, a 16 dias do 2T.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Combustíveis: a desoneração da gasolina vence em 09/10, entre os turnos; o diesel, um dia depois do 2T.",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Ato: Decreto 13.116 (10/09 a 09/10) e Portaria MF 2.946 (diesel até ~26/10). Moretti (28/09): a política \"deve ser mantida\". Até a madrugada de 09/10, sem decreto novo.",
+          "Incentivo: deixar a gasolina subir R$ 0,63/l em 10/10, a 15 dias do 2T, custa voto; prorrogar custa ~R$ 7 bi por mês em medidas de combustíveis (Agência Brasil, setembro), compensados por receita extraordinária do petróleo ainda não realizada (LC 235).",
+          "Leituras: se prorrogar, \"proteção contra a guerra\"; se não, \"responsabilidade fiscal\". Qualquer uma tem saída.",
+          "Antes/depois: o diesel vence em 26-27/10, depois do voto. A conta (receita de petróleo projetada) é de 2026-27."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: as medidas começaram em maio, com choque de petróleo real (ataques perto de Ormuz em 08/10); a data de vencimento de 09/10 foi fixada em 09/09, antes do resultado do 1º turno. Acrescentado pela revisão do governo: a nota da Fazenda de 09/10 justifica a ampliação pela alta do petróleo, pela margem de refino e pela distância entre a paridade de importação e o preço interno; desde maio o governo usa subvenção para anular reajustes da Petrobras, e em 01/09 a Abicom media a gasolina A 58% abaixo da paridade e o diesel 88% ([BMC News](https://bmcnews.com.br/petroleo-e-energia/petroleo-a-us-95-com-ormuz-sob-ataque-o-que-muda-para-a-petrobras-para-a-bomba-e-para-a-inflacao/), [reportado], fonte única). A ampliação segue um padrão de cinco meses; a defasagem de outubro não foi achada.",
+          "**Força: média até sair a decisão.** Se houver prorrogação curta, só até depois de 25/10, sobe para forte; se for prorrogado por prazo longo ou encerrado, cai. (Decisão saiu em 09/10: ver L4 revisto em U7, **forte para o timing**.)"
+         ]
+        }
+       ]
+      },
+      {
+       "rotulo": "Atualização de 12/10 (U7)",
+       "titulo": "Combustíveis: prorrogação de 30 dias com ampliação, a 16 dias do 2T.",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Ato: em 09/10, a desoneração da gasolina passa de R$ 0,63 para R$ 0,89/l (+41%), o etanol de R$ 0,251 para R$ 0,4287/l (+71%) e o diesel importado ganha R$ 1,40/l (+66% sobre R$ 2,12), tudo por 30 dias, vencendo por volta de 08-12/11.",
+          "Incentivo: o aumento do desconto chega à bomba antes de 25/10; a próxima decisão (prorrogar ou deixar subir) cai depois do voto.",
+          "Leituras: \"proteção contra a guerra\" (governo, choque de petróleo real); \"compra de voto com imposto\" (oposição). Saída pronta: \"o prazo de 30 dias é o mesmo do decreto anterior\".",
+          "Antes/depois: benefício ampliado agora; custo (R$ 3,6 bi em 2026 só gasolina e etanol, mais R$ 1,6 bi do diesel) pago com receita de petróleo **projetada**, e a decisão de encerrar empurrada para depois da eleição."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: a cadência de 30 dias repete a do Decreto 13.116; o choque de petróleo (Ormuz) é real; a compensação está prevista em lei (LC 235). Não é \"a mesma coisa\" que 2022 em escala: a PEC de 2022 pôs R$ 41,25 bi fora do teto (FB12).",
+          "Critério pré-registrado: a seção 5 dizia \"se houver prorrogação curta, só até depois de 25/10, sobe para forte; se for prorrogado por prazo longo ou encerrado, cai\". O que veio foi uma prorrogação de 30 dias (nem só até 25/10 nem longa) **com ampliação**, que o critério não previa. **Força: forte para o timing** (ato e números oficiais: benefício aumentado dentro da janela eleitoral, fim do prazo depois do voto); **intenção não demonstrada** (o choque de preço é real). Teste do espelho: se o governo Bolsonaro tivesse ampliado o desconto em 41% a 16 dias do 2T de 2022 com vencimento depois do voto, este arquivo chamaria de forte; logo, forte aqui também."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Forte"
+    },
+    "L5": {
+     "codigo": "L5",
+     "lado": "lula",
+     "titulo": "\"Discurso do medo\" por porta-vozes: Flávio ameaça programas sociais e a soberania.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "\"Discurso do medo\" por porta-vozes: Flávio ameaça programas sociais e a soberania.",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Dito: a estratégia declarada é apontar uma \"ameaça\" de Flávio a programas sociais e à soberania (CNN, 07/10); Durigan diz que o plano é \"ilusão\" ao mercado. Lula não cita Flávio pelo nome em live e pergunta se o PL terá \"coragem\" de votar a 6x1 (Poder360, [reportado]).",
+          "Brecha 1 (porta-vozes): o ministro da Fazenda em exercício coordena o plano econômico da campanha e fala como candidato e como governo.",
+          "Leituras: a base ouve \"vão tirar o Bolsa Família\"; a saída é \"falamos do plano deles\"."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: aqui o ataque tem base reportada parcial. A Folha (out.) e o Correio Braziliense (abr.) relataram estudos de desindexação de aposentadorias, BPC e pisos (R$ 250 bi; ~2% do PIB), e o plano de Flávio diz que \"manter não basta\". Não há prova de que ele vá cortar o Bolsa Família, que ele promete manter.",
+          "Contra a leitura do governo (08/10): o TSE mandou remover em liminar quatro peças do campo de Lula por apresentarem como certas consequências sem base: o vídeo dos \"R$ 200 bi\" e \"Se Flávio vence, você perde\" (campanha), posts de Janones e Lindbergh (\"70 anos\", \"12 horas\", Petrobras) e um vídeo de Janja (seção 1 e 3.2). Três das quatro atingem porta-vozes (brecha 1). Para \"70 anos\" e \"12 horas\" não achei base.",
+          "**Força: média** (ver L5 atualizado em U7 e a seção R: as decisões são liminares monocráticas; sobe para forte se o plenário as referendar)."
+         ]
+        }
+       ]
+      },
+      {
+       "rotulo": "Atualização de 12/10 (U7)",
+       "titulo": "\"Discurso do medo\".",
+       "blocos": [
+        {
+         "t": "p",
+         "md": "Corrigido na revisão de 12/10: em 08/10 o TSE mandou remover, em **quatro liminares**, o vídeo dos \"R$ 200 bi\" e a peça \"Se Flávio vence, você perde\" (da própria campanha), cinco posts de Janones e Lindbergh e um vídeo de Janja, por apresentarem como certas consequências sem base; o direito de resposta pedido por Flávio está pendente. Em Ceilândia, Lula disse que Flávio planeja \"meter a mão no bolso do trabalhador\" (Revista Fórum). A correção **amplia** o problema do campo de Lula: são quatro decisões, três sobre porta-vozes (brecha 1), e a \"extrapolação não demonstrada\" agora tem decisão judicial dizendo o mesmo. Para o vídeo dos \"R$ 200 bi\" há base reportada (Folha, Correio Braziliense); para \"70 anos\" e \"12 horas\", não achei. **Força: média, [disputado].** Leitura do revisor da oposição: forte (quatro decisões, inclusive sobre peça da campanha, pelo critério \"sobe com ato verificável\"). Leitura do revisor do governo: média (liminares). Regra aplicada (seção R): decisão liminar monocrática não referendada conta como \"média\"; decisão colegiada conta como \"forte\" (é o que põe F6 em forte). **Sobe para forte se o plenário referendar as liminares**; volta a fraca se o plenário as derrubar."
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "F1": {
+     "codigo": "F1",
+     "lado": "flavio",
+     "titulo": "Privatização: plano \"retomar privatizações, caso a caso\"; à Reuters (dez/2025), Correios e \"possivelmente\" Petrobras (FB23); em 08/10, Sachsida diz \"não existirão privatizações de empresas\" e \"nenhuma dessas empresas será tocada\".",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Privatização: plano \"retomar privatizações, caso a caso\"; à Reuters (dez/2025), Correios e \"possivelmente\" Petrobras (FB23); em 08/10, Sachsida diz \"não existirão privatizações de empresas\" e \"nenhuma dessas empresas será tocada\".",
+       "blocos": [
+        {
+         "t": "ul",
+         "itens": [
+          "Correção da revisão de 12/10: a palavra à Reuters foi \"possivelmente\", não \"provavelmente\", e em fev/2026 (canal 5º Elemento) Flávio já dizia que \"não pode simplesmente vender uma empresa que tem um monopólio estratégico\" ([eixos](https://eixos.com.br/politica/eleicoes/eleicoes-2026/sachsida-diz-que-flavio-bolsonaro-nao-vai-privatizar-a-petrobras/), fonte especializada única). Logo, a negação sobre a **Petrobras** é coerente com o candidato desde fevereiro. A duplicidade que sobra é outra: o programa diz \"retomar privatizações, caso a caso\" e o coordenador diz \"não existirão privatizações de empresas\"; e foi Sachsida quem, como ministro em 2022, pediu os estudos para privatizar Petrobras e PPSA."
+         ]
+        },
+        {
+         "t": "ol",
+         "itens": [
+          "Dito e escrito: o programa \"Para o Brasil Vencer o Atraso\" prevê retomar privatizações com avaliação caso a caso; em 08/10 o coordenador econômico, em vídeo para servidores, funcionários de estatais e o eleitor em geral, diz que não haverá privatizações de Petrobras, BB e Caixa.",
+          "Incentivo: privatizar a Petrobras perde voto no Nordeste e entre servidores; não privatizar perde parte da tese do mercado.",
+          "Leituras: o mercado guarda o programa escrito; o eleitor guarda o vídeo. Saída: \"falei das três, o plano fala das outras\" (a Forbes nota que Sachsida não esclareceu o alcance).",
+          "Porta-voz (brecha 1): é o coordenador quem desmente, não o candidato."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: \"caso a caso\" é compatível com manter as três estatais; FB23 era fala hedgeada.",
+          "**Força: média.** Há duas pontas documentadas (programa e vídeo), em datas diferentes e para públicos diferentes; o alvo da duplicidade é \"privatizações em geral\", não a Petrobras."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "F2": {
+     "codigo": "F2",
+     "lado": "flavio",
+     "titulo": "Previdência e pisos: equipe estuda desindexar (R$ 250 bi, Folha); o candidato nega, chama de \"fake news do PT\" e promete aposentadorias acima da inflação.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Previdência e pisos: equipe estuda desindexar (R$ 250 bi, Folha); o candidato nega, chama de \"fake news do PT\" e promete aposentadorias acima da inflação.",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Fato reportado: a Folha relata estudos para limitar aposentadorias e BPC ao INPC e trocar os pisos de saúde (15% da RCL) e educação (18% da RLI) por correção pela inflação. A campanha diz que não é proposta oficial e que não está no programa.",
+          "Incentivo: idoso e beneficiário do BPC votam; o mercado quer o corte. Dizer os dois em voz alta é impossível.",
+          "Leituras: o mercado reage à \"expectativa de ajuste\" (Terra, 08/10: \"embora ele não tenha apresentado propostas concretas\"); o aposentado ouve \"não vou mexer\". Saída pronta: \"estudo técnico não é proposta\".",
+          "Antes/depois: a promessa sem custo vem antes; a conta (R$ 250 bi ou o déficit sem eles) depois. É o mesmo padrão já registrado no CLAUDE.md (\"de nada adianta baixar imposto hoje se a conta volta amanhã\", com metade do plano financiada por receitas que não se repetem e sem lista de cortes)."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Base ampliada (revisão do governo): a mesma ideia (aposentadorias, BPC e pisos corrigidos só pela inflação, ~2% do PIB, \"divulgação adiada por estratégia política\") foi reportada pelo [Correio Braziliense em 22/04/2026](https://www.correiobraziliense.com.br/politica/2026/04/7403233-flavio-avalia-reajuste-de-gastos-sociais-pela-inflacao-e-mais-privatizacoes.html), com fontes anônimas da pré-campanha. São dois veículos em datas diferentes, o que reduz o risco de vazamento isolado.",
+          "Contra-evidência: o texto original da Folha não foi lido (só repercussão, e quatro veículos repetindo a Folha não são quatro fontes); as duas reportagens usam fontes anônimas e não há documento da equipe; a campanha nega e Flávio chama de \"fake news\"; estudos de equipe não são compromisso; mudança exige Congresso. Em 08/10, Mendonça (TSE) considerou que o corte de \"R$ 200 bi\" atribuído pela campanha de Lula não tinha \"fundamento concreto\" como proposta do candidato.",
+          "**Força: média** (rebaixada de forte pela revisão de 12/10; **[disputado]** entre os revisores). Regra (seção R): \"forte\" exige o fato central em documento, ato oficial, fala gravada ou decisão colegiada; aqui o fato central (o estudo da equipe) é só reportado, com fontes anônimas, ainda que em dois veículos independentes. É a mesma régua usada para o relato da Veja contra Lula (sem documento, negado: \"não corroborado\"), com a diferença de que aqui há dois veículos em datas diferentes. A negação ao eleitor é [fato]. Volta a forte com o texto original e um documento da equipe. **Não verificado** para o que Flávio de fato faria."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "F3": {
+     "codigo": "F3",
+     "lado": "flavio",
+     "titulo": "PEC 6x1: senador e candidato, não diz como vota.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "PEC 6x1: senador e candidato, não diz como vota.",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Dito: \"oportunista\"; \"agora, no meio do segundo turno, ele vem de forma oportunista\"; tem proposta \"melhor\" (jornada escolhida pelo trabalhador, salário proporcional, voucher de creche). Não disse se vota contra (Terra).",
+          "Incentivo: votar contra perde trabalhador; votar a favor perde empresário e parte da base.",
+          "Saída: \"minha proposta é outra\". O voto nominal no Senado, previsto para ~15/10, vai fechar a saída se ele estiver em plenário e votar.",
+          "Brecha 2 (atos sem palavras): a oposição obstruiu a sessão de 02/09 (Randolfe, Agência Brasil). Se a ausência de Flávio no voto se repetir, a ausência é a fala."
+         ]
+        },
+        {
+         "t": "p",
+         "md": "4b. Comportamento do ecossistema (pergunta 4): na Câmara, em 27/05/2026, **83 dos 94 deputados do PL que votaram (88%) votaram a favor** da PEC no 1º turno (472×22). Flávio chama de \"oportunista\" uma pauta que a bancada do partido dele aprovou quatro meses antes. Não é voto do próprio Flávio."
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: chamar o timing de oportunista é, como fato, correto (ver L2); a crítica dele ao timing e a de L2 se espelham.",
+          "**Força: média** agora; o voto nominal pode deixá-la forte ou eliminá-la."
+         ]
+        }
+       ]
+      },
+      {
+       "rotulo": "Atualização de 12/10 (U7)",
+       "titulo": "PEC 6x1.",
+       "blocos": [
+        {
+         "t": "p",
+         "md": "Novo ato: o líder da oposição e **coordenador da campanha de Flávio**, Rogério Marinho, articula adiar a votação para depois do 2T (brecha 1, porta-voz). Com isso Flávio pode não ter de dar o voto nominal antes da eleição. Contra-evidência: Alcolumbre também não quer a PEC na eleição, e o argumento \"não votar no pico da campanha\" se aplica igualmente ao timing do governo (L2). **Força: média** (a escala não tem degrau intermediário), e sobe para forte se o adiamento passar e Flávio não declarar o voto até 25/10."
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "F4": {
+     "codigo": "F4",
+     "lado": "flavio",
+     "titulo": "Bolsa Família \"a primeira coisa que um governo faz\" (08/10) × plano \"manter não basta... transição\" × fala de 2012.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Bolsa Família \"a primeira coisa que um governo faz\" (08/10) × plano \"manter não basta... transição\" × fala de 2012.",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Dito: promessa de manter e \"fortalecer\" (Sachsida). Plano: manter programas \"com correção de distorções e combate às fraudes\"; \"manter não basta\", tornar o programa \"transição\". Folha/EM lembra fala de 2012 sobre domésticas no Nordeste que perderiam o benefício ao trabalhar.",
+          "Incentivo: 2º turno decidido no Nordeste, onde Flávio ganhou terreno; não pode parecer ameaça ao programa.",
+          "Leituras: o Nordeste ouve \"mantenho\"; o eleitor do Sul e o mercado ouvem \"porta de saída e combate a fraude\". Saída: \"transição é emprego, não corte\"."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: \"porta de saída\" é política defendida por técnicos dos dois campos; a volta imediata ao benefício após o seguro-desemprego, que está no plano, é ampliação, não corte.",
+          "**Força: fraca.** A tensão é de ênfase, não contradição literal (o caso mais documentado da economia é F2, hoje média; ver seção R)."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Fraca"
+    },
+    "F5": {
+     "codigo": "F5",
+     "lado": "flavio",
+     "titulo": "Alianças e alvos: os vídeos ligam Lula a Moraes e ao Master enquanto o PP de Ciro Nogueira (alvo da PF no caso Master) entra na aliança.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Alianças e alvos: os vídeos ligam Lula a Moraes e ao Master enquanto o PP de Ciro Nogueira (alvo da PF no caso Master) entra na aliança.",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Ato: vídeos mantidos pelo TSE em 07/10 dizem que Lula \"dividiu o poder\" com Moraes; em 05-06/10 Ciro Nogueira, que a PF acusa de receber de R$ 300 mil a R$ 500 mil por mês de Vorcaro e de apresentar a \"Emenda Master\" (FB62; ele nega), puxou o PP para Flávio. Flávio tem o próprio caso Master (Dark Horse, FB44 e FB34: pediu ~US$ 24 mi a Vorcaro e negou ao mercado conhecê-lo).",
+          "Incentivo: o Master é o melhor tema contra Lula via Moraes; o PP traz tempo, palanques e governadores.",
+          "Leituras: o eleitor anti-STF ouve \"Lula é Moraes\"; quem acompanha o caso vê o mesmo banco dos dois lados. Saída: \"apoio de partido não é apoio de pessoa\".",
+          "Do que nunca fala mal: nenhuma crítica de Flávio a Ciro Nogueira ou ao vínculo do PP com Vorcaro foi encontrada depois de 04/10. Em maio, segundo a Gazeta do Povo, ele e Tarcísio \"se descolaram\" de Ciro (FB62); em outubro, reaproximação."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: o apoio é da federação (decisão unânime), não pessoal de Ciro; investigação não é condenação, nos dois casos (Moraes também nega).",
+          "**Espelho exato (revisão da oposição):** o campo de Lula tem no palanque um alvo de operação da PF no mesmo caso. Jaques Wagner (PT-BA), então líder do governo no Senado, foi alvo da 9ª fase da Compliance Zero em 18/06/2026 (busca autorizada por Mendonça; US$ 49 mil apreendidos no hotel em Brasília; Wagner diz que vieram de diárias declaradas), deixou a liderança em 24/06 e nega; em 01/08 Lula pediu voto para ele (seção 2.3). Ciro com Flávio e Wagner com Lula estão no mesmo estágio: investigação formal, sem denúncia achada.",
+          "**Força: média.** O ato (aceitar o apoio liderado por um investigado no mesmo caso que ele usa contra o adversário) é verificado. Régua espelhada: L1 mostra Lula se descolando de Moraes só depois do 1º turno; aqui Flávio se reaproxima do PP de Ciro depois do 1º turno; e L6 mostra Lula usando o Master contra Flávio com Wagner no palanque. Os movimentos seguem o incentivo do momento."
+         ]
+        }
+       ]
+      },
+      {
+       "rotulo": "Atualização de 12/10 (U7)",
+       "titulo": "Alianças e alvos.",
+       "blocos": [
+        {
+         "t": "p",
+         "md": "Novo: Ratinho Jr. (PSD) entra; nada novo sobre Ciro Nogueira. Flávio usa a reportagem da Veja contra Lula (o PL tem vídeo que a campanha de Lula pede para retirar no TSE) **enquanto** ele próprio é investigado no Dark Horse com o mesmo Vorcaro como financiador. **Força: média** (sem mudança)."
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "F6": {
+     "codigo": "F6",
+     "lado": "flavio",
+     "titulo": "Facções: posts de Flávio que ligam Lula ao PCC e ao CV (acrescentado pela revisão de 12/10).",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Facções: posts de Flávio que ligam Lula ao PCC e ao CV (acrescentado pela revisão de 12/10).",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Dito e feito: posts no X associando Lula às facções, um deles com imagem de IA sem rótulo (\"Trump, deixe nossos bandidos em paz\"), apoiados em falas de Lula sobre a possível designação das facções como terroristas pelos EUA.",
+          "Incentivo: dizer \"Lula é do crime organizado\" diretamente seria acusação sem prova, com risco judicial; a insinuação por imagem e montagem chega ao eleitor sem a frase literal.",
+          "Leituras: a base ouve \"Lula protege bandido\"; o centro pode ler como sátira; a saída é \"é crítica à fala dele sobre os EUA\" e \"é humor\"."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: os posts partiam de falas reais de Lula sobre a possível designação americana das facções como terroristas (segundo o Congresso em Foco); criticar essa posição de política externa é legítimo. O que o TSE barrou foi a associação pessoal \"sem provas mínimas\".",
+          "Fato: **plenário do TSE, por unanimidade, em 08/10**, mandou retirar três posts; em agosto o plenário já tinha removido outro por 5×2; em 28/09 Nunes Marques condenou Flávio por propaganda antecipada negativa no mesmo tema (multa mínima de R$ 5 mil) ([Congresso em Foco](https://www.congressoemfoco.com.br/noticia/123128/flavio-e-multado-por-associar-lula-ao-pcc-e-tem-tres-posts-barrados)).",
+          "**Força: forte** (decisão colegiada, não liminar; padrão repetido em três processos). Espelho: L5 (posts do campo de Lula) usa o mesmo critério e fica em média só porque as decisões de 08/10 são liminares."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Forte"
+    },
+    "F7": {
+     "codigo": "F7",
+     "lado": "flavio",
+     "titulo": "Cury: a condição do Dark Horse que sumiu (acrescentado pela revisão de 12/10; brecha 8, reescrita posterior).",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Cury: a condição do Dark Horse que sumiu (acrescentado pela revisão de 12/10; brecha 8, reescrita posterior).",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Falas datadas: em **10/09**, Cury disse que só apoiaria Flávio se ele provasse \"para onde foi o dinheiro\" de Vorcaro no Dark Horse e se registrasse em cartório o compromisso com o plano do Avante ([Bahia Notícias](https://www.bahianoticias.com.br/noticia/320980-augusto-cury-diz-que-so-apoia-flavio-se-ele-explicar-como-foi-gasto-dinheiro-de-vorcaro-para-o-dark-horse)); em **04/10**, \"me silencio completamente\"; em **08/10**, apoio com termo de 8 pontos e condição genérica de \"transparência\".",
+          "Incentivo: Cury pode influir num eleitorado de 3,4 mi; dizer \"abri mão da condição do Dark Horse\" custaria a imagem de independência que o elegeu; Flávio ganha o apoio sem ter de explicar o caso.",
+          "Leituras: o eleitor de Cury ouve \"apoio condicionado, não é cheque em branco\"; o eleitor de Flávio ouve \"mais um apoio\". A saída: \"as condições estão no termo\"."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: a segunda condição de 10/09 (compromisso escrito com o plano do Avante) foi cumprida pelo termo assinado; o apoio diz explicitamente que não envolve cargos. Não achei explicação pública de Flávio sobre o destino do dinheiro entre 10/09 e 08/10 (busca limitada: ausência de achado não prova ausência).",
+          "**Força: média.** As três falas são [fato]; \"condição abandonada\" é [leitura] apoiada numa ausência de achado. Espelho: se um eliminado tivesse condicionado o apoio a Lula a uma explicação sobre o Master e depois apoiado sem ela, este arquivo registraria igual."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "L6": {
+     "codigo": "L6",
+     "lado": "lula",
+     "titulo": "Lula e o Master: \"não será governado pelo sócio do Banco Master, pelos parentes do Vorcaro\" (09/10).",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Lula e o Master: \"não será governado pelo sócio do Banco Master, pelos parentes do Vorcaro\" (09/10).",
+       "blocos": [
+        {
+         "t": "ol",
+         "itens": [
+          "Dito: ataque ao vínculo Flávio-Vorcaro (Dark Horse) no mesmo dia em que a Veja publica o relato contra ele.",
+          "Incentivo: usar o Master contra Flávio neutraliza o tema que Flávio usa contra Lula (Moraes e o contrato do escritório da mulher dele, ponto **disputado** no CLAUDE.md).",
+          "De quem nunca fala mal: no discurso, nenhuma menção a Moraes ou ao contrato do escritório da mulher dele com o Master; a crítica de 01/10 (L29) não foi repetida neste ato (não encontrei). Nenhuma menção a **Jaques Wagner**, alvo da PF no mesmo caso (9ª fase da Compliance Zero, 18/06/2026), para quem Lula pediu voto em 01/08 e que, no mesmo 09/10, puxava a \"Caminhada a Bahia com Lula\" em Salvador ([A Tarde](https://atarde.com.br/eleicoes/jeronimo-rui-e-wagner-puxam-caminhada-pro-lula-nesta-sexta-0910-1405166), lido pelo revisor da oposição, não reaberto). Também nada sobre Mantega (L28, L38: reunião com Vorcaro fora da agenda, \"não conclusivo\") nem sobre o contrato do escritório de Lewandowski (coluna, fonte única, [reportado])."
+         ]
+        },
+        {
+         "t": "ul",
+         "itens": [
+          "Contra-evidência: a relação Flávio-Vorcaro no Dark Horse tem inquérito no STF com parecer favorável da PGR (FB34/FB44); a frase \"sócio do Banco Master\" tem base factual parcial (Flávio pediu dinheiro para um filme; sociedade não documentada). **\"Parentes do Vorcaro\" tem base**: Fabiano Zettel, cunhado de Vorcaro, doou R$ 3 mi à campanha de Jair Bolsonaro e R$ 2 mi à de Tarcísio em 2022 (dados do TSE) e foi preso na 2ª fase da Compliance Zero ([CNN Brasil](https://www.cnnbrasil.com.br/politica/alvo-da-pf-doou-r-5-mi-para-campanhas-de-bolsonaro-e-tarcisio-em-2022/), InfoMoney); doação declarada não é ilícito e Tarcísio diz não ter vínculo. O plural e a ligação com um eventual governo Flávio continuam hipérbole.",
+          "**Força: média** para a seletividade (o Master aparece só do lado do adversário, com Wagner no palanque); a base factual contra Flávio é real. Não é forte porque \"nunca fala mal\" se apoia em busca limitada (ausência de achado) e porque Lula cobrou Moraes em 01/10. Espelho: F5 (Flávio usa o Master com Ciro na aliança) fica na mesma faixa."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    },
+    "L3a": {
+     "codigo": "L3a",
+     "lado": "lula",
+     "titulo": "Bolsa Família reajustado (Decreto 13.120, 17/09) e pago a partir de 19/10. Calendário de pagamento.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Bolsa Família reajustado (Decreto 13.120, 17/09) e pago a partir de 19/10. Dividido em dois casos pela revisão de 12/10.",
+       "blocos": [
+        {
+         "t": "ul",
+         "itens": [
+          "**L3a. Calendário de pagamento: fraca.** Já analisado em L09 e no CLAUDE.md: o pagamento de 19/10 abre o calendário padrão (últimos dez dias úteis, por final de NIS); os 15,04% são o INPC acumulado (reposição, sem ganho real); escala de 15% contra 50% do Auxílio de 2022. Novo desde 04/10: Gilmar validou o decreto no STF; a ação de Renan no TSE não foi julgada. Metade das famílias (NIS 1 a 5) recebe antes do 2T.",
+          "**L3b. Data da decisão: média.** Fato: o piso de R$ 600 e os demais valores ficaram sem correção desde a reformulação do programa (mar/2023; algumas fontes dizem jan/2023 como data-base do INPC), cerca de **3,5 anos**, e a correção saiu por decreto em **17/09/2026, 17 dias antes do 1º turno** ([Diário do Comércio](https://diariodocomercio.com.br/economia/bolsa-familia-aumento-valor/), [SBT News](https://sbtnews.sbt.com.br/noticia/economia/bolsa-familia-veja-calendario-de-outubro-com-novo-reajuste)). A defesa (\"é só reposição; em ano eleitoral só cabe inflação\") explica o **tamanho**, não a **data**: nas fontes lidas, nenhuma regra é citada que obrigasse a esperar até setembro de 2026 em vez de corrigir em 2024 ou 2025 (busca limitada; não procurei a lei do programa). A escolha de quando decidir é o ato (brechas 2 e 3). Repercussão nos dois campos: Bloomberg Línea (\"surpreende\"), Gazeta do Povo (professor da FGV), PL (Itatiaia) [reportado, lidos pelo revisor da oposição].",
+          "Mesma régua: em 2022 Lula disse que Bolsonaro tentava \"comprar o povo\" com benefício de três meses ([Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/pt-criticou-pec-do-desespero-de-bolsonaro-mas-lula-reajusta-bolsa-familia-a-17-dias-da-eleicao/)). A diferença de escala é real (15% de reposição × 50% de aumento com estado de emergência) e é ela que impede \"forte\" em L3b; a coincidência de calendário existe nos dois casos.",
+          "**Força: L3a fraca; L3b média.** Regra (seção R): há ato oficial com data, mas a contra-evidência com número (15,04% = INPC acumulado, reposição sem ganho real, contra +50% em 2022) explica parte relevante; por isso não é forte."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Fraca"
+    },
+    "L3b": {
+     "codigo": "L3b",
+     "lado": "lula",
+     "titulo": "Bolsa Família reajustado (Decreto 13.120, 17/09) e pago a partir de 19/10. Data da decisão.",
+     "versoes": [
+      {
+       "rotulo": "Seção 5 (09/10, revista em 12/10)",
+       "titulo": "Bolsa Família reajustado (Decreto 13.120, 17/09) e pago a partir de 19/10. Dividido em dois casos pela revisão de 12/10.",
+       "blocos": [
+        {
+         "t": "ul",
+         "itens": [
+          "**L3a. Calendário de pagamento: fraca.** Já analisado em L09 e no CLAUDE.md: o pagamento de 19/10 abre o calendário padrão (últimos dez dias úteis, por final de NIS); os 15,04% são o INPC acumulado (reposição, sem ganho real); escala de 15% contra 50% do Auxílio de 2022. Novo desde 04/10: Gilmar validou o decreto no STF; a ação de Renan no TSE não foi julgada. Metade das famílias (NIS 1 a 5) recebe antes do 2T.",
+          "**L3b. Data da decisão: média.** Fato: o piso de R$ 600 e os demais valores ficaram sem correção desde a reformulação do programa (mar/2023; algumas fontes dizem jan/2023 como data-base do INPC), cerca de **3,5 anos**, e a correção saiu por decreto em **17/09/2026, 17 dias antes do 1º turno** ([Diário do Comércio](https://diariodocomercio.com.br/economia/bolsa-familia-aumento-valor/), [SBT News](https://sbtnews.sbt.com.br/noticia/economia/bolsa-familia-veja-calendario-de-outubro-com-novo-reajuste)). A defesa (\"é só reposição; em ano eleitoral só cabe inflação\") explica o **tamanho**, não a **data**: nas fontes lidas, nenhuma regra é citada que obrigasse a esperar até setembro de 2026 em vez de corrigir em 2024 ou 2025 (busca limitada; não procurei a lei do programa). A escolha de quando decidir é o ato (brechas 2 e 3). Repercussão nos dois campos: Bloomberg Línea (\"surpreende\"), Gazeta do Povo (professor da FGV), PL (Itatiaia) [reportado, lidos pelo revisor da oposição].",
+          "Mesma régua: em 2022 Lula disse que Bolsonaro tentava \"comprar o povo\" com benefício de três meses ([Gazeta do Povo](https://www.gazetadopovo.com.br/eleicoes/2026/pt-criticou-pec-do-desespero-de-bolsonaro-mas-lula-reajusta-bolsa-familia-a-17-dias-da-eleicao/)). A diferença de escala é real (15% de reposição × 50% de aumento com estado de emergência) e é ela que impede \"forte\" em L3b; a coincidência de calendário existe nos dois casos.",
+          "**Força: L3a fraca; L3b média.** Regra (seção R): há ato oficial com data, mas a contra-evidência com número (15,04% = INPC acumulado, reposição sem ganho real, contra +50% em 2022) explica parte relevante; por isso não é forte."
+         ]
+        }
+       ]
+      }
+     ],
+     "forca": "Média"
+    }
+   },
+   "conflitos": {
+    "t": "tab",
+    "cab": [
+     "Ponto",
+     "G",
+     "O",
+     "Resolução e regra"
+    ],
+    "lin": [
+     [
+      "F2 (desindexação)",
+      "manter forte (Correio de abril é 2ª fonte)",
+      "rebaixar a média (texto da Folha não lido)",
+      "**Média, [disputado].** Pela regra (a), o fato central (o estudo) é reportado com fontes anônimas, sem documento; dois veículos independentes melhoram a confiança, mas não viram documento. Mesma régua do relato da Veja."
+     ],
+     [
+      "L5 (discurso do medo)",
+      "média",
+      "forte",
+      "**Média, [disputado].** Pela regra (a), liminar monocrática não referendada é \"média\"; sobe se o plenário referendar."
+     ],
+     [
+      "F6 (facções)",
+      "não tratado",
+      "novo, forte",
+      "**Forte**: decisão colegiada unânime (08/10), repetida em agosto (5×2) e em condenação de 28/09."
+     ],
+     [
+      "L3 (Bolsa Família)",
+      "fraca",
+      "dividir: pagamento fraca, data média",
+      "**Dividido**: L3a fraca (calendário padrão); L3b média: ato oficial com data (17/09, 17 dias antes do 1º turno, depois de ~3,5 anos sem correção), mas a reposição sem ganho real (contra-evidência com número) impede forte pela regra (c)."
+     ],
+     [
+      "L4 (combustíveis)",
+      "forte, com contra-evidência",
+      "forte",
+      "**Forte**: ato oficial; ampliação de 41% na gasolina dentro da janela e vencimento depois do voto; o choque do petróleo e o padrão de cinco meses explicam a existência da medida, não a ampliação com prazo pós-voto. É o caso de fronteira da regra (c); intenção não demonstrada."
+     ],
+     [
+      "L1",
+      "média; 17/09 não verificado",
+      "média",
+      "**Média**; 17/09 marcado [não verificado]; defesa de ago/2025 documentada; apoio à vista de Dino em 01/10 acrescentado."
+     ],
+     [
+      "L6",
+      "corrigir \"parentes\" (Zettel)",
+      "acrescentar Wagner, Mantega, Lewandowski",
+      "**Média**, com os dois acréscimos; Lewandowski fica [reportado, fonte única]."
+     ],
+     [
+      "F1",
+      "corrigir para \"possivelmente\"",
+      "manter média",
+      "**Média**, alvo corrigido (privatizações em geral, não a Petrobras)."
+     ],
+     [
+      "F3",
+      "média, com o voto do PL",
+      "média",
+      "**Média**; PL 83×11 na Câmara."
+     ],
+     [
+      "F7 (Cury)",
+      "sugerido como caso de indireto",
+      "Cury como apoio condicionado",
+      "**Média**: falas de 10/09, 04/10 e 08/10 são fato; \"condição abandonada\" é leitura com ausência de achado."
+     ]
+    ]
+   },
+   "vorcaro": {
+    "titulo": "O caso Vorcaro, os dois lados com a mesma régua",
+    "tabela": {
+     "t": "tab",
+     "cab": [
+      "",
+      "Contra Flávio (Dark Horse)",
+      "Contra Flávio (Prerrogativas, 09/10)",
+      "Contra o campo de Flávio (Ciro Nogueira, FB62)",
+      "Contra Lula (Veja, 08-09/10)",
+      "Contra o campo de Lula (Wagner, Compliance Zero)"
+     ],
+     "lin": [
+      [
+       "O que se alega",
+       "US$ 10,6 mi pagos por Vorcaro ao filme sobre Bolsonaro; pedido de ~US$ 24 mi",
+       "Acordo entre Vorcaro e aliados de Flávio para entregar um HD com acusações contra o governo",
+       "R$ 300 mil a R$ 500 mil por mês de Vorcaro; \"Emenda Master\"",
+       "R$ 30 mi em espécie para o filme de Oliver Stone, em troca de fundos de pensão",
+       "Vantagens pagas por membros do Master em troca de atuação no Congresso; Wagner como \"beneficiário central\" segundo a decisão de Mendonça"
+      ],
+      [
+       "Quem alega",
+       "PF, áudio do Intercept, inquérito no STF",
+       "Grupo de advogados alinhado ao PT",
+       "PF",
+       "Revista (áudio e capturas atribuídos a Vorcaro)",
+       "PF, busca autorizada por Mendonça (STF), 18/06/2026"
+      ],
+      [
+       "Documento",
+       "Inquérito aberto; PGR favorável; nova perícia ordenada por Dino",
+       "Os autores dizem não ter acesso à gravação",
+       "Operação da PF (FB62)",
+       "Nenhum pagamento achado; PF e PGR negam depoimento; UOL não acha nos celulares; Stone nega",
+       "US$ 49 mil apreendidos no hotel em Brasília e moeda estrangeira em Salvador (Wagner diz que são diárias)"
+      ],
+      [
+       "Negação",
+       "Flávio admite pedir apoio, nega ilícito",
+       "Sem resposta da campanha de Flávio encontrada",
+       "Ciro nega",
+       "Lula, Instituto Lula, Padilha; a defesa de Vorcaro \"repudia\" e não reconhece a autenticidade do material",
+       "Wagner nega; deixou a liderança do governo em 24/06; não é réu"
+      ],
+      [
+       "Estágio",
+       "**investigação formal** (contra o próprio candidato)",
+       "**alegação sem prova**",
+       "**investigação formal**",
+       "**relato não corroborado** (PF e PGR negam depoimento e anexo; a Veja diz que **não afirmou** depoimento à PF nem ida pessoal de Vorcaro à PGR e chama isso de \"invenção da campanha\" de Lula; a defesa não reconhece o áudio)",
+       "**investigação formal**"
+      ]
+     ]
+    },
+    "notas": [
+     "Leitura: o estágio de evidência é diferente. Há investigação formal nos **dois** campos (Wagner com Lula; Ciro com Flávio), e o único caso em investigação formal contra um **candidato** é o Dark Horse. O relato contra Lula e a representação contra Flávio estão no mesmo nível baixo (sem documento). Fontes da nuance da Veja e da defesa: [Times Brasil, 09/10](https://timesbrasil.com.br/brasil/em-novo-audio-atribuido-a-vorcaro-banqueiro-relata-reacao-de-pgr-a-acusacoes-envolvendo-propina-ao-instituto-lula/). Concessão do revisor do governo: as notas da PF e da PGR negam algo que a revista diz não ter afirmado; isso não muda o estágio (nenhum pagamento achado). Teste do espelho: se a reportagem fosse contra Flávio, com PF e PGR negando o depoimento, este arquivo a chamaria de não corroborada; é o que se faz aqui. E se a representação do Prerrogativas fosse contra Lula, vinda de advogados alinhados ao PL, seria chamada de alegação sem prova; é o que se faz aqui.",
+     "**Placar de 12/10, antes da revisão adversarial (histórico):** forte L4 × F2; média L1, L2, L5, L6 × F1, F3, F5; fraca L3 × F4. **Substituído** pelo placar final da seção 5.3 e da seção R (forte L4 × F6; F2 cai para média; L3 dividido; F7 novo)."
+    ]
+   },
+   "resumo": [
+    "Uma regra única pôs em \"forte\" só os casos com ato oficial ou decisão colegiada e sem contra-evidência que explique a parte central: L4 (combustíveis) e F6 (facções). F2 caiu para média por ter fato central só reportado; L5 ficou em média por depender de liminares; o Bolsa Família foi dividido (calendário fraca, data da decisão média). Os dois revisores discordam em F2 e L5; as duas leituras estão registradas.",
+    "Os dois lados têm um caso forte de natureza diferente: Lula no timing (benefício de combustível ampliado dentro da janela, com a próxima decisão depois do voto) e Flávio na insinuação (posts que ligam Lula a facções, barrados por unanimidade no plenário do TSE). A economia de Flávio (F1, F2) mostra duas mensagens para dois públicos, mas o estudo de desindexação é reportado, não documentado. Do lado de Lula, o indireto está no timing: a crítica ao STF que endurece depois do 1º turno (embora a cobrança nominal a Moraes tenha vindo em 01/10, antes do voto, junto com o apoio ao adiamento do caso), a PEC 6x1 empurrada no Senado entre os turnos e a correção do Bolsa Família decidida 17 dias antes do 1º turno depois de 3,5 anos parada. Os dois lados usam porta-vozes (Durigan, Janja, Janones, Lindbergh; Sachsida, Marinho) para dizer o que o candidato não diz."
+   ]
+  },
+  "disputados": {
+   "lista": [
+    "[disputado]: força de F2 e de L5 (R2); data-base do INPC do Bolsa Família (jan ou mar/2023); data de publicação da Veja (08 ou 09/10).",
+    "[não verificado]: defesa de Moraes por Lula em 17/09/2026; o \"R$ 350 bi\" de Flávio; texto original da Folha; julgamento em plenário das liminares de 08/10; explicação pública de Flávio sobre o Dark Horse entre 10/09 e 08/10 (não achada); defasagem dos combustíveis em outubro; contrato de Lewandowski (coluna, fonte única); a caminhada de Wagner em 09/10 (lida pelo revisor, não reaberta)."
+   ],
+   "nao_verificado_09_10": "**Não verificado:** prorrogação da gasolina; texto original da Folha sobre a desindexação; posição de Ratinho Jr., Helder, prefeitos e Michelle; confirmação de presença nos debates; dados de XP e BTG; fechamento de mercado de 09/10.",
+   "nao_verificado_12_10": "**Não verificado**: número do novo decreto da gasolina; quem derrubou o debate da Record; posição de Helder, MDB, Renan, PSDB e Michelle; resultado de Direct e Seta; texto original da Folha sobre a desindexação; julgamento em plenário das liminares de 08/10; o \"R$ 350 bi\" de Flávio.",
+   "resumo": [
+    "Número do novo decreto da gasolina; quem derrubou o debate da Record; posição de Helder, MDB, Renan, PSDB e Michelle; resultado de Direct e Seta; texto original da Folha sobre a desindexação; julgamento em plenário das liminares de 08/10; o \"R$ 350 bi\" de Flávio."
+   ]
+  },
+  "resumo_aba": [
+   "Depois do 1º turno, a direita organizada e Cury (08/10, depois de dizer que se calaria) fecharam com Flávio; Renan e o centro ficaram neutros; Lula manteve a esquerda e governadores do Nordeste.",
+   "O TSE decidiu nos dois sentidos em 08/10: liminares contra quatro peças do campo de Lula (direito de resposta de Flávio pendente) e plenário unânime contra três posts de Flávio sobre facções.",
+   "O caso Master tem investigação formal nos dois campos (Wagner; Ciro) e contra um candidato (Dark Horse); o relato da Veja contra Lula segue não corroborado.",
+   "Placar do indireto pela regra única: 1 forte para cada lado (L4 e F6), 5 médias para cada lado, 1 fraca para cada lado; F2 e L5 são [disputados].",
+   "Mercados e pesquisas apontam Flávio à frente; a aritmética de transferência e abstenção também."
+  ]
+ },
+ "risco_democratico": {
+  "fonte": "research_notes/Democracia 2026/risco_democratico.md",
+  "titulo": "Risco democrático em 2026: \"Flávio → ditadura / perda de direitos\" × \"Lula → Venezuela / censura / ditadura do Judiciário\"",
+  "data": "Data da pesquisa: 12/10/2026, entre o 1º turno (04/10; TSE, válidos: Flávio Bolsonaro 47,03% × Lula 45,16%) e o 2º turno (25/10). Regras aplicadas: CLAUDE.md (Regra 1, o indireto; Regra 2, mesma régua e teste do espelho; Regra 3, custo; Regra 4, processo; Regra 6, ler a tese como foi feita). Casos já catalogados em `research_notes/Indireto 2026/` são citados pelo código (FBxx para Flávio/Bolsonaro, Lxx/LPxx para Lula/PT) e não são refeitos aqui.",
+  "convencoes": [
+   "`[fato]` = verificável em decisão, registro oficial, documento ou fala gravada com data.",
+   "`[leitura]` = inferência deste documento a partir de fatos; pode estar errada.",
+   "`[narrativa de X]` = tese de um ator, registrada como tese, sem endosso.",
+   "Confiança: **alta** (fonte primária ou dois veículos de campos diferentes), **média** (um veículo ou resumo secundário), **baixa** (fonte única, partidária ou não conferida).",
+   "\"Não verificado\" quer dizer o que diz. Números de memória não entram sem essa marca."
+  ],
+  "selecao": "**Aviso de seleção (brecha 9).** Os temas, a ordem (Flávio primeiro porque a pergunta do usuário começou por ele; a seção espelho tem o mesmo formato) e quais fatos entraram foram escolhidos por quem pesquisou. A omissão de um tema é uma fala indireta do próprio documento; as lacunas estão na seção 11.",
+  "vereditos": {
+   "tabela": {
+    "t": "tab",
+    "cab": [
+     "Afirmação",
+     "Forma forte",
+     "Forma fraca"
+    ],
+    "lin": [
+     [
+      "\"Se Flávio ganhar, o Brasil vira ditadura / o povo perde poder e direitos\"",
+      "**Não sustentada** (\"ditadura\")",
+      "**Parcialmente sustentada** (\"risco de erosão\": impunidade para a tentativa de golpe, STF remontado, histórico de ataque ao processo eleitoral no ecossistema)"
+     ],
+     [
+      "\"Se Lula ganhar, o Brasil vira Venezuela / há censura e ditadura do Judiciário\"",
+      "**Não sustentada** (\"Venezuela\")",
+      "**Parcialmente sustentada** (\"restrição à expressão por via judicial e administrativa, que o governo apoia e um 4º mandato consolidaria via nomeações\")"
+     ]
+    ]
+   },
+   "notas": [
+    "Os dois \"parcialmente\" **não são do mesmo tipo nem do mesmo peso**, e isso é dito sem amaciar para nenhum lado: um lado tem no seu ecossistema uma tentativa de ruptura julgada e condenada (STF, 4×1, com dissenso), um filho condenado (4×0) por articular sanções estrangeiras para pressionar o julgamento, mais a promessa do candidato de indultar \"todo mundo\"; o outro tem restrições à expressão por decisões judiciais e por órgãos do Executivo (AGU em 2026, Senacon em 2023), apoiadas publicamente pelo presidente, que declarou o STF como via \"mais factível\" para regular as redes, e uma fala do presidente insinuando \"falcatrua\" do Tribunal Eleitoral. **A diferença de peso é de magnitude, não de probabilidade**: com Flávio, o dano possível é maior e menos provável (depende de indulto, Congresso e STF); com Lula, o dano por ato é menor e com alta probabilidade de continuar (os mecanismos já operam). A seção 8.3 explica a régua e o julgamento de valor que ela contém.",
+    "Restrição que vale para qualquer vencedor: nenhum dos dois tem os 308 deputados e 49 senadores de uma PEC; o \"centrão\" (cerca de 257 deputados) decide. O ponto onde o vencedor ganha mais poder **sem** o Congresso é o STF: há 1 vaga aberta e 3 aposentadorias compulsórias até dez/2030, e o vencedor indicará 4 de 11 ministros."
+   ],
+   "resumo": [
+    "As duas teses fortes (\"ditadura\" e \"Venezuela\") não se sustentam diante do Congresso eleito, das cláusulas pétreas, do árbitro eleitoral e do registro recente. As duas teses fracas se sustentam em parte: com Flávio, pela impunidade prometida à tentativa de golpe, pela pressão estrangeira e pelas evasões no ecossistema e pela remontagem do STF; com Lula, pela restrição administrativa e judicial à expressão, pela via do STF declarada para regular redes, por palavras contra o árbitro eleitoral e pela consolidação de um STF que se protege. O peso é diferente em magnitude (maior com Flávio) e em probabilidade (maior com Lula); a ordem final depende de um julgamento de valor que este documento declara. O risco comum aos dois é o mesmo: 4 vagas no STF.",
+    "\"Flávio → ditadura\" e \"Lula → Venezuela\" dependem de supermaioria no Congresso, ampliação do tribunal ou controle do árbitro eleitoral e das armas. Nenhum dos dois tem. PL: 121/513 e 28/81. PT: 70/513 e 9/81. O tamanho do STF exige PEC. O TSE de 2026 é presidido por indicado de Bolsonaro. A cúpula militar que aderiu em 2022 foi condenada."
+   ]
+  },
+  "evidencia": {
+   "flavio": {
+    "titulo": "8.1 \"Se Flávio ganhar, o Brasil vira ditadura / o povo perde poder e direitos\"",
+    "blocos": [
+     {
+      "t": "p",
+      "md": "**Forma forte (\"ditadura\"): não sustentada.**"
+     },
+     {
+      "t": "ul",
+      "itens": [
+       "Não há maioria de PEC (PL: 121 de 513 e 28 de 81); cláusulas pétreas protegem voto periódico e separação de Poderes.",
+       "O STF tem até 2028 maioria de indicados de outros presidentes; a cúpula militar que aderiu em 2022 foi condenada; o Exército e a Aeronáutica recusaram em 2022.",
+       "O candidato propõe fim da reeleição (limita o próprio poder) e declarou que aceita o resultado."
+      ]
+     },
+     {
+      "t": "p",
+      "md": "**Forma fraca (\"risco de erosão e perda de garantias\"): parcialmente sustentada.** Razões com mecanismo:"
+     },
+     {
+      "t": "ol",
+      "itens": [
+       "Anistia ou indulto amplo à tentativa de golpe julgada (FB38, prometido literalmente): sinal de impunidade que a literatura liga a tentativas repetidas; a lei de anistia tem chance real no Congresso de 2027.",
+       "4 indicações ao STF levariam a 6 de 11 ministros indicados por pai e filho até 2030, com o programa de \"rever competências\" e acabar com o foro criminal no STF, que alcança o próprio inquérito do candidato.",
+       "Comportamento eleitoral recente: Smartmatic a diplomatas (jul/2026), \"TSE de 2022 não era imparcial\", \"jamais questionei\" desmentido pelo registro.",
+       "Ecossistema e pressão externa (acrescentado na revisão de 12/10): Eduardo condenado 4×0 por articular sanções americanas para pressionar o julgamento do pai; o próprio Flávio tratou a tarifa de 2025 como moeda para a anistia (\"já é uma sinalização\"); evasões de decisão judicial no ecossistema (Ramagem, Zambelli, tornozeleira; vigília convocada por Flávio citada na preventiva)."
+      ]
+     },
+     {
+      "t": "p",
+      "md": "**Incertezas principais**: se o indulto alcançaria a cúpula (o texto da promessa diz \"todo mundo\"); se o STF barraria a anistia; se a reforma do STF seria retroativa; quem seriam os 4 indicados."
+     }
+    ]
+   },
+   "lula": {
+    "titulo": "8.2 \"Se Lula ganhar (4º mandato), o Brasil vira Venezuela / há censura / ditadura do Judiciário\"",
+    "blocos": [
+     {
+      "t": "p",
+      "md": "**Forma forte (\"Venezuela\"): não sustentada.**"
+     },
+     {
+      "t": "ul",
+      "itens": [
+       "O PT tem 70 deputados e 9 senadores; o Congresso derrubou vetos de Lula e o Senado rejeitou seu indicado ao STF, com aceitação.",
+       "Lula não pode concorrer em 2030 e não há proposta de mudar isso.",
+       "O árbitro eleitoral de 2026 é presidido por indicado de Bolsonaro e a oposição venceu o 1º turno. Esse TSE decidiu contra o campo de Lula (vídeo da \"falcatrua\" em set/2026; quatro peças em 08/10; Canal Gov em jul/2026) e contra o de Flávio (posts sobre facções, plenário unânime, 08/10), o que não combina com árbitro capturado por nenhum dos dois.",
+       "Imprensa: RSF 110º → 52º. Em 2024 o governo não reconheceu Maduro e vetou a Venezuela no BRICS; o PT, como partido, reconheceu (porta-voz, brecha 1)."
+      ]
+     },
+     {
+      "t": "p",
+      "md": "**Forma fraca (\"censura e excesso do Judiciário, apoiados e consolidados por Lula\"): parcialmente sustentada.** Razões com mecanismo:"
+     },
+     {
+      "t": "ol",
+      "itens": [
+       "O Executivo já pede remoção de posts por via extrajudicial (AGU, abr/2026: posts que o órgão classificou como atribuição falsa de conteúdo a um projeto de lei; críticos chamam de remoção de opinião), sem contraditório, com recuo só para jornalistas e, segundo a própria AGU, 88% de atendimento; em 2023 a Senacon impôs contrapropaganda ao Google sobre o PL 2630.",
+       "Lula apoiou publicamente o bloqueio de uma rede inteira (motivo declarado na decisão: falta de representante legal; fala de Lula: \"tem que respeitar a decisão da Suprema Corte\"); o programa promete \"avançar\" na regulação sem texto; e Lula declarou que regular pelo STF é \"mais factível\" que pelo Congresso, o que tira do \"Congresso à direita\" parte do papel de freio.",
+       "Com 4 indicações, 8 de 11 ministros seriam indicados por Lula/Dilma até 2030, o que consolidaria um tribunal com inquérito de ofício aberto desde 2019, liminar que dificulta o impeachment dos próprios ministros e suspensão monocrática de lei do Congresso. Ressalva: \"8 de 11\" mede origem, não alinhamento (Fux, indicado por Dilma, foi o voto vencido a favor de Bolsonaro na AP 2668; Fachin ficou vencido no art. 19); vale igual para o \"6 de 11\" de Flávio. A diferença de intenção declarada é que Flávio disse que o candidato da direita teria de \"garantir que o STF não derrube\" o indulto (15/06/2025); não achei fala equivalente de Lula ligando as vagas a um processo específico.",
+       "EIU (2024), Liberdade na Rede (2025) e IDEA (2025) registram a restrição à expressão; o medo de criticar o STF subiu de 35% para 57,5% (Sivis).",
+       "Palavras contra o árbitro eleitoral: \"falcatrua\" (set/2026) e \"fraude\" (2018). Palavras, não atos; entram no sinal 1 em grau baixo-médio."
+      ]
+     },
+     {
+      "t": "p",
+      "md": "Ressalva que vale para os dois: a restrição judicial à expressão não corre num sentido só. Em 2026 o presidente do TSE, indicado por Bolsonaro, suspendeu a pedido do PL uma pesquisa desfavorável a Flávio (2.5). Teste do espelho: se o PT tivesse conseguido suspender uma pesquisa desfavorável a Lula, isso contaria no sinal 4 do lado de Lula; conta no do lado de Flávio."
+     },
+     {
+      "t": "p",
+      "md": "**Incertezas principais**: o conteúdo de uma lei de plataformas; se as novas indicações seriam de perfil \"Moraes\" ou não (Lula criticou Moraes em 01/10 e falou em mandatos em 05/10); o desfecho do caso Master no STF; se o \"excesso do Judiciário\" diminui ou cresce sem relação com o presidente."
+     }
+    ]
+   },
+   "sinais_tabela": {
+    "t": "tab",
+    "cab": [
+     "Sinal",
+     "Flávio e ecossistema",
+     "Evidência",
+     "Lula e PT",
+     "Evidência"
+    ],
+    "lin": [
+     [
+      "1. Rejeição ou compromisso fraco com as regras do jogo",
+      "**Alto no ecossistema, médio no candidato**",
+      "Jair: minuta de ruptura (condenado 4×1); PL pediu anulação de votos (multa de R$ 22,99 mi); Eduardo condenado 4×0 por articular sanções estrangeiras para pressionar o julgamento; evasões de decisão judicial (Ramagem, Zambelli, tornozeleira); Flávio: dúvida sobre urnas em 2014-18, Smartmatic a diplomatas em jul/2026, \"TSE de 2022 não era imparcial\", tarifa como moeda para a anistia (\"já é uma sinalização\", 2025), vigília de nov/2025 (papel disputado); aceitou o resultado em 02/08/2026, evasivo no JN",
+      "**Baixo-médio (palavras)** (era \"baixo\"; elevado na revisão de 12/10)",
+      "Contra: \"Que não venha o Tribunal Eleitoral querer falcatrua\" (09/09/2026, vídeo retirado pelo TSE por liminar); \"fraude\" se fosse barrado (2018); chamou o impeachment de \"golpe\". A favor: aceitou derrotas institucionais (impeachment de 2016 pela via do Senado, veto derrubado, Messias rejeitado); disse que aceita derrota; nenhuma **ação** achada contra o resultado de uma eleição. Diferença para Flávio: grau (palavra × palavra a estrangeiros + ecossistema com ato de ruptura), não \"nada × algo\""
+     ],
+     [
+      "2. Negação da legitimidade do adversário",
+      "**Médio**",
+      "Moraes \"tirano\", \"demônio\"; julgamento \"farsa\"; \"último obstáculo contra a ditadura\"",
+      "**Médio**",
+      "\"Não há lugar para fascistas\"; \"fascismo\" e \"assassinos\" da Covid para o campo adversário no 1º ato do 2º turno (09/10/2026, sem nomear Flávio); \"golpe\" de 2016"
+     ],
+     [
+      "3. Tolerância ou incentivo à violência",
+      "**Médio-alto (por ato prometido)**",
+      "Promessa de indulto a \"todo mundo\" do 8/1 e da trama, inclusive a cúpula de um plano de assassinato; \"vocês vão subir a rampa comigo\"; desqualifica os generais que recusaram o golpe. Não achei incentivo direto de Flávio à violência",
+      "**Baixo**",
+      "Não achei tolerância a violência contra instituições. Relação com o MST (ocupações de terra) é tema de propriedade, não de ruptura, e não foi pesquisada aqui"
+     ],
+     [
+      "4. Disposição de restringir liberdades civis de adversários e da mídia",
+      "**Médio-alto no histórico do ecossistema** (era \"médio\"; regraduado na revisão de 12/10), **baixo no programa**",
+      "77 inquéritos **criminais** de LSN contra críticos (2019-20), vários pedidos pelo ministro da Justiça; \"Abin paralela\" (34 indiciados, monitoramento de adversários); Eduardo: \"cabo e soldado\", \"novo AI-5\". O programa de 2026 não propõe restringir imprensa. Em 2026 o PL pediu e obteve a suspensão de uma pesquisa desfavorável (via judicial)",
+      "**Médio**",
+      "Apoio público ao bloqueio do X; cautelar da Senacon contra o Google (2023, vinculante, com multa); AGU pedindo remoção de posts que classificou como atribuição falsa de conteúdo a projeto de lei (abr/2026), com 88% das notificações atendidas segundo o próprio órgão; via do STF declarada para regular redes; ação da campanha contra um repórter (out/2026); CFJ em 2004 (abandonado); PT reconheceu Maduro em 2024"
+     ]
+    ]
+   },
+   "regua": "**Régua de graduação do sinal 4 (fixada na revisão de 12/10, vale para os dois):** o grau segue o instrumento usado contra críticos: investigação criminal ou espionagem de adversários (alto ou médio-alto) > medida administrativa vinculante ou notificação extrajudicial com alto atendimento (médio) > fala ou proposta sem texto (baixo-médio). Por isso o histórico do ecossistema Bolsonaro (LSN criminal, Abin paralela) fica acima de Lula (Senacon, AGU, apoio ao bloqueio do X, via STF), e a frase anterior \"no mesmo nível\" foi retirada: os próprios dados deste documento não a sustentavam (V-Dem de liberdade de expressão 0,699-0,709 em 2020-22 contra 0,903-0,923 em 2023-25). O revisor do governo propunha baixar Lula a \"baixo-médio\"; o da oposição trouxe a Senacon e o dado de 88% de atendimento da AGU, que sustentam \"médio\".",
+   "resumo": [
+    "Pela régua de Levitsky e Ziblatt, o campo de Flávio pontua mais nos sinais 1, 3 e 4 (regras eleitorais, tolerância com a violência de 2022-23 e histórico de uso de instrumentos criminais contra críticos); o campo de Lula pontua no sinal 4 (expressão e plataformas, por via administrativa e judicial, em grau médio) e passou a pontuar no sinal 1 em grau baixo-médio, por palavras contra o árbitro eleitoral (2018 e set/2026). Os dois pontuam no sinal 2. Os caminhos clássicos de ruptura (supermaioria, ampliação de tribunal, Constituinte) não estão disponíveis para nenhum; o caminho de \"captura por nomeação\" está disponível para os dois.",
+    "Flávio: promessa literal de indulto a \"todo mundo\" depois de uma tentativa de golpe julgada (4×1, com plano de assassinato); alegação falsa sobre urnas a diplomatas em jul/2026; tarifa americana tratada como moeda para a anistia (2025) e irmão condenado 4×0 por articular essa pressão; evasões de decisão judicial no ecossistema (Ramagem, Zambelli, tornozeleira); reforma do STF que alcançaria o próprio inquérito dele; 6 de 11 ministros indicados pelo pai e por ele até 2030.",
+    "Lula: apoio ao bloqueio integral do X (por falta de representante legal); AGU pedindo remoção, sem ordem judicial, de posts que classificou como atribuição falsa de conteúdo a projeto de lei (abr/2026), com 88% de atendimento segundo o órgão; Senacon contra o Google (2023); regulação de plataformas sem texto e com o STF declarado como via \"mais factível\"; \"falcatrua\" do Tribunal Eleitoral (set/2026, vídeo retirado pelo TSE); consolidação de um STF que investiga de ofício seus críticos desde 2019, se blinda do impeachment e suspende lei do Congresso; 8 de 11 ministros indicados por PT até 2030 (origem, não alinhamento garantido)."
+   ]
+  },
+  "freios": {
+   "quoruns": {
+    "t": "tab",
+    "cab": [
+     "Medida",
+     "Câmara",
+     "Senado",
+     "Quem tem sozinho?"
+    ],
+    "lin": [
+     [
+      "Lei ordinária (anistia, regulação de redes, Estatuto do Desarmamento)",
+      "maioria simples, presentes 257",
+      "maioria simples, presentes 41",
+      "ninguém; o centrão decide"
+     ],
+     [
+      "Derrubar veto",
+      "257",
+      "41",
+      "ninguém; a dosimetria passou por 318 e 49"
+     ],
+     [
+      "PEC (mandatos no STF, competências, fim da reeleição, 6x1)",
+      "308, dois turnos",
+      "49, dois turnos",
+      "ninguém: direita + centrão = 389; esquerda + centrão = 381"
+     ],
+     [
+      "Bloquear PEC",
+      "206",
+      "33",
+      "nem a esquerda (124) nem a direita (132) bloqueiam sozinhas na Câmara"
+     ],
+     [
+      "Aprovar ministro do STF ou PGR",
+      "—",
+      "41",
+      "ninguém; PL fica a 13"
+     ],
+     [
+      "Condenar ministro do STF em impeachment",
+      "—",
+      "54 (2/3, art. 52)",
+      "PL fica a 26; a liminar de Gilmar exige 2/3 também para abrir"
+     ],
+     [
+      "Cláusulas pétreas (art. 60, §4º: voto direto, secreto, universal e periódico; separação de Poderes; direitos individuais; federação)",
+      "não podem ser abolidas nem por PEC",
+      "",
+      "ninguém"
+     ]
+    ]
+   },
+   "quoruns_leitura": "[leitura] Para os dois vencedores, o Congresso é mais restrição do que instrumento. Para Lula, o Congresso de 2027 é mais à direita que o de 2023 (PL de 99 para 121) e já derrubou vetos dele (dosimetria; 52 de 63 vetos ao licenciamento ambiental, `ambiente_agro_energia_infra.md`). Para Flávio, a maioria simples para uma **lei de anistia** é plausível (a dosimetria passou por 318×144), mas PECs dependem do centrão, que historicamente negocia.",
+   "camara_fonte": "**Câmara (513)** [fato, média: apuração de 99,99%, ainda sem diplomação] ([CNN Brasil, 05/10](https://www.cnnbrasil.com.br/eleicoes/bancada-partidos-camara/)):",
+   "senado": "**Senado (81) a partir de 2027** [fato, média]: PL 28 (19 eleitos + 9 com mandato), União Progressista 11, PT 9, MDB 8 ([Correio da Manhã](https://www.correiodamanha.com.br/politica/2026/10/324418-mapa-do-poder-pl-domina-congresso-e-amplia-presenca-nos-estados-apos-primeiro-turno.html); [Congresso em Foco](https://www.congressoemfoco.com.br/noticia/122992/pl-tera-1-em-cada-4-congressistas-e-amplia-pressao-sobre-o-stf)). Um suplente que se filiou ao PL levaria a 29 (número em movimento).",
+   "stf": {
+    "t": "tab",
+    "cab": [
+     "Ministro",
+     "Indicado por",
+     "Ano",
+     "Aposentadoria compulsória (75 anos)"
+    ],
+    "lin": [
+     [
+      "Gilmar Mendes",
+      "FHC",
+      "2002",
+      "dez/2030"
+     ],
+     [
+      "Cármen Lúcia",
+      "Lula",
+      "2006",
+      "abr/2029"
+     ],
+     [
+      "Dias Toffoli",
+      "Lula",
+      "2009",
+      "2042*"
+     ],
+     [
+      "Luiz Fux",
+      "Dilma",
+      "2011",
+      "abr/2028"
+     ],
+     [
+      "Edson Fachin",
+      "Dilma",
+      "2015",
+      "2033"
+     ],
+     [
+      "Alexandre de Moraes",
+      "Temer",
+      "2017",
+      "2043*"
+     ],
+     [
+      "Kassio Nunes Marques",
+      "Bolsonaro",
+      "2020",
+      "2047*"
+     ],
+     [
+      "André Mendonça",
+      "Bolsonaro",
+      "2021",
+      "2047*"
+     ],
+     [
+      "Cristiano Zanin",
+      "Lula",
+      "2023",
+      "2050*"
+     ],
+     [
+      "Flávio Dino",
+      "Lula",
+      "2023 (posse 2024)",
+      "2043"
+     ],
+     [
+      "**vaga de Barroso**",
+      "aberta desde out/2025",
+      "—",
+      "Messias rejeitado (42×34) em 29/04/2026; sem nova indicação até 15/09/2026 ([O Liberal](https://www.oliberal.com/politica/stf-tera-tres-aposentadorias-ate-2030-presidente-eleito-podera-indicar-quase-um-terco-da-corte-1.1169042))"
+     ]
+    ]
+   },
+   "stf_projecao": {
+    "t": "tab",
+    "cab": [
+     "Vencedor",
+     "Indicações 2027-30",
+     "STF em 2031"
+    ],
+    "lin": [
+     [
+      "Flávio",
+      "4 (Barroso, Fux, Cármen, Gilmar)",
+      "6 de 11 indicados por Bolsonaro pai e filho (Nunes Marques, Mendonça + 4); 4 por Lula/Dilma (Toffoli, Zanin, Dino, Fachin); 1 por Temer"
+     ],
+     [
+      "Lula",
+      "4",
+      "8 de 11 indicados por Lula/Dilma (Toffoli, Zanin, Dino, Fachin + 4); 2 por Bolsonaro; 1 por Temer"
+     ]
+    ]
+   },
+   "stf_notas": [
+    "Fontes: [O Liberal, 15/09/2026](https://www.oliberal.com/politica/stf-tera-tres-aposentadorias-ate-2030-presidente-eleito-podera-indicar-quase-um-terco-da-corte-1.1169042); [Jornal de Brasília](https://jornaldebrasilia.com.br/noticias/politica-e-poder/flavio-dino-pode-ficar-no-stf-por-20-anos-ate-2043-veja-quando-cada-ministro-se-aposenta/). *Anos marcados com asterisco: de memória pelas datas de nascimento, não reconferidos (não afetam o período 2027-2030).",
+    "**Projeção mecânica em 2031 (se a vaga de Barroso não for preenchida antes de 01/01/2027 e ninguém sair antes)** [leitura, conta própria]:",
+    "O tamanho do STF (11) está no art. 101 da Constituição: ampliar o tribunal, como fizeram Venezuela (lei de 2004, de 20 para 32 juízes; [Caracas Chronicles](https://www.caracaschronicles.com/2016/01/02/49927)) e Hungria (de 11 para 15 em 2011; [Hungarian Helsinki Committee/HCLU](https://hclu.hu/en/articles/hungarys-government-has-taken-control-of-the-constitutional-court-1)), exige PEC. Nenhum dos dois candidatos de 2026 propõe ampliar; o campo Bolsonaro propôs 21 ministros em 2018 (seção 2.1). O Senado já mostrou que veta (Messias). [leitura] **O principal poder que o vencedor ganha sem o Congresso é moldar o árbitro.** Isso vale para os dois e é o maior risco estrutural que sobra em qualquer cenário: um STF alinhado ao presidente reduz o freio sobre ele."
+   ],
+   "outros": {
+    "t": "tab",
+    "cab": [
+     "Freio",
+     "Situação",
+     "Tag",
+     "Conf."
+    ],
+    "lin": [
+     [
+      "Governadores",
+      "20 eleitos no 1º turno: PL 5, PSD 4, PT 3, Republicanos 3 (inclui SP e MG), PP 2, PSDB 1, MDB 1, Podemos 1; 7 estados no 2º turno ([Correio da Manhã](https://www.correiodamanha.com.br/politica/2026/10/324418-mapa-do-poder-pl-domina-congresso-e-amplia-presenca-nos-estados-apos-primeiro-turno.html)). Polícias e segurança são estaduais (art. 144)",
+      "[fato]",
+      "média"
+     ],
+     [
+      "Forças Armadas",
+      "Em 2022, dois de três comandantes recusaram a minuta; em 2025, pela primeira vez, oficiais-generais foram condenados por golpe (penas de 19 a 26 anos) e há pedido de perda de patente no STM",
+      "[fato]",
+      "alta"
+     ],
+     [
+      "TSE",
+      "Composição rotativa (3 do STF, 2 do STJ, 2 juristas nomeados pelo presidente a partir de listas do STF); presidido em 2026 por indicado de Bolsonaro",
+      "[fato]",
+      "alta"
+     ],
+     [
+      "Imprensa",
+      "RSF 2026: Brasil em 52º (110º em 2022), à frente dos EUA (64º)",
+      "[fato]",
+      "alta"
+     ],
+     [
+      "Federalismo e Judiciário estadual",
+      "27 tribunais de justiça, 6 TRFs, MPs estaduais com autonomia",
+      "[fato] de base",
+      "alta"
+     ]
+    ]
+   },
+   "sozinho": "**O que um presidente muda sozinho** [fato, Constituição e precedentes]: decretos regulamentares (armas: Bolsonaro flexibilizou por decreto em 2019-21 e Lula restringiu em 2023, decretos validados pelo STF, `seguranca_publica.md`); indulto e graça (art. 84, XII, sob controle do STF, que anulou a graça a Silveira por 8×2); nomeação de PF, Abin, AGU, comandantes militares e diretoria de estatais; indicação (com Senado) de STF, PGR e BC; medidas provisórias (caducam sem Congresso); publicidade oficial; atuação extrajudicial da AGU (PNDD); política externa. **O que exige o Congresso**: anistia, regulação de plataformas, mandatos e competências do STF, fim da reeleição, 6x1, Estatuto do Desarmamento.",
+   "resumo": [
+    "Nenhum vencedor terá maioria de PEC; o centrão (257 deputados) é o fiel e as cláusulas pétreas protegem voto e separação de Poderes mesmo contra PEC. O vencedor ganha três alavancas sem o Congresso: 4 cadeiras no STF, o indulto e a máquina administrativa (PF, Abin, AGU, decretos). É por essas três que um risco real passaria, para os dois lados."
+   ]
+  },
+  "indices": {
+   "vdem": {
+    "anos": [
+     2014,
+     2015,
+     2016,
+     2017,
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025
+    ],
+    "series": {
+     "Democracia liberal (LDI)": [
+      0.783,
+      0.769,
+      0.653,
+      0.641,
+      0.608,
+      0.528,
+      0.534,
+      0.531,
+      0.54,
+      0.695,
+      0.712,
+      0.704
+     ],
+     "Democracia eleitoral": [
+      0.873,
+      0.861,
+      0.781,
+      0.774,
+      0.749,
+      0.691,
+      0.699,
+      0.69,
+      0.699,
+      0.79,
+      0.799,
+      0.784
+     ],
+     "Liberdade de expressão": [
+      0.934,
+      0.921,
+      0.809,
+      0.813,
+      0.792,
+      0.728,
+      0.709,
+      0.699,
+      0.704,
+      0.903,
+      0.923,
+      0.91
+     ],
+     "Restrição judicial ao Executivo": [
+      0.927,
+      0.921,
+      0.872,
+      0.881,
+      0.859,
+      0.806,
+      0.806,
+      0.827,
+      0.827,
+      0.914,
+      0.954,
+      0.954
+     ],
+     "Restrição legislativa ao Executivo": [
+      0.921,
+      0.931,
+      0.83,
+      0.792,
+      0.792,
+      0.785,
+      0.778,
+      0.789,
+      0.822,
+      0.937,
+      0.933,
+      0.933
+     ],
+     "Eleições livres e limpas": [
+      0.931,
+      0.919,
+      0.919,
+      0.907,
+      0.89,
+      0.842,
+      0.869,
+      0.876,
+      0.874,
+      0.838,
+      0.838,
+      0.838
+     ]
+    },
+    "fonte": "4.1 V-Dem (escala 0-1; dados v16 via [Our World in Data](https://ourworldindata.org/grapher/liberal-democracy-index)) [fato, alta]"
+   },
+   "vdem_nota": [
+    "O relatório de 2026 classifica o Brasil como \"democratizador em U\" (reverteu a autocratização), 28º de 179 no LDI ([CRS, ago/2026](https://www.everycrsreport.com/files/2026-08-11_R46016_29adb9a7d5871b600a941208441560658b71cda7.html)). Comentário acadêmico sobre o relatório (Godoy e Perovano, I·CONnect, 14/05/2026) chama a recuperação de \"parcial e frágil\" e aponta **dois** riscos: a volta de atores que apoiam anistia ao 8/1 **e** os inquéritos de ofício do STF, que produzem uma \"reconfiguração silenciosa, porém perigosa\" dos limites do sistema ([I·CONnect](https://www.iconnectblog.com/brazil-in-the-v-dem-democracy-report-2026-reversal-resilience-and-the-limits-of-democratic-recovery/))."
+   ],
+   "freedom_house": {
+    "anos": [
+     2018,
+     2019,
+     2020,
+     2021,
+     2022,
+     2023,
+     2024,
+     2025,
+     2026
+    ],
+    "valores": [
+     78.0,
+     75.0,
+     75.0,
+     74.0,
+     73.0,
+     72.0,
+     72.0,
+     72.0,
+     73.0
+    ],
+    "rotulo": "Freedom House, Liberdade no Mundo (0-100; a edição cobre o ano anterior)"
+   },
+   "outros_indices": {
+    "t": "tab",
+    "cab": [
+     "Índice",
+     "2018",
+     "2019",
+     "2020",
+     "2021",
+     "2022",
+     "2023",
+     "2024",
+     "2025",
+     "2026"
+    ],
+    "lin": [
+     [
+      "Freedom House, Liberdade no Mundo (0-100; a edição cobre o ano anterior)",
+      "78",
+      "75",
+      "75",
+      "74",
+      "73",
+      "72",
+      "72",
+      "72",
+      "73"
+     ],
+     [
+      "EIU, Democracy Index (0-10; ano de referência)",
+      "n/v",
+      "6,86",
+      "n/v",
+      "n/v",
+      "n/v",
+      "6,68 (51º)",
+      "6,49 (57º)",
+      "50º, nota n/v",
+      "—"
+     ],
+     [
+      "RSF, liberdade de imprensa (posição; edição)",
+      "—",
+      "—",
+      "—",
+      "—",
+      "110º",
+      "92º (implícito)",
+      "82º",
+      "63º",
+      "52º"
+     ],
+     [
+      "Freedom House, Liberdade na Rede (0-100)",
+      "—",
+      "—",
+      "—",
+      "—",
+      "—",
+      "—",
+      "65",
+      "65",
+      "—"
+     ]
+    ]
+   },
+   "fontes_42": "Fontes: Freedom House, páginas por edição ([2018-2024](https://freedomhouse.org/country/brazil/freedom-world/2024), [2025](https://freedomhouse.org/country/brazil/freedom-world/2025), [2026](https://freedomhouse.org/country/brazil/freedom-world/2026), [Rede 2025](https://freedomhouse.org/country/brazil/freedom-net/2025)); EIU via [brazilian.report](https://brazilian.report/latin-america/2020/01/23/democracy-weakening-latin-america-economist-index/amp/), [latinoamerica21](https://latinoamerica21.com/en/the-pulse-of-latin-american-democracy/), [Congresso em Foco](https://congressoemfoco.com.br/noticia/106752/acoes-do-stf-enfraquecem-a-democracia-brasileira-diz-the-economist) e [CRS](https://www.everycrsreport.com/files/2026-08-11_R46016_29adb9a7d5871b600a941208441560658b71cda7.html); RSF via [Jornal de Brasília](https://jornaldebrasilia.com.br/noticias/brasil/brasil-ultrapassa-eua-em-ranking-de-liberdade-de-imprensa/) e [O Imparcial](https://oimparcial.com.br/brasil/2026/04/brasil-sobe-para-52a-posicao-em-ranking-global-de-liberdade-de-imprensa-e-supera-os-estados-unidos/). n/v = não verificado. A série completa do EIU no OWID é de redistribuição proibida.",
+   "leitura": [
+    "**A queda começa em 2016, não em 2019.** O LDI caiu 0,116 de 2015 para 2016 (impeachment de Dilma, governo Temer) e mais 0,080 de 2018 para 2019 (1º ano de Bolsonaro). O fundo do poço é 2019-2022 (0,528 a 0,540). Dizer que \"a democracia caiu com Bolsonaro\" omite 2016; dizer que \"caiu com o PT\" ignora que o mínimo é 2019-22.",
+    "**Sob Bolsonaro**, caíram sobretudo liberdade de expressão (0,792 → 0,699) e restrição judicial ao Executivo (0,859 → 0,806); FH perdeu 3 pontos entre as edições de 2019 e 2023; RSF chegou a 110º.",
+    "**Sob Lula 3**, V-Dem e RSF mostram forte recuperação (expressão 0,704 → 0,910; imprensa 110º → 52º). **Os índices que medem o Judiciário e a internet não acompanham**: EIU caiu em 2024 citando o STF; Liberdade na Rede ficou em 65 com piora em bloqueios; FH ficou parado em 72; IDEA põe a expressão \"sob monitoramento\". O índice de eleições livres e limpas do V-Dem está mais baixo em 2023-25 (0,838) do que em 2020-22 (0,87): ele codifica a eleição de 2022 e a carrega para os anos seguintes, então reflete a eleição sob Bolsonaro e o ambiente do TSE daquele ano; não dá para atribuir a um lado só.",
+    "**Viés de medição** (Regra 5, brecha 10): índices de especialistas (V-Dem, FH) dependem de codificadores acadêmicos e foram criticados por exagerar quedas e recuperações (Little e Meng, \"Measuring Democratic Backsliding\", *PS: Political Science & Politics*, 2024 [referência de base, não reaberta]). O V-Dem mede sobretudo freios ao **Executivo**; um tribunal que restringe a expressão sem ordem do Executivo aparece menos nele. É coerente com a divergência entre V-Dem (otimista) e EIU/FOTN/IDEA (preocupados com o STF)."
+   ],
+   "resumo": [
+    "Os índices concordam que 2019-22 foi o pior período desde a redemocratização e que houve recuperação desde 2023. Discordam sobre o papel do STF: os índices centrados no Executivo veem melhora forte; os que olham para Judiciário e internet registram a restrição à expressão como problema novo. As duas leituras são compatíveis com os dados."
+   ]
+  },
+  "sinais": {
+   "tabela": {
+    "t": "tab",
+    "cab": [
+     "Se Flávio vencer",
+     "Se Lula vencer"
+    ],
+    "lin": [
+     [
+      "Texto e alcance do indulto: inclui a cúpula condenada (Braga Netto, Garnier, Heleno, o próprio Jair)?",
+      "Texto de qualquer projeto de regulação de plataformas: quem decide o que é \"desinformação\"? Há juiz ou é órgão do Executivo?"
+     ],
+     [
+      "Regra de transição da reforma do STF: o fim do foro criminal se aplica a inquéritos em curso (inclusive o dele)?",
+      "A PNDD/AGU continua pedindo remoção sem ordem judicial? Há relatório público com número de pedidos?"
+     ],
+     [
+      "Perfil dos 4 indicados ao STF e ao PGR: ligação pessoal ou partidária, quarentena aplicada a si mesmo?",
+      "Perfil dos 4 indicados: advogado pessoal ou ministro de Estado (como Zanin e Dino)? Lula aplicaria a quarentena que Flávio propõe?"
+     ],
+     [
+      "Nomeações na PF, Abin e comandos militares: algum condenado ou investigado da trama?",
+      "Destino do Inquérito 4781 e da liminar de Gilmar sobre impeachment: o governo defende ou pede limites?"
+     ],
+     [
+      "Pedido de impeachment de Moraes: segue a via constitucional (54 votos) ou há pressão por desobediência?",
+      "Reação a decisões do STF contra o governo: acata?"
+     ],
+     [
+      "Reação a decisões do STF contra o governo: acata ou diz que não cumpre (como em 07/09/2021)?",
+      "Relação com Venezuela e Nicarágua: reconhecimento de eleições sem atas?"
+     ],
+     [
+      "Discurso sobre a eleição de 2030 e o TSE",
+      "Proposta para 2030 (sucessão sem Lula) e respeito ao limite de mandatos"
+     ]
+    ]
+   },
+   "resumo": [
+    "O texto do indulto e da reforma do STF (Flávio); o texto da regulação e a atuação da AGU (Lula); o perfil dos 4 indicados (os dois); e se o presidente acata decisões contrárias (os dois)."
+   ]
+  },
+  "peso": {
+   "titulo": "8.3 Por que os dois \"parcialmente\" não pesam igual (reescrito na revisão de 12/10)",
+   "blocos": [
+    {
+     "t": "p",
+     "md": "**Duas dimensões, não uma.** A versão anterior justificava a diferença pela \"natureza dos fatos (ruptura tentada × restrição de expressão por vias legais e revertidas)\". Isso tinha dois problemas, apontados pelo revisor da oposição e aceitos aqui: (1) \"revertidas\" generalizava um caso só (o X voltou em cerca de 40 dias); não foram revertidos o Inq. 4781 (7 anos), a tese do art. 19, a suspensão da Lei da Dosimetria, a atuação extrajudicial da AGU, a pena de 14 anos de Débora, os seis meses de prisão de Filipe Martins e a morte de Clezão; (2) a comparação misturava **magnitude** com **probabilidade**."
+    },
+    {
+     "t": "tab",
+     "cab": [
+      "Dimensão",
+      "Flávio",
+      "Lula"
+     ],
+     "lin": [
+      [
+       "Magnitude do dano possível",
+       "Maior: impunidade para uma ruptura armada julgada (com plano de assassinato), remontagem do tribunal que a julgou, ecossistema com evasões de decisão judicial e pressão estrangeira sobre o julgamento",
+       "Menor por ato: restrição à expressão por vias administrativas e judiciais, árbitro eleitoral atacado em palavras"
+      ],
+      [
+       "Probabilidade de o dano ocorrer",
+       "Menor e condicionada: o indulto tem precedente contrário no STF (graça a Silveira anulada por 8×2; Conjur, 08/10/2026); a anistia depende do Congresso; a reforma do STF depende de PEC; as nomeações só pesam a partir de 2027-28",
+       "Alta: os mecanismos já operam (AGU, inquérito de ofício, art. 19) e parte deles, a do STF, continua com qualquer vencedor; 4 nomeações reforçariam a linha atual"
+      ]
+     ]
+    },
+    {
+     "t": "p",
+     "md": "**Veredito sobre o peso (mantido, com a justificativa nova):** os dois \"parcialmente\" não pesam igual em **magnitude**; pesam de forma diferente, e em sentido oposto, em **probabilidade**. Com Flávio, o dano possível é maior e menos provável; com Lula, o dano por ato é menor e com alta probabilidade de continuar. Não há régua neutra que converta um no outro sem um julgamento de valor. O julgamento deste documento é que a tolerância com uma ruptura armada julgada pesa mais do que a restrição administrativa e judicial à expressão, porque a primeira atinge a própria alternância de poder e a segunda atinge direitos que a alternância permite recuperar. O leitor pode discordar desse julgamento; os fatos das duas colunas estão nas seções 2 e 5."
+    },
+    {
+     "t": "p",
+     "md": "**O que mudou na distância entre os dois:** diminuiu pelo lado de Lula (sinal 1 sobe para baixo-médio com \"falcatrua\"; Senacon; via do STF declarada; AGU com 88% de atendimento) e aumentou pelo lado de Flávio (condenação de Eduardo; tarifa tratada como moeda para a anistia; evasões no ecossistema; sinal 4 do ecossistema regraduado para médio-alto). A ordem não mudou."
+    },
+    {
+     "t": "p",
+     "md": "**Teste do espelho, sem usar o crime do pai contra o filho** (a versão anterior usava \"se o pai de Lula tivesse sido condenado\", o que contradizia a seção 9.1): se Lula prometesse indultar \"todo mundo\" condenado por uma tentativa de golpe julgada, inclusive aliados próprios, tratasse uma sanção estrangeira contra o país como \"sinalização\" para aprovar um perdão e convocasse uma vigília que o STF citou como risco de fuga ao converter a prisão de um condenado, o risco seria lido como maior do que o de um governo que apoia restrições à expressão. No sentido inverso: se um governo Bolsonaro tivesse apoiado o bloqueio de uma rede inteira, imposto contrapropaganda a uma empresa sobre um projeto de lei e dito que \"o Tribunal Eleitoral\" não viesse \"querer falcatrua\", isso seria chamado de ataque às instituições. É o que este documento diz do governo Lula, no grau que os atos sustentam."
+    }
+   ],
+   "resumo": [
+    "Peso: com Flávio, dano possível maior e menos provável; com Lula, dano por ato menor e com alta probabilidade de continuar. A ordem (Flávio acima) depende do julgamento de valor declarado em 8.3: tolerância com ruptura armada pesa mais que restrição à expressão."
+   ]
+  },
+  "nao_verificado": {
+   "lista": [
+    "Data exata e placar do julgamento do STM sobre perda de patente; status atual (out/2026) das ADIs da Lei da Dosimetria e do Inquérito 4781 (inferido por documento da OAB de mar/2026).",
+    "Série completa do EIU 2018, 2020-2022 e a nota de 2025 (só a posição 50º); escores do IDEA por ano.",
+    "Texto integral dos programas de governo no TSE (o de Flávio foi lido pela nota oficial da campanha sobre o Judiciário; o eixo \"liberdade de expressão\" não foi lido; o de Lula foi lido por resumos).",
+    "Número de pedidos de remoção da PNDD/AGU desde 2023; desfecho da representação do Novo no TCU.",
+    "Fala de Lula, depois de 04/10, chamando Flávio de ditador **nominalmente** (há \"fascismo\" e \"assassinos\" sem nome, 09/10); fala de Flávio, depois de 04/10, sobre aceitar o resultado do 2º turno.",
+    "Pesquisa Quaest ou Datafolha específica sobre \"risco de ditadura\" ou \"censura\" por candidato; o questionário do Sivis.",
+    "(Resolvido na revisão de 12/10: demissão de Arruda em 21/01/2023 e saída do PL 2630 da pauta em 02/05/2023 reconferidas, confiança alta.)",
+    "Acrescentados na revisão de 12/10 e não verificados: desfecho da suspensão da pesquisa AtlasIntel depois de jun/2026; julgamento em plenário da liminar sobre o vídeo da \"falcatrua\"; manifestação de Abraji/ANJ sobre a ação contra Robson Bonin; resposta formal do STF ao despacho publicado pelo X; desfecho do caso Canal Gov além da ordem de 31/07; a fala de Flávio de que a fuga do pai era \"impossível\" (Itatiaia, não reaberta); a causa da tarifa de 2026 (disputada); o MST (sinal 3) continua não pesquisado.",
+    "Anos de aposentadoria posteriores a 2030 (Toffoli, Moraes, Nunes Marques, Mendonça, Zanin), calculados de memória.",
+    "A referência Little e Meng (2024) e os detalhes de Levitsky e Ziblatt e de Haggard e Kaufman foram usados de base, sem reabrir os textos.",
+    "Classificação dos partidos em blocos (direita, esquerda, centrão) é deste documento; outros analistas classificam Republicanos e PP como direita.",
+    "Casos de uso da máquina estatal contra opositores sob Lula 3 além da AGU, da Senacon (2023) e do Canal Gov (2026): busca limitada; ausência de achado não é prova de ausência."
+   ],
+   "resumo": [
+    "\"Não verificado\" quer dizer o que diz. Números de memória não entram sem essa marca."
+   ]
+  },
+  "resumo_aba": [
+   "\"Ditadura\" com Flávio e \"Venezuela\" com Lula: não sustentadas.",
+   "Erosão com Flávio e restrição à expressão com Lula: parcialmente sustentadas; com Flávio o dano possível é maior e menos provável, com Lula é menor por ato e mais provável; a ordem depende de um julgamento de valor declarado.",
+   "A revisão de 12/10 elevou o sinal 1 de Lula (palavras contra o árbitro eleitoral), regraduou o sinal 4 (ecossistema Bolsonaro médio-alto, Lula médio) e acrescentou fatos dos dois lados; nenhum veredito mudou.",
+   "O risco comum é o STF: 4 vagas para o vencedor."
+  ]
+ }
+}

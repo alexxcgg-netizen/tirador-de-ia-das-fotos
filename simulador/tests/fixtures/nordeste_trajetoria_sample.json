@@ -1,0 +1,297 @@
+{
+ "meta": {
+  "gerado_em": "2026-10-05",
+  "titulo": "Nordeste: quem governou, o que mudou e o que os dados dizem (2002–2026)",
+  "origem": [
+   "research_notes/Nordeste e cenarios economicos 2026/nordeste_trajetoria_governos.md",
+   "research_notes/Nordeste e cenarios economicos 2026/nordeste_trajetoria_indicadores.csv"
+  ],
+  "grupos": {
+   "Nordeste PT atual": "BA, PI, CE, RN (governo do PT em 2026)",
+   "Outros NE": "MA, PB, PE, AL, SE (SE teve PT em 2007–2013; MA, PB, PE e AL nunca)",
+   "Brasil": "total nacional (homicídios: média das 5 regiões ponderada pela população do Censo 2022)",
+   "Espelho SP/PR/SC/GO/MT": "estados de comparação com a mesma régua; não são um 'grupo de direita' homogêneo nem placar contra o NE"
+  },
+  "correcao": "O PT também governou o Piauí em 2003–abr/2010 e Sergipe em 2007–dez/2013; a lista de estados do PT feita só com BA, PI (desde 2015), CE e RN está incompleta.",
+  "convencoes": "[fato] dado de fonte oficial; [cálculo próprio] conta feita a partir de dado com fonte; [estimativa] inferência com premissa explícita. Médias de grupo ponderadas pela população do Censo 2022 (IDEB: média simples).",
+  "avisos": [
+   "Não é veredito sobre partidos nem recomendação de voto: n = 9 estados, sem desenho causal.",
+   "A classificação de PSB/PCdoB/PDT como aliados de esquerda do PT é dos autores e é discutível; a coluna do PT é mostrada separada.",
+   "O placar depende da seleção de indicadores e do ano-base; as séries do arquivo são uma seleção de 8 indicadores do CSV."
+  ]
+ },
+ "partidos": [
+  {
+   "uf": "PI",
+   "anos_PT": 19.0,
+   "anos_aliados_esquerda": 4.0,
+   "anos_PT_mais_aliados": 23.0,
+   "anos_outros": 0.7,
+   "mandatos": [
+    {
+     "governador": "Wellington Dias",
+     "partido": "PT",
+     "inicio": "01/01/2003",
+     "fim": "01/04/2010"
+    },
+    {
+     "governador": "Wilson Martins",
+     "partido": "PSB",
+     "inicio": "01/04/2010",
+     "fim": "04/04/2014"
+    },
+    {
+     "governador": "Zé Filho",
+     "partido": "PMDB",
+     "inicio": "04/04/2014",
+     "fim": "01/01/2015"
+    },
+    {
+     "governador": "Wellington Dias",
+     "partido": "PT",
+     "inicio": "01/01/2015",
+     "fim": "31/03/2022"
+    },
+    {
+     "governador": "Regina Sousa",
+     "partido": "PT",
+     "inicio": "31/03/2022",
+     "fim": "01/01/2023"
+    },
+    {
+     "governador": "Rafael Fonteles",
+     "partido": "PT",
+     "inicio": "01/01/2023",
+     "fim": "em exercício"
+    }
+   ]
+  },
+  {
+   "uf": "SE",
+   "anos_PT": 6.9,
+   "anos_aliados_esquerda": 0.0,
+   "anos_PT_mais_aliados": 6.9,
+   "anos_outros": 16.8,
+   "mandatos": [
+    {
+     "governador": "João Alves Filho",
+     "partido": "PFL",
+     "inicio": "01/01/2003",
+     "fim": "01/01/2007"
+    },
+    {
+     "governador": "Marcelo Déda",
+     "partido": "PT",
+     "inicio": "01/01/2007",
+     "fim": "02/12/2013"
+    },
+    {
+     "governador": "Jackson Barreto",
+     "partido": "PMDB",
+     "inicio": "02/12/2013",
+     "fim": "06/04/2018"
+    },
+    {
+     "governador": "Belivaldo Chagas",
+     "partido": "PSD",
+     "inicio": "06/04/2018",
+     "fim": "01/01/2023"
+    },
+    {
+     "governador": "Fábio Mitidieri",
+     "partido": "PSD",
+     "inicio": "01/01/2023",
+     "fim": "em exercício"
+    }
+   ]
+  }
+ ],
+ "numeros_usuario": [
+  {
+   "item": 1,
+   "descricao": "Escolaridade média do NE 8,8 anos",
+   "valor_citado": "Escolaridade média do NE 8,8 anos",
+   "valor_verificado": "PNAD Contínua 2024, pessoas de 25 anos ou mais: NE 8,8 (Brasil 10,1). Em 2025: NE 9,0 (Brasil 10,2). Para 15+: NE 9,2 (2024) e 9,3 (2025). Censo 2022 (11+): NE 8,5, Brasil 9,5. [fato]",
+   "veredito": "confirmado",
+   "veredito_na_nota": "confirmado (com definição)",
+   "fonte": "IBGE SIDRA 7126; SIDRA 10062",
+   "fonte_url": "https://sidra.ibge.gov.br/tabela/7126"
+  },
+  {
+   "item": 5,
+   "descricao": "NE = 14,2% do PIB",
+   "valor_citado": "NE = 14,2% do PIB",
+   "valor_verificado": "Contas Regionais: 14,18% em 2019 e 2020 (recorde de 14,48% em 2017); 13,83% em 2023, o dado mais recente. [cálculo próprio sobre dado oficial]",
+   "veredito": "diferente",
+   "veredito_na_nota": "diferente (dado datado)",
+   "fonte": "IBGE SIDRA 5938",
+   "fonte_url": "https://sidra.ibge.gov.br/tabela/5938"
+  },
+  {
+   "item": 8,
+   "descricao": "Transferências >90% nas receitas municipais",
+   "valor_citado": "Transferências >90% nas receitas municipais",
+   "valor_verificado": "Siconfi/DCA 2023, 1.789 municípios do NE: mediana de 92,1%; 63,8% dos municípios têm transferências correntes acima de 90% da receita corrente (Sul 14,9%; Sudeste 28,7%; Centro-Oeste 10,1%; Norte 55,3%; Brasil 37,6%). Por estado, de 35,9% (PE) a 77,0% (MA). \"Transferência\" aqui inclui FPM, FUNDEB, SUS e a cota de ICMS (que é imposto estadual compartilhado, não dinheiro federal). [cálculo próprio]",
+   "veredito": "parcial",
+   "veredito_na_nota": "diferente / parcial",
+   "fonte": "Tesouro/Siconfi API DCA Anexo I-C",
+   "fonte_url": "https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2023&no_anexo=DCA-Anexo%20I-C&id_ente=29"
+  }
+ ],
+ "trajetoria": [
+  {
+   "indicador": "Pobreza (abaixo de US$ 6,85/dia, PPC 2017)",
+   "id": "pobreza_685ppc",
+   "unidade": "% pessoas < US$6,85 PPC 2017/dia",
+   "fonte": "IBGE Síntese de Indicadores Sociais 2025, tab. 2.18 (PNAD Contínua) | grupos: agregação própria das UFs (média ponderada pela pop. Censo 2022)",
+   "tag": "[cálculo próprio]",
+   "series": [
+    {
+     "grupo": "Nordeste PT atual (BA, PI, CE, RN)",
+     "anos": [
+      2012,
+      2013,
+      2014
+     ],
+     "valores": [
+      55.4,
+      51.81,
+      49.51
+     ]
+    },
+    {
+     "grupo": "Outros NE (MA, PB, PE, AL, SE)",
+     "anos": [
+      2012,
+      2013,
+      2014
+     ],
+     "valores": [
+      57.67,
+      55.19,
+      52.35
+     ]
+    },
+    {
+     "grupo": "Brasil",
+     "anos": [
+      2012,
+      2013,
+      2014
+     ],
+     "valores": [
+      34.73,
+      32.48,
+      30.88
+     ]
+    },
+    {
+     "grupo": "Espelho: SP, PR, SC, GO, MT",
+     "anos": [
+      2012,
+      2013,
+      2014
+     ],
+     "valores": [
+      20.11,
+      18.2,
+      17.34
+     ]
+    }
+   ]
+  }
+ ],
+ "comparacao_pt": [
+  {
+   "indicador": "PIB pc, % da média do Brasil (2002-2023)",
+   "resultado": "sem coeficiente significativo (1,9 (1,8)); Δ médio 5,8 nos estados atuais do PT contra 3,4 nos outros NE",
+   "nota": "Correlação de postos com anos de PT 0,10 [0,79]; com PT + PSB/PCdoB/PDT 0,29 [0,44]; com o nível inicial -0,82.",
+   "delta_pt_atual": 5.8,
+   "delta_outros_ne": 3.4,
+   "coef_10_anos_pt": 1.9,
+   "erro_padrao": 1.8,
+   "significativo_5pct": false
+  },
+  {
+   "indicador": "Pobreza < US$ 6,85 (p.p.) (2012-2024)",
+   "resultado": "sem coeficiente significativo (-1,1 (1,1)); Δ médio -17,5 nos estados atuais do PT contra -16,5 nos outros NE",
+   "nota": "Correlação de postos com anos de PT -0,15 [0,70]; com PT + PSB/PCdoB/PDT 0,13 [0,73]; com o nível inicial -0,43.",
+   "delta_pt_atual": -17.5,
+   "delta_outros_ne": -16.5,
+   "coef_10_anos_pt": -1.1,
+   "erro_padrao": 1.1,
+   "significativo_5pct": false
+  }
+ ],
+ "espelho": [
+  {
+   "grupo": "SP",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "159,4 → 143,9"
+  },
+  {
+   "grupo": "SC",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "115,6 → 125,2"
+  },
+  {
+   "grupo": "PR",
+   "indicador": "PIB pc, % do Brasil (2002→2023)",
+   "resultado": "105,6 → 108,8"
+  }
+ ],
+ "eleitoral": {
+  "fonte": "TSE via simulador/data/resultados_uf_2002_2022.csv e modelo_municipal/data/mun_2026_1t.csv (1º turno de 2026 com cerca de 1,2% do eleitorado extrapolado)",
+  "tabela": [
+   {
+    "eleicao": "2022 2º turno",
+    "votos_candidato_pt_mi": 60.35,
+    "ne_mi": 22.53,
+    "pct_votos_do_candidato_vindos_do_ne": 37.3,
+    "ne_pct_dos_validos": 27.4,
+    "pt_pct_validos_no_ne": 69.3,
+    "pt_pct_validos_fora_do_ne": 43.9,
+    "margem_ne_mi": 12.57,
+    "margem_fora_do_ne_mi": -10.43,
+    "margem_nacional_mi": 2.14
+   },
+   {
+    "eleicao": "2026 1º turno",
+    "votos_candidato_pt_mi": 53.83,
+    "ne_mi": 21.46,
+    "pct_votos_do_candidato_vindos_do_ne": 39.9,
+    "ne_pct_dos_validos": 28.2,
+    "pt_pct_validos_no_ne": 63.8,
+    "pt_pct_validos_fora_do_ne": 37.8,
+    "margem_ne_mi": 11.07,
+    "margem_fora_do_ne_mi": -13.33,
+    "margem_nacional_mi": -2.26
+   }
+  ],
+  "nota_tabela": "(Para 2002–2018, \"margem\" é a do candidato do PT contra o adversário do 2º turno, ou o 2º colocado do 1º turno, conforme o arquivo; margem fora do NE = nacional − NE. Em 2026, o adversário é Flávio Bolsonaro: 56,09 mi de votos, 10,39 mi no NE.)",
+  "margens_por_regiao": "Por região, 2026 (1º turno), margem de Lula − Flávio (mi): NE +11,07; Sudeste −5,67; Sul −5,04; Centro-Oeste −2,17; Norte −0,46. Em 2022 (2º turno): NE +12,57; Sudeste −4,25; Sul −4,19; Centro-Oeste −1,81; Norte −0,19. [cálculo próprio]",
+  "aritmetica": [
+   "A margem de Lula depende do NE: em 2022 (2º turno), sem o NE ele teria perdido por 10,43 mi; a margem do NE (12,57 mi) foi 5,9 vezes a margem nacional. Em 2026, o NE dá +11,07 mi e o resto, −13,33 mi.",
+   "O NE tem 28,2% dos válidos e deu 39,9% dos votos de Lula (37–38% em 2022); o voto de Lula no NE é muito mais concentrado do que o do PT em 2002 (25,0%), de modo que a participação do NE na base do PT subiu de 25% (2002) para 37–43% (2014–2022).",
+   "Em 2026 a base do NE encolheu: Lula caiu de 66,8% para 63,8% dos válidos no NE (1º turno 2022 → 2026) e a margem regional caiu 1,90 mi (12,97 → 11,07), enquanto fora do NE caiu de −6,78 para −13,33 mi (−6,55). O NE respondeu por 22,5% da piora nacional (nota nordeste_dados_1t.md, seção 0)."
+  ],
+  "enquadramento": "'O Nordeste salva o Brasil' é um enquadramento, não um número: é um enquadramento. A mesma conta dá \"SE, S e CO decidem por Flávio\", com margens maiores em valor absoluto (−13,33 mi no conjunto SE+S+CO+N frente a +11,07 mi do NE em 2026). Em termos de resultado (pobreza, emprego, segurança), a seção 3 mostra um NE que avança em quase tudo mas continua muito atrás.",
+  "espelho": "A mesma conta lida para as outras regiões: no 1º turno de 2026 as margens de Lula contra Flávio foram Sudeste −5,67, Sul −5,04, Centro-Oeste −2,17 e Norte −0,46 (mi); em 2022 (2º turno), Sudeste −4,25, Sul −4,19, Centro-Oeste −1,81 e Norte −0,19. Logo, 'Sudeste, Sul e Centro-Oeste decidem por Flávio' é tão verdadeiro como aritmética quanto 'o Nordeste decide por Lula', e nenhuma das duas frases explica por que as pessoas votam.",
+  "indireto": "O indireto (Regra nº 1): \"o Nordeste salva o Brasil\" soa como elogio e carrega duplo sentido (\"o resto não presta\"); a fala oposta (\"o NE vota por Bolsa Família\") soa como constatação e carrega duplo sentido de desprezo. A conta acima não sustenta nenhuma das duas leituras: fala de onde estão os votos, não de por que votam. O BF atinge 46,5% das famílias beneficiárias no NE, mas o voto por faixa de BF no município desaparece quando se controla por porte e capital (seção 1.4 do nordeste_dados_1t.md).",
+  "itens_originais": [
+   "A margem de Lula depende do NE: em 2022 (2º turno), sem o NE ele teria perdido por 10,43 mi; a margem do NE (12,57 mi) foi 5,9 vezes a margem nacional. Em 2026, o NE dá +11,07 mi e o resto, −13,33 mi.",
+   "O NE tem 28,2% dos válidos e deu 39,9% dos votos de Lula (37–38% em 2022); o voto de Lula no NE é muito mais concentrado do que o do PT em 2002 (25,0%), de modo que a participação do NE na base do PT subiu de 25% (2002) para 37–43% (2014–2022).",
+   "Em 2026 a base do NE encolheu: Lula caiu de 66,8% para 63,8% dos válidos no NE (1º turno 2022 → 2026) e a margem regional caiu 1,90 mi (12,97 → 11,07), enquanto fora do NE caiu de −6,78 para −13,33 mi (−6,55). O NE respondeu por 22,5% da piora nacional (nota nordeste_dados_1t.md, seção 0).",
+   "\"Salva o Brasil\" não é um número: é um enquadramento. A mesma conta dá \"SE, S e CO decidem por Flávio\", com margens maiores em valor absoluto (−13,33 mi no conjunto SE+S+CO+N frente a +11,07 mi do NE em 2026). Em termos de resultado (pobreza, emprego, segurança), a seção 3 mostra um NE que avança em quase tudo mas continua muito atrás.",
+   "O indireto (Regra nº 1): \"o Nordeste salva o Brasil\" soa como elogio e carrega duplo sentido (\"o resto não presta\"); a fala oposta (\"o NE vota por Bolsa Família\") soa como constatação e carrega duplo sentido de desprezo. A conta acima não sustenta nenhuma das duas leituras: fala de onde estão os votos, não de por que votam. O BF atinge 46,5% das famílias beneficiárias no NE, mas o voto por faixa de BF no município desaparece quando se controla por porte e capital (seção 1.4 do nordeste_dados_1t.md)."
+  ]
+ },
+ "limites": [
+  "n = 9 e controles grosseiros; nada aqui é efeito causal. A classificação de campos políticos é nossa.",
+  "Seleção (CLAUDE.md, brecha 9): escolhi os indicadores pelos que o usuário citou e por séries com cobertura por UF; ficaram de fora saúde (mortalidade infantil), habitação, água, banda larga, que podem alterar o quadro. O placar depende da seleção."
+ ],
+ "resumo": [
+  "Quem governou: O PT governou BA e PI por cerca de 19 anos cada, CE por 11, RN por 8 e SE por 7; nunca governou MA, PB, PE e AL. Somando PSB/PCdoB/PDT, a esquerda no sentido amplo governou 14 a 23 anos em sete estados. Lista do usuário: correta para BA, CE e RN; incompleta para PI (2003–2010) e omite SE (2007–2013). ---",
+  "Números do usuário: Confirmados: 1, 2, 3, 4, 6, 9, 10. Diferentes ou parciais: 5 (14,2% era 2019/2020; hoje 13,8%), 7 (41,3–41,6% no agregado, 44,0% na média simples), 8 (63,8% dos municípios do NE, não todos). Ressalva de método importante: o analfabetismo do Censo (14,2%) e o da PNAD-C (11,8% em 2022) diferem na mesma data; comparações entre regiões só valem dentro da mesma fonte. ---"
+ ]
+}

@@ -1,0 +1,1965 @@
+{
+ "meta": {
+  "modelo": "modelo_alternativo (passeio aleatório bayesiano + bootstrap empírico + swing uniforme)",
+  "gerado_em": "2026-10-03T22:57:16+00:00",
+  "data_referencia": "2026-10-03",
+  "eleicao_1t": "2026-10-04",
+  "eleicao_2t": "2026-10-25",
+  "n_simulacoes_por_variante": 500000,
+  "mcmc_iter": 4000,
+  "mcmc_burn": 1500,
+  "semente": 20261004,
+  "tempo_s": {
+   "ajustes_mcmc": 56.0,
+   "simulacao_2026": 4.5,
+   "backtest": 8.4,
+   "total": 70.4
+  },
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "dados": {
+   "pesquisas_nacionais.csv": {
+    "sha256_12": "010191c4022d",
+    "linhas": 94
+   },
+   "backtest_pesquisas_nacionais.csv": {
+    "sha256_12": "fd56a9905a63",
+    "linhas": 242
+   },
+   "resultados_uf_2002_2022.csv": {
+    "sha256_12": "c3768248b231",
+    "linhas": 350
+   }
+  },
+  "variante_principal": "neutro",
+  "variantes": {
+   "neutro": "erro partidário histórico com sinal sorteado (±): magnitude empírica, direção agnóstica",
+   "historico": "erro com o sinal observado em 2014/2018/2022 (pesquisas superestimaram o PT)"
+  }
+ },
+ "agregado_2026": {
+  "data_alvo": "2026-10-03",
+  "n_pesquisas_1t": 73,
+  "n_pesquisas_2t": 81,
+  "lula_bipartidario_1t_pct": 50.72452,
+  "lula_validos_1t_pct": 45.0889,
+  "flavio_validos_1t_pct": 43.80085,
+  "demais_validos_1t_pct": 11.11025,
+  "menores_validos_1t_pct": {
+   "renan": 3.35874,
+   "cury": 2.99305,
+   "caiado": 2.9692,
+   "zema": 1.08002
+  },
+  "nao_listados_validos_1t_pct": 0.70925,
+  "lula_2t_pct_validos": 49.54077,
+  "dp_posterior_logit": {
+   "z1": 0.01966,
+   "z2": 0.07634,
+   "m_renan": 0.07492,
+   "m_cury": 0.16164,
+   "m_caiado": 0.08773,
+   "m_zema": 0.14997,
+   "zq": 0.01967
+  },
+  "hiperparametros_mediana": {
+   "z1": {
+    "omega": 0.01122,
+    "tau": 0.01175,
+    "sigma_h": 0.06807
+   },
+   "z2": {
+    "omega": 0.04696,
+    "tau": 0.14738,
+    "sigma_h": 0.16583
+   },
+   "m_renan": {
+    "omega": 0.0424,
+    "tau": 0.13293,
+    "sigma_h": 0.44243
+   },
+   "m_cury": {
+    "omega": 0.11288,
+    "tau": 0.29003,
+    "sigma_h": 0.39561
+   },
+   "m_caiado": {
+    "omega": 0.03984,
+    "tau": 0.20515,
+    "sigma_h": 0.35869
+   },
+   "m_zema": {
+    "omega": 0.06442,
+    "tau": 0.21894,
+    "sigma_h": 0.209
+   },
+   "zq": {
+    "omega": 0.01261,
+    "tau": 0.01183,
+    "sigma_h": 0.06219
+   }
+  },
+  "taxa_aceitacao_mcmc": {
+   "z1": 0.3075,
+   "z2": 0.28725,
+   "m_renan": 0.29025,
+   "m_cury": 0.313,
+   "m_caiado": 0.2805,
+   "m_zema": 0.2815,
+   "zq": 0.31075
+  },
+  "efeitos_instituto_pp_aprox": {
+   "z1": {
+    "AtlasIntel": {
+     "pp": 0.71,
+     "dp_pp": 0.4
+    },
+    "CNT/MDA": {
+     "pp": 3.38,
+     "dp_pp": 0.7
+    },
+    "Datafolha": {
+     "pp": 0.39,
+     "dp_pp": 0.43
+    },
+    "Futura": {
+     "pp": -1.81,
+     "dp_pp": 0.85
+    },
+    "Gerp": {
+     "pp": -1.27,
+     "dp_pp": 0.99
+    },
+    "IFP": {
+     "pp": 0.67,
+     "dp_pp": 1.04
+    },
+    "Ideia": {
+     "pp": -0.4,
+     "dp_pp": 1.05
+    },
+    "Indexa": {
+     "pp": 1.3,
+     "dp_pp": 1.1
+    },
+    "Nexus": {
+     "pp": 1.1,
+     "dp_pp": 1.06
+    },
+    "Palver": {
+     "pp": -1.95,
+     "dp_pp": 0.62
+    },
+    "Parana Pesquisas": {
+     "pp": -0.65,
+     "dp_pp": 0.93
+    },
+    "PoderData": {
+     "pp": -1.12,
+     "dp_pp": 0.44
+    },
+    "Quaest": {
+     "pp": 1.38,
+     "dp_pp": 0.46
+    },
+    "Real Time Big Data": {
+     "pp": 0.7,
+     "dp_pp": 0.56
+    },
+    "Verita": {
+     "pp": -1.59,
+     "dp_pp": 0.61
+    },
+    "Vox Brasil": {
+     "pp": -0.84,
+     "dp_pp": 1.03
+    }
+   },
+   "zq": {
+    "AtlasIntel": {
+     "pp": 0.94,
+     "dp_pp": 0.33
+    },
+    "CNT/MDA": {
+     "pp": 2.78,
+     "dp_pp": 0.79
+    },
+    "Datafolha": {
+     "pp": 0.95,
+     "dp_pp": 0.39
+    },
+    "Futura": {
+     "pp": -2.45,
+     "dp_pp": 0.51
+    },
+    "Gerp": {
+     "pp": -2.03,
+     "dp_pp": 0.72
+    },
+    "IFP": {
+     "pp": 0.49,
+     "dp_pp": 0.97
+    },
+    "Ideia": {
+     "pp": 0.95,
+     "dp_pp": 0.7
+    },
+    "Indexa": {
+     "pp": 0.5,
+     "dp_pp": 1.0
+    },
+    "Nexus": {
+     "pp": 0.8,
+     "dp_pp": 0.8
+    },
+    "Palver": {
+     "pp": -1.32,
+     "dp_pp": 0.47
+    },
+    "Parana Pesquisas": {
+     "pp": -0.36,
+     "dp_pp": 0.67
+    },
+    "PoderData": {
+     "pp": -0.3,
+     "dp_pp": 0.45
+    },
+    "Quaest": {
+     "pp": 0.5,
+     "dp_pp": 0.39
+    },
+    "Real Time Big Data": {
+     "pp": -0.15,
+     "dp_pp": 0.8
+    },
+    "Vox Brasil": {
+     "pp": -1.3,
+     "dp_pp": 0.8
+    }
+   }
+  },
+  "tendencia_semanal": {
+   "z1": [
+    {
+     "data": "2026-02-07",
+     "lula_pct": 53.91,
+     "ic80": [
+      52.57,
+      55.24
+     ]
+    },
+    {
+     "data": "2026-02-14",
+     "lula_pct": 53.77,
+     "ic80": [
+      52.52,
+      55.02
+     ]
+    },
+    {
+     "data": "2026-02-21",
+     "lula_pct": 53.63,
+     "ic80": [
+      52.57,
+      54.7
+     ]
+    },
+    {
+     "data": "2026-02-28",
+     "lula_pct": 53.58,
+     "ic80": [
+      52.67,
+      54.49
+     ]
+    },
+    {
+     "data": "2026-03-07",
+     "lula_pct": 53.42,
+     "ic80": [
+      52.54,
+      54.3
+     ]
+    },
+    {
+     "data": "2026-03-14",
+     "lula_pct": 53.16,
+     "ic80": [
+      52.23,
+      54.09
+     ]
+    },
+    {
+     "data": "2026-03-21",
+     "lula_pct": 52.94,
+     "ic80": [
+      52.14,
+      53.73
+     ]
+    },
+    {
+     "data": "2026-03-28",
+     "lula_pct": 52.91,
+     "ic80": [
+      52.0,
+      53.82
+     ]
+    },
+    {
+     "data": "2026-04-04",
+     "lula_pct": 52.89,
+     "ic80": [
+      51.95,
+      53.83
+     ]
+    },
+    {
+     "data": "2026-04-11",
+     "lula_pct": 52.93,
+     "ic80": [
+      52.1,
+      53.76
+     ]
+    },
+    {
+     "data": "2026-04-18",
+     "lula_pct": 53.17,
+     "ic80": [
+      52.26,
+      54.08
+     ]
+    },
+    {
+     "data": "2026-04-25",
+     "lula_pct": 53.43,
+     "ic80": [
+      52.63,
+      54.22
+     ]
+    },
+    {
+     "data": "2026-05-02",
+     "lula_pct": 53.74,
+     "ic80": [
+      52.89,
+      54.59
+     ]
+    },
+    {
+     "data": "2026-05-09",
+     "lula_pct": 54.15,
+     "ic80": [
+      53.37,
+      54.94
+     ]
+    },
+    {
+     "data": "2026-05-16",
+     "lula_pct": 55.15,
+     "ic80": [
+      54.42,
+      55.89
+     ]
+    },
+    {
+     "data": "2026-05-23",
+     "lula_pct": 55.15,
+     "ic80": [
+      54.33,
+      55.96
+     ]
+    },
+    {
+     "data": "2026-05-30",
+     "lula_pct": 55.15,
+     "ic80": [
+      54.29,
+      56.0
+     ]
+    },
+    {
+     "data": "2026-06-06",
+     "lula_pct": 55.41,
+     "ic80": [
+      54.53,
+      56.29
+     ]
+    },
+    {
+     "data": "2026-06-13",
+     "lula_pct": 55.5,
+     "ic80": [
+      54.63,
+      56.36
+     ]
+    },
+    {
+     "data": "2026-06-20",
+     "lula_pct": 55.26,
+     "ic80": [
+      54.43,
+      56.09
+     ]
+    },
+    {
+     "data": "2026-06-27",
+     "lula_pct": 55.2,
+     "ic80": [
+      54.42,
+      55.97
+     ]
+    },
+    {
+     "data": "2026-07-04",
+     "lula_pct": 55.3,
+     "ic80": [
+      54.4,
+      56.2
+     ]
+    },
+    {
+     "data": "2026-07-11",
+     "lula_pct": 55.42,
+     "ic80": [
+      54.6,
+      56.24
+     ]
+    },
+    {
+     "data": "2026-07-18",
+     "lula_pct": 55.1,
+     "ic80": [
+      54.32,
+      55.87
+     ]
+    },
+    {
+     "data": "2026-07-25",
+     "lula_pct": 55.02,
+     "ic80": [
+      54.33,
+      55.7
+     ]
+    },
+    {
+     "data": "2026-08-01",
+     "lula_pct": 55.0,
+     "ic80": [
+      54.2,
+      55.79
+     ]
+    },
+    {
+     "data": "2026-08-08",
+     "lula_pct": 54.88,
+     "ic80": [
+      54.1,
+      55.66
+     ]
+    },
+    {
+     "data": "2026-08-15",
+     "lula_pct": 54.5,
+     "ic80": [
+      53.67,
+      55.33
+     ]
+    },
+    {
+     "data": "2026-08-22",
+     "lula_pct": 54.25,
+     "ic80": [
+      53.49,
+      55.01
+     ]
+    },
+    {
+     "data": "2026-08-29",
+     "lula_pct": 54.07,
+     "ic80": [
+      53.45,
+      54.68
+     ]
+    },
+    {
+     "data": "2026-09-05",
+     "lula_pct": 53.04,
+     "ic80": [
+      52.45,
+      53.64
+     ]
+    },
+    {
+     "data": "2026-09-12",
+     "lula_pct": 52.01,
+     "ic80": [
+      51.45,
+      52.57
+     ]
+    },
+    {
+     "data": "2026-09-19",
+     "lula_pct": 51.42,
+     "ic80": [
+      50.92,
+      51.91
+     ]
+    },
+    {
+     "data": "2026-09-26",
+     "lula_pct": 51.3,
+     "ic80": [
+      50.86,
+      51.75
+     ]
+    },
+    {
+     "data": "2026-10-03",
+     "lula_pct": 50.7,
+     "ic80": [
+      50.14,
+      51.27
+     ]
+    }
+   ],
+   "zq": [
+    {
+     "data": "2025-12-08",
+     "lula_pct": 54.27,
+     "ic80": [
+      53.41,
+      55.12
+     ]
+    },
+    {
+     "data": "2025-12-15",
+     "lula_pct": 54.47,
+     "ic80": [
+      53.69,
+      55.25
+     ]
+    },
+    {
+     "data": "2025-12-22",
+     "lula_pct": 53.72,
+     "ic80": [
+      52.72,
+      54.72
+     ]
+    },
+    {
+     "data": "2025-12-29",
+     "lula_pct": 53.43,
+     "ic80": [
+      52.29,
+      54.57
+     ]
+    },
+    {
+     "data": "2026-01-05",
+     "lula_pct": 53.14,
+     "ic80": [
+      52.1,
+      54.18
+     ]
+    },
+    {
+     "data": "2026-01-12",
+     "lula_pct": 52.49,
+     "ic80": [
+      51.63,
+      53.35
+     ]
+    },
+    {
+     "data": "2026-01-19",
+     "lula_pct": 51.47,
+     "ic80": [
+      50.66,
+      52.29
+     ]
+    },
+    {
+     "data": "2026-01-26",
+     "lula_pct": 51.45,
+     "ic80": [
+      50.51,
+      52.38
+     ]
+    },
+    {
+     "data": "2026-02-02",
+     "lula_pct": 51.25,
+     "ic80": [
+      50.17,
+      52.33
+     ]
+    },
+    {
+     "data": "2026-02-09",
+     "lula_pct": 50.9,
+     "ic80": [
+      49.85,
+      51.95
+     ]
+    },
+    {
+     "data": "2026-02-16",
+     "lula_pct": 50.18,
+     "ic80": [
+      49.19,
+      51.18
+     ]
+    },
+    {
+     "data": "2026-02-23",
+     "lula_pct": 49.66,
+     "ic80": [
+      48.88,
+      50.43
+     ]
+    },
+    {
+     "data": "2026-03-02",
+     "lula_pct": 49.46,
+     "ic80": [
+      48.61,
+      50.31
+     ]
+    },
+    {
+     "data": "2026-03-09",
+     "lula_pct": 49.34,
+     "ic80": [
+      48.42,
+      50.25
+     ]
+    },
+    {
+     "data": "2026-03-16",
+     "lula_pct": 49.21,
+     "ic80": [
+      48.3,
+      50.12
+     ]
+    },
+    {
+     "data": "2026-03-23",
+     "lula_pct": 49.29,
+     "ic80": [
+      48.53,
+      50.05
+     ]
+    },
+    {
+     "data": "2026-03-30",
+     "lula_pct": 49.2,
+     "ic80": [
+      48.32,
+      50.08
+     ]
+    },
+    {
+     "data": "2026-04-06",
+     "lula_pct": 49.04,
+     "ic80": [
+      48.16,
+      49.92
+     ]
+    },
+    {
+     "data": "2026-04-13",
+     "lula_pct": 48.99,
+     "ic80": [
+      48.08,
+      49.9
+     ]
+    },
+    {
+     "data": "2026-04-20",
+     "lula_pct": 49.08,
+     "ic80": [
+      48.15,
+      50.01
+     ]
+    },
+    {
+     "data": "2026-04-27",
+     "lula_pct": 49.28,
+     "ic80": [
+      48.42,
+      50.14
+     ]
+    },
+    {
+     "data": "2026-05-04",
+     "lula_pct": 49.68,
+     "ic80": [
+      48.89,
+      50.47
+     ]
+    },
+    {
+     "data": "2026-05-11",
+     "lula_pct": 50.46,
+     "ic80": [
+      49.73,
+      51.19
+     ]
+    },
+    {
+     "data": "2026-05-18",
+     "lula_pct": 51.53,
+     "ic80": [
+      50.68,
+      52.38
+     ]
+    },
+    {
+     "data": "2026-05-25",
+     "lula_pct": 51.89,
+     "ic80": [
+      50.84,
+      52.94
+     ]
+    },
+    {
+     "data": "2026-06-01",
+     "lula_pct": 52.32,
+     "ic80": [
+      51.22,
+      53.41
+     ]
+    },
+    {
+     "data": "2026-06-08",
+     "lula_pct": 52.69,
+     "ic80": [
+      51.7,
+      53.67
+     ]
+    },
+    {
+     "data": "2026-06-15",
+     "lula_pct": 52.64,
+     "ic80": [
+      51.7,
+      53.57
+     ]
+    },
+    {
+     "data": "2026-06-22",
+     "lula_pct": 52.59,
+     "ic80": [
+      51.61,
+      53.57
+     ]
+    },
+    {
+     "data": "2026-06-29",
+     "lula_pct": 52.7,
+     "ic80": [
+      51.83,
+      53.57
+     ]
+    },
+    {
+     "data": "2026-07-06",
+     "lula_pct": 52.85,
+     "ic80": [
+      51.81,
+      53.89
+     ]
+    },
+    {
+     "data": "2026-07-13",
+     "lula_pct": 52.85,
+     "ic80": [
+      51.85,
+      53.86
+     ]
+    },
+    {
+     "data": "2026-07-20",
+     "lula_pct": 52.49,
+     "ic80": [
+      51.6,
+      53.39
+     ]
+    },
+    {
+     "data": "2026-07-27",
+     "lula_pct": 52.26,
+     "ic80": [
+      51.4,
+      53.12
+     ]
+    },
+    {
+     "data": "2026-08-03",
+     "lula_pct": 51.98,
+     "ic80": [
+      51.09,
+      52.86
+     ]
+    },
+    {
+     "data": "2026-08-10",
+     "lula_pct": 51.48,
+     "ic80": [
+      50.71,
+      52.25
+     ]
+    },
+    {
+     "data": "2026-08-17",
+     "lula_pct": 51.21,
+     "ic80": [
+      50.34,
+      52.08
+     ]
+    },
+    {
+     "data": "2026-08-24",
+     "lula_pct": 50.91,
+     "ic80": [
+      50.18,
+      51.64
+     ]
+    },
+    {
+     "data": "2026-08-31",
+     "lula_pct": 50.17,
+     "ic80": [
+      49.56,
+      50.78
+     ]
+    },
+    {
+     "data": "2026-09-07",
+     "lula_pct": 49.45,
+     "ic80": [
+      48.87,
+      50.03
+     ]
+    },
+    {
+     "data": "2026-09-14",
+     "lula_pct": 49.33,
+     "ic80": [
+      48.8,
+      49.86
+     ]
+    },
+    {
+     "data": "2026-09-21",
+     "lula_pct": 49.55,
+     "ic80": [
+      49.07,
+      50.02
+     ]
+    },
+    {
+     "data": "2026-09-28",
+     "lula_pct": 49.7,
+     "ic80": [
+      49.22,
+      50.18
+     ]
+    },
+    {
+     "data": "2026-10-03",
+     "lula_pct": 49.54,
+     "ic80": [
+      48.95,
+      50.12
+     ]
+    }
+   ]
+  }
+ },
+ "erros_historicos": {
+  "2014": {
+   "erro_logit": {
+    "z1": -0.3592,
+    "z2": -0.17841,
+    "zq": null
+   },
+   "resultado": {
+    "pt_1t": 41.594,
+    "opp_1t": 33.5473,
+    "demais_1t": 24.8587,
+    "q_2t": 51.6391,
+    "terceiro_1t": 21.3188
+   },
+   "estimativa_modelo_vespera": {
+    "pt_bipartidario_1t_pct": 63.9731,
+    "demais_1t_pct": 28.33804,
+    "pt_2t_pct": null
+   },
+   "n_institutos_nucleo": 4
+  },
+  "2018": {
+   "erro_logit": {
+    "z1": 0.01354,
+    "z2": -0.37622,
+    "zq": -0.11329
+   },
+   "resultado": {
+    "pt_1t": 29.2778,
+    "opp_1t": 46.0314,
+    "demais_1t": 24.6908,
+    "q_2t": 44.8698,
+    "terceiro_1t": 12.4655
+   },
+   "estimativa_modelo_vespera": {
+    "pt_bipartidario_1t_pct": 38.5556,
+    "demais_1t_pct": 32.32336,
+    "pt_2t_pct": 47.68547
+   },
+   "n_institutos_nucleo": 10
+  },
+  "2022": {
+   "erro_logit": {
+    "z1": -0.02506,
+    "z2": -0.48921,
+    "zq": -0.18177
+   },
+   "resultado": {
+    "pt_1t": 48.4307,
+    "opp_1t": 43.1976,
+    "demais_1t": 8.3717,
+    "q_2t": 50.9024,
+    "terceiro_1t": 4.1575
+   },
+   "estimativa_modelo_vespera": {
+    "pt_bipartidario_1t_pct": 53.47967,
+    "demais_1t_pct": 12.96935,
+    "pt_2t_pct": 55.42539
+   },
+   "n_institutos_nucleo": 13
+  }
+ },
+ "pool_erros": {
+  "anos": [
+   2014,
+   2018,
+   2022
+  ],
+  "banda_h": {
+   "z1": 0.17702,
+   "z2": 0.1093,
+   "zq": 0.13976
+  },
+  "dp_alvo_logit": {
+   "z1": 0.20803,
+   "zq": 0.15145,
+   "z2": 0.12845
+  },
+  "media_com_sinal_logit": {
+   "z1": -0.12357,
+   "zq": -0.14753,
+   "z2": -0.34795
+  },
+  "n_nucleo_1t": 27,
+  "n_nucleo_2t": 20,
+  "pares_desvio_uf": [
+   "2002->2006",
+   "2006->2010",
+   "2010->2014",
+   "2014->2018",
+   "2018->2022"
+  ]
+ },
+ "cenarios_2026": {
+  "neutro": {
+   "prob": {
+    "lula_vence": 0.49385,
+    "flavio_vence": 0.50615,
+    "outro_vence": 0.0,
+    "decide_1t": 0.36419,
+    "lula_vence_1t": 0.2091,
+    "flavio_vence_1t": 0.15509,
+    "top2_lula_flavio": 1.0,
+    "ha_segundo_turno_lula_x_flavio": 0.63581,
+    "lula_1o_no_1t": 0.57997
+   },
+   "ep_mc": {
+    "lula_vence": 0.00071,
+    "flavio_vence": 0.00071,
+    "outro_vence": 0.0,
+    "decide_1t": 0.00068,
+    "lula_vence_1t": 0.00058,
+    "flavio_vence_1t": 0.00051,
+    "top2_lula_flavio": 0.0,
+    "ha_segundo_turno_lula_x_flavio": 0.00068,
+    "lula_1o_no_1t": 0.0007
+   },
+   "quantis_pct_validos": {
+    "lula_1t": {
+     "p5": 38.2696,
+     "p10": 39.96169,
+     "p25": 44.14788,
+     "p50": 46.80698,
+     "p75": 49.31333,
+     "p90": 52.46992,
+     "p95": 53.93986,
+     "media": 46.56589
+    },
+    "flavio_1t": {
+     "p5": 37.00933,
+     "p10": 38.44577,
+     "p25": 42.66742,
+     "p50": 45.46978,
+     "p75": 48.0681,
+     "p90": 51.26898,
+     "p95": 52.92519,
+     "media": 45.25349
+    },
+    "demais_1t": {
+     "p5": 6.50168,
+     "p10": 6.81675,
+     "p25": 7.36343,
+     "p50": 8.0697,
+     "p75": 8.92547,
+     "p90": 9.69473,
+     "p95": 10.16218,
+     "media": 8.18062
+    },
+    "lula_2t": {
+     "p5": 43.24144,
+     "p10": 44.60728,
+     "p25": 46.70427,
+     "p50": 49.52192,
+     "p75": 52.36781,
+     "p90": 54.47228,
+     "p95": 55.86023,
+     "media": 49.53659
+    },
+    "renan_1t": {
+     "p5": 1.89268,
+     "p10": 1.99903,
+     "p25": 2.19079,
+     "p50": 2.43364,
+     "p75": 2.71263,
+     "p90": 2.98432,
+     "p95": 3.15426,
+     "media": 2.46782
+    },
+    "cury_1t": {
+     "p5": 1.60403,
+     "p10": 1.71494,
+     "p25": 1.91709,
+     "p50": 2.17256,
+     "p75": 2.46418,
+     "p90": 2.75409,
+     "p95": 2.94045,
+     "media": 2.20989
+    },
+    "caiado_1t": {
+     "p5": 1.65945,
+     "p10": 1.75628,
+     "p25": 1.93187,
+     "p50": 2.15128,
+     "p75": 2.40398,
+     "p90": 2.65128,
+     "p95": 2.80645,
+     "media": 2.18257
+    },
+    "zema_1t": {
+     "p5": 0.56424,
+     "p10": 0.60653,
+     "p25": 0.68493,
+     "p50": 0.78414,
+     "p75": 0.89753,
+     "p90": 1.01335,
+     "p95": 1.08855,
+     "media": 0.79982
+    }
+   },
+   "ufs": {
+    "AC": {
+     "p_lula_vence_2t": 0.01899,
+     "p_lula_a_frente_1t": 0.11299,
+     "lula_2t_p10": 14.18232,
+     "lula_2t_p50": 28.45747,
+     "lula_2t_p90": 42.48653
+    },
+    "AL": {
+     "p_lula_vence_2t": 0.7287,
+     "p_lula_a_frente_1t": 0.74848,
+     "lula_2t_p10": 42.35841,
+     "lula_2t_p50": 57.33131,
+     "lula_2t_p90": 72.45565
+    },
+    "AM": {
+     "p_lula_vence_2t": 0.4908,
+     "p_lula_a_frente_1t": 0.54408,
+     "lula_2t_p10": 35.33364,
+     "lula_2t_p50": 49.73209,
+     "lula_2t_p90": 64.0392
+    },
+    "AP": {
+     "p_lula_vence_2t": 0.33787,
+     "p_lula_a_frente_1t": 0.45659,
+     "lula_2t_p10": 39.21662,
+     "lula_2t_p50": 47.29237,
+     "lula_2t_p90": 55.40025
+    },
+    "BA": {
+     "p_lula_vence_2t": 0.99484,
+     "p_lula_a_frente_1t": 0.98953,
+     "lula_2t_p10": 59.15715,
+     "lula_2t_p50": 70.77982,
+     "lula_2t_p90": 82.42907
+    },
+    "CE": {
+     "p_lula_vence_2t": 0.99622,
+     "p_lula_a_frente_1t": 0.99865,
+     "lula_2t_p10": 59.25464,
+     "lula_2t_p50": 68.59572,
+     "lula_2t_p90": 78.00581
+    },
+    "DF": {
+     "p_lula_vence_2t": 0.06876,
+     "p_lula_a_frente_1t": 0.21458,
+     "lula_2t_p10": 31.01325,
+     "lula_2t_p50": 39.79771,
+     "lula_2t_p90": 48.53404
+    },
+    "ES": {
+     "p_lula_vence_2t": 0.09798,
+     "p_lula_a_frente_1t": 0.13921,
+     "lula_2t_p10": 31.27606,
+     "lula_2t_p50": 40.62214,
+     "lula_2t_p90": 49.95375
+    },
+    "GO": {
+     "p_lula_vence_2t": 0.00312,
+     "p_lula_a_frente_1t": 0.06529,
+     "lula_2t_p10": 34.598,
+     "lula_2t_p50": 39.92545,
+     "lula_2t_p90": 45.26616
+    },
+    "MA": {
+     "p_lula_vence_2t": 0.92109,
+     "p_lula_a_frente_1t": 0.96912,
+     "lula_2t_p10": 51.87032,
+     "lula_2t_p50": 69.75999,
+     "lula_2t_p90": 87.75297
+    },
+    "MG": {
+     "p_lula_vence_2t": 0.40311,
+     "p_lula_a_frente_1t": 0.53327,
+     "lula_2t_p10": 43.01406,
+     "lula_2t_p50": 48.83118,
+     "lula_2t_p90": 54.69578
+    },
+    "MS": {
+     "p_lula_vence_2t": 0.04507,
+     "p_lula_a_frente_1t": 0.07196,
+     "lula_2t_p10": 30.99982,
+     "lula_2t_p50": 39.13528,
+     "lula_2t_p90": 47.37169
+    },
+    "MT": {
+     "p_lula_vence_2t": 0.0,
+     "p_lula_a_frente_1t": 0.00748,
+     "lula_2t_p10": 26.23386,
+     "lula_2t_p50": 33.56097,
+     "lula_2t_p90": 40.94204
+    },
+    "PA": {
+     "p_lula_vence_2t": 0.66654,
+     "p_lula_a_frente_1t": 0.65649,
+     "lula_2t_p10": 43.72139,
+     "lula_2t_p50": 53.38044,
+     "lula_2t_p90": 63.1801
+    },
+    "PB": {
+     "p_lula_vence_2t": 0.91358,
+     "p_lula_a_frente_1t": 0.89691,
+     "lula_2t_p10": 50.81963,
+     "lula_2t_p50": 65.27475,
+     "lula_2t_p90": 79.80003
+    },
+    "PE": {
+     "p_lula_vence_2t": 0.91181,
+     "p_lula_a_frente_1t": 0.85371,
+     "lula_2t_p10": 50.99087,
+     "lula_2t_p50": 65.55826,
+     "lula_2t_p90": 80.19707
+    },
+    "PI": {
+     "p_lula_vence_2t": 0.99368,
+     "p_lula_a_frente_1t": 0.98064,
+     "lula_2t_p10": 61.16129,
+     "lula_2t_p50": 75.49663,
+     "lula_2t_p90": 90.02256
+    },
+    "PR": {
+     "p_lula_vence_2t": 0.0102,
+     "p_lula_a_frente_1t": 0.04165,
+     "lula_2t_p10": 28.99567,
+     "lula_2t_p50": 36.25716,
+     "lula_2t_p90": 43.52039
+    },
+    "RJ": {
+     "p_lula_vence_2t": 0.20976,
+     "p_lula_a_frente_1t": 0.26238,
+     "lula_2t_p10": 29.71311,
+     "lula_2t_p50": 42.14614,
+     "lula_2t_p90": 54.59385
+    },
+    "RN": {
+     "p_lula_vence_2t": 0.91735,
+     "p_lula_a_frente_1t": 0.92215,
+     "lula_2t_p10": 51.07634,
+     "lula_2t_p50": 63.75398,
+     "lula_2t_p90": 76.55498
+    },
+    "RO": {
+     "p_lula_vence_2t": 0.00029,
+     "p_lula_a_frente_1t": 0.00314,
+     "lula_2t_p10": 19.51204,
+     "lula_2t_p50": 27.98846,
+     "lula_2t_p90": 36.50265
+    },
+    "RR": {
+     "p_lula_vence_2t": 0.03085,
+     "p_lula_a_frente_1t": 0.07695,
+     "lula_2t_p10": 3.56468,
+     "lula_2t_p50": 22.58601,
+     "lula_2t_p90": 41.58327
+    },
+    "RS": {
+     "p_lula_vence_2t": 0.15812,
+     "p_lula_a_frente_1t": 0.24845,
+     "lula_2t_p10": 32.43206,
+     "lula_2t_p50": 42.27083,
+     "lula_2t_p90": 52.25777
+    },
+    "SC": {
+     "p_lula_vence_2t": 0.01633,
+     "p_lula_a_frente_1t": 0.03949,
+     "lula_2t_p10": 17.11996,
+     "lula_2t_p50": 29.34261,
+     "lula_2t_p90": 41.59002
+    },
+    "SE": {
+     "p_lula_vence_2t": 0.94209,
+     "p_lula_a_frente_1t": 0.91301,
+     "lula_2t_p10": 53.08015,
+     "lula_2t_p50": 65.8959,
+     "lula_2t_p90": 78.81324
+    },
+    "SP": {
+     "p_lula_vence_2t": 0.17075,
+     "p_lula_a_frente_1t": 0.24536,
+     "lula_2t_p10": 34.56666,
+     "lula_2t_p50": 43.35516,
+     "lula_2t_p90": 52.18985
+    },
+    "TO": {
+     "p_lula_vence_2t": 0.4995,
+     "p_lula_a_frente_1t": 0.55351,
+     "lula_2t_p10": 37.74928,
+     "lula_2t_p50": 50.01817,
+     "lula_2t_p90": 62.34855
+    }
+   }
+  },
+  "historico": {
+   "prob": {
+    "lula_vence": 0.18908,
+    "flavio_vence": 0.81092,
+    "outro_vence": 0.0,
+    "decide_1t": 0.39774,
+    "lula_vence_1t": 0.09001,
+    "flavio_vence_1t": 0.30773,
+    "top2_lula_flavio": 1.0,
+    "ha_segundo_turno_lula_x_flavio": 0.60226,
+    "lula_1o_no_1t": 0.27373
+   },
+   "ep_mc": {
+    "lula_vence": 0.00055,
+    "flavio_vence": 0.00055,
+    "outro_vence": 0.0,
+    "decide_1t": 0.00069,
+    "lula_vence_1t": 0.0004,
+    "flavio_vence_1t": 0.00065,
+    "top2_lula_flavio": 0.0,
+    "ha_segundo_turno_lula_x_flavio": 0.00069,
+    "lula_1o_no_1t": 0.00063
+   },
+   "quantis_pct_validos": {
+    "lula_1t": {
+     "p5": 35.55236,
+     "p10": 37.20908,
+     "p25": 41.33812,
+     "p50": 43.95494,
+     "p75": 46.4654,
+     "p90": 49.69854,
+     "p95": 51.19011,
+     "media": 43.76047
+    },
+    "flavio_1t": {
+     "p5": 39.7409,
+     "p10": 41.23232,
+     "p25": 45.48973,
+     "p50": 48.31931,
+     "p75": 50.87306,
+     "p90": 54.03501,
+     "p95": 55.68784,
+     "media": 48.0593
+    },
+    "demais_1t": {
+     "p5": 6.50377,
+     "p10": 6.81666,
+     "p25": 7.36435,
+     "p50": 8.07051,
+     "p75": 8.92598,
+     "p90": 9.69164,
+     "p95": 10.1581,
+     "media": 8.18023
+    },
+    "lula_2t": {
+     "p5": 39.66639,
+     "p10": 41.01432,
+     "p25": 43.06246,
+     "p50": 45.86335,
+     "p75": 48.69212,
+     "p90": 50.80427,
+     "p95": 52.20141,
+     "media": 45.89003
+    },
+    "renan_1t": {
+     "p5": 1.8926,
+     "p10": 1.99948,
+     "p25": 2.19055,
+     "p50": 2.43388,
+     "p75": 2.71214,
+     "p90": 2.98302,
+     "p95": 3.15166,
+     "media": 2.46755
+    },
+    "cury_1t": {
+     "p5": 1.60531,
+     "p10": 1.71536,
+     "p25": 1.91803,
+     "p50": 2.17255,
+     "p75": 2.46233,
+     "p90": 2.75548,
+     "p95": 2.94074,
+     "media": 2.2099
+    },
+    "caiado_1t": {
+     "p5": 1.65962,
+     "p10": 1.7571,
+     "p25": 1.9316,
+     "p50": 2.15161,
+     "p75": 2.40424,
+     "p90": 2.65154,
+     "p95": 2.80642,
+     "media": 2.18262
+    },
+    "zema_1t": {
+     "p5": 0.56377,
+     "p10": 0.6064,
+     "p25": 0.68473,
+     "p50": 0.7842,
+     "p75": 0.89806,
+     "p90": 1.0132,
+     "p95": 1.08923,
+     "media": 0.79972
+    }
+   },
+   "ufs": {
+    "AC": {
+     "p_lula_vence_2t": 0.00044,
+     "p_lula_a_frente_1t": 0.05437,
+     "lula_2t_p10": 7.41102,
+     "lula_2t_p50": 20.49942,
+     "lula_2t_p90": 34.25534
+    },
+    "AL": {
+     "p_lula_vence_2t": 0.77867,
+     "p_lula_a_frente_1t": 0.80492,
+     "lula_2t_p10": 44.62297,
+     "lula_2t_p50": 58.74768,
+     "lula_2t_p90": 73.03703
+    },
+    "AM": {
+     "p_lula_vence_2t": 0.28019,
+     "p_lula_a_frente_1t": 0.35774,
+     "lula_2t_p10": 31.33097,
+     "lula_2t_p50": 43.29589,
+     "lula_2t_p90": 59.80897
+    },
+    "AP": {
+     "p_lula_vence_2t": 0.0451,
+     "p_lula_a_frente_1t": 0.14032,
+     "lula_2t_p10": 33.13542,
+     "lula_2t_p50": 40.1602,
+     "lula_2t_p90": 47.51437
+    },
+    "BA": {
+     "p_lula_vence_2t": 0.99713,
+     "p_lula_a_frente_1t": 0.98182,
+     "lula_2t_p10": 59.39458,
+     "lula_2t_p50": 70.55438,
+     "lula_2t_p90": 81.55087
+    },
+    "CE": {
+     "p_lula_vence_2t": 0.99314,
+     "p_lula_a_frente_1t": 0.99618,
+     "lula_2t_p10": 57.52629,
+     "lula_2t_p50": 66.63889,
+     "lula_2t_p90": 75.92991
+    },
+    "DF": {
+     "p_lula_vence_2t": 0.00464,
+     "p_lula_a_frente_1t": 0.08542,
+     "lula_2t_p10": 25.35451,
+     "lula_2t_p50": 34.08156,
+     "lula_2t_p90": 42.44401
+    },
+    "ES": {
+     "p_lula_vence_2t": 0.01586,
+     "p_lula_a_frente_1t": 0.02958,
+     "lula_2t_p10": 26.01389,
+     "lula_2t_p50": 35.77378,
+     "lula_2t_p90": 44.56321
+    },
+    "GO": {
+     "p_lula_vence_2t": 0.0,
+     "p_lula_a_frente_1t": 0.01666,
+     "lula_2t_p10": 30.04147,
+     "lula_2t_p50": 35.16189,
+     "lula_2t_p90": 40.36366
+    },
+    "MA": {
+     "p_lula_vence_2t": 0.96038,
+     "p_lula_a_frente_1t": 0.95669,
+     "lula_2t_p10": 56.22085,
+     "lula_2t_p50": 68.9227,
+     "lula_2t_p90": 88.91986
+    },
+    "MG": {
+     "p_lula_vence_2t": 0.08803,
+     "p_lula_a_frente_1t": 0.2584,
+     "lula_2t_p10": 38.37937,
+     "lula_2t_p50": 43.96245,
+     "lula_2t_p90": 49.64693
+    },
+    "MS": {
+     "p_lula_vence_2t": 0.00318,
+     "p_lula_a_frente_1t": 0.02192,
+     "lula_2t_p10": 26.14279,
+     "lula_2t_p50": 34.85721,
+     "lula_2t_p90": 42.62635
+    },
+    "MT": {
+     "p_lula_vence_2t": 0.0,
+     "p_lula_a_frente_1t": 0.00083,
+     "lula_2t_p10": 21.04471,
+     "lula_2t_p50": 27.91472,
+     "lula_2t_p90": 35.15501
+    },
+    "PA": {
+     "p_lula_vence_2t": 0.62384,
+     "p_lula_a_frente_1t": 0.61849,
+     "lula_2t_p10": 42.85268,
+     "lula_2t_p50": 52.44151,
+     "lula_2t_p90": 61.37878
+    },
+    "PB": {
+     "p_lula_vence_2t": 0.92638,
+     "p_lula_a_frente_1t": 0.92105,
+     "lula_2t_p10": 51.6048,
+     "lula_2t_p50": 65.63438,
+     "lula_2t_p90": 79.5892
+    },
+    "PE": {
+     "p_lula_vence_2t": 0.95044,
+     "p_lula_a_frente_1t": 0.88007,
+     "lula_2t_p10": 54.07216,
+     "lula_2t_p50": 64.46645,
+     "lula_2t_p90": 80.91655
+    },
+    "PI": {
+     "p_lula_vence_2t": 0.99968,
+     "p_lula_a_frente_1t": 0.9913,
+     "lula_2t_p10": 63.71787,
+     "lula_2t_p50": 77.22008,
+     "lula_2t_p90": 90.57539
+    },
+    "PR": {
+     "p_lula_vence_2t": 0.0,
+     "p_lula_a_frente_1t": 0.00474,
+     "lula_2t_p10": 23.02745,
+     "lula_2t_p50": 30.38615,
+     "lula_2t_p90": 37.01845
+    },
+    "RJ": {
+     "p_lula_vence_2t": 0.02564,
+     "p_lula_a_frente_1t": 0.09159,
+     "lula_2t_p10": 21.98916,
+     "lula_2t_p50": 33.44754,
+     "lula_2t_p90": 44.61136
+    },
+    "RN": {
+     "p_lula_vence_2t": 0.9272,
+     "p_lula_a_frente_1t": 0.93082,
+     "lula_2t_p10": 51.32709,
+     "lula_2t_p50": 63.17264,
+     "lula_2t_p90": 76.04644
+    },
+    "RO": {
+     "p_lula_vence_2t": 0.0,
+     "p_lula_a_frente_1t": 0.00016,
+     "lula_2t_p10": 13.11793,
+     "lula_2t_p50": 21.22098,
+     "lula_2t_p90": 28.93181
+    },
+    "RR": {
+     "p_lula_vence_2t": 0.00081,
+     "p_lula_a_frente_1t": 0.00727,
+     "lula_2t_p10": 0.5,
+     "lula_2t_p50": 12.99144,
+     "lula_2t_p90": 30.46027
+    },
+    "RS": {
+     "p_lula_vence_2t": 0.05756,
+     "p_lula_a_frente_1t": 0.16191,
+     "lula_2t_p10": 28.24267,
+     "lula_2t_p50": 38.33623,
+     "lula_2t_p90": 48.05997
+    },
+    "SC": {
+     "p_lula_vence_2t": 0.0,
+     "p_lula_a_frente_1t": 0.00164,
+     "lula_2t_p10": 8.97667,
+     "lula_2t_p50": 21.90248,
+     "lula_2t_p90": 31.37043
+    },
+    "SE": {
+     "p_lula_vence_2t": 0.96431,
+     "p_lula_a_frente_1t": 0.91489,
+     "lula_2t_p10": 54.32193,
+     "lula_2t_p50": 65.79713,
+     "lula_2t_p90": 78.79829
+    },
+    "SP": {
+     "p_lula_vence_2t": 0.06055,
+     "p_lula_a_frente_1t": 0.13385,
+     "lula_2t_p10": 30.74002,
+     "lula_2t_p50": 39.82598,
+     "lula_2t_p90": 48.40078
+    },
+    "TO": {
+     "p_lula_vence_2t": 0.38446,
+     "p_lula_a_frente_1t": 0.48892,
+     "lula_2t_p10": 36.30374,
+     "lula_2t_p50": 47.10014,
+     "lula_2t_p90": 60.89625
+    }
+   }
+  }
+ },
+ "sensibilidade_2026": {
+  "pool_sem_2014/neutro": {
+   "lula_vence": 0.46408,
+   "flavio_vence": 0.53592,
+   "outro_vence": 0.0,
+   "decide_1t": 1e-05,
+   "lula_vence_1t": 1e-05,
+   "flavio_vence_1t": 0.0,
+   "top2_lula_flavio": 1.0,
+   "ha_segundo_turno_lula_x_flavio": 0.99999,
+   "lula_1o_no_1t": 0.84792
+  },
+  "pool_sem_2014/historico": {
+   "lula_vence": 0.14275,
+   "flavio_vence": 0.85725,
+   "outro_vence": 0.0,
+   "decide_1t": 0.0,
+   "lula_vence_1t": 0.0,
+   "flavio_vence_1t": 0.0,
+   "top2_lula_flavio": 1.0,
+   "ha_segundo_turno_lula_x_flavio": 1.0,
+   "lula_1o_no_1t": 0.79415
+  },
+  "bootstrap_puro_sem_nucleo/neutro": {
+   "lula_vence": 0.49965,
+   "flavio_vence": 0.50035,
+   "outro_vence": 0.0,
+   "decide_1t": 0.33318,
+   "lula_vence_1t": 0.16648,
+   "flavio_vence_1t": 0.1667,
+   "top2_lula_flavio": 1.0,
+   "ha_segundo_turno_lula_x_flavio": 0.66682,
+   "lula_1o_no_1t": 0.72398
+  },
+  "bootstrap_puro_sem_nucleo/historico": {
+   "lula_vence": 0.29643,
+   "flavio_vence": 0.70357,
+   "outro_vence": 0.0,
+   "decide_1t": 0.34152,
+   "lula_vence_1t": 0.16307,
+   "flavio_vence_1t": 0.17845,
+   "top2_lula_flavio": 1.0,
+   "ha_segundo_turno_lula_x_flavio": 0.65848,
+   "lula_1o_no_1t": 0.16653
+  }
+ },
+ "backtest": {
+  "2018": {
+   "neutro": {
+    "ano": 2018,
+    "previsao": {
+     "pt_vence": 0.28905,
+     "opp_vence": 0.71095,
+     "outro_vence": 0.0,
+     "decide_1t": 0.1705,
+     "pt_vence_1t": 0.0,
+     "opp_vence_1t": 0.1705,
+     "top2_pt_opp": 0.99999,
+     "ha_segundo_turno_pt_x_opp": 0.8295,
+     "pt_1o_no_1t": 0.03429
+    },
+    "resultado": {
+     "pt_1t": 29.2778,
+     "opp_1t": 46.0314,
+     "demais_1t": 24.6908,
+     "q_2t": 44.8698,
+     "terceiro_1t": 12.4655
+    },
+    "erro_mediana_pp": {
+     "pt_1t": -0.03716,
+     "opp_1t": 0.29956,
+     "demais_1t": 0.78293,
+     "q_2t": 2.81559
+    },
+    "cobertura_nacional": {
+     "pt_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "opp_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "demais_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "q_2t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     }
+    },
+    "cobertura_uf_2t": {
+     "0.5": 0.66667,
+     "0.8": 0.85185,
+     "0.95": 0.92593
+    },
+    "brier_nacional": {
+     "pt_vence": 0.08355,
+     "decide_1t": 0.02907,
+     "pt_1o_no_1t": 0.00118,
+     "top2_pt_opp": 0.0
+    },
+    "brier_uf_2t": 0.09176,
+    "brier_uf_1t": 0.06855,
+    "acertos_uf_2t": 24,
+    "acertos_uf_1t": 24,
+    "pool_anos": [
+     2014,
+     2022
+    ]
+   },
+   "historico": {
+    "ano": 2018,
+    "previsao": {
+     "pt_vence": 0.05844,
+     "opp_vence": 0.94156,
+     "outro_vence": 0.0,
+     "decide_1t": 0.46328,
+     "pt_vence_1t": 0.0,
+     "opp_vence_1t": 0.46328,
+     "top2_pt_opp": 0.99965,
+     "ha_segundo_turno_pt_x_opp": 0.53672,
+     "pt_1o_no_1t": 0.00834
+    },
+    "resultado": {
+     "pt_1t": 29.2778,
+     "opp_1t": 46.0314,
+     "demais_1t": 24.6908,
+     "q_2t": 44.8698,
+     "terceiro_1t": 12.4655
+    },
+    "erro_mediana_pp": {
+     "pt_1t": -3.39802,
+     "opp_1t": 3.58153,
+     "demais_1t": 0.79605,
+     "q_2t": -1.70396
+    },
+    "cobertura_nacional": {
+     "pt_1t": {
+      "0.5": false,
+      "0.8": true,
+      "0.95": true
+     },
+     "opp_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "demais_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "q_2t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     }
+    },
+    "cobertura_uf_2t": {
+     "0.5": 0.81481,
+     "0.8": 0.92593,
+     "0.95": 1.0
+    },
+    "brier_nacional": {
+     "pt_vence": 0.00341,
+     "decide_1t": 0.21463,
+     "pt_1o_no_1t": 7e-05,
+     "top2_pt_opp": 0.0
+    },
+    "brier_uf_2t": 0.04317,
+    "brier_uf_1t": 0.04844,
+    "acertos_uf_2t": 25,
+    "acertos_uf_1t": 26,
+    "pool_anos": [
+     2014,
+     2022
+    ]
+   }
+  },
+  "2022": {
+   "neutro": {
+    "ano": 2022,
+    "previsao": {
+     "pt_vence": 0.90842,
+     "opp_vence": 0.09158,
+     "outro_vence": 0.0,
+     "decide_1t": 0.42956,
+     "pt_vence_1t": 0.36992,
+     "opp_vence_1t": 0.05965,
+     "top2_pt_opp": 1.0,
+     "ha_segundo_turno_pt_x_opp": 0.57044,
+     "pt_1o_no_1t": 0.71108
+    },
+    "resultado": {
+     "pt_1t": 48.4307,
+     "opp_1t": 43.1976,
+     "demais_1t": 8.3717,
+     "q_2t": 50.9024,
+     "terceiro_1t": 4.1575
+    },
+    "erro_mediana_pp": {
+     "pt_1t": -0.13587,
+     "opp_1t": -1.14614,
+     "demais_1t": 1.77334,
+     "q_2t": 4.50836
+    },
+    "cobertura_nacional": {
+     "pt_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "opp_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "demais_1t": {
+      "0.5": false,
+      "0.8": false,
+      "0.95": true
+     },
+     "q_2t": {
+      "0.5": false,
+      "0.8": false,
+      "0.95": true
+     }
+    },
+    "cobertura_uf_2t": {
+     "0.5": 0.25926,
+     "0.8": 0.81481,
+     "0.95": 0.92593
+    },
+    "brier_nacional": {
+     "pt_vence": 0.00839,
+     "decide_1t": 0.18453,
+     "pt_1o_no_1t": 0.08347,
+     "top2_pt_opp": 0.0
+    },
+    "brier_uf_2t": 0.059,
+    "brier_uf_1t": 0.02807,
+    "acertos_uf_2t": 26,
+    "acertos_uf_1t": 27,
+    "pool_anos": [
+     2014,
+     2018
+    ]
+   },
+   "historico": {
+    "ano": 2022,
+    "previsao": {
+     "pt_vence": 0.67136,
+     "opp_vence": 0.32864,
+     "outro_vence": 0.0,
+     "decide_1t": 0.38173,
+     "pt_vence_1t": 0.14817,
+     "opp_vence_1t": 0.23356,
+     "top2_pt_opp": 1.0,
+     "ha_segundo_turno_pt_x_opp": 0.61827,
+     "pt_1o_no_1t": 0.43742
+    },
+    "resultado": {
+     "pt_1t": 48.4307,
+     "opp_1t": 43.1976,
+     "demais_1t": 8.3717,
+     "q_2t": 50.9024,
+     "terceiro_1t": 4.1575
+    },
+    "erro_mediana_pp": {
+     "pt_1t": -4.03239,
+     "opp_1t": 2.75126,
+     "demais_1t": 1.76802,
+     "q_2t": 1.71267
+    },
+    "cobertura_nacional": {
+     "pt_1t": {
+      "0.5": false,
+      "0.8": true,
+      "0.95": true
+     },
+     "opp_1t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     },
+     "demais_1t": {
+      "0.5": false,
+      "0.8": false,
+      "0.95": true
+     },
+     "q_2t": {
+      "0.5": true,
+      "0.8": true,
+      "0.95": true
+     }
+    },
+    "cobertura_uf_2t": {
+     "0.5": 0.37037,
+     "0.8": 0.59259,
+     "0.95": 0.92593
+    },
+    "brier_nacional": {
+     "pt_vence": 0.108,
+     "decide_1t": 0.14572,
+     "pt_1o_no_1t": 0.31649,
+     "top2_pt_opp": 0.0
+    },
+    "brier_uf_2t": 0.05685,
+    "brier_uf_1t": 0.03454,
+    "acertos_uf_2t": 25,
+    "acertos_uf_1t": 26,
+    "pool_anos": [
+     2014,
+     2018
+    ]
+   }
+  }
+ },
+ "backtest_resumo": {
+  "neutro": {
+   "cobertura_nacional": {
+    "0.5": 0.75,
+    "0.8": 0.75,
+    "0.95": 1.0
+   },
+   "n_quantidades_nacionais": 8,
+   "cobertura_uf_2t": {
+    "0.5": 0.46296,
+    "0.8": 0.83333,
+    "0.95": 0.92593
+   },
+   "n_uf": 54,
+   "brier_nacional_medio": 0.04877,
+   "n_eventos_nacionais": 8,
+   "brier_nacional_pt_vence_e_pt_1o": 0.04415,
+   "brier_uf_1t_e_2t": 0.06184,
+   "brier_uf_2t": 0.07538,
+   "brier_uf_1t": 0.04831,
+   "logloss_uf_2t": 0.29089,
+   "acerto_uf_2t": 0.92593,
+   "referencia_brier_moeda": 0.25
+  },
+  "historico": {
+   "cobertura_nacional": {
+    "0.5": 0.625,
+    "0.8": 0.875,
+    "0.95": 1.0
+   },
+   "n_quantidades_nacionais": 8,
+   "cobertura_uf_2t": {
+    "0.5": 0.59259,
+    "0.8": 0.75926,
+    "0.95": 0.96296
+   },
+   "n_uf": 54,
+   "brier_nacional_medio": 0.09854,
+   "n_eventos_nacionais": 8,
+   "brier_nacional_pt_vence_e_pt_1o": 0.107,
+   "brier_uf_1t_e_2t": 0.04575,
+   "brier_uf_2t": 0.05001,
+   "brier_uf_1t": 0.04149,
+   "logloss_uf_2t": 0.1585,
+   "acerto_uf_2t": 0.92593,
+   "referencia_brier_moeda": 0.25
+  }
+ },
+ "comparacao_modelo_principal": {
+  "arquivo": "simulador/web/resultados.json",
+  "gerado_em": "2026-10-03T22:51:54+00:00",
+  "visoes": {
+   "neutro": {
+    "lula_vence": 0.43062,
+    "flavio_vence": 0.56938,
+    "decide_1t": 0.15697,
+    "segundo_turno_lula_flavio": 0.84302
+   },
+   "calibrado": {
+    "lula_vence": 0.20378,
+    "flavio_vence": 0.79622,
+    "decide_1t": 0.20588,
+    "segundo_turno_lula_flavio": 0.79412
+   },
+   "pleno": {
+    "lula_vence": 0.11438,
+    "flavio_vence": 0.88562,
+    "decide_1t": 0.31862,
+    "segundo_turno_lula_flavio": 0.68138
+   }
+  }
+ }
+}

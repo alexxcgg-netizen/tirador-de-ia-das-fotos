@@ -1,0 +1,7 @@
+cenario,transferencia_mil,comparecimento_mil,brancos_nulos_mil,total_NE_mil,%_do_gap
+"A. Pessimista: transf. pró-Flávio, comparecimento cai como 2018",-973.5,-156.4,0.0,-1129.9,-50.0
+"A2. Histórico 2022: transf. Quaest, comparecimento como 2022",-430.1,32.8,0.0,-397.2,-17.6
+"B. Base: transf. Quaest, comparecimento estável",-430.1,0.0,0.0,-430.1,-19.0
+"C. Base + 1 p.p. comparecimento, -10% brancos/nulos",-430.1,143.4,62.6,-224.1,-9.9
+"D. Otimista: transf. pró-Lula, +2 p.p. comparecimento, -15% B/N",-68.2,286.8,93.9,312.6,13.8
+"E. Teto: transf. pró-Lula, +3 p.p., novos +10 p.p. pró-Lula (+10), -20% B/N",-68.2,678.1,197.3,807.2,35.7
