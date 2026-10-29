@@ -145,6 +145,12 @@ enum AspectRatio: String, CaseIterable, Identifiable {
     }
 }
 
+/// Um quadro vindo da câmera: DNG, ou HEIC quando a câmera não oferece RAW (ex.: a da frente).
+struct CapturedFrame {
+    let data: Data
+    let isRaw: Bool
+}
+
 /// Tudo que define como a foto é revelada.
 struct DevelopOptions {
     var look: Look = .filme
@@ -152,6 +158,8 @@ struct DevelopOptions {
     var grain: Float = 1
     var zoom: CGFloat = 1
     var aspect: AspectRatio = .r43
+    /// Inverte na horizontal, como num espelho.
+    var mirror = false
 
     var params: LookParams { look.params.scaled(amount: amount, grain: grain) }
 }
@@ -210,14 +218,26 @@ enum Developer {
         return image.settingProperties(properties)
     }
 
-    static func develop(dng: Data, options: DevelopOptions) -> Output? {
+    /// HEIC já processado pela Apple -> luz linear de tela (o look é aplicado como no visor).
+    static func processed(_ data: Data) -> CIImage? {
+        guard let image = CIImage(data: data, options: [.applyOrientationProperty: true]) else { return nil }
+        var properties = image.properties
+        properties[kCGImagePropertyOrientation as String] = nil
+        return image.settingProperties(properties)
+    }
+
+    static func image(from frame: CapturedFrame) -> CIImage? {
+        frame.isRaw ? linear(dng: frame.data) : processed(frame.data)
+    }
+
+    static func develop(_ frame: CapturedFrame, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
-        guard let image = linear(dng: dng) else {
-            dlog("❌ CIRAWFilter não abriu o DNG (\(dng.count / 1024) KB)")
+        guard let image = image(from: frame) else {
+            dlog("❌ Não abriu o \(frame.isRaw ? "DNG" : "HEIC") (\(frame.data.count / 1024) KB)")
             return nil
         }
-        let output = finish(image, options: options)
-        dlog("Revelação \(options.look.rawValue) \(Int(image.extent.width))×\(Int(image.extent.height)) · DNG \(dng.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
+        let output = finish(image, options: options, displayReferred: !frame.isRaw)
+        dlog("Revelação \(options.look.rawValue) \(Int(image.extent.width))×\(Int(image.extent.height)) · \(frame.isRaw ? "DNG" : "HEIC") \(frame.data.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
     }
 
@@ -230,11 +250,17 @@ enum Developer {
     }
 
     /// Luz linear -> look, recorte e HEIC de 10 bits.
-    static func finish(_ linear: CIImage, options: DevelopOptions) -> Output? {
+    static func finish(_ linear: CIImage, options: DevelopOptions, displayReferred: Bool = false) -> Output? {
         let rect = options.aspect.crop(linear.extent, zoom: options.zoom)
-        let cropped = linear.cropped(to: rect)
+        var cropped = linear.cropped(to: rect)
             .transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
-        let graded = apply(toneKernel, to: cropped, look: options.params, extra: [])
+        if options.mirror {
+            cropped = cropped.transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -rect.width, y: 0))
+        }
+        // Imagem já com a curva da Apple: usa o kernel do visor, que desfaz a curva antes do look
+        let graded = (displayReferred
+            ? apply(previewKernel, to: cropped, look: options.params, extra: [0])
+            : apply(toneKernel, to: cropped, look: options.params, extra: []))
             .settingProperties(linear.properties)
 
         guard let heic = try? context.heif10Representation(
@@ -251,9 +277,9 @@ enum Developer {
     enum StackKind { case focus, average }
 
     /// Junta vários RAW: foco empilhado (pega o pedaço mais nítido de cada quadro) ou média (menos ruído / exposição longa).
-    static func stack(_ frames: [Data], kind: StackKind, options: DevelopOptions) -> Output? {
+    static func stack(_ frames: [CapturedFrame], kind: StackKind, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
-        let images = frames.compactMap { linear(dng: $0) }
+        let images = frames.compactMap { image(from: $0) }
         guard let reference = images.first else { return nil }
         dlog("Empilhando \(images.count) de \(frames.count) quadros (\(kind == .focus ? "foco" : "média")) · \(Int(reference.extent.width))×\(Int(reference.extent.height))")
         let aligned = [reference] + images.dropFirst().map { align($0, to: reference) }
@@ -266,7 +292,8 @@ enum Developer {
         case .focus:
             merged = focusMerge(aligned) ?? average(aligned)
         }
-        let output = finish(merged.cropped(to: reference.extent).settingProperties(reference.properties), options: options)
+        let output = finish(merged.cropped(to: reference.extent).settingProperties(reference.properties), options: options,
+                            displayReferred: !(frames.first?.isRaw ?? true))
         dlog("Empilhamento + revelação: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
     }

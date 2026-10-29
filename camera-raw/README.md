@@ -6,13 +6,16 @@ App de câmera para iPhone que fotografa em **RAW** e revela a foto com uma curv
 
 **Captura**
 - **ProRAW** (até 48 MP) ou **RAW puro** (Bayer, um único quadro, sem o processamento computacional da Apple).
-- Lentes **Macro**, 0.5×, 1×, **2×**, 4× e **8×**. O 2×, o 8× e o Macro são um recorte central do sensor de 48 MP (12 MP com qualidade óptica).
+- Lentes **Macro**, 0.5×, 1×, **2×**, 4× e **8×**, e a câmera da frente. O 2×, o 8× e o Macro são um recorte central do sensor de 48 MP (12 MP com qualidade óptica).
 - **Macro**: usa a ultra-angular, que foca a 2 cm, com recorte 2× para aproximar ainda mais. Liga o peaking sozinho.
 - **Foco empilhado**: 7 fotos com o foco indo do perto ao longe, alinhadas e juntadas pegando o pedaço mais nítido de cada uma. É o modo para macro de cabelo, pele, tecido, insetos: tudo nítido, mesmo com a profundidade de campo minúscula do macro.
 - **Noite**: 8 fotos a 1/15 s alinhadas e somadas: noite limpa sem o processamento da Apple.
 - **Estrelas**: 16 exposições longas com foco no infinito, somadas (tripé ou iPhone apoiado).
 - **Lua**: vai para a lente 8×, foco no infinito, exposição para a Lua e 8 fotos somadas.
 - **Flash**: RAW com flash.
+- **Retrato**: vai para o 2×, segue o rosto com o foco e a luz e usa o look Retrato. Um quadro no rosto mostra a distância estimada e avisa até você chegar em 1,3 m ou mais, onde a perspectiva não deforma o rosto.
+- **Câmera da frente**: botão de virar ao lado do disparador. Se ela não oferecer RAW, o app fotografa em HEIC e aplica o look por cima.
+- **Espelhar** (menu `…`): salva a foto invertida, como você se vê no espelho.
 - **Média**: 8 fotos alinhadas e somadas. À noite tira o ruído sem o processamento da Apple; com obturador lento deixa água e nuvens lisas.
 - ISO, obturador, balanço de branco (Kelvin) e foco manuais; no automático, compensação de EV.
 - Proporções 4:3, 1:1, 16:9 e 65:24 (panorâmica de cinema).

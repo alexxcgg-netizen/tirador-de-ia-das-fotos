@@ -72,6 +72,7 @@ struct ContentView: View {
             iconToggle(camera.aspect.rawValue, isSymbol: false, isOn: camera.aspect != .r43) { camera.cycleAspect() }
             Menu {
                 Toggle(isOn: $camera.showGrid) { Label("Grade de terços", systemImage: "grid") }
+                Toggle(isOn: $camera.mirror) { Label("Espelhar foto (como no espelho)", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") }
                 Button { showReport = true } label: { Label("Relatório para o Claude", systemImage: "doc.text.magnifyingglass") }
             } label: {
                 Image(systemName: "ellipsis")
@@ -147,7 +148,8 @@ struct ContentView: View {
                         Histogram(bins: camera.histogram)
                             .frame(width: 96, height: 40)
                         Spacer()
-                        Text(camera.look.rawValue.uppercased())
+                        Text(camera.look.rawValue.uppercased() + " · " + statusText.replacingOccurrences(of: "\n", with: " ")
+                             + (camera.mirror ? " · ESPELHO" : ""))
                             .font(.caption2.weight(.bold)).tracking(1.2)
                             .padding(.horizontal, 8).padding(.vertical, 4)
                             .background(.black.opacity(0.45), in: Capsule())
@@ -163,6 +165,28 @@ struct ContentView: View {
                         .foregroundStyle(.black)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                         .padding(.bottom, 10)
+                }
+                if let face = camera.faceRect, camera.stackProgress == nil {
+                    let zoom = camera.lens.zoom
+                    let advice = camera.distanceAdvice
+                    let color: Color = advice == nil ? .white.opacity(0.6) : (advice!.good ? .green : accent)
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(color, lineWidth: 1.5)
+                        .frame(width: face.width * zoom * geo.size.width, height: face.height * zoom * geo.size.height)
+                        .position(x: (0.5 + (face.midX - 0.5) * zoom) * geo.size.width,
+                                  y: (0.5 + (face.midY - 0.5) * zoom) * geo.size.height)
+                        .animation(.easeOut(duration: 0.15), value: face)
+                        .allowsHitTesting(false)
+                    if let advice {
+                        Label(advice.text, systemImage: advice.good ? "checkmark.circle.fill" : "figure.walk")
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 10).padding(.vertical, 6)
+                            .foregroundStyle(advice.good ? Color.black : Color.white)
+                            .background(advice.good ? Color.green : Color.black.opacity(0.6), in: Capsule())
+                            .frame(maxHeight: .infinity, alignment: .bottom)
+                            .padding(.bottom, 10)
+                            .allowsHitTesting(false)
+                    }
                 }
                 if camera.lens == .macro && camera.stackProgress == nil {
                     Text("Macro: aproxime até 2 cm")
@@ -353,14 +377,14 @@ struct ContentView: View {
 
     private var lensPicker: some View {
         HStack(spacing: 8) {
-            ForEach(camera.availableLenses) { lens in
+            ForEach(camera.lens == .front ? [Lens.front] : camera.availableLenses) { lens in
                 Button {
                     withAnimation(.snappy(duration: 0.2)) { camera.select(lens: lens) }
                 } label: {
                     if lens == .macro {
                         Image(systemName: "camera.macro")
                     } else {
-                        Text(lens.rawValue)
+                        Text(lens.rawValue).minimumScaleFactor(0.6).lineLimit(1)
                     }
                 }
                     .font(.footnote.weight(.bold))
@@ -407,9 +431,19 @@ struct ContentView: View {
                         ProgressView().tint(.white)
                         Text("Revelando").font(.caption2).opacity(0.7)
                     }
-                } else {
-                    Text(statusText)
-                        .font(.caption2.weight(.bold)).multilineTextAlignment(.center).opacity(0.5)
+                } else if camera.hasFront {
+                    Button {
+                        withAnimation(.snappy(duration: 0.25)) { camera.flipCamera() }
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    } label: {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .font(.title3.weight(.semibold))
+                            .frame(width: 52, height: 52)
+                            .foregroundStyle(camera.lens == .front ? accent : .white)
+                            .background(Circle().fill(.white.opacity(0.1)))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Virar câmera")
                 }
             }
             .frame(width: 56, height: 56)
@@ -439,7 +473,7 @@ struct ContentView: View {
         case .stars: return "16×\nCÉU"
         case .moon: return "8×\nLUA"
         case .flash: return "DNG\nFLASH"
-        case .photo:
+        case .photo, .portrait:
             if camera.rawMode == .bayer { return "DNG\nRAW" }
             return camera.lens.zoom > 1 ? "DNG\n12MP" : "DNG\n48MP"
         }
