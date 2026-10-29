@@ -1,0 +1,53 @@
+name: Revela (IPA)
+
+on:
+  push:
+    paths:
+      - "camera-raw/**"
+      - ".github/workflows/camera-raw.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: camera-raw
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Selecionar Xcode
+        run: |
+          XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XC" ]; then sudo xcode-select -s "$XC"; fi
+          xcodebuild -version
+          # Desde o Xcode 26 o compilador Metal é um componente separado
+          xcodebuild -downloadComponent MetalToolchain || true
+
+      - name: Gerar projeto
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Compilar (sem assinatura)
+        run: |
+          set -o pipefail
+          xcodebuild -project Revela.xcodeproj -scheme Revela -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | grep -E "error:|warning: .*Revela|BUILD" || true
+          test -d build/Build/Products/Release-iphoneos/Revela.app
+
+      - name: Empacotar .ipa
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/Revela.app Payload/
+          zip -qry Revela.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Revela-ipa
+          path: camera-raw/Revela.ipa
+          retention-days: 14

@@ -1,0 +1,6 @@
+Revela.xcodeproj/
+Revela/Info.plist
+build/
+Payload/
+*.ipa
+.DS_Store
