@@ -5,10 +5,15 @@ App de câmera para iPhone que fotografa em **RAW** e revela a foto com uma curv
 ## O que ele faz
 
 - **ProRAW** (até 48 MP) ou **RAW puro** (Bayer, um único quadro, sem o processamento computacional da Apple).
+- **Look ao vivo no visor**: o vídeo da câmera passa pela mesma curva da revelação, então você vê o resultado antes de fotografar.
+- Cinco looks: **Neutro**, **Filme**, **Cine**, **Suave** e **Prata** (P&B).
 - ISO, obturador, balanço de branco (Kelvin) e foco manuais; no automático, compensação de EV.
+- Toque no visor para focar e medir a luz naquele ponto.
+- Histograma, zebra (listras onde a luz estourou), grade de terços e nível do horizonte.
+- Timer de 3 ou 10 segundos.
+- Dispara pelo botão de volume e pelo **Controle da Câmera**; no Controle da Câmera também dá para ajustar a exposição e trocar o look.
 - Lentes 0.5×, 1× e 4×.
-- Três looks de revelação: **Neutro**, **Filme** (cor suave, preto levemente levantado, grão) e **P&B**.
-- Salva na galeria como um único item: a foto revelada (HEIC) + o **DNG original**. Dá pra revelar o DNG de novo depois no Lightroom etc.
+- Salva na galeria como um único item: a foto revelada (HEIC) + o **DNG original**. Dá para revelar o DNG de novo depois no Lightroom etc.
 
 ## Como gerar o app
 
@@ -31,5 +36,6 @@ Em **Actions → Revela (IPA) → (última execução) → Artifacts**, baixe `R
 - `project.yml`: projeto do Xcode (gerado com XcodeGen).
 - `Revela/CameraModel.swift`: sessão da câmera, controles manuais, captura e salvamento.
 - `Revela/Developer.swift`: revelação do DNG (CIRAWFilter em luz linear + kernel próprio).
-- `Revela/Tone.ci.metal`: a curva fílmica, cor, contraste e grão (kernel de Core Image).
+- `Revela/LivePreview.swift`: visor ao vivo com o look e o histograma.
+- `Revela/Tone.ci.metal`: a curva fílmica, cor, contraste, split toning, grão e zebra (kernels de Core Image).
 - `Revela/ContentView.swift`: interface.

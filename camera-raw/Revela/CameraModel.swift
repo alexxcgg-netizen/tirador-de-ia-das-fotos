@@ -39,7 +39,7 @@ enum RevelaError: LocalizedError {
     }
 }
 
-final class CameraModel: NSObject, ObservableObject {
+final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     static let allISO: [Float] = [25, 32, 40, 50, 64, 80, 100, 125, 160, 200, 250, 320, 400, 500, 640,
                                   800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12800]
     static let allShutter: [Double] = [8000, 6400, 5000, 4000, 3200, 2500, 2000, 1600, 1250, 1000, 800, 640,
@@ -47,8 +47,11 @@ final class CameraModel: NSObject, ObservableObject {
                                        15, 13, 10, 8, 6, 5, 4, 3, 2, 1].map { 1 / $0 }
 
     let session = AVCaptureSession()
+    let renderer = PreviewRenderer()
     private let photoOutput = AVCapturePhotoOutput()
+    private let videoOutput = AVCaptureVideoDataOutput()
     private let sessionQueue = DispatchQueue(label: "revela.session")
+    private let videoQueue = DispatchQueue(label: "revela.video", qos: .userInteractive)
     private var device: AVCaptureDevice?
     private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
     private var inFlight: [Int64: PhotoProcessor] = [:]
@@ -59,7 +62,20 @@ final class CameraModel: NSObject, ObservableObject {
     @Published var lens: Lens = .wide
     @Published var rawMode: RawMode = .proRAW
     @Published var proRAWSupported = true
-    @Published var look: Look = .filme
+    @Published var look: Look = Look(rawValue: UserDefaults.standard.string(forKey: "look") ?? "") ?? .filme {
+        didSet {
+            renderer.look = look
+            UserDefaults.standard.set(look.rawValue, forKey: "look")
+        }
+    }
+    @Published var zebra = false { didSet { renderer.zebra = zebra } }
+    @Published var showGrid = true
+    @Published var timerSeconds = 0
+    @Published var countdown = 0
+    @Published var histogram: [Float] = []
+    @Published var flash = false
+    /// Ponto do último toque para focar, em coordenadas normalizadas do visor.
+    @Published var focusPoint: CGPoint?
 
     @Published var isoStops: [Float] = [100]
     @Published var shutterStops: [Double] = [1.0 / 60]
@@ -84,6 +100,12 @@ final class CameraModel: NSObject, ObservableObject {
 
     // MARK: - Sessão
 
+    override init() {
+        super.init()
+        renderer.look = look
+        renderer.onHistogram = { [weak self] bins in self?.histogram = bins }
+    }
+
     func start() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -107,6 +129,9 @@ final class CameraModel: NSObject, ObservableObject {
         let lens = self.lens
         let mode = self.rawMode
         sessionQueue.async {
+            if #available(iOS 18.0, *), self.session.supportsControls {
+                self.session.setControlsDelegate(self, queue: self.sessionQueue)
+            }
             self.setupSession(lens: lens, mode: mode)
             if !self.session.isRunning { self.session.startRunning() }
         }
@@ -149,6 +174,16 @@ final class CameraModel: NSObject, ObservableObject {
         if !session.outputs.contains(photoOutput), session.canAddOutput(photoOutput) {
             session.addOutput(photoOutput)
         }
+        if !session.outputs.contains(videoOutput), session.canAddOutput(videoOutput) {
+            videoOutput.alwaysDiscardsLateVideoFrames = true
+            videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
+            session.addOutput(videoOutput)
+        }
+        // O app é só em retrato
+        if let connection = videoOutput.connection(with: .video), connection.isVideoRotationAngleSupported(90) {
+            connection.videoRotationAngle = 90
+        }
+        if #available(iOS 18.0, *) { installCameraControls(for: dev) }
         session.commitConfiguration()
 
         device = dev
@@ -255,13 +290,62 @@ final class CameraModel: NSObject, ObservableObject {
         }
     }
 
+    /// Toque no visor: foca e mede a luz naquele ponto. `point` vai de 0 a 1 nos dois eixos.
+    func focus(at point: CGPoint) {
+        focusPoint = point
+        // Sensor fica deitado: girar 90° do retrato para as coordenadas da câmera
+        let devicePoint = CGPoint(x: point.y, y: 1 - point.x)
+        let manualFocus = self.manualFocus
+        let manualExposure = self.manualExposure
+        sessionQueue.async {
+            guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
+            defer { d.unlockForConfiguration() }
+            if !manualFocus, d.isFocusPointOfInterestSupported, d.isFocusModeSupported(.autoFocus) {
+                d.focusPointOfInterest = devicePoint
+                d.focusMode = .autoFocus
+            }
+            if !manualExposure, d.isExposurePointOfInterestSupported, d.isExposureModeSupported(.continuousAutoExposure) {
+                d.exposurePointOfInterest = devicePoint
+                d.exposureMode = .continuousAutoExposure
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+            if self.focusPoint == point { self.focusPoint = nil }
+        }
+    }
+
+    func cycleTimer() {
+        timerSeconds = timerSeconds == 0 ? 3 : (timerSeconds == 3 ? 10 : 0)
+    }
+
+    /// Botão do app, volume ou Controle da Câmera.
+    func shutter() {
+        guard countdown == 0 else { return }
+        guard timerSeconds > 0 else { return capture() }
+        countdown = timerSeconds
+        tick()
+    }
+
+    private func tick() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            guard self.countdown > 0 else { return }
+            self.countdown -= 1
+            if self.countdown == 0 { self.capture() } else {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                self.tick()
+            }
+        }
+    }
+
     // MARK: - Captura
 
-    func capture() {
+    private func capture() {
         let look = self.look
         let mode = self.rawMode
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         processing += 1
+        flash = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { self.flash = false }
 
         sessionQueue.async {
             let types = self.photoOutput.availableRawPhotoPixelFormatTypes
@@ -310,6 +394,41 @@ final class CameraModel: NSObject, ObservableObject {
     private func post(_ text: String) {
         DispatchQueue.main.async { self.message = text }
     }
+
+    // MARK: - Visor
+
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        renderer.enqueue(CIImage(cvPixelBuffer: pixelBuffer))
+    }
+
+    // MARK: - Controle da Câmera (iPhone 16 e 17)
+
+    @available(iOS 18.0, *)
+    private func installCameraControls(for device: AVCaptureDevice) {
+        guard session.supportsControls else { return }
+        session.controls.forEach { session.removeControl($0) }
+
+        let exposure = AVCaptureSystemExposureBiasSlider(device: device)
+        let looks = AVCaptureIndexPicker("Look", symbolName: "camera.filters",
+                                         localizedIndexTitles: Look.allCases.map(\.rawValue))
+        looks.selectedIndex = Look.allCases.firstIndex(of: look) ?? 0
+        looks.setActionQueue(.main) { [weak self] index in
+            guard let self, Look.allCases.indices.contains(index) else { return }
+            self.look = Look.allCases[index]
+        }
+        for control in [exposure, looks] as [AVCaptureControl] where session.canAddControl(control) {
+            session.addControl(control)
+        }
+    }
+}
+
+@available(iOS 18.0, *)
+extension CameraModel: AVCaptureSessionControlsDelegate {
+    func sessionControlsDidBecomeActive(_ session: AVCaptureSession) {}
+    func sessionControlsWillEnterFullscreenAppearance(_ session: AVCaptureSession) {}
+    func sessionControlsWillExitFullscreenAppearance(_ session: AVCaptureSession) {}
+    func sessionControlsDidBecomeInactive(_ session: AVCaptureSession) {}
 }
 
 // MARK: - Processamento de cada foto

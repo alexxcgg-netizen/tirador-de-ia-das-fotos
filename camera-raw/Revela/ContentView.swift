@@ -1,7 +1,12 @@
+import AVKit
+import CoreMotion
 import SwiftUI
+
+private let accent = Color(red: 0.96, green: 0.64, blue: 0.24)
 
 struct ContentView: View {
     @StateObject private var camera = CameraModel()
+    @StateObject private var level = LevelMeter()
     @State private var panel: Panel?
 
     enum Panel { case exposure, whiteBalance, focus }
@@ -10,14 +15,12 @@ struct ContentView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             if camera.authorized {
-                VStack(spacing: 12) {
+                VStack(spacing: 10) {
                     topBar
-                    CameraPreview(session: camera.session)
-                        .aspectRatio(3 / 4, contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .overlay { ThirdsGrid().stroke(.white.opacity(0.18), lineWidth: 0.5) }
+                    viewfinder
                     readoutChips
                     controlPanel
+                    lookStrip
                     Spacer(minLength: 0)
                     lensPicker
                     bottomBar
@@ -30,7 +33,11 @@ struct ContentView: View {
         }
         .preferredColorScheme(.dark)
         .statusBarHidden()
-        .onAppear { camera.start() }
+        .onAppear {
+            camera.start()
+            level.start()
+        }
+        .physicalShutter { camera.shutter() }
         .alert("Revela", isPresented: Binding(
             get: { camera.message != nil },
             set: { if !$0 { camera.message = nil } }
@@ -41,36 +48,89 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Partes da tela
+    // MARK: - Topo
 
     private var topBar: some View {
-        HStack {
+        HStack(spacing: 8) {
             Picker("Modo", selection: Binding(get: { camera.rawMode }, set: { camera.select(mode: $0) })) {
                 ForEach(RawMode.allCases) { mode in
                     Text(mode.rawValue).tag(mode)
                 }
             }
             .pickerStyle(.segmented)
-            .frame(maxWidth: 200)
+            .frame(maxWidth: 190)
 
             Spacer()
 
-            Menu {
-                Picker("Look", selection: $camera.look) {
-                    ForEach(Look.allCases) { look in
-                        Text(look.rawValue).tag(look)
-                    }
+            iconToggle(camera.timerSeconds == 0 ? "timer" : "\(camera.timerSeconds)s",
+                       isSymbol: camera.timerSeconds == 0, isOn: camera.timerSeconds > 0) { camera.cycleTimer() }
+            iconToggle("circle.lefthalf.striped.horizontal", isOn: camera.zebra) { camera.zebra.toggle() }
+            iconToggle("grid", isOn: camera.showGrid) { camera.showGrid.toggle() }
+        }
+        .padding(.top, 6)
+    }
+
+    private func iconToggle(_ name: String, isSymbol: Bool = true, isOn: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Group {
+                if isSymbol { Image(systemName: name) } else { Text(name).font(.footnote.weight(.bold)) }
+            }
+            .frame(width: 36, height: 36)
+            .foregroundStyle(isOn ? accent : .white)
+            .background(Circle().fill(.white.opacity(isOn ? 0.16 : 0.08)))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Visor
+
+    private var viewfinder: some View {
+        GeometryReader { geo in
+            ZStack {
+                LivePreview(renderer: camera.renderer)
+                if camera.showGrid {
+                    ThirdsGrid().stroke(.white.opacity(0.22), lineWidth: 0.5)
                 }
-            } label: {
-                Label(camera.look.rawValue, systemImage: "camera.filters")
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(.white.opacity(0.12), in: Capsule())
+                LevelLine(roll: level.roll)
+                if let p = camera.focusPoint {
+                    FocusSquare()
+                        .position(x: p.x * geo.size.width, y: p.y * geo.size.height)
+                        .id(p)
+                }
+                VStack {
+                    HStack {
+                        Histogram(bins: camera.histogram)
+                            .frame(width: 96, height: 40)
+                        Spacer()
+                        Text(camera.look.rawValue.uppercased())
+                            .font(.caption2.weight(.bold)).tracking(1.2)
+                            .padding(.horizontal, 8).padding(.vertical, 4)
+                            .background(.black.opacity(0.45), in: Capsule())
+                    }
+                    Spacer()
+                }
+                .padding(8)
+                if camera.countdown > 0 {
+                    Text("\(camera.countdown)")
+                        .font(.system(size: 96, weight: .thin, design: .rounded))
+                        .contentTransition(.numericText(countsDown: true))
+                        .shadow(radius: 8)
+                }
+                Color.white.opacity(camera.flash ? 0.85 : 0)
+                    .animation(.easeOut(duration: 0.2), value: camera.flash)
+                    .allowsHitTesting(false)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture(coordinateSpace: .local) { location in
+                camera.focus(at: CGPoint(x: location.x / geo.size.width, y: location.y / geo.size.height))
             }
         }
-        .padding(.top, 8)
+        .aspectRatio(3 / 4, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .animation(.snappy(duration: 0.25), value: camera.countdown)
     }
+
+    // MARK: - Controles
 
     private var readoutChips: some View {
         HStack(spacing: 8) {
@@ -94,10 +154,10 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
-            .foregroundStyle(isAuto ? Color.white : Color.yellow)
+            .foregroundStyle(isAuto ? Color.white : accent)
             .background(
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(panel == which ? Color.white.opacity(0.22) : Color.white.opacity(0.08))
+                    .fill(panel == which ? Color.white.opacity(0.2) : Color.white.opacity(0.08))
             )
         }
         .buttonStyle(.plain)
@@ -168,13 +228,41 @@ struct ContentView: View {
         }
     }
 
+    private var lookStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(Look.allCases) { look in
+                    Button {
+                        withAnimation(.snappy(duration: 0.2)) { camera.look = look }
+                        UISelectionFeedbackGenerator().selectionChanged()
+                    } label: {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(look.rawValue).font(.subheadline.weight(.semibold))
+                            Text(look.subtitle).font(.caption2).opacity(0.65).lineLimit(1)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .foregroundStyle(camera.look == look ? Color.black : Color.white)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(camera.look == look ? accent : Color.white.opacity(0.08))
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    // MARK: - Base
+
     private var lensPicker: some View {
         HStack(spacing: 10) {
             ForEach(camera.availableLenses) { lens in
                 Button(lens.rawValue) { camera.select(lens: lens) }
                     .font(.footnote.weight(.bold))
                     .frame(width: 44, height: 44)
-                    .foregroundStyle(camera.lens == lens ? Color.yellow : Color.white)
+                    .foregroundStyle(camera.lens == lens ? accent : Color.white)
                     .background(Circle().fill(.white.opacity(camera.lens == lens ? 0.2 : 0.08)))
                     .buttonStyle(.plain)
             }
@@ -200,10 +288,10 @@ struct ContentView: View {
 
             Spacer()
 
-            Button(action: camera.capture) {
+            Button(action: camera.shutter) {
                 ZStack {
                     Circle().stroke(.white, lineWidth: 4).frame(width: 78, height: 78)
-                    Circle().fill(.white).frame(width: 64, height: 64)
+                    Circle().fill(camera.countdown > 0 ? accent : .white).frame(width: 64, height: 64)
                 }
             }
             .buttonStyle(ShutterButtonStyle())
@@ -216,6 +304,9 @@ struct ContentView: View {
                         ProgressView().tint(.white)
                         Text("Revelando").font(.caption2).opacity(0.7)
                     }
+                } else {
+                    Text(camera.rawMode == .proRAW ? "DNG\n48MP" : "DNG\nRAW")
+                        .font(.caption2.weight(.bold)).multilineTextAlignment(.center).opacity(0.5)
                 }
             }
             .frame(width: 56, height: 56)
@@ -241,6 +332,81 @@ struct ContentView: View {
         guard seconds > 0 else { return "—" }
         if seconds >= 0.5 { return String(format: "%.1fs", seconds) }
         return "1/\(Int((1 / seconds).rounded()))"
+    }
+}
+
+// MARK: - Peças do visor
+
+/// Inclinação lateral do iPhone, para a linha de nível.
+final class LevelMeter: ObservableObject {
+    @Published var roll: Double = 0
+    private let motion = CMMotionManager()
+
+    func start() {
+        guard motion.isDeviceMotionAvailable, !motion.isDeviceMotionActive else { return }
+        motion.deviceMotionUpdateInterval = 1 / 30
+        motion.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
+            guard let g = data?.gravity else { return }
+            self?.roll = atan2(g.x, -g.y)
+        }
+    }
+}
+
+private struct LevelLine: View {
+    let roll: Double
+    @State private var wasLevel = false
+
+    private var isLevel: Bool { abs(roll) < 1 * .pi / 180 }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Rectangle().frame(width: 40, height: 1.5)
+            Spacer().frame(width: 36)
+            Rectangle().frame(width: 40, height: 1.5)
+        }
+        .foregroundStyle(isLevel ? accent : Color.white.opacity(0.7))
+        .rotationEffect(.radians(-roll))
+        .opacity(abs(roll) < 20 * .pi / 180 ? 1 : 0)
+        .onChange(of: isLevel) { _, level in
+            if level { UISelectionFeedbackGenerator().selectionChanged() }
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+private struct FocusSquare: View {
+    @State private var settled = false
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 3)
+            .stroke(accent, lineWidth: 1.5)
+            .frame(width: 72, height: 72)
+            .scaleEffect(settled ? 1 : 1.35)
+            .opacity(settled ? 1 : 0.3)
+            .onAppear { withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { settled = true } }
+            .allowsHitTesting(false)
+    }
+}
+
+private struct Histogram: View {
+    let bins: [Float]
+
+    var body: some View {
+        Canvas { ctx, size in
+            guard bins.count > 1 else { return }
+            var path = Path()
+            path.move(to: CGPoint(x: 0, y: size.height))
+            for (i, v) in bins.enumerated() {
+                let x = size.width * CGFloat(i) / CGFloat(bins.count - 1)
+                path.addLine(to: CGPoint(x: x, y: size.height * (1 - CGFloat(min(v, 1)))))
+            }
+            path.addLine(to: CGPoint(x: size.width, y: size.height))
+            path.closeSubpath()
+            ctx.fill(path, with: .color(.white.opacity(0.75)))
+        }
+        .padding(4)
+        .background(.black.opacity(0.45), in: RoundedRectangle(cornerRadius: 6))
+        .allowsHitTesting(false)
     }
 }
 
@@ -271,9 +437,21 @@ private extension View {
     func panelStyle() -> some View {
         self
             .font(.subheadline)
-            .tint(.yellow)
+            .tint(accent)
             .padding(12)
             .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.08)))
             .transition(.opacity.combined(with: .move(edge: .top)))
+    }
+
+    /// Volume e Controle da Câmera disparam a foto (iOS 18+).
+    @ViewBuilder
+    func physicalShutter(_ action: @escaping () -> Void) -> some View {
+        if #available(iOS 18.0, *) {
+            onCameraCaptureEvent { event in
+                if event.phase == .ended { action() }
+            }
+        } else {
+            self
+        }
     }
 }
