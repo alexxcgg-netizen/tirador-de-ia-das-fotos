@@ -39,6 +39,10 @@ enum Lens: String, CaseIterable, Identifiable {
 
 enum CaptureMode: String, CaseIterable, Identifiable {
     case photo = "FOTO"
+    case night = "NOITE"
+    case stars = "ESTRELAS"
+    case moon = "LUA"
+    case flash = "FLASH"
     case focusStack = "FOCO EMPILHADO"
     case average = "MÉDIA"
 
@@ -46,17 +50,31 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var frameCount: Int {
         switch self {
-        case .photo: return 1
+        case .photo, .flash: return 1
+        case .night, .moon, .average: return 8
+        case .stars: return 16
         case .focusStack: return 7
-        case .average: return 8
+        }
+    }
+
+    /// Como juntar os quadros, quando há mais de um.
+    var stackKind: Developer.StackKind? {
+        switch self {
+        case .photo, .flash: return nil
+        case .focusStack: return .focus
+        case .night, .stars, .moon, .average: return .average
         }
     }
 
     var hint: String {
         switch self {
         case .photo: return ""
+        case .night: return "8 fotos a 1/15 s alinhadas e somadas: noite limpa, sem o processamento da Apple."
+        case .stars: return "16 exposições longas com foco no infinito. Use tripé ou apoie o iPhone."
+        case .moon: return "Lente 8×, foco no infinito e exposição para a Lua. 8 fotos somadas para mais detalhe."
+        case .flash: return "Uma foto RAW com o flash."
         case .focusStack: return "7 fotos com foco do perto ao longe, juntadas no mais nítido. Apoie o iPhone."
-        case .average: return "8 fotos somadas: menos ruído à noite, ou água lisa com obturador lento."
+        case .average: return "8 fotos somadas: menos ruído, ou água lisa com obturador lento."
         }
     }
 }
@@ -99,7 +117,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var lens: Lens = .wide
     @Published var rawMode: RawMode = .proRAW
     @Published var proRAWSupported = true
-    @Published var captureMode: CaptureMode = .photo
+    @Published private(set) var captureMode: CaptureMode = .photo
+    /// Ajustes que uma cena (Lua, Estrelas) ligou sozinha e que voltam ao sair dela.
+    private var sceneTookOver = false
 
     // Revelação
     @Published var look: Look = .filme { didSet { optionsChanged() } }
@@ -149,6 +169,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     override init() {
         super.init()
+        Diagnostics.shared.startMonitoring()
         if let saved = defaults.string(forKey: "look").flatMap(Look.init(rawValue:)) { look = saved }
         if let saved = defaults.string(forKey: "aspect").flatMap(AspectRatio.init(rawValue:)) { aspect = saved }
         if defaults.object(forKey: "lookAmount") != nil { lookAmount = defaults.float(forKey: "lookAmount") }
@@ -228,6 +249,40 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async { self.applyRawMode(mode) }
     }
 
+    /// Cada cena ajusta a câmera para o que ela pede.
+    func select(captureMode mode: CaptureMode) {
+        guard mode != captureMode else { return }
+        if sceneTookOver {
+            manualExposure = false
+            manualFocus = false
+            sceneTookOver = false
+        }
+        captureMode = mode
+        dlog("Modo: \(mode.rawValue)")
+        switch mode {
+        case .moon:
+            let tele = availableLenses.contains(.tele8x) ? Lens.tele8x : (availableLenses.contains(.tele) ? .tele : .wide2x)
+            select(lens: tele)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 50, shutter: 1.0 / 500) }
+        case .stars:
+            select(lens: .wide)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 2000, shutter: 10) }
+        default:
+            break
+        }
+    }
+
+    /// Foco no infinito + exposição manual (o obturador fica no mais próximo que a lente aceita).
+    private func applyScene(iso: Float, shutter: Double) {
+        sceneTookOver = true
+        manualFocus = true
+        lensPosition = 1
+        isoIndex = Double(Self.nearestIndex(of: iso, in: isoStops))
+        shutterIndex = Double(Self.nearestIndex(of: Float(shutter), in: shutterStops.map { Float($0) }))
+        manualExposure = true
+        dlog("Cena ajustou: ISO \(Int(selectedISO)), \(String(format: "%.4f", selectedShutter)) s, foco 1.0")
+    }
+
     func cycleAspect() {
         let all = AspectRatio.allCases
         aspect = all[(all.firstIndex(of: aspect)! + 1) % all.count]
@@ -244,6 +299,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
               session.canAddInput(input) else {
             session.commitConfiguration()
             post("Não foi possível abrir a câmera.")
+            dlog("❌ Não abriu a câmera \(lens.rawValue)")
             return
         }
         session.addInput(input)
@@ -265,6 +321,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         device = dev
         rotationCoordinator = AVCaptureDevice.RotationCoordinator(device: dev, previewLayer: nil)
         applyRawMode(mode)
+        let dims = CMVideoFormatDescriptionGetDimensions(dev.activeFormat.formatDescription)
+        dlog("Câmera aberta: \(dev.localizedName) (\(lens.rawValue)) · vídeo \(dims.width)×\(dims.height) · ProRAW \(photoOutput.isAppleProRAWSupported ? "sim" : "não") · RAW: \(photoOutput.availableRawPhotoPixelFormatTypes.count) formato(s)")
 
         let format = dev.activeFormat
         let isos = Self.allISO.filter { $0 >= format.minISO && $0 <= format.maxISO }
@@ -425,10 +483,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
         let options = developOptions
         let mode = captureMode
-        guard mode != .photo else {
+        let t0 = CFAbsoluteTimeGetCurrent()
+        dlog("📸 \(mode.rawValue) · \(lens.rawValue) · \(rawMode.rawValue) · look \(look.rawValue) · \(aspect.rawValue) · " +
+             (manualExposure ? "ISO \(Int(selectedISO)) \(String(format: "%.4f", selectedShutter))s" : "auto ISO \(Int(readoutISO)) \(String(format: "%.4f", readoutShutter))s"))
+        guard mode.frameCount > 1 else {
+            let flash = mode == .flash
             sessionQueue.async {
-                self.captureRAW(forStack: false) { result in
-                    self.process(result.map { [$0] }, mode: mode, options: options)
+                self.captureRAW(forStack: false, flash: flash) { result in
+                    dlog("RAW recebido: \(Diagnostics.ms(since: t0))")
+                    self.process(result.map { [$0] }, mode: mode, options: options, started: t0)
                 }
             }
             return
@@ -445,14 +508,30 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
             : nil
         stackProgress = "0/\(count)"
+        let nightPlan = mode == .night && !manualExposure
         sessionQueue.async {
-            self.shootSequence(index: 0, count: count, positions: positions, frames: []) { result in
-                DispatchQueue.main.async {
-                    self.stackProgress = nil
-                    self.updateFocus()
+            let run = {
+                self.shootSequence(index: 0, count: count, positions: positions, frames: []) { result in
+                    dlog("Sequência de \(count) fotografada: \(Diagnostics.ms(since: t0))")
+                    DispatchQueue.main.async {
+                        self.stackProgress = nil
+                        self.updateFocus()
+                        self.updateExposure()
+                    }
+                    self.process(result, mode: mode, options: options, started: t0)
                 }
-                self.process(result, mode: mode, options: options)
             }
+            // Noite: troca o automático por 1/15 s e ISO equivalente, para cada quadro ter menos ruído
+            guard nightPlan, let d = self.device, (try? d.lockForConfiguration()) != nil else { return run() }
+            let f = d.activeFormat
+            let current = d.exposureDuration.seconds
+            let target = min(max(current, 1.0 / 15), f.maxExposureDuration.seconds)
+            let iso = min(max(d.iso * Float(current / target), f.minISO), f.maxISO)
+            dlog(String(format: "Noite: %.4fs ISO %.0f → %.4fs ISO %.0f", current, d.iso, target, iso))
+            d.setExposureModeCustom(duration: CMTime(seconds: target, preferredTimescale: 1_000_000_000), iso: iso) { _ in
+                self.sessionQueue.async { run() }
+            }
+            d.unlockForConfiguration()
         }
     }
 
@@ -483,7 +562,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Fotografa um RAW e devolve o DNG. Em sequências usa 12 MP para caber na memória.
-    private func captureRAW(forStack: Bool, completion: @escaping (Result<Data, Error>) -> Void) {
+    private func captureRAW(forStack: Bool, flash: Bool = false, completion: @escaping (Result<Data, Error>) -> Void) {
         let mode = rawMode
         let types = photoOutput.availableRawPhotoPixelFormatTypes
         let format: OSType?
@@ -509,6 +588,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 settings.maxPhotoDimensions = target
             }
         }
+        if flash {
+            if photoOutput.supportedFlashModes.contains(.on) {
+                settings.flashMode = .on
+            } else {
+                dlog("⚠️ Flash não disponível nesta lente/formato")
+                DispatchQueue.main.async { self.message = "O flash não está disponível nesta lente." }
+            }
+        }
         if let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelCapture,
            let connection = photoOutput.connection(with: .video),
            connection.isVideoRotationAngleSupported(angle) {
@@ -525,8 +612,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Revela (e junta, se for sequência) e salva na galeria.
-    private func process(_ result: Result<[Data], Error>, mode: CaptureMode, options: DevelopOptions) {
+    private func process(_ result: Result<[Data], Error>, mode: CaptureMode, options: DevelopOptions,
+                         started t0: CFAbsoluteTime) {
         let done: (Result<UIImage?, Error>) -> Void = { result in
+            switch result {
+            case .success: dlog("✅ Salvo na galeria. Total: \(Diagnostics.ms(since: t0)) · memória livre \(Diagnostics.freeMemory)")
+            case .failure(let error): dlog("❌ \(error.localizedDescription)")
+            }
             DispatchQueue.main.async {
                 self.processing -= 1
                 switch result {
@@ -543,10 +635,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         case .success(let frames):
             DispatchQueue.global(qos: .userInitiated).async {
                 let output: Developer.Output?
-                switch mode {
-                case .photo: output = frames.first.flatMap { Developer.develop(dng: $0, options: options) }
-                case .focusStack: output = Developer.stack(frames, kind: .focus, options: options)
-                case .average: output = Developer.stack(frames, kind: .average, options: options)
+                if let kind = mode.stackKind {
+                    output = Developer.stack(frames, kind: kind, options: options)
+                } else {
+                    output = frames.first.flatMap { Developer.develop(dng: $0, options: options) }
                 }
                 // Na foto simples o DNG vai junto; nas sequências, o DNG do primeiro quadro
                 Library.save(dng: frames.first, developed: output?.heic) { error in
@@ -559,6 +651,42 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     }
                 }
             }
+        }
+    }
+
+    /// Tudo que a câmera deste iPhone oferece, para o relatório.
+    func describeCapabilities(completion: @escaping (String) -> Void) {
+        let settings = "- Ajustes: lente \(lens.rawValue), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(look.rawValue) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
+            "exposição \(manualExposure ? "manual ISO \(Int(selectedISO)) \(selectedShutter)s" : "auto EV \(evBias)"), " +
+            "balanço \(manualWB ? "\(Int(kelvin))K" : "auto"), foco \(manualFocus ? "manual \(lensPosition)" : "auto"), " +
+            "peaking \(peaking), zebra \(zebra)\n"
+        sessionQueue.async {
+            var out = settings
+            out += "- Kernels de revelação: \(Developer.kernelStatus)\n"
+            out += "- ProRAW suportado: \(self.photoOutput.isAppleProRAWSupported), ligado: \(self.photoOutput.isAppleProRAWEnabled)\n"
+            let types = self.photoOutput.availableRawPhotoPixelFormatTypes
+            out += "- Formatos RAW agora: " + types.map {
+                AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) ? "ProRAW" : (AVCapturePhotoOutput.isBayerRAWPixelFormat($0) ? "Bayer" : "outro")
+            }.joined(separator: ", ") + "\n"
+            let maxDims = self.photoOutput.maxPhotoDimensions
+            out += "- Resolução máxima da foto: \(maxDims.width)×\(maxDims.height)\n"
+            out += "- Flash: " + self.photoOutput.supportedFlashModes.map { $0 == .on ? "on" : ($0 == .auto ? "auto" : "off") }.joined(separator: ", ") + "\n"
+            if #available(iOS 18.0, *) { out += "- Controle da Câmera: \(self.session.supportsControls ? "sim" : "não")\n" }
+
+            var seen = Set<AVCaptureDevice.DeviceType>()
+            for lens in Lens.allCases where seen.insert(lens.deviceType).inserted {
+                guard let d = AVCaptureDevice.default(lens.deviceType, for: .video, position: .back) else {
+                    out += "\n### \(lens.deviceType.rawValue): não existe neste iPhone\n"
+                    continue
+                }
+                let f = d.activeFormat
+                out += "\n### \(d.localizedName)\n"
+                out += "- ISO \(Int(f.minISO))–\(Int(f.maxISO)) · obturador \(String(format: "%.5f", f.minExposureDuration.seconds))–\(String(format: "%.3f", f.maxExposureDuration.seconds)) s\n"
+                out += "- Abertura f/\(d.lensAperture) · campo de visão \(Int(f.videoFieldOfView))° · foco mínimo \(d.minimumFocusDistance) mm\n"
+                out += "- Fotos: " + f.supportedMaxPhotoDimensions.map { "\($0.width)×\($0.height)" }.joined(separator: ", ") + "\n"
+                out += "- Flash: \(d.hasFlash ? "sim" : "não") · foco manual: \(d.isLockingFocusWithCustomLensPositionSupported ? "sim" : "não")\n"
+            }
+            DispatchQueue.main.async { completion(out) }
         }
     }
 

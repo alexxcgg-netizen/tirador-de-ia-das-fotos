@@ -33,6 +33,16 @@ enum Look: String, CaseIterable, Identifiable {
     case cine = "Cine"
     case suave = "Suave"
     case prata = "Prata"
+    case paisagem = "Paisagem"
+    case retrato = "Retrato"
+    case slide = "Slide"
+    case dourado = "Dourado"
+    case nordico = "Nórdico"
+    case vintage = "Vintage"
+    case bleach = "Bleach"
+    case neon = "Neon"
+    case noite = "Noite"
+    case sepia = "Sépia"
 
     var id: String { rawValue }
 
@@ -43,6 +53,16 @@ enum Look: String, CaseIterable, Identifiable {
         case .cine: return "Sombras frias, pele quente"
         case .suave: return "Baixo contraste, preto lavado"
         case .prata: return "P&B de alto contraste"
+        case .paisagem: return "Céu e verde vivos, muito detalhe"
+        case .retrato: return "Pele quente, contraste macio"
+        case .slide: return "Cromo saturado, preto profundo"
+        case .dourado: return "Fim de tarde, luz quente"
+        case .nordico: return "Frio, claro e dessaturado"
+        case .vintage: return "Foto antiga, cor desbotada"
+        case .bleach: return "Pouca cor, muito contraste"
+        case .neon: return "Noite urbana, ciano e magenta"
+        case .noite: return "Sombras azuis, luzes limpas"
+        case .sepia: return "Monocromático marrom"
         }
     }
 
@@ -60,6 +80,36 @@ enum Look: String, CaseIterable, Identifiable {
             return LookParams(saturation: 0.85, warmth: 0.015, toe: 0.012, contrast: 0.88, grain: 0.015)
         case .prata:
             return LookParams(mono: 1, toe: 0.003, contrast: 1.2, grain: 0.05)
+        case .paisagem:
+            return LookParams(saturation: 1.22, warmth: 0.01, contrast: 1.1,
+                              shadowTint: SIMD3(0, 0.001, 0.003), highTint: SIMD3(0.004, 0.004, 0))
+        case .retrato:
+            return LookParams(exposure: 0.1, saturation: 0.92, warmth: 0.035, toe: 0.003, contrast: 0.94, grain: 0.012,
+                              highTint: SIMD3(0.014, 0.006, -0.004))
+        case .slide:
+            return LookParams(saturation: 1.3, warmth: 0.01, contrast: 1.22, grain: 0.015,
+                              shadowTint: SIMD3(0.001, -0.001, 0.003))
+        case .dourado:
+            return LookParams(saturation: 1.05, warmth: 0.07, toe: 0.003, contrast: 1.05, grain: 0.02,
+                              shadowTint: SIMD3(0.002, 0.0005, -0.002), highTint: SIMD3(0.035, 0.018, -0.025))
+        case .nordico:
+            return LookParams(exposure: 0.15, saturation: 0.7, warmth: -0.035, toe: 0.01, contrast: 0.92, grain: 0.012,
+                              shadowTint: SIMD3(-0.001, 0.001, 0.004), highTint: SIMD3(-0.004, 0.002, 0.008))
+        case .vintage:
+            return LookParams(saturation: 0.72, warmth: 0.05, toe: 0.02, contrast: 0.86, grain: 0.07,
+                              shadowTint: SIMD3(0.004, 0.003, -0.001), highTint: SIMD3(0.02, 0.012, -0.03))
+        case .bleach:
+            return LookParams(saturation: 0.45, toe: 0.001, contrast: 1.3, grain: 0.04,
+                              highTint: SIMD3(0.004, 0.004, 0.002))
+        case .neon:
+            return LookParams(saturation: 1.18, warmth: -0.04, contrast: 1.15, grain: 0.03,
+                              shadowTint: SIMD3(-0.002, 0.004, 0.009), highTint: SIMD3(0.03, -0.01, 0.03))
+        case .noite:
+            return LookParams(exposure: -0.1, saturation: 0.85, warmth: -0.02, contrast: 1.08, grain: 0.03,
+                              shadowTint: SIMD3(-0.002, 0.001, 0.007), highTint: SIMD3(0.006, 0.004, 0))
+        case .sepia:
+            return LookParams(mono: 1, toe: 0.006, contrast: 1.05, grain: 0.04,
+                              shadowTint: SIMD3(0.004, 0.002, -0.002), highTint: SIMD3(0.045, 0.022, -0.03))
         }
     }
 }
@@ -161,7 +211,22 @@ enum Developer {
     }
 
     static func develop(dng: Data, options: DevelopOptions) -> Output? {
-        linear(dng: dng).flatMap { finish($0, options: options) }
+        let t0 = CFAbsoluteTimeGetCurrent()
+        guard let image = linear(dng: dng) else {
+            dlog("❌ CIRAWFilter não abriu o DNG (\(dng.count / 1024) KB)")
+            return nil
+        }
+        let output = finish(image, options: options)
+        dlog("Revelação \(options.look.rawValue) \(Int(image.extent.width))×\(Int(image.extent.height)) · DNG \(dng.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
+        return output
+    }
+
+    /// Diz se os kernels de Metal carregaram (sem eles a revelação sai sem look).
+    static var kernelStatus: String {
+        let names = ["revelaTone": toneKernel, "revelaPreview": previewKernel, "revelaPeaking": peakingKernel,
+                     "revelaSharpness": sharpnessKernel, "revelaPick": pickKernel]
+        let missing = names.filter { $0.value == nil }.map(\.key).sorted()
+        return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
 
     /// Luz linear -> look, recorte e HEIC de 10 bits.
@@ -187,9 +252,12 @@ enum Developer {
 
     /// Junta vários RAW: foco empilhado (pega o pedaço mais nítido de cada quadro) ou média (menos ruído / exposição longa).
     static func stack(_ frames: [Data], kind: StackKind, options: DevelopOptions) -> Output? {
+        let t0 = CFAbsoluteTimeGetCurrent()
         let images = frames.compactMap { linear(dng: $0) }
         guard let reference = images.first else { return nil }
+        dlog("Empilhando \(images.count) de \(frames.count) quadros (\(kind == .focus ? "foco" : "média")) · \(Int(reference.extent.width))×\(Int(reference.extent.height))")
         let aligned = [reference] + images.dropFirst().map { align($0, to: reference) }
+        dlog("Alinhamento: \(Diagnostics.ms(since: t0))")
 
         let merged: CIImage
         switch kind {
@@ -198,7 +266,9 @@ enum Developer {
         case .focus:
             merged = focusMerge(aligned) ?? average(aligned)
         }
-        return finish(merged.cropped(to: reference.extent).settingProperties(reference.properties), options: options)
+        let output = finish(merged.cropped(to: reference.extent).settingProperties(reference.properties), options: options)
+        dlog("Empilhamento + revelação: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
+        return output
     }
 
     /// Corrige o tremido entre quadros (só translação, que é o que a mão faz em frações de segundo).
@@ -206,8 +276,13 @@ enum Developer {
         let request = VNTranslationalImageRegistrationRequest(targetedCIImage: image, options: [:])
         let handler = VNImageRequestHandler(ciImage: reference, options: [:])
         guard (try? handler.perform([request])) != nil,
-              let observation = request.results?.first as? VNImageTranslationAlignmentObservation else { return image }
-        return image.transformed(by: observation.alignmentTransform)
+              let observation = request.results?.first as? VNImageTranslationAlignmentObservation else {
+            dlog("Alinhamento falhou num quadro (usado sem alinhar)")
+            return image
+        }
+        let t = observation.alignmentTransform
+        dlog(String(format: "Quadro deslocado %.1f, %.1f px", t.tx, t.ty))
+        return image.transformed(by: t)
     }
 
     private static func average(_ images: [CIImage]) -> CIImage {

@@ -9,6 +9,10 @@ App de câmera para iPhone que fotografa em **RAW** e revela a foto com uma curv
 - Lentes **Macro**, 0.5×, 1×, **2×**, 4× e **8×**. O 2×, o 8× e o Macro são um recorte central do sensor de 48 MP (12 MP com qualidade óptica).
 - **Macro**: usa a ultra-angular, que foca a 2 cm, com recorte 2× para aproximar ainda mais. Liga o peaking sozinho.
 - **Foco empilhado**: 7 fotos com o foco indo do perto ao longe, alinhadas e juntadas pegando o pedaço mais nítido de cada uma. É o modo para macro de cabelo, pele, tecido, insetos: tudo nítido, mesmo com a profundidade de campo minúscula do macro.
+- **Noite**: 8 fotos a 1/15 s alinhadas e somadas: noite limpa sem o processamento da Apple.
+- **Estrelas**: 16 exposições longas com foco no infinito, somadas (tripé ou iPhone apoiado).
+- **Lua**: vai para a lente 8×, foco no infinito, exposição para a Lua e 8 fotos somadas.
+- **Flash**: RAW com flash.
 - **Média**: 8 fotos alinhadas e somadas. À noite tira o ruído sem o processamento da Apple; com obturador lento deixa água e nuvens lisas.
 - ISO, obturador, balanço de branco (Kelvin) e foco manuais; no automático, compensação de EV.
 - Proporções 4:3, 1:1, 16:9 e 65:24 (panorâmica de cinema).
@@ -21,8 +25,11 @@ App de câmera para iPhone que fotografa em **RAW** e revela a foto com uma curv
 - Histograma, zebra (listras onde a luz estourou), grade de terços e nível do horizonte.
 
 **Revelação**
-- Cinco looks: **Neutro**, **Filme**, **Cine**, **Suave** e **Prata** (P&B), com intensidade e grão ajustáveis.
+- Quinze looks, com intensidade e grão ajustáveis: Neutro, Filme, Cine, Suave, Prata (P&B), Paisagem, Retrato, Slide, Dourado, Nórdico, Vintage, Bleach, Neon, Noite e Sépia.
 - Salva na galeria a foto revelada (HEIC de 10 bits) + o **DNG original** num único item. Nas sequências, o DNG que vai junto é o do primeiro quadro.
+
+**Relatório**
+- Menu `…` → **Relatório para o Claude**: junta o modelo do iPhone, o que cada lente suporta, os ajustes atuais, o tempo de cada etapa das últimas fotos, erros, avisos de memória e temperatura, e os travamentos que o iOS registrar. Dá para escrever o que você notou e compartilhar o arquivo.
 
 ## Como gerar o app
 
@@ -48,3 +55,4 @@ Em **Actions → Revela (IPA) → (última execução) → Artifacts**, baixe `R
 - `Revela/LivePreview.swift`: visor ao vivo com o look e o histograma.
 - `Revela/Tone.ci.metal`: a curva fílmica, cor, contraste, split toning, grão e zebra (kernels de Core Image).
 - `Revela/ContentView.swift`: interface.
+- `Revela/Diagnostics.swift` e `Revela/ReportView.swift`: registro e tela do relatório.

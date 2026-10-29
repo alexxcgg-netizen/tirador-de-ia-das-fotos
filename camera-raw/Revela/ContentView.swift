@@ -8,6 +8,7 @@ struct ContentView: View {
     @StateObject private var camera = CameraModel()
     @StateObject private var level = LevelMeter()
     @State private var panel: Panel?
+    @State private var showReport = false
 
     enum Panel { case exposure, whiteBalance, focus, look }
 
@@ -39,6 +40,7 @@ struct ContentView: View {
             level.start()
         }
         .physicalShutter { camera.shutter() }
+        .sheet(isPresented: $showReport) { ReportView(camera: camera) }
         .alert("Revela", isPresented: Binding(
             get: { camera.message != nil },
             set: { if !$0 { camera.message = nil } }
@@ -67,23 +69,40 @@ struct ContentView: View {
                        isSymbol: camera.timerSeconds == 0, isOn: camera.timerSeconds > 0) { camera.cycleTimer() }
             iconToggle("circle.lefthalf.striped.horizontal", isOn: camera.zebra) { camera.zebra.toggle() }
             iconToggle("scope", isOn: camera.peaking) { camera.peaking.toggle() }
-            iconToggle("grid", isOn: camera.showGrid) { camera.showGrid.toggle() }
             iconToggle(camera.aspect.rawValue, isSymbol: false, isOn: camera.aspect != .r43) { camera.cycleAspect() }
+            Menu {
+                Toggle(isOn: $camera.showGrid) { Label("Grade de terços", systemImage: "grid") }
+                Button { showReport = true } label: { Label("Relatório para o Claude", systemImage: "doc.text.magnifyingglass") }
+            } label: {
+                Image(systemName: "ellipsis")
+                    .frame(width: 34, height: 34)
+                    .foregroundStyle(.white)
+                    .background(Circle().fill(.white.opacity(0.08)))
+            }
         }
         .padding(.top, 6)
     }
 
     private var modePicker: some View {
         VStack(spacing: 4) {
-            HStack(spacing: 18) {
-                ForEach(CaptureMode.allCases) { mode in
-                    Button(mode.rawValue) {
-                        withAnimation(.snappy(duration: 0.2)) { camera.captureMode = mode }
-                        UISelectionFeedbackGenerator().selectionChanged()
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 18) {
+                        ForEach(CaptureMode.allCases) { mode in
+                            Button(mode.rawValue) {
+                                withAnimation(.snappy(duration: 0.2)) {
+                                    camera.select(captureMode: mode)
+                                    proxy.scrollTo(mode, anchor: .center)
+                                }
+                                UISelectionFeedbackGenerator().selectionChanged()
+                            }
+                            .font(.caption.weight(.bold)).tracking(0.8)
+                            .foregroundStyle(camera.captureMode == mode ? accent : Color.white.opacity(0.75))
+                            .buttonStyle(.plain)
+                            .id(mode)
+                        }
                     }
-                    .font(.caption.weight(.bold)).tracking(0.8)
-                    .foregroundStyle(camera.captureMode == mode ? accent : Color.white.opacity(0.75))
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, 16)
                 }
             }
             if !camera.captureMode.hint.isEmpty {
@@ -416,6 +435,10 @@ struct ContentView: View {
         switch camera.captureMode {
         case .focusStack: return "7×\nFOCO"
         case .average: return "8×\nMÉDIA"
+        case .night: return "8×\nNOITE"
+        case .stars: return "16×\nCÉU"
+        case .moon: return "8×\nLUA"
+        case .flash: return "DNG\nFLASH"
         case .photo:
             if camera.rawMode == .bayer { return "DNG\nRAW" }
             return camera.lens.zoom > 1 ? "DNG\n12MP" : "DNG\n48MP"

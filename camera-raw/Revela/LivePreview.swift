@@ -15,6 +15,8 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     private let lock = NSLock()
     private var frame: CIImage?
     private var frameCount = 0
+    private var fpsWindowStart = CFAbsoluteTimeGetCurrent()
+    private var fpsFrames = 0
     private var histogramBusy = false
 
     weak var view: MTKView?
@@ -64,6 +66,17 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
 
         frameCount += 1
         if frameCount % 6 == 0 { computeHistogram(of: image) }
+
+        // Quadros por segundo do visor, para o relatório
+        fpsFrames += 1
+        let now = CFAbsoluteTimeGetCurrent()
+        if now - fpsWindowStart > 3 {
+            let fps = Double(fpsFrames) / (now - fpsWindowStart)
+            Diagnostics.shared.set("Visor", String(format: "%.0f quadros/s · %d×%d · look %@", fps,
+                                                   Int(size.width), Int(size.height), options.develop.look.rawValue))
+            fpsFrames = 0
+            fpsWindowStart = now
+        }
     }
 
     private func computeHistogram(of image: CIImage) {
