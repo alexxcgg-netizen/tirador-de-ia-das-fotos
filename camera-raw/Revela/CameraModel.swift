@@ -9,18 +9,54 @@ enum RawMode: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+/// Cada "lente" do app é uma câmera física + um recorte digital do sensor de 48 MP.
 enum Lens: String, CaseIterable, Identifiable {
+    case macro = "Macro"
     case ultraWide = "0.5×"
     case wide = "1×"
+    case wide2x = "2×"
     case tele = "4×"
+    case tele8x = "8×"
 
     var id: String { rawValue }
 
     var deviceType: AVCaptureDevice.DeviceType {
         switch self {
-        case .ultraWide: return .builtInUltraWideCamera
-        case .wide: return .builtInWideAngleCamera
-        case .tele: return .builtInTelephotoCamera
+        case .macro, .ultraWide: return .builtInUltraWideCamera
+        case .wide, .wide2x: return .builtInWideAngleCamera
+        case .tele, .tele8x: return .builtInTelephotoCamera
+        }
+    }
+
+    /// Recorte central do sensor. 2× de 48 MP = 12 MP com qualidade óptica.
+    var zoom: CGFloat {
+        switch self {
+        case .macro, .wide2x, .tele8x: return 2
+        default: return 1
+        }
+    }
+}
+
+enum CaptureMode: String, CaseIterable, Identifiable {
+    case photo = "FOTO"
+    case focusStack = "FOCO EMPILHADO"
+    case average = "MÉDIA"
+
+    var id: String { rawValue }
+
+    var frameCount: Int {
+        switch self {
+        case .photo: return 1
+        case .focusStack: return 7
+        case .average: return 8
+        }
+    }
+
+    var hint: String {
+        switch self {
+        case .photo: return ""
+        case .focusStack: return "7 fotos com foco do perto ao longe, juntadas no mais nítido. Apoie o iPhone."
+        case .average: return "8 fotos somadas: menos ruído à noite, ou água lisa com obturador lento."
         }
     }
 }
@@ -54,21 +90,27 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private let videoQueue = DispatchQueue(label: "revela.video", qos: .userInteractive)
     private var device: AVCaptureDevice?
     private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
-    private var inFlight: [Int64: PhotoProcessor] = [:]
+    private var inFlight: [Int64: RawCaptureDelegate] = [:]
     private var readoutTimer: Timer?
+    private let defaults = UserDefaults.standard
 
     @Published var authorized = true
     @Published var availableLenses: [Lens] = []
     @Published var lens: Lens = .wide
     @Published var rawMode: RawMode = .proRAW
     @Published var proRAWSupported = true
-    @Published var look: Look = Look(rawValue: UserDefaults.standard.string(forKey: "look") ?? "") ?? .filme {
-        didSet {
-            renderer.look = look
-            UserDefaults.standard.set(look.rawValue, forKey: "look")
-        }
-    }
-    @Published var zebra = false { didSet { renderer.zebra = zebra } }
+    @Published var captureMode: CaptureMode = .photo
+
+    // Revelação
+    @Published var look: Look = .filme { didSet { optionsChanged() } }
+    @Published var lookAmount: Float = 1 { didSet { optionsChanged() } }
+    @Published var grainAmount: Float = 1 { didSet { optionsChanged() } }
+    @Published var aspect: AspectRatio = .r43 { didSet { optionsChanged() } }
+
+    // Ajudas do visor
+    @Published var zebra = false { didSet { renderer.options.zebra = zebra } }
+    @Published var peaking = false { didSet { renderer.options.peaking = peaking } }
+    @Published var loupe = false { didSet { renderer.loupe = loupe } }
     @Published var showGrid = true
     @Published var timerSeconds = 0
     @Published var countdown = 0
@@ -91,20 +133,39 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     @Published var readoutISO: Float = 0
     @Published var readoutShutter: Double = 0
+    @Published var readoutLensPosition: Float = 0
     @Published var processing = 0
+    /// "3/7" enquanto uma sequência está sendo fotografada.
+    @Published var stackProgress: String?
     @Published var message: String?
     @Published var thumbnail: UIImage?
 
     var selectedISO: Float { isoStops[min(max(Int(isoIndex), 0), isoStops.count - 1)] }
     var selectedShutter: Double { shutterStops[min(max(Int(shutterIndex), 0), shutterStops.count - 1)] }
 
-    // MARK: - Sessão
+    var developOptions: DevelopOptions {
+        DevelopOptions(look: look, amount: lookAmount, grain: grainAmount, zoom: lens.zoom, aspect: aspect)
+    }
 
     override init() {
         super.init()
-        renderer.look = look
+        if let saved = defaults.string(forKey: "look").flatMap(Look.init(rawValue:)) { look = saved }
+        if let saved = defaults.string(forKey: "aspect").flatMap(AspectRatio.init(rawValue:)) { aspect = saved }
+        if defaults.object(forKey: "lookAmount") != nil { lookAmount = defaults.float(forKey: "lookAmount") }
+        if defaults.object(forKey: "grainAmount") != nil { grainAmount = defaults.float(forKey: "grainAmount") }
+        optionsChanged()
         renderer.onHistogram = { [weak self] bins in self?.histogram = bins }
     }
+
+    private func optionsChanged() {
+        renderer.options.develop = developOptions
+        defaults.set(look.rawValue, forKey: "look")
+        defaults.set(aspect.rawValue, forKey: "aspect")
+        defaults.set(lookAmount, forKey: "lookAmount")
+        defaults.set(grainAmount, forKey: "grainAmount")
+    }
+
+    // MARK: - Sessão
 
     func start() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
@@ -140,7 +201,17 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     func select(lens newLens: Lens) {
         guard newLens != lens else { return }
+        let old = lens
         lens = newLens
+        optionsChanged()
+        if newLens == .macro {
+            peaking = true
+            if !manualFocus { lensPosition = 0 }
+        } else if old == .macro {
+            peaking = false
+        }
+        // Mesma câmera física (ex.: 1× -> 2×): só muda o recorte, sem reabrir a sessão
+        guard newLens.deviceType != old.deviceType else { return }
         let mode = rawMode
         sessionQueue.async {
             self.setupSession(lens: newLens, mode: mode)
@@ -155,6 +226,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     func select(mode: RawMode) {
         rawMode = mode
         sessionQueue.async { self.applyRawMode(mode) }
+    }
+
+    func cycleAspect() {
+        let all = AspectRatio.allCases
+        aspect = all[(all.firstIndex(of: aspect)! + 1) % all.count]
     }
 
     private func setupSession(lens: Lens, mode: RawMode) {
@@ -210,9 +286,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let proSupported = photoOutput.isAppleProRAWSupported
         photoOutput.isAppleProRAWEnabled = proSupported && mode == .proRAW
         photoOutput.maxPhotoQualityPrioritization = .quality
-        if let dims = device?.activeFormat.supportedMaxPhotoDimensions.max(by: {
-            Int($0.width) * Int($0.height) < Int($1.width) * Int($1.height)
-        }) {
+        if let dims = device?.activeFormat.supportedMaxPhotoDimensions.max(by: { $0.pixels < $1.pixels }) {
             photoOutput.maxPhotoDimensions = dims
         }
         session.commitConfiguration()
@@ -287,14 +361,18 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             guard let self, let d = self.device else { return }
             self.readoutISO = d.iso
             self.readoutShutter = d.exposureDuration.seconds
+            self.readoutLensPosition = d.lensPosition
         }
     }
 
     /// Toque no visor: foca e mede a luz naquele ponto. `point` vai de 0 a 1 nos dois eixos.
     func focus(at point: CGPoint) {
         focusPoint = point
+        // O visor mostra o centro ampliado pelo zoom digital
+        let zoom = lens.zoom
+        let sensorPoint = CGPoint(x: 0.5 + (point.x - 0.5) / zoom, y: 0.5 + (point.y - 0.5) / zoom)
         // Sensor fica deitado: girar 90° do retrato para as coordenadas da câmera
-        let devicePoint = CGPoint(x: point.y, y: 1 - point.x)
+        let devicePoint = CGPoint(x: sensorPoint.y, y: 1 - sensorPoint.x)
         let manualFocus = self.manualFocus
         let manualExposure = self.manualExposure
         sessionQueue.async {
@@ -320,7 +398,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Botão do app, volume ou Controle da Câmera.
     func shutter() {
-        guard countdown == 0 else { return }
+        guard countdown == 0, stackProgress == nil else { return }
         guard timerSeconds > 0 else { return capture() }
         countdown = timerSeconds
         tick()
@@ -340,54 +418,147 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     // MARK: - Captura
 
     private func capture() {
-        let look = self.look
-        let mode = self.rawMode
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         processing += 1
         flash = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { self.flash = false }
 
-        sessionQueue.async {
-            let types = self.photoOutput.availableRawPhotoPixelFormatTypes
-            let format: OSType?
-            if mode == .proRAW && self.photoOutput.isAppleProRAWEnabled {
-                format = types.first { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) }
-            } else {
-                format = types.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }
-            }
-            guard let format else {
-                DispatchQueue.main.async {
-                    self.processing -= 1
-                    self.message = "Esta lente não oferece \(mode.rawValue). Tente outra lente ou o outro modo."
+        let options = developOptions
+        let mode = captureMode
+        guard mode != .photo else {
+            sessionQueue.async {
+                self.captureRAW(forStack: false) { result in
+                    self.process(result.map { [$0] }, mode: mode, options: options)
                 }
-                return
             }
+            return
+        }
 
-            let settings = AVCapturePhotoSettings(rawPixelFormatType: format)
-            if AVCapturePhotoOutput.isAppleProRAWPixelFormat(format) {
-                settings.maxPhotoDimensions = self.photoOutput.maxPhotoDimensions
+        // Sequência: no foco empilhado, cada quadro com o foco um pouco mais longe
+        let count = mode.frameCount
+        let center = manualFocus ? lensPosition : readoutLensPosition
+        let span: Float = lens == .macro ? 0.1 : 0.16
+        let positions: [Float]? = mode == .focusStack
+            ? (0..<count).map { i in
+                let start = max(0, center - span / 2), end = min(1, center + span / 2)
+                return start + (end - start) * Float(i) / Float(count - 1)
             }
-            if let angle = self.rotationCoordinator?.videoRotationAngleForHorizonLevelCapture,
-               let connection = self.photoOutput.connection(with: .video),
-               connection.isVideoRotationAngleSupported(angle) {
-                connection.videoRotationAngle = angle
-            }
-
-            let id = settings.uniqueID
-            let processor = PhotoProcessor(look: look) { result in
-                self.sessionQueue.async { self.inFlight[id] = nil }
+            : nil
+        stackProgress = "0/\(count)"
+        sessionQueue.async {
+            self.shootSequence(index: 0, count: count, positions: positions, frames: []) { result in
                 DispatchQueue.main.async {
-                    self.processing -= 1
-                    switch result {
-                    case .success(let thumb):
-                        if let thumb { self.thumbnail = thumb }
-                    case .failure(let error):
-                        self.message = error.localizedDescription
+                    self.stackProgress = nil
+                    self.updateFocus()
+                }
+                self.process(result, mode: mode, options: options)
+            }
+        }
+    }
+
+    private func shootSequence(index: Int, count: Int, positions: [Float]?, frames: [Data],
+                               completion: @escaping (Result<[Data], Error>) -> Void) {
+        guard index < count else { return completion(.success(frames)) }
+        let shoot = {
+            self.captureRAW(forStack: true) { result in
+                switch result {
+                case .failure(let error):
+                    completion(.failure(error))
+                case .success(let data):
+                    DispatchQueue.main.async { self.stackProgress = "\(index + 1)/\(count)" }
+                    self.sessionQueue.async {
+                        self.shootSequence(index: index + 1, count: count, positions: positions,
+                                           frames: frames + [data], completion: completion)
                     }
                 }
             }
-            self.inFlight[id] = processor
-            self.photoOutput.capturePhoto(with: settings, delegate: processor)
+        }
+        guard let positions, let d = device, d.isLockingFocusWithCustomLensPositionSupported,
+              (try? d.lockForConfiguration()) != nil else { return shoot() }
+        // Espera a lente chegar na posição antes de fotografar
+        d.setFocusModeLocked(lensPosition: positions[index]) { _ in
+            self.sessionQueue.async { shoot() }
+        }
+        d.unlockForConfiguration()
+    }
+
+    /// Fotografa um RAW e devolve o DNG. Em sequências usa 12 MP para caber na memória.
+    private func captureRAW(forStack: Bool, completion: @escaping (Result<Data, Error>) -> Void) {
+        let mode = rawMode
+        let types = photoOutput.availableRawPhotoPixelFormatTypes
+        let format: OSType?
+        if mode == .proRAW && photoOutput.isAppleProRAWEnabled {
+            format = types.first { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) }
+        } else {
+            format = types.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }
+        }
+        guard let format else {
+            DispatchQueue.main.async {
+                self.message = "Esta lente não oferece \(mode.rawValue). Tente outra lente ou o outro modo."
+            }
+            return completion(.failure(RevelaError.noRawData))
+        }
+
+        let settings = AVCapturePhotoSettings(rawPixelFormatType: format)
+        if AVCapturePhotoOutput.isAppleProRAWPixelFormat(format), let d = device {
+            let all = d.activeFormat.supportedMaxPhotoDimensions
+            let target: CMVideoDimensions? = forStack
+                ? all.filter { $0.pixels >= 11_000_000 }.min(by: { $0.pixels < $1.pixels })
+                : all.max(by: { $0.pixels < $1.pixels })
+            if let target, target.pixels <= photoOutput.maxPhotoDimensions.pixels {
+                settings.maxPhotoDimensions = target
+            }
+        }
+        if let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelCapture,
+           let connection = photoOutput.connection(with: .video),
+           connection.isVideoRotationAngleSupported(angle) {
+            connection.videoRotationAngle = angle
+        }
+
+        let id = settings.uniqueID
+        let delegate = RawCaptureDelegate { result in
+            self.sessionQueue.async { self.inFlight[id] = nil }
+            completion(result)
+        }
+        inFlight[id] = delegate
+        photoOutput.capturePhoto(with: settings, delegate: delegate)
+    }
+
+    /// Revela (e junta, se for sequência) e salva na galeria.
+    private func process(_ result: Result<[Data], Error>, mode: CaptureMode, options: DevelopOptions) {
+        let done: (Result<UIImage?, Error>) -> Void = { result in
+            DispatchQueue.main.async {
+                self.processing -= 1
+                switch result {
+                case .success(let thumb):
+                    if let thumb { self.thumbnail = thumb }
+                case .failure(let error):
+                    self.message = error.localizedDescription
+                }
+            }
+        }
+        switch result {
+        case .failure(let error):
+            done(.failure(error))
+        case .success(let frames):
+            DispatchQueue.global(qos: .userInitiated).async {
+                let output: Developer.Output?
+                switch mode {
+                case .photo: output = frames.first.flatMap { Developer.develop(dng: $0, options: options) }
+                case .focusStack: output = Developer.stack(frames, kind: .focus, options: options)
+                case .average: output = Developer.stack(frames, kind: .average, options: options)
+                }
+                // Na foto simples o DNG vai junto; nas sequências, o DNG do primeiro quadro
+                Library.save(dng: frames.first, developed: output?.heic) { error in
+                    if let error {
+                        done(.failure(error))
+                    } else if output == nil {
+                        done(.failure(RevelaError.developFailed))
+                    } else {
+                        done(.success(output?.thumbnail))
+                    }
+                }
+            }
         }
     }
 
@@ -417,7 +588,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             guard let self, Look.allCases.indices.contains(index) else { return }
             self.look = Look.allCases[index]
         }
-        for control in [exposure, looks] as [AVCaptureControl] where session.canAddControl(control) {
+        let focus = AVCaptureSlider("Foco", symbolName: "camera.macro", in: 0...1)
+        focus.value = lensPosition
+        focus.setActionQueue(.main) { [weak self] value in
+            guard let self else { return }
+            self.manualFocus = true
+            self.lensPosition = value
+        }
+        for control in [exposure, looks, focus] as [AVCaptureControl] where session.canAddControl(control) {
             session.addControl(control)
         }
     }
@@ -431,16 +609,18 @@ extension CameraModel: AVCaptureSessionControlsDelegate {
     func sessionControlsDidBecomeInactive(_ session: AVCaptureSession) {}
 }
 
-// MARK: - Processamento de cada foto
+private extension CMVideoDimensions {
+    var pixels: Int { Int(width) * Int(height) }
+}
 
-final class PhotoProcessor: NSObject, AVCapturePhotoCaptureDelegate {
-    private let look: Look
-    private let completion: (Result<UIImage?, Error>) -> Void
+// MARK: - Recebe um RAW
+
+final class RawCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
+    private let completion: (Result<Data, Error>) -> Void
     private var dng: Data?
     private var captureError: Error?
 
-    init(look: Look, completion: @escaping (Result<UIImage?, Error>) -> Void) {
-        self.look = look
+    init(completion: @escaping (Result<Data, Error>) -> Void) {
         self.completion = completion
     }
 
@@ -453,34 +633,20 @@ final class PhotoProcessor: NSObject, AVCapturePhotoCaptureDelegate {
     }
 
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
-        let completion = self.completion
         if let error = error ?? captureError {
             completion(.failure(error))
-            return
-        }
-        guard let dng else {
+        } else if let dng {
+            completion(.success(dng))
+        } else {
             completion(.failure(RevelaError.noRawData))
-            return
-        }
-        let look = self.look
-        DispatchQueue.global(qos: .userInitiated).async {
-            let developed = Developer.develop(dng: dng, look: look)
-            Library.save(dng: dng, developed: developed?.heic) { error in
-                if let error {
-                    completion(.failure(error))
-                } else if developed == nil {
-                    completion(.failure(RevelaError.developFailed))
-                } else {
-                    completion(.success(developed?.thumbnail))
-                }
-            }
         }
     }
 }
 
 enum Library {
     /// Salva como um único item na galeria: a foto revelada + o DNG original (par RAW+HEIC).
-    static func save(dng: Data, developed: Data?, completion: @escaping (Error?) -> Void) {
+    static func save(dng: Data?, developed: Data?, completion: @escaping (Error?) -> Void) {
+        guard dng != nil || developed != nil else { return completion(RevelaError.noRawData) }
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             guard status == .authorized || status == .limited else {
                 completion(RevelaError.photosDenied)
@@ -492,8 +658,8 @@ enum Library {
                 rawOptions.uniformTypeIdentifier = "com.adobe.raw-image"
                 if let developed {
                     request.addResource(with: .photo, data: developed, options: nil)
-                    request.addResource(with: .alternatePhoto, data: dng, options: rawOptions)
-                } else {
+                    if let dng { request.addResource(with: .alternatePhoto, data: dng, options: rawOptions) }
+                } else if let dng {
                     request.addResource(with: .photo, data: dng, options: rawOptions)
                 }
             }, completionHandler: { _, error in

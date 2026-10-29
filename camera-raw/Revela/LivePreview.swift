@@ -20,8 +20,9 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     weak var view: MTKView?
 
     // Lidos e escritos só na main thread
-    var look: Look = .filme
-    var zebra = false
+    var options = Developer.PreviewOptions()
+    /// Lupa de foco: amplia o centro 4× enquanto você ajusta o foco.
+    var loupe = false
     var onHistogram: (([Float]) -> Void)?
 
     /// Chamado na fila de vídeo a cada quadro.
@@ -40,16 +41,17 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         lock.unlock()
         guard let frame, let drawable = view.currentDrawable, let buffer = queue.makeCommandBuffer() else { return }
 
-        // Preenche a área do visor (aspect fill), centralizado
+        // Preenche a área do visor (aspect fill), centralizado, com zoom digital e lupa
         let size = view.drawableSize
-        let scale = max(size.width / frame.extent.width, size.height / frame.extent.height)
+        let zoom = options.develop.zoom * (loupe ? 4 : 1)
+        let scale = max(size.width / frame.extent.width, size.height / frame.extent.height) * zoom
         var image = frame
             .transformed(by: CGAffineTransform(translationX: -frame.extent.minX, y: -frame.extent.minY))
             .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         image = image.transformed(by: CGAffineTransform(
             translationX: (size.width - image.extent.width) / 2,
             y: (size.height - image.extent.height) / 2))
-        image = Developer.preview(image, look: look, zebra: zebra)
+        image = Developer.preview(image, options: options)
             .cropped(to: CGRect(origin: .zero, size: size))
 
         let destination = CIRenderDestination(

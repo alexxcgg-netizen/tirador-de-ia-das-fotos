@@ -2,6 +2,7 @@ import CoreImage
 import CoreImage.CIFilterBuiltins
 import ImageIO
 import UIKit
+import Vision
 
 struct LookParams {
     var exposure: Float = 0
@@ -13,6 +14,17 @@ struct LookParams {
     var grain: Float = 0
     var shadowTint = SIMD3<Float>(0, 0, 0)
     var highTint = SIMD3<Float>(0, 0, 0)
+
+    /// Mistura com o Neutro (`amount` 0…1) e escala o grão.
+    func scaled(amount: Float, grain grainScale: Float) -> LookParams {
+        let n = LookParams()
+        func mix(_ a: Float, _ b: Float) -> Float { a + (b - a) * amount }
+        return LookParams(
+            exposure: mix(n.exposure, exposure), saturation: mix(n.saturation, saturation),
+            warmth: mix(n.warmth, warmth), mono: mix(n.mono, mono), toe: mix(n.toe, toe),
+            contrast: mix(n.contrast, contrast), grain: grain * amount * grainScale,
+            shadowTint: shadowTint * amount, highTint: highTint * amount)
+    }
 }
 
 enum Look: String, CaseIterable, Identifiable {
@@ -52,6 +64,48 @@ enum Look: String, CaseIterable, Identifiable {
     }
 }
 
+enum AspectRatio: String, CaseIterable, Identifiable {
+    case r43 = "4:3"
+    case r11 = "1:1"
+    case r169 = "16:9"
+    case xpan = "65:24"
+
+    var id: String { rawValue }
+
+    /// Lado maior ÷ lado menor.
+    var ratio: CGFloat {
+        switch self {
+        case .r43: return 4.0 / 3.0
+        case .r11: return 1
+        case .r169: return 16.0 / 9.0
+        case .xpan: return 65.0 / 24.0
+        }
+    }
+
+    /// Recorte centralizado: primeiro o zoom digital, depois a proporção (mantendo a orientação da imagem).
+    func crop(_ rect: CGRect, zoom: CGFloat) -> CGRect {
+        var w = rect.width / zoom, h = rect.height / zoom
+        let long = max(w, h), short = min(w, h)
+        if long / short > ratio {
+            if h > w { h = w * ratio } else { w = h * ratio }
+        } else {
+            if h > w { w = h / ratio } else { h = w / ratio }
+        }
+        return CGRect(x: rect.midX - w / 2, y: rect.midY - h / 2, width: w, height: h).integral
+    }
+}
+
+/// Tudo que define como a foto é revelada.
+struct DevelopOptions {
+    var look: Look = .filme
+    var amount: Float = 1
+    var grain: Float = 1
+    var zoom: CGFloat = 1
+    var aspect: AspectRatio = .r43
+
+    var params: LookParams { look.params.scaled(amount: amount, grain: grain) }
+}
+
 /// Revela o DNG com a nossa própria curva, sem o processamento de "aparência" da Apple.
 enum Developer {
     struct Output {
@@ -62,7 +116,7 @@ enum Developer {
     static let displayP3 = CGColorSpace(name: CGColorSpace.displayP3)!
     static let linearP3 = CGColorSpace(name: CGColorSpace.extendedLinearDisplayP3)!
 
-    private static let context = CIContext(options: [
+    static let context = CIContext(options: [
         .workingColorSpace: linearP3,
         .workingFormat: CIFormat.RGBAh,
         .cacheIntermediates: false,
@@ -73,41 +127,53 @@ enum Developer {
         return try? Data(contentsOf: url)
     }()
 
-    private static let toneKernel: CIColorKernel? = library.flatMap {
-        try? CIColorKernel(functionName: "revelaTone", fromMetalLibraryData: $0)
+    private static func kernel(_ name: String) -> CIColorKernel? {
+        library.flatMap { try? CIColorKernel(functionName: name, fromMetalLibraryData: $0) }
     }
 
-    private static let previewKernel: CIColorKernel? = library.flatMap {
-        try? CIColorKernel(functionName: "revelaPreview", fromMetalLibraryData: $0)
-    }
+    private static let toneKernel = kernel("revelaTone")
+    private static let previewKernel = kernel("revelaPreview")
+    private static let peakingKernel = kernel("revelaPeaking")
+    private static let sharpnessKernel = kernel("revelaSharpness")
+    private static let pickKernel = kernel("revelaPick")
 
     private static let noise = CIFilter.randomGenerator().outputImage!
 
-    static func develop(dng: Data, look: Look) -> Output? {
-        guard let raw = CIRAWFilter(imageData: dng, identifierHint: "com.adobe.raw-image") else { return nil }
+    // MARK: - Foto
 
-        // Desliga o "look" da Apple: sem boost de contraste e sem tone mapping local.
+    /// RAW -> luz linear da cena, sem boost de contraste e sem tone mapping local da Apple.
+    static func linear(dng: Data) -> CIImage? {
+        guard let raw = CIRAWFilter(imageData: dng, identifierHint: "com.adobe.raw-image") else { return nil }
         raw.boostAmount = 0
         raw.boostShadowAmount = 0
         if raw.isLocalToneMapSupported { raw.localToneMapAmount = 0 }
         raw.extendedDynamicRangeAmount = 0
-
-        guard let linear = raw.outputImage else { return nil }
-
-        let graded = apply(toneKernel, to: linear, look: look.params, extra: [])
+        guard let image = raw.outputImage else { return nil }
 
         // A orientação já foi aplicada pelo CIRAWFilter; não deixar a tag girar a foto de novo.
-        var properties = linear.properties
+        var properties = image.properties
         properties[kCGImagePropertyOrientation as String] = nil
         if var tiff = properties[kCGImagePropertyTIFFDictionary as String] as? [String: Any] {
             tiff[kCGImagePropertyTIFFOrientation as String] = nil
             properties[kCGImagePropertyTIFFDictionary as String] = tiff
         }
-        let output = graded.settingProperties(properties)
+        return image.settingProperties(properties)
+    }
 
-        guard let heic = context.heifRepresentation(
-            of: output,
-            format: .RGBA8,
+    static func develop(dng: Data, options: DevelopOptions) -> Output? {
+        linear(dng: dng).flatMap { finish($0, options: options) }
+    }
+
+    /// Luz linear -> look, recorte e HEIC de 10 bits.
+    static func finish(_ linear: CIImage, options: DevelopOptions) -> Output? {
+        let rect = options.aspect.crop(linear.extent, zoom: options.zoom)
+        let cropped = linear.cropped(to: rect)
+            .transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
+        let graded = apply(toneKernel, to: cropped, look: options.params, extra: [])
+            .settingProperties(linear.properties)
+
+        guard let heic = try? context.heif10Representation(
+            of: graded,
             colorSpace: displayP3,
             options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.92]
         ) else { return nil }
@@ -115,9 +181,89 @@ enum Developer {
         return Output(heic: heic, thumbnail: thumbnail(of: graded))
     }
 
+    // MARK: - Empilhamento
+
+    enum StackKind { case focus, average }
+
+    /// Junta vários RAW: foco empilhado (pega o pedaço mais nítido de cada quadro) ou média (menos ruído / exposição longa).
+    static func stack(_ frames: [Data], kind: StackKind, options: DevelopOptions) -> Output? {
+        let images = frames.compactMap { linear(dng: $0) }
+        guard let reference = images.first else { return nil }
+        let aligned = [reference] + images.dropFirst().map { align($0, to: reference) }
+
+        let merged: CIImage
+        switch kind {
+        case .average:
+            merged = average(aligned)
+        case .focus:
+            merged = focusMerge(aligned) ?? average(aligned)
+        }
+        return finish(merged.cropped(to: reference.extent).settingProperties(reference.properties), options: options)
+    }
+
+    /// Corrige o tremido entre quadros (só translação, que é o que a mão faz em frações de segundo).
+    private static func align(_ image: CIImage, to reference: CIImage) -> CIImage {
+        let request = VNTranslationalImageRegistrationRequest(targetedCIImage: image, options: [:])
+        let handler = VNImageRequestHandler(ciImage: reference, options: [:])
+        guard (try? handler.perform([request])) != nil,
+              let observation = request.results?.first as? VNImageTranslationAlignmentObservation else { return image }
+        return image.transformed(by: observation.alignmentTransform)
+    }
+
+    private static func average(_ images: [CIImage]) -> CIImage {
+        guard var sum = images.first else { return CIImage.empty() }
+        for image in images.dropFirst() {
+            sum = image.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: sum])
+        }
+        let k = CGFloat(1) / CGFloat(images.count)
+        return sum.applyingFilter("CIColorMatrix", parameters: [
+            "inputRVector": CIVector(x: k, y: 0, z: 0, w: 0),
+            "inputGVector": CIVector(x: 0, y: k, z: 0, w: 0),
+            "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0),
+            "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
+        ])
+    }
+
+    private static func sharpness(_ image: CIImage) -> CIImage? {
+        let laplacian = image.applyingFilter("CIConvolution3X3", parameters: [
+            "inputWeights": CIVector(values: [0, 1, 0, 1, -4, 1, 0, 1, 0], count: 9),
+            "inputBias": 0,
+        ])
+        guard let s = sharpnessKernel?.apply(extent: image.extent, arguments: [laplacian]) else { return nil }
+        return s.clampedToExtent().applyingGaussianBlur(sigma: 6).cropped(to: image.extent)
+    }
+
+    private static func focusMerge(_ images: [CIImage]) -> CIImage? {
+        guard var result = images.first, var resultSharpness = sharpness(result), let pickKernel else { return nil }
+        for image in images.dropFirst() {
+            guard let s = sharpness(image),
+                  let mask = pickKernel.apply(extent: image.extent, arguments: [s, resultSharpness]) else { continue }
+            let softMask = mask.clampedToExtent().applyingGaussianBlur(sigma: 2).cropped(to: image.extent)
+            result = image.applyingFilter("CIBlendWithMask", parameters: [
+                kCIInputBackgroundImageKey: result,
+                kCIInputMaskImageKey: softMask,
+            ])
+            resultSharpness = s.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: resultSharpness])
+        }
+        return result
+    }
+
+    // MARK: - Visor
+
+    struct PreviewOptions {
+        var develop = DevelopOptions()
+        var zebra = false
+        var peaking = false
+    }
+
     /// Aplica o look ao vídeo do visor, para ver o resultado antes de fotografar.
-    static func preview(_ image: CIImage, look: Look, zebra: Bool) -> CIImage {
-        apply(previewKernel, to: image, look: look.params, extra: [zebra ? 1 : 0] as [Any])
+    static func preview(_ image: CIImage, options: PreviewOptions) -> CIImage {
+        var out = apply(previewKernel, to: image, look: options.develop.params, extra: [options.zebra ? 1 : 0] as [Any])
+        if options.peaking, let peakingKernel {
+            let edges = image.applyingFilter("CIEdges", parameters: [kCIInputIntensityKey: 3.0])
+            out = peakingKernel.apply(extent: image.extent, arguments: [out, edges, 0.18]) ?? out
+        }
+        return out
     }
 
     private static func apply(_ kernel: CIColorKernel?, to image: CIImage, look p: LookParams, extra: [Any]) -> CIImage {

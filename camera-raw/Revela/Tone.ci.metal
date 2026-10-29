@@ -80,5 +80,24 @@ namespace coreimage {
         }
         return float4(t, 1.0f);
     }
+
+    // Focus peaking: pinta de âmbar as bordas que estão em foco
+    float4 revelaPeaking(sample_t image, sample_t edges, float threshold) {
+        float e = dot(edges.rgb, revela::kLuma);
+        float k = smoothstep(threshold, threshold * 1.6f, e);
+        return float4(mix(image.rgb, float3(1.0f, 0.62f, 0.16f), k), image.a);
+    }
+
+    // Empilhamento de foco: nitidez local = |laplaciano| da luminância
+    float4 revelaSharpness(sample_t laplacian) {
+        float s = abs(dot(laplacian.rgb, revela::kLuma));
+        return float4(s, s, s, 1.0f);
+    }
+
+    // 1 onde o quadro novo é mais nítido que o resultado acumulado
+    float4 revelaPick(sample_t candidate, sample_t current) {
+        float m = candidate.r > current.r * 1.05f ? 1.0f : 0.0f;
+        return float4(m, m, m, 1.0f);
+    }
 }
 }

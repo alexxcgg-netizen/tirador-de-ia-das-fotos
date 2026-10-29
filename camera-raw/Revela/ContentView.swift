@@ -9,7 +9,7 @@ struct ContentView: View {
     @StateObject private var level = LevelMeter()
     @State private var panel: Panel?
 
-    enum Panel { case exposure, whiteBalance, focus }
+    enum Panel { case exposure, whiteBalance, focus, look }
 
     var body: some View {
         ZStack {
@@ -22,6 +22,7 @@ struct ContentView: View {
                     controlPanel
                     lookStrip
                     Spacer(minLength: 0)
+                    modePicker
                     lensPicker
                     bottomBar
                 }
@@ -58,24 +59,48 @@ struct ContentView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .frame(maxWidth: 190)
+            .frame(maxWidth: 168)
 
-            Spacer()
+            Spacer(minLength: 0)
 
             iconToggle(camera.timerSeconds == 0 ? "timer" : "\(camera.timerSeconds)s",
                        isSymbol: camera.timerSeconds == 0, isOn: camera.timerSeconds > 0) { camera.cycleTimer() }
             iconToggle("circle.lefthalf.striped.horizontal", isOn: camera.zebra) { camera.zebra.toggle() }
+            iconToggle("scope", isOn: camera.peaking) { camera.peaking.toggle() }
             iconToggle("grid", isOn: camera.showGrid) { camera.showGrid.toggle() }
+            iconToggle(camera.aspect.rawValue, isSymbol: false, isOn: camera.aspect != .r43) { camera.cycleAspect() }
         }
         .padding(.top, 6)
+    }
+
+    private var modePicker: some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 18) {
+                ForEach(CaptureMode.allCases) { mode in
+                    Button(mode.rawValue) {
+                        withAnimation(.snappy(duration: 0.2)) { camera.captureMode = mode }
+                        UISelectionFeedbackGenerator().selectionChanged()
+                    }
+                    .font(.caption.weight(.bold)).tracking(0.8)
+                    .foregroundStyle(camera.captureMode == mode ? accent : Color.white.opacity(0.75))
+                    .buttonStyle(.plain)
+                }
+            }
+            if !camera.captureMode.hint.isEmpty {
+                Text(camera.captureMode.hint)
+                    .font(.caption2).opacity(0.6)
+                    .multilineTextAlignment(.center)
+                    .transition(.opacity)
+            }
+        }
     }
 
     private func iconToggle(_ name: String, isSymbol: Bool = true, isOn: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Group {
-                if isSymbol { Image(systemName: name) } else { Text(name).font(.footnote.weight(.bold)) }
+                if isSymbol { Image(systemName: name) } else { Text(name).font(.system(size: 11, weight: .bold)).minimumScaleFactor(0.7) }
             }
-            .frame(width: 36, height: 36)
+            .frame(width: 34, height: 34)
             .foregroundStyle(isOn ? accent : .white)
             .background(Circle().fill(.white.opacity(isOn ? 0.16 : 0.08)))
         }
@@ -91,6 +116,7 @@ struct ContentView: View {
                 if camera.showGrid {
                     ThirdsGrid().stroke(.white.opacity(0.22), lineWidth: 0.5)
                 }
+                AspectMask(aspect: camera.aspect)
                 LevelLine(roll: level.roll)
                 if let p = camera.focusPoint {
                     FocusSquare()
@@ -110,6 +136,32 @@ struct ContentView: View {
                     Spacer()
                 }
                 .padding(8)
+                if camera.loupe {
+                    Text("LUPA 4×")
+                        .font(.caption2.weight(.bold)).tracking(1.2)
+                        .padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(accent, in: Capsule())
+                        .foregroundStyle(.black)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, 10)
+                }
+                if camera.lens == .macro && camera.stackProgress == nil {
+                    Text("Macro: aproxime até 2 cm")
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .background(.black.opacity(0.5), in: Capsule())
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, camera.loupe ? 40 : 10)
+                }
+                if let progress = camera.stackProgress {
+                    VStack(spacing: 6) {
+                        ProgressView().tint(.white)
+                        Text("Fotografando \(progress)").font(.subheadline.weight(.semibold))
+                        Text("Não mexa o iPhone").font(.caption).opacity(0.7)
+                    }
+                    .padding(16)
+                    .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 14))
+                }
                 if camera.countdown > 0 {
                     Text("\(camera.countdown)")
                         .font(.system(size: 96, weight: .thin, design: .rounded))
@@ -141,6 +193,8 @@ struct ContentView: View {
                  subtitle: "Balanço", isAuto: !camera.manualWB)
             chip(.focus, title: camera.manualFocus ? String(format: "%.2f", camera.lensPosition) : "AF",
                  subtitle: "Foco", isAuto: !camera.manualFocus)
+            chip(.look, title: "\(Int((camera.lookAmount * 100).rounded()))%",
+                 subtitle: "Look", isAuto: camera.lookAmount == 1 && camera.grainAmount == 1)
         }
     }
 
@@ -207,9 +261,31 @@ struct ContentView: View {
                 if camera.manualFocus {
                     HStack {
                         Text("Perto").font(.caption)
-                        Slider(value: $camera.lensPosition, in: 0...1)
+                        Slider(value: $camera.lensPosition, in: 0...1) { editing in
+                            withAnimation(.snappy(duration: 0.2)) { camera.loupe = editing }
+                        }
                         Text("Longe").font(.caption)
                     }
+                    Text("Ao arrastar, o visor amplia 4× e o peaking marca o que está em foco.")
+                        .font(.caption2).opacity(0.6)
+                }
+            }
+            .panelStyle()
+        case .look:
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Intensidade").frame(width: 80, alignment: .leading)
+                    Slider(value: $camera.lookAmount, in: 0...1, step: 0.05)
+                    Text("\(Int((camera.lookAmount * 100).rounded()))%")
+                        .font(.system(.footnote, design: .monospaced))
+                        .frame(width: 56, alignment: .trailing)
+                }
+                HStack {
+                    Text("Grão").frame(width: 80, alignment: .leading)
+                    Slider(value: $camera.grainAmount, in: 0...2, step: 0.1)
+                    Text(String(format: "%.1f×", camera.grainAmount))
+                        .font(.system(.footnote, design: .monospaced))
+                        .frame(width: 56, alignment: .trailing)
                 }
             }
             .panelStyle()
@@ -257,9 +333,17 @@ struct ContentView: View {
     // MARK: - Base
 
     private var lensPicker: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 8) {
             ForEach(camera.availableLenses) { lens in
-                Button(lens.rawValue) { camera.select(lens: lens) }
+                Button {
+                    withAnimation(.snappy(duration: 0.2)) { camera.select(lens: lens) }
+                } label: {
+                    if lens == .macro {
+                        Image(systemName: "camera.macro")
+                    } else {
+                        Text(lens.rawValue)
+                    }
+                }
                     .font(.footnote.weight(.bold))
                     .frame(width: 44, height: 44)
                     .foregroundStyle(camera.lens == lens ? accent : Color.white)
@@ -305,7 +389,7 @@ struct ContentView: View {
                         Text("Revelando").font(.caption2).opacity(0.7)
                     }
                 } else {
-                    Text(camera.rawMode == .proRAW ? "DNG\n48MP" : "DNG\nRAW")
+                    Text(statusText)
                         .font(.caption2.weight(.bold)).multilineTextAlignment(.center).opacity(0.5)
                 }
             }
@@ -326,6 +410,16 @@ struct ContentView: View {
         }
         .foregroundStyle(.white)
         .padding()
+    }
+
+    private var statusText: String {
+        switch camera.captureMode {
+        case .focusStack: return "7×\nFOCO"
+        case .average: return "8×\nMÉDIA"
+        case .photo:
+            if camera.rawMode == .bayer { return "DNG\nRAW" }
+            return camera.lens.zoom > 1 ? "DNG\n12MP" : "DNG\n48MP"
+        }
     }
 
     private func shutterText(_ seconds: Double) -> String {
@@ -369,6 +463,24 @@ private struct LevelLine: View {
         .opacity(abs(roll) < 20 * .pi / 180 ? 1 : 0)
         .onChange(of: isLevel) { _, level in
             if level { UISelectionFeedbackGenerator().selectionChanged() }
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+/// Escurece o que fica fora da proporção escolhida.
+private struct AspectMask: View {
+    let aspect: AspectRatio
+
+    var body: some View {
+        GeometryReader { geo in
+            let rect = aspect.crop(CGRect(origin: .zero, size: geo.size), zoom: 1)
+            Path { p in
+                p.addRect(CGRect(origin: .zero, size: geo.size))
+                p.addRect(rect)
+            }
+            .fill(Color.black.opacity(0.6), style: FillStyle(eoFill: true))
+            .animation(.snappy(duration: 0.25), value: aspect)
         }
         .allowsHitTesting(false)
     }
