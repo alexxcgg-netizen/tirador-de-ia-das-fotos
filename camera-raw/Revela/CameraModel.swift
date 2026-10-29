@@ -235,7 +235,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let lens = self.lens
         let mode = self.rawMode
         sessionQueue.async {
-            if #available(iOS 18.0, *), self.session.supportsControls {
+            // O delegate precisa existir antes de qualquer controle ser adicionado
+            if #available(iOS 18.0, *) {
                 self.session.setControlsDelegate(self, queue: self.sessionQueue)
             }
             self.setupSession(lens: lens, mode: mode)
@@ -899,10 +900,10 @@ enum Library {
                 completion(RevelaError.photosDenied)
                 return
             }
+            let rawOptions = PHAssetResourceCreationOptions()
+            rawOptions.uniformTypeIdentifier = "com.adobe.raw-image"
             PHPhotoLibrary.shared().performChanges({
                 let request = PHAssetCreationRequest.forAsset()
-                let rawOptions = PHAssetResourceCreationOptions()
-                rawOptions.uniformTypeIdentifier = "com.adobe.raw-image"
                 if let developed {
                     request.addResource(with: .photo, data: developed, options: nil)
                     if let dng { request.addResource(with: .alternatePhoto, data: dng, options: rawOptions) }
@@ -910,7 +911,13 @@ enum Library {
                     request.addResource(with: .photo, data: dng, options: rawOptions)
                 }
             }, completionHandler: { _, error in
-                completion(error)
+                guard let error, let developed, let dng else { return completion(error) }
+                // A galeria pode recusar o par (ex.: tamanhos diferentes depois do recorte): salva os dois separados
+                dlog("Par HEIC+DNG recusado (\(error.localizedDescription)); salvando separados")
+                PHPhotoLibrary.shared().performChanges({
+                    PHAssetCreationRequest.forAsset().addResource(with: .photo, data: developed, options: nil)
+                    PHAssetCreationRequest.forAsset().addResource(with: .photo, data: dng, options: rawOptions)
+                }, completionHandler: { _, error in completion(error) })
             })
         }
     }

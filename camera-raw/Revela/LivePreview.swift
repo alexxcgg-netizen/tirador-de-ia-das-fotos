@@ -71,9 +71,10 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         fpsFrames += 1
         let now = CFAbsoluteTimeGetCurrent()
         if now - fpsWindowStart > 3 {
-            let fps = Double(fpsFrames) / (now - fpsWindowStart)
-            Diagnostics.shared.set("Visor", String(format: "%.0f quadros/s · %d×%d · look %@", fps,
-                                                   Int(size.width), Int(size.height), options.develop.look.rawValue))
+            let fps: Double = Double(fpsFrames) / (now - fpsWindowStart)
+            let fpsText = String(format: "%.0f", fps)
+            let lookName = options.develop.look.rawValue
+            Diagnostics.shared.set("Visor", "\(fpsText) quadros/s · \(Int(size.width))×\(Int(size.height)) · look \(lookName)")
             fpsFrames = 0
             fpsWindowStart = now
         }
@@ -95,7 +96,11 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
             var bins = [Float](repeating: 0, count: 64 * 4)
             self.context.render(output, toBitmap: &bins, rowBytes: 64 * 4 * MemoryLayout<Float>.size,
                                 bounds: CGRect(x: 0, y: 0, width: 64, height: 1), format: .RGBAf, colorSpace: nil)
-            var luma = (0..<64).map { 0.2126 * bins[$0 * 4] + 0.7152 * bins[$0 * 4 + 1] + 0.0722 * bins[$0 * 4 + 2] }
+            var luma = [Float](repeating: 0, count: 64)
+            for i in 0..<64 {
+                let r: Float = bins[i * 4], g: Float = bins[i * 4 + 1], b: Float = bins[i * 4 + 2]
+                luma[i] = 0.2126 * r + 0.7152 * g + 0.0722 * b
+            }
             if let peak = luma.max(), peak > 0 { luma = luma.map { $0 / peak } }
             DispatchQueue.main.async { callback?(luma) }
         }

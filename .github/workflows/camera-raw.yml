@@ -33,21 +33,40 @@ jobs:
 
       - name: Compilar (sem assinatura)
         run: |
-          set -o pipefail
+          set +e
           xcodebuild -project Revela.xcodeproj -scheme Revela -configuration Release \
             -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-            build | grep -E "error:|warning: .*Revela|BUILD" || true
-          test -d build/Build/Products/Release-iphoneos/Revela.app
-          # Sem o metallib a revelação sai sem o look; falhar aqui em vez de no iPhone
-          ls -la build/Build/Products/Release-iphoneos/Revela.app
-          test -f build/Build/Products/Release-iphoneos/Revela.app/default.metallib
+            build > build.log 2>&1
+          status=$?
+          set -e
+          # Mostra só o que importa, mas sem esconder a falha
+          grep -E "error:|warning: .*/Revela/|BUILD (SUCCEEDED|FAILED)" build.log || true
+          if [ $status -ne 0 ]; then
+            echo "::error::xcodebuild falhou (código $status)"
+            tail -80 build.log
+            exit $status
+          fi
+
+      - name: Conferir o app
+        run: |
+          APP=build/Build/Products/Release-iphoneos/Revela.app
+          ls -la "$APP"
+          # O executável é o app em si; sem ele o .ipa não instala
+          test -x "$APP/Revela"
+          file "$APP/Revela" | grep -q "arm64"
+          # Sem o metallib a revelação sai sem look
+          test -f "$APP/default.metallib"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" -c "Print :CFBundleIdentifier" -c "Print :CFBundleShortVersionString" -c "Print :MinimumOSVersion" -c "Print :NSCameraUsageDescription" -c "Print :NSPhotoLibraryAddUsageDescription" "$APP/Info.plist"
+          du -sh "$APP"
 
       - name: Empacotar .ipa
         run: |
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/Revela.app Payload/
           zip -qry Revela.ipa Payload
+          unzip -l Revela.ipa | grep -q "Payload/Revela.app/Revela$"
+          ls -la Revela.ipa
 
       - uses: actions/upload-artifact@v4
         with:
