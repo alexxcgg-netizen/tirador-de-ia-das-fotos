@@ -38,6 +38,17 @@ final class StudioModel: ObservableObject {
     @Published var adjust = Developer.Adjust() { didSet { refresh() } }
     var skinProtection = true
 
+    /// Comparar: um segundo filme (B) mostrado lado a lado com o atual (A).
+    struct Choice: Equatable {
+        var look: Look
+        var custom: CustomLook?
+        var name: String { custom?.name ?? look.rawValue }
+    }
+    @Published var compare: Choice? { didSet { refresh() } }
+    @Published var previewB: UIImage?
+    /// Revelando várias fotos: "3/10".
+    @Published var batchProgress: String?
+
     private var zoom: CGFloat = 1
     private var mirror = false
     /// Cena pequena já aberta (só reabre quando muda o foco ou o desfoque do retrato).
@@ -56,6 +67,30 @@ final class StudioModel: ObservableObject {
         o.originalAspect = aspect == nil
         o.skinProtection = skinProtection
         return o
+    }
+
+    /// Liga a comparação com o próximo filme da lista (ou desliga).
+    func toggleCompare() {
+        if compare != nil {
+            compare = nil
+            previewB = nil
+        } else {
+            let all = Look.allCases
+            let next = all[((all.firstIndex(of: look) ?? 0) + 1) % all.count]
+            compare = Choice(look: next, custom: nil)
+        }
+    }
+
+    /// Fica com o B: ele vira o filme atual e o A vai para o lado da comparação.
+    func keepB() {
+        guard let b = compare else { return }
+        let a = Choice(look: look, custom: custom)
+        suspendRefresh = true
+        look = b.look
+        custom = b.custom
+        compare = a
+        suspendRefresh = false
+        refresh()
     }
 
     /// Começa com as escolhas atuais da câmera.
@@ -164,6 +199,13 @@ final class StudioModel: ObservableObject {
         let aperture = self.aperture, focus = self.focus
         let cached = previewScene
         let needsBefore = before == nil
+        var optionsB: DevelopOptions?
+        if let b = compare {
+            var o = options
+            o.look = b.look
+            o.custom = b.custom
+            optionsB = o
+        }
         queue.async {
             guard gen == self.generation else { return }
             var scene = cached
@@ -181,7 +223,9 @@ final class StudioModel: ObservableObject {
                 DispatchQueue.main.async { if gen == self.generation { self.previewScene = scene } }
             }
             guard let scene, gen == self.generation else { return }
-            let image = Developer.render(Developer.adjusted(scene, adjust), options: options)
+            let adjustedScene = Developer.adjusted(scene, adjust)
+            let image = Developer.render(adjustedScene, options: options)
+            let imageB = optionsB.flatMap { Developer.render(adjustedScene, options: $0) }
             var neutral = options
             neutral.custom = nil
             neutral.look = .neutro
@@ -191,6 +235,7 @@ final class StudioModel: ObservableObject {
             DispatchQueue.main.async {
                 guard gen == self.generation else { return }
                 self.preview = image
+                self.previewB = imageB
                 if let beforeImage { self.before = beforeImage }
                 self.loading = false
             }
@@ -220,6 +265,53 @@ final class StudioModel: ObservableObject {
         let v = (rect.maxY - ciY) / rect.height
         guard (0...1).contains(u), (0...1).contains(v) else { return nil }
         return CGPoint(x: u, y: v)
+    }
+
+    /// Revelar várias: o filme e os ajustes atuais em cada foto escolhida, uma por vez, cada uma salva como nova.
+    func batch(_ items: [PhotosPickerItem]) {
+        guard !items.isEmpty, batchProgress == nil else { return }
+        var opts = options
+        opts.zoom = 1
+        opts.mirror = false
+        let adjust = self.adjust
+        let queue = self.queue
+        batchProgress = "0/\(items.count)"
+        let t0 = CFAbsoluteTimeGetCurrent()
+        Task {
+            var saved = 0
+            for (i, item) in items.enumerated() {
+                if let data = await Self.loadData(item) {
+                    let ok: Bool = await withCheckedContinuation { continuation in
+                        queue.async {
+                            let frame = CapturedFrame(data: data, isRaw: Self.isRaw(data))
+                            let out = autoreleasepool {
+                                Developer.scene(for: frame).flatMap { Developer.finish(Developer.adjusted($0, adjust), options: opts) }
+                            }
+                            guard let out else { return continuation.resume(returning: false) }
+                            Library.save(dng: nil, developed: out.heic, tryPair: false, location: nil) { error in
+                                continuation.resume(returning: error == nil)
+                            }
+                        }
+                    }
+                    if ok { saved += 1 }
+                }
+                await MainActor.run { self.batchProgress = "\(i + 1)/\(items.count)" }
+            }
+            dlog("Revelar várias: \(saved)/\(items.count) com \(opts.lookName) em \(Diagnostics.ms(since: t0))")
+            await MainActor.run {
+                self.batchProgress = nil
+                self.message = "\(saved) de \(items.count) foto(s) reveladas com \(opts.lookName) e salvas como novas."
+            }
+        }
+    }
+
+    /// Os dados da foto: o RAW quando a foto tem um, senão o arquivo como está.
+    private static func loadData(_ item: PhotosPickerItem) async -> Data? {
+        if item.supportedContentTypes.contains(where: { $0.conforms(to: .rawImage) }),
+           let raw = try? await item.loadTransferable(type: RawFile.self) {
+            return raw.data
+        }
+        return try? await item.loadTransferable(type: Data.self)
     }
 
     func save() {
@@ -258,6 +350,9 @@ struct StudioView: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var showBefore = false
     @State private var tab = 0
+    @State private var batchItems: [PhotosPickerItem] = []
+    /// Onde fica a divisória da comparação (0…1).
+    @State private var split: CGFloat = 0.5
 
     var body: some View {
         VStack(spacing: 0) {
@@ -274,6 +369,11 @@ struct StudioView: View {
         }
         .onChange(of: pickerItem) { _, item in
             if let item { model.load(item) }
+        }
+        .onChange(of: batchItems) { _, items in
+            guard !items.isEmpty else { return }
+            model.batch(items)
+            batchItems = []
         }
     }
 
@@ -293,6 +393,12 @@ struct StudioView: View {
                 Image(systemName: "photo.on.rectangle").frame(width: 44, height: 44)
             }
             .accessibilityLabel("Abrir o app Fotos")
+            PhotosPicker(selection: $batchItems, maxSelectionCount: 50, matching: .images,
+                         preferredItemEncoding: .current, photoLibrary: .shared()) {
+                Image(systemName: "square.stack").frame(width: 40, height: 44)
+            }
+            .accessibilityLabel("Revelar várias fotos com este filme")
+            .disabled(model.batchProgress != nil)
             PhotosPicker(selection: $pickerItem, matching: .images, preferredItemEncoding: .current, photoLibrary: .shared()) {
                 Text("Escolher").font(.body.weight(.semibold))
                     .padding(.horizontal, 14).frame(height: 36)
@@ -306,7 +412,9 @@ struct StudioView: View {
     private var photo: some View {
         GeometryReader { geo in
             ZStack {
-                if let image = showBefore ? (model.before ?? model.preview) : model.preview {
+                if model.compare != nil, !showBefore, let a = model.preview, let b = model.previewB {
+                    comparison(a: a, b: b)
+                } else if let image = showBefore ? (model.before ?? model.preview) : model.preview {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
@@ -337,7 +445,11 @@ struct StudioView: View {
                     }
                     .padding(30)
                 }
-                if model.loading || model.saving {
+                if let progress = model.batchProgress {
+                    ProgressView("Revelando várias: \(progress)")
+                        .padding(16)
+                        .background(RoundedRectangle(cornerRadius: 12).fill(.black.opacity(0.7)))
+                } else if model.loading || model.saving {
                     ProgressView(model.saving ? "Revelando em resolução cheia…" : "Abrindo…")
                         .padding(16)
                         .background(RoundedRectangle(cornerRadius: 12).fill(.black.opacity(0.7)))
@@ -355,6 +467,40 @@ struct StudioView: View {
             }
             .frame(width: geo.size.width, height: geo.size.height)
         }
+    }
+
+    /// A à esquerda da divisória, B à direita; arraste para mover a divisória.
+    private func comparison(a: UIImage, b: UIImage) -> some View {
+        Image(uiImage: b)
+            .resizable()
+            .scaledToFit()
+            .overlay {
+                GeometryReader { box in
+                    Image(uiImage: a)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: box.size.width, height: box.size.height)
+                        .mask(alignment: .leading) {
+                            Rectangle().frame(width: box.size.width * split)
+                        }
+                    Rectangle().fill(.white).frame(width: 2, height: box.size.height)
+                        .position(x: box.size.width * split, y: box.size.height / 2)
+                    HStack {
+                        Text("A · \(model.lookName)")
+                        Spacer()
+                        Text("B · \(model.compare?.name ?? "")")
+                    }
+                    .font(.caption2.weight(.bold))
+                    .padding(.horizontal, 8).padding(.vertical, 6)
+                    .background(.black.opacity(0.5))
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .gesture(DragGesture(minimumDistance: 0).onChanged { value in
+                            split = min(max(value.location.x / max(box.size.width, 1), 0.02), 0.98)
+                        })
+                }
+            }
     }
 
     private var controls: some View {
@@ -409,6 +555,32 @@ struct StudioView: View {
 
     private var filmControls: some View {
         VStack(spacing: 10) {
+            HStack(spacing: 8) {
+                chip(model.compare == nil ? "Comparar" : "Fechar comparação", on: model.compare != nil) { model.toggleCompare() }
+                if model.compare != nil {
+                    chip("Ficar com B", on: false) { model.keepB() }
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            if model.compare != nil {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        Text("B").font(.caption.weight(.heavy)).foregroundStyle(accent)
+                        ForEach(camera.customLooks) { custom in
+                            chip(custom.name, on: model.compare?.custom?.id == custom.id) {
+                                model.compare = StudioModel.Choice(look: custom.baseLook, custom: custom)
+                            }
+                        }
+                        ForEach(Look.allCases) { look in
+                            chip(look.rawValue, on: model.compare?.custom == nil && model.compare?.look == look) {
+                                model.compare = StudioModel.Choice(look: look, custom: nil)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                }
+            }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(camera.customLooks) { custom in

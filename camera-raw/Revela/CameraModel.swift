@@ -164,7 +164,8 @@ enum RevelaError: LocalizedError {
 }
 
 final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate,
-                         AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate {
+                         AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate,
+                         AVCaptureDepthDataOutputDelegate {
     static let allISO: [Float] = [25, 32, 40, 50, 64, 80, 100, 125, 160, 200, 250, 320, 400, 500, 640,
                                   800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12800]
     static let allShutter: [Double] = [8000, 6400, 5000, 4000, 3200, 2500, 2000, 1600, 1250, 1000, 800, 640,
@@ -409,6 +410,30 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
+    // Retrato: profundidade ao vivo (LiDAR / TrueDepth) para o bokeh no visor
+    private let depthOutput = AVCaptureDepthDataOutput()
+    private let depthQueue = DispatchQueue(label: "revela.depth", qos: .userInitiated)
+    /// O iPhone já gira a profundidade para ficar em pé (senão o app gira).
+    private var depthRotated = false
+    private var depthMirrored = false
+    private var depthFrameIndex = 0
+
+    // Exposição para RAW (ETTR): o mais claro possível sem estourar; a revelação desconta
+    @Published var ettr = UserDefaults.standard.bool(forKey: "ettr") {
+        didSet {
+            defaults.set(ettr, forKey: "ettr")
+            if !ettr { ettrBias = 0 }
+            updateExposure()
+        }
+    }
+    /// Quanto a câmera está expondo a mais (paradas), decidido olhando as altas luzes do vídeo.
+    @Published private(set) var ettrBias: Float = 0
+    var ettrActive: Bool {
+        ettr && !manualExposure && ![.video, .cinematic, .dual, .panorama, .action, .freeze, .longExposure].contains(captureMode)
+    }
+    /// Lido na fila de vídeo.
+    private var ettrRunning = false
+
     // Macro
     /// Com a 1×, chegou perto demais para focar: troca sozinho para o macro (e volta ao afastar).
     @Published var autoMacro = UserDefaults.standard.object(forKey: "autoMacro") as? Bool ?? true {
@@ -500,6 +525,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var developOptions: DevelopOptions {
         var o = DevelopOptions(look: look, custom: customLook, amount: lookAmount, grain: grainAmount, zoom: crop, aspect: aspect, mirror: mirror)
         o.skinProtection = skinProtection
+        // ETTR: a câmera expôs mais claro; a revelação volta para a exposição que você escolheu
+        if ettrActive { o.exposureOffset = evBias - ettrBias }
         return o
     }
 
@@ -782,6 +809,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let oldMode = captureMode
         captureMode = mode
         dlog("Modo: \(mode.rawValue)")
+        // A exposição para RAW vale só nos modos de foto: liga ou desliga conforme o modo
+        if ettr { updateExposure() }
         if mode.fixesShutter || leavingSpecial { applySpecialFormat() }
         if mode == .fast { prepareFastCapture() }
 
@@ -848,7 +877,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let on = captureMode == .portrait
         portraitPreviewOn = on
         renderer.portraitBlur = on ? 2.8 / portraitAperture : 0
-        if !on { renderer.setPersonMask(nil) }
+        if !on {
+            renderer.setPersonMask(nil)
+            renderer.setDepth(nil, focus: 0)
+        }
     }
 
     func cycleAspect() {
@@ -940,6 +972,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             previewMirrored = connection.isVideoMirrored
         }
         if #available(iOS 18.0, *) { attempt("Controle da Câmera") { installCameraControls(for: dev) } }
+        if !(depthWanted && !cinematicWanted), session.outputs.contains(depthOutput) { session.removeOutput(depthOutput) }
         device = dev
         // RAW, profundidade e disparo rápido entram na mesma configuração: o iPhone remonta a câmera uma vez só
         if session.outputs.contains(photoOutput) {
@@ -953,6 +986,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if videoWanted { applyVideoFrameRate() }
         applyStabilization()
         applyPreviewRate()
+        if depthWanted, !cinematicWanted { configureLiveDepth(dev) }
         // Cada câmera é montada num ângulo; o coordinator, com a camada do visor, diz o ângulo certo
         DispatchQueue.main.async {
             self.activeLens = lens
@@ -1070,7 +1104,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let manual = manualExposure
         let iso = selectedISO
         let shutter = selectedShutter
-        let bias = evBias
+        let bias = ettrActive ? ettrBias : evBias
+        ettrRunning = ettrActive
+        renderer.options.develop = developOptions
         sessionQueue.async {
             guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
             defer { d.unlockForConfiguration() }
@@ -2489,12 +2525,157 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
         videoFrameIndex += 1
         if !idleThrottle, videoFrameIndex % (8 * renderEvery) == 0 { detectFace(in: frame) }
+        if ettrRunning, videoFrameIndex % 10 == 5 { analyzeHighlights(frame) }
         // Retrato: máscara de pessoa para borrar o fundo no visor
         if portraitPreviewOn, videoFrameIndex % 2 == 0,
            (try? VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up).perform([personRequest])) != nil,
            let mask = personRequest.results?.first?.pixelBuffer {
             renderer.setPersonMask(CIImage(cvPixelBuffer: mask))
         }
+    }
+
+    /// ETTR: mede quanto do quadro está estourado ou quase (numa versão de 96 px).
+    private func analyzeHighlights(_ frame: CIImage) {
+        let scale = 96 / max(frame.extent.width, frame.extent.height)
+        let small = frame.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        let e = small.extent.integral
+        let w = Int(e.width), h = Int(e.height)
+        guard w > 4, h > 4 else { return }
+        var pixels = [UInt8](repeating: 0, count: w * h * 4)
+        Developer.context.render(small, toBitmap: &pixels, rowBytes: w * 4, bounds: e, format: .RGBA8,
+                                 colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
+        var clipped = 0, bright = 0
+        for i in stride(from: 0, to: pixels.count, by: 4) {
+            let peak = max(pixels[i], pixels[i + 1], pixels[i + 2])
+            if peak >= 250 { clipped += 1 }
+            if peak >= 225 { bright += 1 }
+        }
+        let n = Float(w * h)
+        let clippedShare = Float(clipped) / n, brightShare = Float(bright) / n
+        DispatchQueue.main.async { self.stepETTR(clipped: clippedShare, bright: brightShare) }
+    }
+
+    /// Um passo do ETTR: estourou → desce; sobrando espaço nas altas luzes → sobe.
+    private func stepETTR(clipped: Float, bright: Float) {
+        guard ettrActive else { return }
+        var next = ettrBias
+        if clipped > 0.004 {
+            next -= clipped > 0.02 ? 0.4 : 0.15
+        } else if bright < 0.003 {
+            next += 0.1
+        } else {
+            return
+        }
+        next = min(max(next, -3), 2)
+        guard abs(next - ettrBias) > 0.01 else { return }
+        ettrBias = next
+        renderer.options.develop = developOptions
+        sessionQueue.async {
+            guard let d = self.device, d.exposureMode == .continuousAutoExposure,
+                  (try? d.lockForConfiguration()) != nil else { return }
+            d.setExposureTargetBias(min(max(next, d.minExposureTargetBias), d.maxExposureTargetBias), completionHandler: nil)
+            d.unlockForConfiguration()
+        }
+    }
+
+    // MARK: - Profundidade ao vivo (Retrato)
+
+    /// Liga a saída de profundidade na câmera do Retrato. Roda numa configuração própria, e se a câmera
+    /// recusar, o Retrato continua com o desfoque pela máscara de pessoa.
+    private func configureLiveDepth(_ dev: AVCaptureDevice) {
+        let formats = dev.activeFormat.supportedDepthDataFormats.filter {
+            let t = CMFormatDescriptionGetMediaSubType($0.formatDescription)
+            return t == kCVPixelFormatType_DisparityFloat16 || t == kCVPixelFormatType_DepthFloat16
+        }
+        guard let best = formats.max(by: {
+            CMVideoFormatDescriptionGetDimensions($0.formatDescription).width < CMVideoFormatDescriptionGetDimensions($1.formatDescription).width
+        }) else {
+            dlog("Retrato: \(dev.localizedName) não entrega profundidade ao vivo neste formato")
+            return
+        }
+        let ok = attempt("Profundidade ao vivo") {
+            session.beginConfiguration()
+            if !session.outputs.contains(depthOutput), session.canAddOutput(depthOutput) {
+                session.addOutput(depthOutput)
+                depthOutput.isFilteringEnabled = true
+                depthOutput.alwaysDiscardsLateDepthData = true
+                depthOutput.setDelegate(self, callbackQueue: depthQueue)
+            }
+            if (try? dev.lockForConfiguration()) != nil {
+                dev.activeDepthDataFormat = best
+                dev.unlockForConfiguration()
+            }
+            if let c = depthOutput.connection(with: .depthData) {
+                c.isEnabled = true
+                depthRotated = c.isVideoRotationAngleSupported(90)
+                if depthRotated { c.videoRotationAngle = 90 }
+                depthMirrored = false
+                if c.isVideoMirroringSupported {
+                    c.automaticallyAdjustsVideoMirroring = false
+                    c.isVideoMirrored = dev.position == .front && depthRotated
+                    depthMirrored = c.isVideoMirrored
+                }
+            }
+            session.commitConfiguration()
+        }
+        if !ok {
+            // Fecha a configuração que ficou aberta e tira a saída
+            attempt("Fechar a configuração") { session.commitConfiguration() }
+            attempt("Tirar a profundidade ao vivo") {
+                session.beginConfiguration()
+                if session.outputs.contains(depthOutput) { session.removeOutput(depthOutput) }
+                session.commitConfiguration()
+            }
+        } else {
+            let d = CMVideoFormatDescriptionGetDimensions(best.formatDescription)
+            dlog("Retrato: profundidade ao vivo \(d.width)×\(d.height)\(depthRotated ? "" : " (girada pelo app)")")
+        }
+    }
+
+    func depthDataOutput(_ output: AVCaptureDepthDataOutput, didOutput depthData: AVDepthData,
+                         timestamp: CMTime, connection: AVCaptureConnection) {
+        guard portraitPreviewOn else { return }
+        depthFrameIndex += 1
+        guard depthFrameIndex % 2 == 0 else { return }
+        let disparity = depthData.depthDataType == kCVPixelFormatType_DisparityFloat16
+            ? depthData : depthData.converting(toDepthDataType: kCVPixelFormatType_DisparityFloat16)
+        let buffer = disparity.depthDataMap
+        // Ponto em foco: o rosto (no visor, que mostra o centro ampliado) ou um pouco acima do centro
+        let c = crop
+        let viewPoint = faceRect.map { CGPoint(x: 0.5 + ($0.midX - 0.5) / c, y: 0.5 + ($0.midY - 0.5) / c) }
+            ?? CGPoint(x: 0.5, y: 0.45)
+        var image = CIImage(cvPixelBuffer: buffer)
+        let samplePoint: CGPoint
+        if depthRotated {
+            samplePoint = viewPoint
+        } else {
+            image = image.oriented(previewMirrored ? .leftMirrored : .right)
+            samplePoint = sensorPoint(fromView: viewPoint)
+        }
+        renderer.setDepth(image, focus: Self.sampleDisparity(buffer, at: samplePoint))
+    }
+
+    /// Média da disparidade num quadradinho em volta do ponto (0…1, origem em cima à esquerda).
+    private static func sampleDisparity(_ buffer: CVPixelBuffer, at p: CGPoint) -> Float {
+        CVPixelBufferLockBaseAddress(buffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(buffer, .readOnly) }
+        guard let base = CVPixelBufferGetBaseAddress(buffer) else { return 0 }
+        let w = CVPixelBufferGetWidth(buffer), h = CVPixelBufferGetHeight(buffer)
+        let rowBytes = CVPixelBufferGetBytesPerRow(buffer)
+        let cx = min(max(Int(p.x * CGFloat(w)), 0), w - 1), cy = min(max(Int(p.y * CGFloat(h)), 0), h - 1)
+        var sum: Float = 0
+        var n: Float = 0
+        for y in max(0, cy - 3)...min(h - 1, cy + 3) {
+            let row = (base + y * rowBytes).assumingMemoryBound(to: Float16.self)
+            for x in max(0, cx - 3)...min(w - 1, cx + 3) {
+                let v = Float(row[x])
+                if v.isFinite, v > 0 {
+                    sum += v
+                    n += 1
+                }
+            }
+        }
+        return n > 0 ? sum / n : 0
     }
 
     /// Acha o maior rosto e estima a distância pelo tamanho dele (um rosto tem uns 16 cm de largura).

@@ -535,6 +535,15 @@ struct ContentView: View {
                     .padding(.horizontal, 40)
                     .allowsHitTesting(false)
                 }
+                if camera.ettrActive, abs(camera.ettrBias) > 0.05 {
+                    Text(String(format: "ETTR %+.1f", camera.ettrBias).replacingOccurrences(of: ".", with: ","))
+                        .font(.caption2.weight(.bold).monospacedDigit())
+                        .padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(.black.opacity(0.55), in: Capsule())
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                        .padding(10)
+                        .allowsHitTesting(false)
+                }
                 if camera.aeafLocked {
                     Text("TRAVA AE/AF")
                         .font(.caption.weight(.bold))
@@ -885,6 +894,12 @@ struct ContentView: View {
                             }
                             Text("Baixo deixa a foto azulada, alto deixa alaranjada.").font(.footnote).foregroundStyle(.secondary)
                         }
+                    }
+
+                    settingsSection("Exposição para RAW (ETTR)") {
+                        Toggle("Expor o mais claro possível sem estourar", isOn: $camera.ettr)
+                        Text("A câmera expõe mais claro (mais luz no sensor, menos ruído nas sombras) e a revelação escurece de volta. O visor e a foto ficam com a exposição de sempre. Vale nos modos de foto, no automático.")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
 
                     settingsSection("Ajudas") {

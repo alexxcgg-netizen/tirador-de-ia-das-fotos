@@ -28,11 +28,22 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     /// Retrato: quanto borrar o fundo no visor (0 = nada). A foto final usa a profundidade de verdade.
     var portraitBlur: Float = 0
     private var personMask: CIImage?
+    /// Retrato: profundidade ao vivo (disparidade, já em pé) e a disparidade do ponto em foco.
+    private var depth: CIImage?
+    private var depthFocus: Float = 0
 
     /// Máscara de pessoa vinda da fila de vídeo (branco = pessoa).
     func setPersonMask(_ mask: CIImage?) {
         lock.lock()
         personMask = mask
+        lock.unlock()
+    }
+
+    /// Profundidade vinda do LiDAR/TrueDepth (nil = sem profundidade, usa só a máscara de pessoa).
+    func setDepth(_ map: CIImage?, focus: Float) {
+        lock.lock()
+        depth = map
+        depthFocus = focus
         lock.unlock()
     }
     /// Luminância e, separados, vermelho, verde e azul (64 faixas cada, de 0 a 1).
@@ -52,6 +63,8 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         lock.lock()
         let frame = self.frame
         let mask = personMask
+        let depth = self.depth
+        let depthFocus = self.depthFocus
         lock.unlock()
         guard let frame, let drawable = view.currentDrawable, let buffer = queue.makeCommandBuffer() else { return }
 
@@ -65,8 +78,20 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         image = image.transformed(by: CGAffineTransform(
             translationX: (size.width - image.extent.width) / 2,
             y: (size.height - image.extent.height) / 2))
-        // Retrato: fundo borrado no visor, pessoa nítida
-        if portraitBlur > 0, let mask {
+        // Retrato com profundidade: bokeh de verdade no visor, mais borrado quanto mais longe do foco
+        if portraitBlur > 0, let depth {
+            func fit(_ m: CIImage) -> CIImage {
+                m.transformed(by: CGAffineTransform(translationX: -m.extent.minX, y: -m.extent.minY))
+                    .transformed(by: CGAffineTransform(scaleX: image.extent.width / m.extent.width, y: image.extent.height / m.extent.height))
+                    .transformed(by: CGAffineTransform(translationX: image.extent.minX, y: image.extent.minY))
+            }
+            let disparity = fit(depth).clampedToExtent().applyingGaussianBlur(sigma: 3).cropped(to: image.extent)
+            let matte = mask.map(fit) ?? CIImage(color: .black).cropped(to: image.extent)
+            let strength = portraitBlur * 3
+            if let map = Developer.blurMap(disparity: disparity, matte: matte, focus: depthFocus, strength: strength) {
+                image = Developer.liveBokeh(image, map: map, radius: image.extent.width * 0.014 * CGFloat(portraitBlur))
+            }
+        } else if portraitBlur > 0, let mask {
             let fitted = mask.transformed(by: CGAffineTransform(scaleX: image.extent.width / mask.extent.width,
                                                                 y: image.extent.height / mask.extent.height))
                 .transformed(by: CGAffineTransform(translationX: image.extent.minX, y: image.extent.minY))

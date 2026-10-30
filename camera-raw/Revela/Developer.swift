@@ -331,6 +331,8 @@ struct DevelopOptions {
     var originalAspect = false
     /// Pele protegida nos filmes fortes.
     var skinProtection = true
+    /// Exposição para RAW: a foto foi exposta mais clara de propósito; a revelação desconta (em paradas).
+    var exposureOffset: Float = 0
 
     func cropRect(in extent: CGRect) -> CGRect {
         guard originalAspect else { return aspect.crop(extent, zoom: zoom) }
@@ -341,6 +343,7 @@ struct DevelopOptions {
     var params: LookParams {
         var p = (custom?.params ?? look.params).scaled(amount: amount, grain: grain)
         p.skinProtect = skinProtection && custom?.lutFile == nil ? (custom?.baseLook ?? look).skinProtect * amount : 0
+        p.exposure += exposureOffset
         if hdrCompress {
             p.contrast *= 0.85
             p.exposure += 0.15
@@ -1070,6 +1073,33 @@ enum Developer {
         let scene = bokeh(sharp, map: map, radius: radius, extent: extent)
         if scale >= 1 { dlog(String(format: "Retrato: f/%.1f · foco na disparidade %.2f · bokeh até %.0f px", aperture, focus, radius)) }
         return scene.settingProperties(properties)
+    }
+
+    /// Mapa de quanto borrar, para o visor (mesma conta da foto final).
+    static func blurMap(disparity: CIImage, matte: CIImage, focus: Float, strength: Float) -> CIImage? {
+        blurMapKernel?.apply(extent: disparity.extent, arguments: [disparity, matte, focus, strength])
+    }
+
+    /// Bokeh rápido para o visor: duas camadas em um quarto da resolução (a 30 quadros por segundo).
+    static func liveBokeh(_ image: CIImage, map: CIImage, radius: CGFloat) -> CIImage {
+        guard let bandKernel, radius > 1 else { return image }
+        let e = image.extent
+        let k: CGFloat = 0.25
+        let small = image.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
+        var result = image
+        var lower: Float = 0
+        for level in [Float(0.5), 1.0] {
+            let r = radius * CGFloat(level) * k
+            let layer = small
+                .cropped(to: CGRect(x: e.minX * k - r * 2, y: e.minY * k - r * 2, width: e.width * k + r * 4, height: e.height * k + r * 4))
+                .applyingFilter("CIBokehBlur", parameters: [kCIInputRadiusKey: r, "inputRingAmount": 0.1, "inputSoftness": 1.0])
+                .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
+                .cropped(to: e)
+            guard let mask = bandKernel.apply(extent: e, arguments: [map, lower, level]) else { continue }
+            result = layer.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: result, kCIInputMaskImageKey: mask])
+            lower = level
+        }
+        return result.cropped(to: e)
     }
 
     /// Bokeh de lente: o fundo borrado com o formato da abertura (disco), em luz de cena, então cada
