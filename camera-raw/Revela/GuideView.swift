@@ -31,7 +31,8 @@ struct GuideView: View {
         ("Visor", [
             Item(symbol: "hand.tap", title: "Tocar no visor", text: "Foca e mede a luz no ponto tocado."),
             Item(symbol: "lock", title: "Segurar no visor", text: "Trava foco e exposição (TRAVA AE/AF). Um toque solta."),
-            Item(symbol: "photo.on.rectangle", title: "Miniatura", text: "Abre o Revelar de novo: troque o filme da última foto (ou de qualquer foto da galeria) e, no retrato, o foco e o desfoque."),
+            Item(symbol: "photo.on.rectangle", title: "Miniatura", text: "Abre o Revelar de novo: troque o filme da última foto (ou de qualquer foto da galeria) e, no retrato, o foco e o desfoque. Na aba Ajustes: exposição, temperatura, tom, sombras, altas luzes, endireitar e recorte."),
+            Item(symbol: "person.crop.circle", title: "Proteger a pele", text: "Nos filmes fortes (Matrix, Blockbuster, Cross-process…) a pele fica natural e o resto pega o look, como os coloristas fazem no cinema. Liga e desliga na lista de looks."),
             Item(symbol: "chart.bar.fill", title: "Histograma",
                  text: "O gráfico no canto: à esquerda as sombras, à direita as luzes. Encostado na direita = estourado."),
             Item(symbol: "minus", title: "Nível", text: "Fica laranja quando o iPhone está reto. Apontando para baixo vira duas cruzes que se encontram."),
@@ -75,7 +76,7 @@ struct GuideView: View {
         ]),
         ("Modos", [
             Item(symbol: "person.crop.rectangle", title: "Retrato",
-                 text: "Fundo desfocado pela profundidade medida com o LiDAR. f/1,4 borra muito, f/16 quase nada. Também avisa a distância para o rosto não deformar."),
+                 text: "Fundo desfocado pela profundidade medida com o LiDAR, com bokeh de lente: as luzes do fundo viram bolinhas e o cabelo fica recortado. f/1,4 borra muito, f/16 quase nada. Também avisa a distância para o rosto não deformar."),
             Item(symbol: "sun.max", title: "HDR",
                  text: "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe, sem o exagero do HDR comum."),
             Item(symbol: "moon.stars", title: "Noite, Estrelas, Lua",

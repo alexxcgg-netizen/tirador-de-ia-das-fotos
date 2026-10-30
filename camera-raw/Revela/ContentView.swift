@@ -1025,6 +1025,8 @@ struct ContentView: View {
                             Text(String(format: "%.1f×", camera.grainAmount))
                                 .font(.system(.footnote, design: .monospaced)).frame(width: 44, alignment: .trailing)
                         }
+                        Toggle("Proteger a pele nos filmes fortes", isOn: $camera.skinProtection)
+                            .font(.subheadline)
                     }
                     .padding(14)
                     .background(RoundedRectangle(cornerRadius: 14).fill(Color.white.opacity(0.07)))

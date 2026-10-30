@@ -284,6 +284,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var customLooks: [CustomLook] = CustomLookStore.load()
     /// Nome do look em uso, pronto ou próprio.
     var lookName: String { customLook?.name ?? look.rawValue }
+    /// Pele protegida nos filmes fortes (a pele fica natural, o resto pega o look).
+    @Published var skinProtection = UserDefaults.standard.object(forKey: "skinProtection") as? Bool ?? true {
+        didSet {
+            defaults.set(skinProtection, forKey: "skinProtection")
+            renderer.options.develop = developOptions
+        }
+    }
     /// Cada foto sai também em mais dois looks (fotos de um quadro só).
     @Published var multiLook = UserDefaults.standard.bool(forKey: "multiLook") {
         didSet { defaults.set(multiLook, forKey: "multiLook") }
@@ -491,7 +498,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     var developOptions: DevelopOptions {
-        DevelopOptions(look: look, custom: customLook, amount: lookAmount, grain: grainAmount, zoom: crop, aspect: aspect, mirror: mirror)
+        var o = DevelopOptions(look: look, custom: customLook, amount: lookAmount, grain: grainAmount, zoom: crop, aspect: aspect, mirror: mirror)
+        o.skinProtection = skinProtection
+        return o
     }
 
     /// Pinça e botões. `settle` escolhe a melhor câmera física para esse zoom (no fim do gesto, para não piscar no meio).
@@ -1025,6 +1034,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         photoOutput.maxPhotoQualityPrioritization = .quality
         if photoOutput.isDepthDataDeliverySupported { photoOutput.isDepthDataDeliveryEnabled = depth }
         if photoOutput.isPortraitEffectsMatteDeliverySupported { photoOutput.isPortraitEffectsMatteDeliveryEnabled = depth }
+        // Máscaras finas de cabelo e óculos para o bokeh não borrar o contorno
+        let mattes = photoOutput.availableSemanticSegmentationMatteTypes.filter { $0 == .hair || $0 == .glasses }
+        photoOutput.enabledSemanticSegmentationMatteTypes = depth ? mattes : []
         if !special {
             // Disparo sem atraso: a câmera guarda os quadros de antes do toque e usa o do instante certo
             if photoOutput.isZeroShutterLagSupported { photoOutput.isZeroShutterLagEnabled = true }
@@ -1698,6 +1710,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if photoOutput.isPortraitEffectsMatteDeliveryEnabled {
                 settings.isPortraitEffectsMatteDeliveryEnabled = true
                 settings.embedsPortraitEffectsMatteInPhoto = true
+            }
+            if !photoOutput.enabledSemanticSegmentationMatteTypes.isEmpty {
+                settings.enabledSemanticSegmentationMatteTypes = photoOutput.enabledSemanticSegmentationMatteTypes
+                settings.embedsSemanticSegmentationMattesInPhoto = true
             }
         }
         if flash {

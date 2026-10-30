@@ -34,6 +34,9 @@ final class StudioModel: ObservableObject {
     @Published var aperture: Float = 2.8 { didSet { refresh(scene: true) } }
     /// Ponto em foco no retrato (0…1, origem em cima à esquerda, na foto inteira).
     @Published var focus: CGPoint? { didSet { refresh(scene: true) } }
+    /// Ajustes de luz, cor, horizonte e recorte (antes do filme).
+    @Published var adjust = Developer.Adjust() { didSet { refresh() } }
+    var skinProtection = true
 
     private var zoom: CGFloat = 1
     private var mirror = false
@@ -51,6 +54,7 @@ final class StudioModel: ObservableObject {
         var o = DevelopOptions(look: look, custom: custom, amount: amount, grain: grain, zoom: zoom,
                                aspect: aspect ?? .r43, mirror: mirror)
         o.originalAspect = aspect == nil
+        o.skinProtection = skinProtection
         return o
     }
 
@@ -61,6 +65,7 @@ final class StudioModel: ObservableObject {
         custom = camera.customLook
         amount = camera.lookAmount
         grain = camera.grainAmount
+        skinProtection = camera.skinProtection
         suspendRefresh = false
     }
 
@@ -126,6 +131,9 @@ final class StudioModel: ObservableObject {
     }
 
     private func open(_ newFrame: CapturedFrame) {
+        suspendRefresh = true
+        adjust = Developer.Adjust()
+        suspendRefresh = false
         frame = newFrame
         previewScene = nil
         before = nil
@@ -152,6 +160,7 @@ final class StudioModel: ObservableObject {
         generation += 1
         let gen = generation
         let options = self.options
+        let adjust = self.adjust
         let aperture = self.aperture, focus = self.focus
         let cached = previewScene
         let needsBefore = before == nil
@@ -172,11 +181,12 @@ final class StudioModel: ObservableObject {
                 DispatchQueue.main.async { if gen == self.generation { self.previewScene = scene } }
             }
             guard let scene, gen == self.generation else { return }
-            let image = Developer.render(scene, options: options)
+            let image = Developer.render(Developer.adjusted(scene, adjust), options: options)
             var neutral = options
             neutral.custom = nil
             neutral.look = .neutro
             neutral.amount = 0
+            // "Antes": a foto como veio, sem ajustes nem filme
             let beforeImage = needsBefore ? Developer.render(scene, options: neutral) : nil
             DispatchQueue.main.async {
                 guard gen == self.generation else { return }
@@ -189,7 +199,8 @@ final class StudioModel: ObservableObject {
 
     /// Toque na prévia (0…1 na imagem mostrada) -> ponto na foto inteira.
     func setFocus(atDisplayed p: CGPoint) {
-        guard hasDepth, let scene = previewScene else { return }
+        // Com o horizonte girado ou recortado o toque não cai no mesmo lugar: foco só com a foto inteira
+        guard hasDepth, adjust.straighten == 0, adjust.crop <= 1.001, let scene = previewScene else { return }
         let rect = options.cropRect(in: scene.extent)
         let e = scene.extent
         let u = mirror ? 1 - p.x : p.x
@@ -200,7 +211,7 @@ final class StudioModel: ObservableObject {
 
     /// Foco atual em coordenadas da prévia (para desenhar o círculo).
     var focusOnDisplay: CGPoint? {
-        guard let focus, let scene = previewScene else { return nil }
+        guard let focus, adjust.straighten == 0, adjust.crop <= 1.001, let scene = previewScene else { return nil }
         let rect = options.cropRect(in: scene.extent)
         let e = scene.extent
         var u = (focus.x * e.width + e.minX - rect.minX) / rect.width
@@ -215,11 +226,12 @@ final class StudioModel: ObservableObject {
         guard let frame, !saving else { return }
         saving = true
         let options = self.options
+        let adjust = self.adjust
         let aperture = self.aperture, focus = self.focus
         queue.async {
             let t0 = CFAbsoluteTimeGetCurrent()
             let output = Developer.scene(for: frame, aperture: frame.hasDepth ? aperture : nil, focusPoint: focus)
-                .flatMap { Developer.finish($0, options: options) }
+                .flatMap { Developer.finish(Developer.adjusted($0, adjust), options: options) }
             guard let output else {
                 DispatchQueue.main.async {
                     self.saving = false
@@ -244,6 +256,7 @@ struct StudioView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var pickerItem: PhotosPickerItem?
     @State private var showBefore = false
+    @State private var tab = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -345,6 +358,56 @@ struct StudioView: View {
 
     private var controls: some View {
         VStack(spacing: 10) {
+            Picker("", selection: $tab) {
+                Text("Filme").tag(0)
+                Text("Ajustes").tag(1)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+            if tab == 0 { filmControls } else { adjustControls }
+            bottomButtons
+        }
+        .padding(.top, 8)
+        .foregroundStyle(.white)
+    }
+
+    private var adjustControls: some View {
+        VStack(spacing: 4) {
+            row("Exposição", value: String(format: "%+.1f", model.adjust.exposure)) {
+                Slider(value: $model.adjust.exposure, in: -2...2, step: 0.1)
+            }
+            row("Temperatura", value: String(format: "%+.0f", model.adjust.temperature * 100)) {
+                Slider(value: $model.adjust.temperature, in: -1...1, step: 0.02)
+            }
+            row("Tom", value: String(format: "%+.0f", model.adjust.tint * 100)) {
+                Slider(value: $model.adjust.tint, in: -1...1, step: 0.02)
+            }
+            row("Sombras", value: String(format: "%+.0f", model.adjust.shadows * 100)) {
+                Slider(value: $model.adjust.shadows, in: -1...1, step: 0.02)
+            }
+            row("Altas luzes", value: String(format: "%+.0f", model.adjust.highlights * 100)) {
+                Slider(value: $model.adjust.highlights, in: -1...1, step: 0.02)
+            }
+            row("Endireitar", value: String(format: "%+.1f°", model.adjust.straighten)) {
+                Slider(value: $model.adjust.straighten, in: -10...10, step: 0.1)
+            }
+            row("Recorte", value: String(format: "%.1f×", model.adjust.crop)) {
+                Slider(value: $model.adjust.crop, in: 1...3, step: 0.05)
+            }
+            HStack {
+                Text("Temperatura +: mais quente · Tom +: magenta · Altas luzes −: recupera o céu")
+                    .font(.caption2).opacity(0.55)
+                Spacer()
+                Button("Zerar") { model.adjust = Developer.Adjust() }
+                    .font(.footnote.weight(.semibold))
+                    .disabled(model.adjust.isNeutral)
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private var filmControls: some View {
+        VStack(spacing: 10) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(camera.customLooks) { custom in
@@ -380,6 +443,10 @@ struct StudioView: View {
                 }
             }
             .padding(.horizontal, 16)
+        }
+    }
+
+    private var bottomButtons: some View {
             HStack(spacing: 10) {
                 Text("Antes")
                     .font(.body.weight(.semibold))
@@ -398,9 +465,6 @@ struct StudioView: View {
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 8)
-        }
-        .padding(.top, 8)
-        .foregroundStyle(.white)
     }
 
     private func chip(_ title: String, on: Bool, action: @escaping () -> Void) -> some View {

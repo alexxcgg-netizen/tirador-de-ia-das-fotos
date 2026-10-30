@@ -206,6 +206,34 @@ namespace coreimage {
         return float4(v, v, v, 1.0f);
     }
 
+    // Bokeh em camadas: quanto desta camada entra (0 abaixo de lo, 1 acima de hi)
+    float4 revelaBand(sample_t m, float lo, float hi) {
+        float v = clamp((m.r - lo) / max(hi - lo, 1e-4f), 0.0f, 1.0f);
+        return float4(v, v, v, 1.0f);
+    }
+
+    // Proteção de pele: onde a cena original tem cor de pele, o look forte dá lugar à versão neutra
+    float4 revelaSkinMix(sample_t looked, sample_t neutral, sample_t scene, float amount) {
+        float3 c = pow(clamp(scene.rgb, 0.0f, 1.0f), float3(1.0f / 2.2f));
+        float y = dot(c, float3(0.299f, 0.587f, 0.114f));
+        float cb = (c.b - y) * 0.564f + 0.5f;
+        float cr = (c.r - y) * 0.713f + 0.5f;
+        float2 d = float2((cr - 0.585f) / 0.07f, (cb - 0.415f) / 0.08f);
+        float skin = 1.0f - smoothstep(0.6f, 1.0f, length(d));
+        skin *= smoothstep(0.08f, 0.2f, y) * (1.0f - smoothstep(0.92f, 0.99f, y));
+        return float4(mix(looked.rgb, neutral.rgb, skin * amount), 1.0f);
+    }
+
+    // Revelar de novo: sombras (+ clareia) e altas luzes (− recupera), em paradas de luz
+    float4 revelaShadowsHighlights(sample_t s, float shadows, float highlights) {
+        float3 c = max(s.rgb, float3(0.0f));
+        float x = log2(max(dot(c, revela::kLuma), 1e-5f) / 0.18f);
+        float sw = 1.0f - smoothstep(-2.5f, 0.5f, x);
+        float hw = smoothstep(-0.5f, 2.5f, x);
+        float ev = shadows * 1.5f * sw + highlights * 1.5f * hw;
+        return float4(c * exp2(ev), 1.0f);
+    }
+
     // Exposição longa no estilo rastros: fica o mais claro de cada ponto (luzes de carro, estrelas)
     float4 revelaMax(sample_t a, sample_t b) {
         return float4(max(a.rgb, b.rgb), 1.0f);

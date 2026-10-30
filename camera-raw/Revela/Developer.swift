@@ -34,6 +34,8 @@ struct LookParams {
     /// LUT importada (.cube), aplicada depois da curva, e o quanto dela entra.
     var lut: LUTCube?
     var lutAmount: Float = 1
+    /// Quanto a pele fica de fora do look (0 = nada, 1 = pele neutra).
+    var skinProtect: Float = 0
 
     static func make(_ build: (inout LookParams) -> Void) -> LookParams {
         var p = LookParams()
@@ -115,6 +117,18 @@ enum Look: String, CaseIterable, Identifiable {
         case .hp5: return "P&B suave, grão médio"
         case .noir: return "P&B de cinema, preto profundo"
         case .sepia: return "Monocromático marrom antigo"
+        }
+    }
+
+    /// Filmes que mexem muito na cor deixam a pele mais de fora, como um colorista faria.
+    var skinProtect: Float {
+        switch self {
+        case .blockbuster, .matrix: return 0.7
+        case .cross: return 0.6
+        case .bleach: return 0.5
+        case .technicolor, .velvia, .cinestill: return 0.4
+        case .gold, .ektar, .kodachrome, .pastel, .polaroid, .super8: return 0.3
+        case .neutro, .portra, .pro400h, .trix, .hp5, .noir, .sepia: return 0
         }
     }
 
@@ -315,6 +329,8 @@ struct DevelopOptions {
     var hdrCompress = false
     /// Mantém a proporção da foto original (Revelar de novo).
     var originalAspect = false
+    /// Pele protegida nos filmes fortes.
+    var skinProtection = true
 
     func cropRect(in extent: CGRect) -> CGRect {
         guard originalAspect else { return aspect.crop(extent, zoom: zoom) }
@@ -324,6 +340,7 @@ struct DevelopOptions {
 
     var params: LookParams {
         var p = (custom?.params ?? look.params).scaled(amount: amount, grain: grain)
+        p.skinProtect = skinProtection && custom?.lutFile == nil ? (custom?.baseLook ?? look).skinProtect * amount : 0
         if hdrCompress {
             p.contrast *= 0.85
             p.exposure += 0.15
@@ -378,6 +395,9 @@ enum Developer {
     private static let robustColorKernel = kernel("revelaRobustColor")
     private static let robustWeightKernel = kernel("revelaRobustWeight")
     private static let logLumaKernel = kernel("revelaLogLuma")
+    private static let skinMixKernel = kernel("revelaSkinMix")
+    private static let bandKernel = kernel("revelaBand")
+    private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
     private static let localToneKernel = kernel("revelaLocalTone")
     static let cylinderKernel: CIWarpKernel? = library.flatMap {
         try? CIWarpKernel(functionName: "revelaCylinder", fromMetalLibraryData: $0)
@@ -407,7 +427,9 @@ enum Developer {
         if cylinderKernel == nil { missing.append("revelaCylinder") }
         let more: [String: CIColorKernel?] = ["revelaHDRGhostColor": hdrGhostColorKernel, "revelaHDRGhostWeight": hdrGhostWeightKernel,
                                               "revelaRobustColor": robustColorKernel, "revelaRobustWeight": robustWeightKernel,
-                                              "revelaLogLuma": logLumaKernel, "revelaLocalTone": localToneKernel]
+                                              "revelaLogLuma": logLumaKernel, "revelaLocalTone": localToneKernel,
+                                              "revelaSkinMix": skinMixKernel, "revelaBand": bandKernel,
+                                              "revelaShadowsHighlights": shadowsHighlightsKernel]
         missing += more.filter { $0.value == nil }.map(\.key).sorted()
         return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
@@ -498,6 +520,66 @@ enum Developer {
         return UIImage(cgImage: cg)
     }
 
+    /// Ajustes do Revelar de novo, aplicados na luz de cena (antes do filme).
+    struct Adjust: Equatable {
+        var exposure: Float = 0
+        /// Quente (+) ou frio (−).
+        var temperature: Float = 0
+        /// Magenta (+) ou verde (−).
+        var tint: Float = 0
+        var shadows: Float = 0
+        var highlights: Float = 0
+        /// Graus para endireitar o horizonte.
+        var straighten: Float = 0
+        /// Recorte centralizado (1 = foto inteira).
+        var crop: Float = 1
+
+        var isNeutral: Bool { self == Adjust() }
+    }
+
+    static func adjusted(_ scene: CIImage, _ a: Adjust) -> CIImage {
+        guard !a.isNeutral else { return scene }
+        let e = scene.extent
+        var out = scene
+        // Balanço de branco e exposição: ganhos por canal na luz linear (como no RAW)
+        let ev = pow(2, a.exposure)
+        let r = CGFloat(ev * pow(2, a.temperature * 0.35))
+        let g = CGFloat(ev * pow(2, -a.tint * 0.25))
+        let b = CGFloat(ev * pow(2, -a.temperature * 0.35))
+        if r != 1 || g != 1 || b != 1 {
+            out = out.applyingFilter("CIColorMatrix", parameters: [
+                "inputRVector": CIVector(x: r, y: 0, z: 0, w: 0),
+                "inputGVector": CIVector(x: 0, y: g, z: 0, w: 0),
+                "inputBVector": CIVector(x: 0, y: 0, z: b, w: 0),
+                "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
+            ])
+        }
+        if a.shadows != 0 || a.highlights != 0, let shadowsHighlightsKernel {
+            out = shadowsHighlightsKernel.apply(extent: e, arguments: [out, a.shadows, a.highlights]) ?? out
+        }
+        // Endireitar: gira em volta do centro e corta o maior retângulo que cabe sem borda
+        var rect = e
+        if abs(a.straighten) > 0.01 {
+            let angle = CGFloat(a.straighten) * .pi / 180
+            let c = CGPoint(x: e.midX, y: e.midY)
+            out = out.clampedToExtent()
+                .transformed(by: CGAffineTransform(translationX: -c.x, y: -c.y).concatenating(CGAffineTransform(rotationAngle: angle))
+                    .concatenating(CGAffineTransform(translationX: c.x, y: c.y)))
+            let w = e.width, h = e.height
+            let cosA = abs(cos(angle)), sinA = abs(sin(angle))
+            let k = min(w / (w * cosA + h * sinA), h / (w * sinA + h * cosA))
+            rect = CGRect(x: c.x - w * k / 2, y: c.y - h * k / 2, width: w * k, height: h * k)
+        }
+        if a.crop > 1.001 {
+            let k = 1 / CGFloat(a.crop)
+            rect = CGRect(x: rect.midX - rect.width * k / 2, y: rect.midY - rect.height * k / 2,
+                          width: rect.width * k, height: rect.height * k)
+        }
+        rect = rect.integral
+        return out.cropped(to: rect).transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
+            .settingProperties(scene.properties)
+    }
+
     /// A foto tem mapa de profundidade (Retrato do Revela ou do app Câmera)?
     static func hasDepth(_ data: Data) -> Bool {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return false }
@@ -531,7 +613,18 @@ enum Developer {
             p.vignette, CIVector(x: e.minX, y: e.minY, z: e.width, w: e.height),
             zebra ? zebraThreshold : Float(0),
         ]
-        let toned = toneKernel.apply(extent: e, arguments: arguments) ?? scene
+        var toned = toneKernel.apply(extent: e, arguments: arguments) ?? scene
+        if p.skinProtect > 0.01, p.mono < 0.5, let skinMixKernel {
+            // Mesma luz e textura do look, sem a cor dele: é para essa versão que a pele puxa
+            var neutral = arguments
+            neutral[3] = min(p.saturation, 1.05)
+            neutral[8] = vector(SIMD3(1, 0, 0)); neutral[9] = vector(SIMD3(0, 1, 0)); neutral[10] = vector(SIMD3(0, 0, 1))
+            neutral[11] = vector(SIMD3(1, 1, 1)); neutral[12] = vector(SIMD3(0, 0, 0)); neutral[13] = vector(SIMD3(1, 1, 1))
+            neutral[14] = vector(SIMD3(0, 0, 0)); neutral[15] = vector(SIMD3(0, 0, 0))
+            if let plain = toneKernel.apply(extent: e, arguments: neutral) {
+                toned = skinMixKernel.apply(extent: e, arguments: [toned, plain, scene, p.skinProtect]) ?? toned
+            }
+        }
         guard let lut = p.lut, p.lutAmount > 0.001 else { return toned }
         // A LUT espera a imagem já codificada para a tela (sRGB/Rec. 709), como num editor de vídeo
         let cubed = toned.applyingFilter("CIColorCubeWithColorSpace", parameters: [
@@ -980,8 +1073,14 @@ enum Developer {
                 .cropped(to: extent)
         }
         let disparity = fit(disparityRaw)
-        let matte = CIImage(data: data, options: [.auxiliaryPortraitEffectsMatte: true]).map(fit)
+        var matte = CIImage(data: data, options: [.auxiliaryPortraitEffectsMatte: true]).map(fit)
             ?? CIImage(color: .black).cropped(to: extent)
+        // Cabelo e óculos têm máscaras próprias, bem mais finas: entram junto para não borrar fio de cabelo
+        for option in [CIImageOption.auxiliarySemanticSegmentationHairMatte, .auxiliarySemanticSegmentationGlassesMatte] {
+            if let extra = CIImage(data: data, options: [option: true]).map(fit), let maxKernel {
+                matte = maxKernel.apply(extent: extent, arguments: [matte, extra]) ?? matte
+            }
+        }
 
         // Profundidade do plano em foco: média num quadradinho em volta do rosto (ou do centro)
         let p = focusPoint ?? CGPoint(x: 0.5, y: 0.45)
@@ -994,14 +1093,45 @@ enum Developer {
         let focus = pixel[0]
 
         let strength = Float(2.8 / max(aperture, 0.7)) * 3
-        let radius = min(extent.width, extent.height) * 0.012 * CGFloat(2.8 / max(aperture, 0.7))
+        let radius = min(extent.width, extent.height) * 0.014 * CGFloat(2.8 / max(aperture, 0.7))
         guard let map = blurMapKernel.apply(extent: extent, arguments: [disparity, matte, focus, strength]) else { return nil }
-        let blurred = image.clampedToExtent()
-            .applyingFilter("CIMaskedVariableBlur", parameters: ["inputMask": map, kCIInputRadiusKey: radius])
-            .cropped(to: extent)
-        let scene = toSceneKernel?.apply(extent: extent, arguments: [blurred]) ?? blurred
-        if scale >= 1 { dlog(String(format: "Retrato: f/%.1f · foco na disparidade %.2f · raio %.0f px", aperture, focus, radius)) }
+        let sharp = toSceneKernel?.apply(extent: extent, arguments: [image]) ?? image
+        let scene = bokeh(sharp, map: map, radius: radius, extent: extent)
+        if scale >= 1 { dlog(String(format: "Retrato: f/%.1f · foco na disparidade %.2f · bokeh até %.0f px", aperture, focus, radius)) }
         return scene.settingProperties(properties)
+    }
+
+    /// Bokeh de lente: o fundo borrado com o formato da abertura (disco), em luz de cena, então cada
+    /// pontinho de luz vira uma bolinha clara. Quatro camadas de desfoque misturadas pelo mapa de profundidade.
+    private static func bokeh(_ scene: CIImage, map: CIImage, radius: CGFloat, extent: CGRect) -> CIImage {
+        guard let bandKernel, radius > 1 else { return scene }
+        var result = scene
+        var lower: Float = 0
+        for level in [Float(0.2), 0.45, 0.7, 1.0] {
+            let r = radius * CGFloat(level)
+            // Desfoques grandes em meia resolução: o resultado é borrado de qualquer jeito
+            let k: CGFloat = r > 14 ? 0.5 : 1
+            let smallExtent = CGRect(x: 0, y: 0, width: extent.width * k, height: extent.height * k)
+            let layer = scene
+                .transformed(by: CGAffineTransform(scaleX: k, y: k))
+                .clampedToExtent()
+                .cropped(to: smallExtent.insetBy(dx: -r * k * 2, dy: -r * k * 2))
+                .applyingFilter("CIBokehBlur", parameters: [
+                    kCIInputRadiusKey: r * k,
+                    "inputRingAmount": 0.12,
+                    "inputRingSize": 0.08,
+                    "inputSoftness": 1.0,
+                ])
+                .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
+                .cropped(to: extent)
+            guard let mask = bandKernel.apply(extent: extent, arguments: [map, lower, level]) else { continue }
+            result = layer.applyingFilter("CIBlendWithMask", parameters: [
+                kCIInputBackgroundImageKey: result,
+                kCIInputMaskImageKey: mask,
+            ])
+            lower = level
+        }
+        return result.cropped(to: extent)
     }
 
     // MARK: - Visor
