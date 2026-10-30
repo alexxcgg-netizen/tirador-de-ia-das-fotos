@@ -37,6 +37,14 @@ struct GuideView: View {
             Item(symbol: "scope", title: "Foco manual", text: "Arraste de perto a longe. Enquanto arrasta, o visor amplia 4× (lupa)."),
             Item(symbol: "camera.filters", title: "Look", text: "O estilo de filme. O chip Look ajusta a intensidade e o tamanho do grão."),
         ]),
+        ("Modos rápidos", [
+            Item(symbol: "bolt.fill", title: "Rápido",
+                 text: "Disparo sem atraso em 12 MP. Toque várias vezes ou segure o botão para rajada (até 60 fotos)."),
+            Item(symbol: "figure.run", title: "Ação",
+                 text: "Grava em 4K a 120 quadros por segundo enquanto você segura (um toque grava 1 s). O app salva as 8 fotos mais nítidas e o vídeo em câmera lenta."),
+            Item(symbol: "snowflake", title: "Congelar",
+                 text: "Obturador de 1/1000 a 1/16000 s para parar movimento (roda, água, esporte). Precisa de muita luz. MÁX usa o modo mais rápido do sensor: raios menos tortos, foto de ~2 MP."),
+        ]),
         ("Modos", [
             Item(symbol: "person.crop.rectangle", title: "Retrato", text: "Lente 2× e aviso de distância para o rosto não deformar."),
             Item(symbol: "moon.stars", title: "Noite, Estrelas, Lua", text: "Várias fotos alinhadas e somadas: muito menos ruído no escuro."),

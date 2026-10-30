@@ -477,6 +477,31 @@ enum Developer {
         return out
     }
 
+    // MARK: - Quadros de vídeo (modo AÇÃO)
+
+    /// Quadro de vídeo (já com a curva da Apple) -> look e HEIC.
+    static func developVideoFrame(_ frame: CGImage, options: DevelopOptions) -> Output? {
+        let image = CIImage(cgImage: frame)
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        return finish(scene, options: options)
+    }
+
+    /// Nota de nitidez (média do |laplaciano|): quanto maior, menos tremida/borrada.
+    static func sharpnessScore(_ image: CIImage) -> Float {
+        let scale = min(1, 512 / max(image.extent.width, image.extent.height))
+        let small = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        let laplacian = small.applyingFilter("CIConvolution3X3", parameters: [
+            "inputWeights": CIVector(values: [0, 1, 0, 1, -4, 1, 0, 1, 0], count: 9),
+            "inputBias": 0,
+        ])
+        guard let abs = sharpnessKernel?.apply(extent: small.extent, arguments: [laplacian]) else { return 0 }
+        let average = abs.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: small.extent)])
+        var pixel = [Float](repeating: 0, count: 4)
+        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+        return pixel[0]
+    }
+
     // MARK: - Empilhamento
 
     enum StackKind { case focus, average }

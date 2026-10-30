@@ -9,6 +9,9 @@ App de câmera para iPhone que fotografa em **RAW** e revela a foto com uma curv
 - Lentes **Macro**, 0.5×, 1×, **2×**, 4× e **8×**, e a câmera da frente. O 2×, o 8× e o Macro são um recorte central do sensor de 48 MP (12 MP com qualidade óptica).
 - **Macro**: usa a ultra-angular, que foca a 2 cm, com recorte 2× para aproximar ainda mais. Liga o peaking sozinho.
 - **Foco empilhado**: 7 fotos com o foco indo do perto ao longe, alinhadas e juntadas pegando o pedaço mais nítido de cada uma. É o modo para macro de cabelo, pele, tecido, insetos: tudo nítido, mesmo com a profundidade de campo minúscula do macro.
+- **Rápido**: disparo sem atraso em 12 MP (HEIC, ou RAW no RAW puro); segurar o botão faz rajada.
+- **Ação**: grava 4K a 120 fps enquanto o botão está apertado e salva as 8 fotos mais nítidas + o vídeo.
+- **Congelar**: obturador de 1/1000 a 1/16000 s com ISO automático; MÁX usa o formato de 240 fps do sensor (menos distorção de obturador, ~2 MP).
 - **Noite**: 8 fotos a 1/15 s alinhadas e somadas: noite limpa sem o processamento da Apple.
 - **Estrelas**: 16 exposições longas com foco no infinito, somadas (tripé ou iPhone apoiado).
 - **Lua**: vai para a lente 8×, foco no infinito, exposição para a Lua e 8 fotos somadas.
@@ -28,7 +31,7 @@ App de câmera para iPhone que fotografa em **RAW** e revela a foto com uma curv
 - Histograma, zebra (listras onde a luz estourou), grade de terços e nível do horizonte.
 
 **Revelação**
-- Quinze looks, com intensidade e grão ajustáveis: Neutro, Filme, Cine, Suave, Prata (P&B), Paisagem, Retrato, Slide, Dourado, Nórdico, Vintage, Bleach, Neon, Noite e Sépia.
+- Vinte looks de filme (Portra 400, Gold 200, Ektar 100, Velvia 50, Kodachrome, Pro 400H, CineStill 800T, Blockbuster, Technicolor, Bleach Bypass, Matrix, Pastel, Cross-process, Polaroid, Super 8, Tri-X 400, HP5, Noir, Sépia), com mistura de canais, curva por cor, vinheta, halation e grão de tamanhos diferentes; intensidade e grão ajustáveis.
 - Salva na galeria a foto revelada (HEIC de 10 bits) + o **DNG original** num único item. Nas sequências, o DNG que vai junto é o do primeiro quadro.
 
 **Relatório**

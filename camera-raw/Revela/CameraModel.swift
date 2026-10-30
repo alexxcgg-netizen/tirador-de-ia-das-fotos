@@ -47,6 +47,9 @@ enum Lens: String, CaseIterable, Identifiable {
 
 enum CaptureMode: String, CaseIterable, Identifiable {
     case photo = "FOTO"
+    case fast = "RÁPIDO"
+    case action = "AÇÃO"
+    case freeze = "CONGELAR"
     case portrait = "RETRATO"
     case night = "NOITE"
     case stars = "ESTRELAS"
@@ -59,7 +62,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var frameCount: Int {
         switch self {
-        case .photo, .portrait, .flash: return 1
+        case .photo, .fast, .action, .freeze, .portrait, .flash: return 1
         case .night, .moon, .average: return 8
         case .stars: return 16
         case .focusStack: return 7
@@ -69,7 +72,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     /// Como juntar os quadros, quando há mais de um.
     var stackKind: Developer.StackKind? {
         switch self {
-        case .photo, .portrait, .flash: return nil
+        case .photo, .fast, .action, .freeze, .portrait, .flash: return nil
         case .focusStack: return .focus
         case .night, .stars, .moon, .average: return .average
         }
@@ -78,6 +81,9 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     var hint: String {
         switch self {
         case .photo: return ""
+        case .fast: return "Disparo sem atraso em 12 MP (HEIC, ou RAW no RAW puro). Toque várias vezes ou segure para rajada."
+        case .action: return "4K a 120 fps: toque grava 1 s, segure para mais. O app salva as 8 fotos mais nítidas e o vídeo."
+        case .freeze: return "Obturador rapidíssimo para congelar movimento. Precisa de muita luz; segure para rajada."
         case .portrait: return "Lente 2× a 1,5–2 m: o rosto fica com as proporções que as pessoas veem. Look Portra 400."
         case .night: return "8 fotos a 1/15 s alinhadas e somadas: noite limpa, sem o processamento da Apple."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
@@ -87,6 +93,15 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .average: return "8 fotos somadas: menos ruído, ou água lisa com obturador lento."
         }
     }
+}
+
+extension CaptureMode {
+    /// Segurar o botão faz rajada.
+    var holdsForBurst: Bool { self == .fast || self == .freeze }
+    /// Foto leve de 12 MP, priorizando velocidade.
+    var usesFastFormat: Bool { self == .fast || self == .freeze }
+    /// O ISO se ajusta sozinho a um obturador fixo (prioridade de obturador).
+    var fixesShutter: Bool { self == .freeze || self == .action }
 }
 
 enum RevelaError: LocalizedError {
@@ -127,6 +142,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var loggedBufferSize = false
     /// Look de antes do Retrato, para devolver ao sair dele.
     private var lookBeforePortrait: Look?
+    private let processingQueue = DispatchQueue(label: "revela.processing", qos: .userInitiated)
+    private let actionRecorder = ActionRecorder()
+    /// Formato especial do sensor (120/240 fps) ligado agora.
+    private var specialFormatActive = false
+    /// No modo AÇÃO o visor desenha 1 de cada 2 quadros (120 fps é demais para a tela).
+    private var renderEvery = 1
+    private var holding = false
+    private var burstTimer: Timer?
+    private var shutterPriorityISO: Float = 0
     private var inFlight: [Int64: RawCaptureDelegate] = [:]
     private var readoutTimer: Timer?
     private var lastBackLens: Lens = .wide
@@ -164,6 +188,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var saveDNG = false { didSet { defaults.set(saveDNG, forKey: "saveDNG") } }
     /// Frase curta que aparece no visor explicando o botão que você tocou.
     @Published var toast: String?
+
+    // Modos rápidos
+    @Published var bursting = false
+    @Published var burstCount = 0
+    @Published var actionRecording = false
+    static let freezeSpeeds: [Double] = [1.0 / 1000, 1.0 / 2000, 1.0 / 4000, 1.0 / 8000, 1.0 / 16000]
+    @Published var freezeShutter: Double = 1.0 / 4000 { didSet { startShutterPriority() } }
+    /// CONGELAR com o sensor no modo de 240 fps: lê as linhas bem mais rápido (raios menos tortos), mas a foto tem ~2 MP.
+    @Published var freezeMax = false { didSet { applySpecialFormat() } }
+    @Published var lowLight = false
     /// Rosto encontrado no visor (0…1, origem no canto de cima à esquerda) e distância estimada em metros.
     @Published var faceRect: CGRect?
     @Published var faceDistance: Double?
@@ -318,8 +352,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if look == .portra { look = previous }
             lookBeforePortrait = nil
         }
+        let leavingSpecial = captureMode == .action || captureMode == .freeze
         captureMode = mode
         dlog("Modo: \(mode.rawValue)")
+        if mode.fixesShutter || leavingSpecial { applySpecialFormat() }
+        if mode == .fast { prepareFastCapture() }
         switch mode {
         case .moon:
             let tele = availableLenses.contains(.tele8x) ? Lens.tele8x : (availableLenses.contains(.tele) ? .tele : .wide2x)
@@ -457,6 +494,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let proSupported = photoOutput.isAppleProRAWSupported
         photoOutput.isAppleProRAWEnabled = proSupported && mode == .proRAW
         photoOutput.maxPhotoQualityPrioritization = .quality
+        // Disparo sem atraso: a câmera guarda os quadros de antes do toque e usa o do instante certo
+        if photoOutput.isZeroShutterLagSupported { photoOutput.isZeroShutterLagEnabled = true }
+        if photoOutput.isResponsiveCaptureSupported { photoOutput.isResponsiveCaptureEnabled = true }
+        if photoOutput.isFastCapturePrioritizationSupported { photoOutput.isFastCapturePrioritizationEnabled = true }
         if let dims = device?.activeFormat.supportedMaxPhotoDimensions.max(by: { $0.pixels < $1.pixels }) {
             photoOutput.maxPhotoDimensions = dims
         }
@@ -533,6 +574,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.readoutISO = d.iso
             self.readoutShutter = d.exposureDuration.seconds
             self.readoutLensPosition = d.lensPosition
+            self.adjustShutterPriority()
         }
     }
 
@@ -585,6 +627,241 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
+    // MARK: - Segurar o botão: rajada e AÇÃO
+
+    func beginHold() {
+        guard !holding, countdown == 0, stackProgress == nil else { return }
+        holding = true
+        if captureMode == .action {
+            startAction()
+        } else if captureMode.holdsForBurst {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                if self.holding && !self.bursting { self.startBurst() }
+            }
+        }
+    }
+
+    func endHold() {
+        guard holding else { return }
+        holding = false
+        if captureMode == .action {
+            // Toque rápido: completa pelo menos 1 segundo de gravação
+            let recorded = actionRecordingStarted.map { Date().timeIntervalSince($0) } ?? 0
+            DispatchQueue.main.asyncAfter(deadline: .now() + max(0, 1.0 - recorded)) { self.stopAction() }
+        } else if bursting {
+            stopBurst()
+        } else {
+            shutter()
+        }
+    }
+
+    func cancelHold() {
+        holding = false
+        if bursting { stopBurst() }
+        if actionRecording { stopAction() }
+    }
+
+    private func startBurst() {
+        bursting = true
+        burstCount = 0
+        dlog("Rajada começou (\(captureMode.rawValue))")
+        UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+        burstTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.burstTick()
+        }
+    }
+
+    private func burstTick() {
+        guard bursting else { return }
+        guard burstCount < 60 else { return stopBurst() }
+        let options = developOptions
+        let mode = captureMode
+        sessionQueue.async {
+            // No máximo 3 fotos esperando a câmera, para a rajada não engasgar
+            guard self.inFlight.count < 3 else { return }
+            DispatchQueue.main.async {
+                self.burstCount += 1
+                self.processing += 1
+            }
+            let t0 = CFAbsoluteTimeGetCurrent()
+            self.captureRAW(forStack: false, fast: true) { result in
+                self.process(result.map { [$0] }, mode: mode, options: options, started: t0)
+            }
+        }
+    }
+
+    private func stopBurst() {
+        burstTimer?.invalidate()
+        burstTimer = nil
+        bursting = false
+        dlog("Rajada: \(burstCount) fotos")
+        show("\(burstCount) fotos na rajada")
+    }
+
+    private var actionRecordingStarted: Date?
+
+    private func startAction() {
+        guard !actionRecording else { return }
+        actionRecording = true
+        actionRecordingStarted = Date()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        videoQueue.async { self.actionRecorder.start() }
+    }
+
+    private func stopAction() {
+        guard actionRecording else { return }
+        actionRecording = false
+        actionRecordingStarted = nil
+        processing += 1
+        let options = developOptions
+        let t0 = CFAbsoluteTimeGetCurrent()
+        videoQueue.async {
+            let duration = self.actionRecorder.duration
+            self.actionRecorder.stop { url, times in
+                dlog(String(format: "AÇÃO: %d quadros em %.2f s (%.0f fps)", times.count, duration,
+                            duration > 0 ? Double(times.count) / duration : 0))
+                guard let url, !times.isEmpty else {
+                    DispatchQueue.main.async {
+                        self.processing -= 1
+                        self.message = "Não foi possível gravar o modo AÇÃO."
+                    }
+                    return
+                }
+                DispatchQueue.main.async { self.show("Escolhendo as fotos mais nítidas…") }
+                self.processingQueue.async {
+                    let frames = ActionRecorder.sharpestFrames(in: url, times: times, count: 8)
+                    var thumb: UIImage?
+                    let group = DispatchGroup()
+                    for frame in frames {
+                        guard let output = Developer.developVideoFrame(frame, options: options) else { continue }
+                        thumb = output.thumbnail
+                        group.enter()
+                        Library.save(dng: nil, developed: output.heic, tryPair: false) { _ in group.leave() }
+                    }
+                    group.enter()
+                    Library.saveVideo(url) { _ in group.leave() }
+                    group.wait()
+                    try? FileManager.default.removeItem(at: url)
+                    dlog("✅ AÇÃO: \(frames.count) fotos + vídeo salvos. Total: \(Diagnostics.ms(since: t0))")
+                    DispatchQueue.main.async {
+                        self.processing -= 1
+                        if let thumb { self.thumbnail = thumb }
+                        self.show("\(frames.count) fotos nítidas + vídeo em câmera lenta salvos")
+                    }
+                }
+            }
+        }
+    }
+
+    /// Deixa a primeira foto do RÁPIDO pronta antes do toque.
+    private func prepareFastCapture() {
+        sessionQueue.async {
+            let settings = self.photoOutput.availablePhotoCodecTypes.contains(.hevc)
+                ? AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
+                : AVCapturePhotoSettings()
+            settings.photoQualityPrioritization = .speed
+            self.photoOutput.setPreparedPhotoSettingsArray([settings], completionHandler: nil)
+        }
+    }
+
+    // MARK: - Formatos especiais do sensor (AÇÃO 4K 120 fps, CONGELAR 240 fps)
+
+    private func applySpecialFormat() {
+        let mode = captureMode
+        let wantedRate: Double? = mode == .action ? 120 : (mode == .freeze && freezeMax ? 240 : nil)
+        let lens = self.lens
+        let rawMode = self.rawMode
+        renderEvery = mode == .action ? 2 : 1
+        sessionQueue.async {
+            guard let d = self.device else { return }
+            guard let rate = wantedRate else {
+                if self.specialFormatActive {
+                    self.specialFormatActive = false
+                    self.setPreviewSized(true)
+                    self.setupSession(lens: lens, mode: rawMode)
+                    dlog("Sensor de volta ao formato de foto")
+                }
+                DispatchQueue.main.async { self.startShutterPriority() }
+                return
+            }
+            // AÇÃO: o maior formato com 120 fps. CONGELAR máx.: o formato mais rápido (leitura mais curta)
+            let candidates = d.formats.filter { f in f.videoSupportedFrameRateRanges.contains { $0.maxFrameRate >= rate } }
+            func pixels(_ f: AVCaptureDevice.Format) -> Int {
+                let dims = CMVideoFormatDescriptionGetDimensions(f.formatDescription)
+                return Int(dims.width) * Int(dims.height)
+            }
+            let chosen = rate >= 240 ? candidates.min(by: { pixels($0) < pixels($1) }) : candidates.max(by: { pixels($0) < pixels($1) })
+            guard let format = chosen else {
+                dlog("⚠️ \(d.localizedName) não tem formato com \(Int(rate)) fps")
+                DispatchQueue.main.async { self.message = "Esta lente não grava a \(Int(rate)) fps. Tente a 1×." }
+                return
+            }
+            self.session.beginConfiguration()
+            self.session.sessionPreset = .inputPriority
+            self.setPreviewSized(mode != .action)
+            if (try? d.lockForConfiguration()) != nil {
+                d.activeFormat = format
+                let duration = CMTime(value: 1, timescale: CMTimeScale(rate))
+                d.activeVideoMinFrameDuration = duration
+                d.activeVideoMaxFrameDuration = duration
+                d.unlockForConfiguration()
+            }
+            self.session.commitConfiguration()
+            self.specialFormatActive = true
+            self.applyRawMode(rawMode)
+            let dims = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+            dlog("Sensor em \(dims.width)×\(dims.height) a \(Int(rate)) fps (\(mode.rawValue))")
+            DispatchQueue.main.async { self.startShutterPriority() }
+        }
+    }
+
+    private func setPreviewSized(_ on: Bool) {
+        if videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))) {
+            videoOutput.setValue(on, forKey: "deliversPreviewSizedOutputBuffers")
+        }
+    }
+
+    /// Obturador fixo (CONGELAR 1/4000…, AÇÃO 1/1000) e ISO calculado a partir da luz atual.
+    private func startShutterPriority() {
+        guard captureMode.fixesShutter, !manualExposure else {
+            lowLight = false
+            return
+        }
+        let shutter = captureMode == .action ? 1.0 / 1000 : freezeShutter
+        sessionQueue.async {
+            guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
+            defer { d.unlockForConfiguration() }
+            let f = d.activeFormat
+            let seconds = min(max(shutter, f.minExposureDuration.seconds), f.maxExposureDuration.seconds)
+            // Mesma quantidade de luz que o automático estava usando, com o obturador novo
+            let iso = min(max(d.iso * Float(d.exposureDuration.seconds / seconds), f.minISO), f.maxISO)
+            self.shutterPriorityISO = iso
+            d.setExposureModeCustom(duration: CMTime(seconds: seconds, preferredTimescale: 1_000_000_000), iso: iso, completionHandler: nil)
+            dlog(String(format: "Prioridade de obturador: 1/%.0f s · ISO %.0f", 1 / seconds, iso))
+        }
+    }
+
+    /// A cada 1/4 s, corrige o ISO pelo brilho do visor (o obturador fica parado).
+    private func adjustShutterPriority() {
+        guard captureMode.fixesShutter, !manualExposure, shutterPriorityISO > 0, histogram.count == 64 else { return }
+        let total = histogram.reduce(0, +)
+        guard total > 0 else { return }
+        let mean = histogram.enumerated().reduce(Float(0)) { $0 + Float($1.offset) / 63 * $1.element } / total
+        let ratio = pow(0.42 / max(mean, 0.02), 2.2)
+        guard abs(ratio - 1) > 0.08 else { return }
+        let step = pow(min(max(ratio, 0.5), 2), 0.6)
+        sessionQueue.async {
+            guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
+            defer { d.unlockForConfiguration() }
+            let f = d.activeFormat
+            let iso = min(max(self.shutterPriorityISO * step, f.minISO), f.maxISO)
+            self.shutterPriorityISO = iso
+            d.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso, completionHandler: nil)
+            let dark = iso >= f.maxISO * 0.95 && ratio > 1.2
+            DispatchQueue.main.async { if self.lowLight != dark { self.lowLight = dark } }
+        }
+    }
+
     // MARK: - Captura
 
     private func capture() {
@@ -598,10 +875,18 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let t0 = CFAbsoluteTimeGetCurrent()
         dlog("📸 \(mode.rawValue) · \(lens.rawValue) · \(rawMode.rawValue) · look \(look.rawValue) · \(aspect.rawValue) · " +
              (manualExposure ? "ISO \(Int(selectedISO)) \(String(format: "%.4f", selectedShutter))s" : "auto ISO \(Int(readoutISO)) \(String(format: "%.4f", readoutShutter))s"))
+        if mode == .action {
+            // AÇÃO sem segurar: grava 1 segundo
+            processing -= 1
+            startAction()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.stopAction() }
+            return
+        }
         guard mode.frameCount > 1 else {
             let flash = mode == .flash
+            let fast = mode.usesFastFormat
             sessionQueue.async {
-                self.captureRAW(forStack: false, flash: flash) { result in
+                self.captureRAW(forStack: false, flash: flash, fast: fast) { result in
                     dlog("RAW recebido: \(Diagnostics.ms(since: t0))")
                     self.process(result.map { [$0] }, mode: mode, options: options, started: t0)
                 }
@@ -674,11 +959,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Fotografa um RAW e devolve o DNG. Em sequências usa 12 MP para caber na memória.
-    private func captureRAW(forStack: Bool, flash: Bool = false, completion: @escaping (Result<CapturedFrame, Error>) -> Void) {
+    private func captureRAW(forStack: Bool, flash: Bool = false, fast: Bool = false,
+                            completion: @escaping (Result<CapturedFrame, Error>) -> Void) {
         let mode = rawMode
         let types = photoOutput.availableRawPhotoPixelFormatTypes
         let format: OSType?
-        if mode == .proRAW && photoOutput.isAppleProRAWEnabled {
+        if fast {
+            // Rápido: RAW de 12 MP no RAW puro; com ProRAW, HEIC de 12 MP (o mais rápido de todos)
+            format = mode == .bayer ? types.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) } : nil
+        } else if mode == .proRAW && photoOutput.isAppleProRAWEnabled {
             format = types.first { AVCapturePhotoOutput.isAppleProRAWPixelFormat($0) }
         } else {
             format = types.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }
@@ -688,11 +977,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             settings = AVCapturePhotoSettings(rawPixelFormatType: format)
         } else {
             // Sem RAW nesta câmera (pode acontecer na da frente): HEIC, com o nosso look por cima
-            dlog("Sem \(mode.rawValue) em \(device?.localizedName ?? "?"): usando HEIC")
+            if !fast { dlog("Sem \(mode.rawValue) em \(device?.localizedName ?? "?"): usando HEIC") }
             settings = photoOutput.availablePhotoCodecTypes.contains(.hevc)
                 ? AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
                 : AVCapturePhotoSettings()
-            settings.photoQualityPrioritization = .quality
+            settings.photoQualityPrioritization = fast ? .speed : .quality
         }
         if let format, AVCapturePhotoOutput.isAppleProRAWPixelFormat(format), let d = device {
             let all = d.activeFormat.supportedMaxPhotoDimensions
@@ -702,6 +991,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if let target, target.pixels <= photoOutput.maxPhotoDimensions.pixels {
                 settings.maxPhotoDimensions = target
             }
+        } else if format == nil, fast, let d = device {
+            let twelve = d.activeFormat.supportedMaxPhotoDimensions
+                .filter { $0.pixels >= 11_000_000 && $0.pixels <= photoOutput.maxPhotoDimensions.pixels }
+                .min(by: { $0.pixels < $1.pixels })
+            settings.maxPhotoDimensions = twelve ?? photoOutput.maxPhotoDimensions
         } else if format == nil, !forStack {
             settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
         }
@@ -750,7 +1044,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         case .failure(let error):
             done(.failure(error))
         case .success(let frames):
-            DispatchQueue.global(qos: .userInitiated).async {
+            // Uma revelação por vez: na rajada as fotos entram numa fila em vez de lotar a memória
+            processingQueue.async {
                 let output: Developer.Output?
                 if let kind = mode.stackKind {
                     output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, options: options)
@@ -780,7 +1075,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let settings = "- Ajustes: lente \(lens.rawValue), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(look.rawValue) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
             "exposição \(manualExposure ? "manual ISO \(Int(selectedISO)) \(selectedShutter)s" : "auto EV \(evBias)"), " +
             "balanço \(manualWB ? "\(Int(kelvin))K" : "auto"), foco \(manualFocus ? "manual \(lensPosition)" : "auto"), " +
-            "peaking \(peaking), zebra \(zebra), espelhar \(mirror), guardar DNG \(saveDNG), visor \(Int(previewAngle))°" +
+            "peaking \(peaking), zebra \(zebra), espelhar \(mirror), guardar DNG \(saveDNG), visor \(Int(previewAngle))°, " +
+            "congelar 1/\(Int((1 / freezeShutter).rounded()))\(freezeMax ? " máx" : "")" +
             (faceDistance.map { String(format: ", rosto a %.2f m", $0) } ?? "") + "\n"
         sessionQueue.async {
             var out = settings
@@ -820,14 +1116,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        actionRecorder.append(sampleBuffer)
         let frame = CIImage(cvPixelBuffer: pixelBuffer)
-        renderer.enqueue(frame)
+        if videoFrameIndex % renderEvery == 0 { renderer.enqueue(frame) }
         if !loggedBufferSize {
             loggedBufferSize = true
             dlog("Vídeo do visor chegando em \(CVPixelBufferGetWidth(pixelBuffer))×\(CVPixelBufferGetHeight(pixelBuffer))")
         }
         videoFrameIndex += 1
-        if videoFrameIndex % 8 == 0 { detectFace(in: frame) }
+        if videoFrameIndex % (8 * renderEvery) == 0 { detectFace(in: frame) }
     }
 
     /// Acha o maior rosto e estima a distância pelo tamanho dele (um rosto tem uns 16 cm de largura).
@@ -976,6 +1273,15 @@ final class RawCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 }
 
 enum Library {
+    static func saveVideo(_ url: URL, completion: @escaping (Error?) -> Void) {
+        PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+            guard status == .authorized || status == .limited else { return completion(RevelaError.photosDenied) }
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetCreationRequest.forAsset().addResource(with: .video, fileURL: url, options: nil)
+            }, completionHandler: { _, error in completion(error) })
+        }
+    }
+
     /// Salva a foto revelada; com o DNG, tenta juntar os dois num item só (par RAW+HEIC).
     /// Se a galeria já recusou o par antes, salva separado direto.
     static func save(dng: Data?, developed: Data?, tryPair: Bool, completion: @escaping (Error?) -> Void) {

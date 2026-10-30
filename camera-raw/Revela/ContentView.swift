@@ -10,6 +10,7 @@ struct ContentView: View {
     @State private var panel: Panel?
     @State private var showReport = false
     @State private var showGuide = false
+    @State private var pressingShutter = false
     @AppStorage("guideSeen") private var guideSeen = false
 
     enum Panel { case exposure, whiteBalance, focus, look }
@@ -50,7 +51,7 @@ struct ContentView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { showGuide = true }
             }
         }
-        .physicalShutter { camera.shutter() }
+        .physicalShutter(began: { camera.beginHold() }, ended: { camera.endHold() }, cancelled: { camera.cancelHold() })
         .sheet(isPresented: $showReport) { ReportView(camera: camera) }
         .sheet(isPresented: $showGuide) { GuideView() }
         .alert("Revela", isPresented: Binding(
@@ -136,12 +137,41 @@ struct ContentView: View {
                     .padding(.horizontal, 16)
                 }
             }
+            if camera.captureMode == .freeze { freezeControls }
             if !camera.captureMode.hint.isEmpty {
                 Text(camera.captureMode.hint)
                     .font(.caption2).opacity(0.6)
                     .multilineTextAlignment(.center)
                     .transition(.opacity)
             }
+        }
+    }
+
+    /// Velocidade do CONGELAR e o modo de máximo congelamento.
+    private var freezeControls: some View {
+        HStack(spacing: 6) {
+            ForEach(CameraModel.freezeSpeeds, id: \.self) { speed in
+                Button("1/\(Int((1 / speed).rounded()))") {
+                    camera.freezeShutter = speed
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
+                .font(.system(size: 11, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 7).padding(.vertical, 5)
+                .foregroundStyle(camera.freezeShutter == speed ? Color.black : Color.white)
+                .background(Capsule().fill(camera.freezeShutter == speed ? accent : Color.white.opacity(0.1)))
+                .buttonStyle(.plain)
+            }
+            Button("MÁX") {
+                camera.freezeMax.toggle()
+                camera.show(camera.freezeMax
+                            ? "Máximo congelamento: sensor no modo de 240 fps, raios menos tortos, foto de ~2 MP"
+                            : "Congelamento normal: foto de 12 MP")
+            }
+            .font(.system(size: 11, weight: .heavy))
+            .padding(.horizontal, 8).padding(.vertical, 5)
+            .foregroundStyle(camera.freezeMax ? Color.black : accent)
+            .background(Capsule().fill(camera.freezeMax ? accent : Color.white.opacity(0.1)))
+            .buttonStyle(.plain)
         }
     }
 
@@ -247,6 +277,26 @@ struct ContentView: View {
                     }
                     .padding(16)
                     .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 14))
+                }
+                if camera.actionRecording || camera.bursting || camera.lowLight {
+                    HStack(spacing: 6) {
+                        if camera.actionRecording {
+                            Circle().fill(Color.red).frame(width: 9, height: 9)
+                            Text("GRAVANDO 120 fps")
+                        } else if camera.bursting {
+                            Image(systemName: "square.stack.3d.down.right.fill")
+                            Text("RAJADA \(camera.burstCount)")
+                        } else {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text("Luz fraca: a foto vai ter ruído")
+                        }
+                    }
+                    .font(.caption.weight(.bold))
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(.black.opacity(0.6), in: Capsule())
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .padding(.bottom, 44)
+                    .allowsHitTesting(false)
                 }
                 if camera.countdown > 0 {
                     Text("\(camera.countdown)")
@@ -460,13 +510,32 @@ struct ContentView: View {
 
             Spacer()
 
-            Button(action: camera.shutter) {
-                ZStack {
-                    Circle().stroke(.white, lineWidth: 4).frame(width: 78, height: 78)
-                    Circle().fill(camera.countdown > 0 ? accent : .white).frame(width: 64, height: 64)
-                }
+            // Toque = foto; segurar = rajada (RÁPIDO, CONGELAR) ou gravação (AÇÃO)
+            ZStack {
+                Circle().stroke(.white, lineWidth: 4).frame(width: 78, height: 78)
+                Circle()
+                    .fill(camera.actionRecording ? Color.red : (camera.countdown > 0 || camera.bursting ? accent : .white))
+                    .frame(width: camera.actionRecording ? 34 : 64, height: camera.actionRecording ? 34 : 64)
+                    .clipShape(RoundedRectangle(cornerRadius: camera.actionRecording ? 8 : 32))
             }
-            .buttonStyle(ShutterButtonStyle())
+            .scaleEffect(pressingShutter ? 0.9 : 1)
+            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: pressingShutter)
+            .animation(.snappy(duration: 0.2), value: camera.actionRecording)
+            .contentShape(Circle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        guard !pressingShutter else { return }
+                        pressingShutter = true
+                        camera.beginHold()
+                    }
+                    .onEnded { _ in
+                        pressingShutter = false
+                        camera.endHold()
+                    }
+            )
+            .accessibilityAddTraits(.isButton)
+            .accessibilityLabel("Fotografar")
 
             Spacer()
 
@@ -518,6 +587,9 @@ struct ContentView: View {
         case .stars: return "16×\nCÉU"
         case .moon: return "8×\nLUA"
         case .flash: return "DNG\nFLASH"
+        case .fast: return camera.rawMode == .bayer ? "RAW\n12MP" : "HEIC\n12MP"
+        case .action: return "4K\n120"
+        case .freeze: return camera.freezeMax ? "1/\(Int((1 / camera.freezeShutter).rounded()))\nMÁX" : "1/\(Int((1 / camera.freezeShutter).rounded()))\n12MP"
         case .photo, .portrait:
             if camera.rawMode == .bayer { return "DNG\nRAW" }
             return camera.lens.zoom > 1 ? "DNG\n12MP" : "DNG\n48MP"
@@ -624,14 +696,6 @@ private struct Histogram: View {
     }
 }
 
-private struct ShutterButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.9 : 1)
-            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: configuration.isPressed)
-    }
-}
-
 private struct ThirdsGrid: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -657,12 +721,17 @@ private extension View {
             .transition(.opacity.combined(with: .move(edge: .top)))
     }
 
-    /// Volume e Controle da Câmera disparam a foto (iOS 18+).
+    /// Volume e Controle da Câmera: apertar e soltar como o botão da tela (iOS 18+).
     @ViewBuilder
-    func physicalShutter(_ action: @escaping () -> Void) -> some View {
+    func physicalShutter(began: @escaping () -> Void, ended: @escaping () -> Void,
+                         cancelled: @escaping () -> Void) -> some View {
         if #available(iOS 18.0, *) {
             onCameraCaptureEvent { event in
-                if event.phase == .ended { action() }
+                switch event.phase {
+                case .began: began()
+                case .ended: ended()
+                default: cancelled()
+                }
             }
         } else {
             self
