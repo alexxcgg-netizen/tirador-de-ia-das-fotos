@@ -229,6 +229,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     @Published var authorized = true
     @Published var availableLenses: [Lens] = []
+    /// A câmera que está de fato entregando os quadros (muda só quando a troca termina).
+    @Published private(set) var activeLens: Lens = .wide
+    /// Só a última lente pedida abre: toques rápidos em sequência não enfileiram várias trocas.
+    private let lensRequestLock = NSLock()
+    private var lensRequest = 0
     @Published var hasFront = false
     @Published var lens: Lens = .wide
     /// Zoom em relação à 1× (0,5× a 25×). A pinça e os botões mexem aqui.
@@ -325,12 +330,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var selectedShutter: Double { shutterStops[min(max(Int(shutterIndex), 0), shutterStops.count - 1)] }
 
     /// Recorte central do sensor da câmera atual para chegar no zoom pedido.
+    /// Vale para a câmera que está entregando a imagem agora (`activeLens`): enquanto a outra lente abre,
+    /// o 4× já aparece como recorte da 1×, sem esperar.
     var crop: CGFloat {
-        switch lens {
-        case .macro: return 2
-        case .front: return min(max(zoom, 1), 3)
-        default: return max(1, zoom / lens.baseZoom)
-        }
+        if activeLens == .front { return lens == .front ? min(max(zoom, 1), 3) : 1 }
+        if lens == .front { return 1 }
+        let wanted = lens == .macro ? 1 : zoom
+        return max(1, wanted / activeLens.baseZoom)
     }
 
     var minZoom: CGFloat { lens == .front ? 1 : (availableLenses.contains(.ultraWide) ? 0.5 : 1) }
@@ -349,15 +355,60 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Pinça e botões. `settle` escolhe a melhor câmera física para esse zoom (no fim do gesto, para não piscar no meio).
     func setZoom(_ value: CGFloat, settle: Bool = true) {
+        zoomRamp?.invalidate()
+        zoomRamp = nil
         zoom = min(max(value, minZoom), maxZoom)
-        if settle && lens != .front {
-            let best: Lens
-            if zoom < 1 && availableLenses.contains(.ultraWide) { best = .ultraWide }
-            else if zoom >= 4 && availableLenses.contains(.tele) { best = .tele }
-            else { best = .wide }
-            if best != lens { select(lens: best) }
+        if settle { selectBestLens(for: zoom) }
+        renderer.options.develop = developOptions
+    }
+
+    /// `margin`: durante a pinça, só troca de lente depois de passar um pouco do limite (não fica trocando para lá e para cá).
+    private func selectBestLens(for z: CGFloat, margin: CGFloat = 0) {
+        guard lens != .front, lens != .macro || margin == 0 else { return }
+        let toUltra: CGFloat = lens == .ultraWide ? 1 + margin : 1 - margin
+        let toTele: CGFloat = lens == .tele ? 4 - margin * 4 : 4 + margin * 4
+        let best: Lens
+        if z < toUltra && availableLenses.contains(.ultraWide) { best = .ultraWide }
+        else if z >= toTele && availableLenses.contains(.tele) { best = .tele }
+        else { best = .wide }
+        if best != lens { select(lens: best) }
+    }
+
+    /// Pinça: a lente certa já começa a abrir no meio do gesto; até ela chegar, o visor recorta a lente atual.
+    func pinchZoom(_ value: CGFloat) {
+        zoomRamp?.invalidate()
+        zoomRamp = nil
+        zoom = min(max(value, minZoom), maxZoom)
+        selectBestLens(for: zoom, margin: 0.05)
+        renderer.options.develop = developOptions
+    }
+
+    private var zoomRamp: Timer?
+
+    /// Botões de zoom: a lente nova começa a abrir na hora e o visor desliza até o zoom pedido (~0,2 s).
+    func animateZoom(to value: CGFloat) {
+        let target = min(max(value, minZoom), maxZoom)
+        if lens == .macro { select(lens: .wide) }
+        zoomRamp?.invalidate()
+        selectBestLens(for: target)
+        let start = zoom
+        guard abs(start - target) > 0.01 else { setZoom(target, settle: false); return }
+        let t0 = CACurrentMediaTime()
+        let duration = 0.22
+        zoomRamp = Timer.scheduledTimer(withTimeInterval: 1.0 / 120, repeats: true) { [weak self] timer in
+            guard let self else { timer.invalidate(); return }
+            let t = min(1, (CACurrentMediaTime() - t0) / duration)
+            let eased = 1 - pow(1 - t, 3)
+            // Desliza em escala de "paradas" de zoom: 1→2 e 2→4 levam o mesmo tempo
+            self.zoom = start * pow(target / start, CGFloat(eased))
+            self.renderer.options.develop = self.developOptions
+            if t >= 1 {
+                timer.invalidate()
+                self.zoomRamp = nil
+                self.zoom = target
+                self.renderer.options.develop = self.developOptions
+            }
         }
-        optionsChanged()
     }
 
     override init() {
@@ -473,8 +524,19 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // Mesma câmera física (ex.: 1× -> 2×): só muda o recorte, sem reabrir a sessão
         guard !newLens.sameCamera(as: old) else { return }
         let mode = rawMode
+        lensRequestLock.lock()
+        lensRequest += 1
+        let request = lensRequest
+        lensRequestLock.unlock()
         sessionQueue.async {
+            self.lensRequestLock.lock()
+            let stale = request != self.lensRequest
+            self.lensRequestLock.unlock()
+            // Já pediram outra lente depois desta: pula direto para a última
+            guard !stale else { return }
+            let t0 = CFAbsoluteTimeGetCurrent()
             self.setupSession(lens: newLens, mode: mode)
+            dlog("Troca de lente \(old.rawValue) → \(newLens.rawValue): \(Diagnostics.ms(since: t0))")
             DispatchQueue.main.async {
                 self.updateExposure()
                 self.updateWhiteBalance()
@@ -598,7 +660,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         specialFormatActive = false
         cinematicActive = false
         session.beginConfiguration()
-        session.inputs.forEach { session.removeInput($0) }
+        // Tira só a câmera; o microfone fica (tirar e pôr de novo deixa a troca mais lenta)
+        session.inputs.forEach { input in
+            if let d = (input as? AVCaptureDeviceInput)?.device, d.hasMediaType(.video) { session.removeInput(input) }
+        }
         session.sessionPreset = cinematicWanted ? .inputPriority : (videoWanted && session.canSetSessionPreset(.hd1920x1080) ? .hd1920x1080 : .photo)
 
         // Retrato: a câmera que entrega profundidade (principal + LiDAR, ou a TrueDepth na frente)
@@ -647,6 +712,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
         } else {
             if session.outputs.contains(audioOutput) { session.removeOutput(audioOutput) }
+            if let audioInput, session.inputs.contains(audioInput) { session.removeInput(audioInput) }
             audioInput = nil
         }
         if !cinematicWanted, !session.outputs.contains(photoOutput), session.canAddOutput(photoOutput) {
@@ -674,16 +740,27 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             previewMirrored = connection.isVideoMirrored
         }
         if #available(iOS 18.0, *) { attempt("Controle da Câmera") { installCameraControls(for: dev) } }
+        device = dev
+        // RAW, profundidade e disparo rápido entram na mesma configuração: o iPhone remonta a câmera uma vez só
+        if session.outputs.contains(photoOutput) {
+            attempt("Configurar a foto (RAW, profundidade, disparo rápido)") { configurePhotoOutput(mode) }
+        }
         dlog("Abrindo \(dev.localizedName): salvando a configuração…")
         session.commitConfiguration()
         dlog("Configuração aceita")
 
-        device = dev
         loggedBufferSize = false
         if videoWanted { applyVideoFrameRate() }
         // Cada câmera é montada num ângulo; o coordinator, com a camada do visor, diz o ângulo certo
-        DispatchQueue.main.async { self.makeRotationCoordinator(for: dev) }
-        applyRawMode(mode)
+        DispatchQueue.main.async {
+            self.activeLens = lens
+            self.optionsChanged()
+            self.makeRotationCoordinator(for: dev)
+        }
+        // Se o ProRAW só ficou disponível depois de salvar, liga agora
+        if mode == .proRAW, photoOutput.isAppleProRAWSupported, !photoOutput.isAppleProRAWEnabled, !depthWanted, !hdrWanted {
+            applyRawMode(mode)
+        }
         let dims = CMVideoFormatDescriptionGetDimensions(dev.activeFormat.formatDescription)
         let aspect = Double(min(dims.width, dims.height)) / Double(max(dims.width, dims.height))
         let halfLong = Double(dev.activeFormat.videoFieldOfView) * .pi / 360

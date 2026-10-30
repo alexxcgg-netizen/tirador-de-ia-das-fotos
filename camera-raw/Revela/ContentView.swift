@@ -143,7 +143,7 @@ struct ContentView: View {
                 if camera.availableLenses.contains(.macro) { macroButton }
                 if camera.availableLenses.contains(.tele) {
                     let eightOn = isCurrent(8)
-                    Button { withAnimation(.snappy(duration: 0.2)) { camera.setZoom(8) } } label: {
+                    Button { withAnimation(.snappy(duration: 0.2)) { camera.animateZoom(to: 8) } } label: {
                         Text("8×")
                             .font(.system(size: 15, weight: .bold))
                             .frame(width: 52, height: 52)
@@ -194,10 +194,7 @@ struct ContentView: View {
         let title: String = current ? camera.zoomText : zoomLabel(z)
         let fill: Color = isCurrent(z) ? panelOn : panelFill
         return Button {
-            withAnimation(.snappy(duration: 0.2)) {
-                if camera.lens == .macro { camera.select(lens: .wide) }
-                camera.setZoom(z)
-            }
+            withAnimation(.snappy(duration: 0.2)) { camera.animateZoom(to: z) }
         } label: {
             Text(title)
                 .font(.system(size: 15, weight: .bold))
@@ -570,7 +567,7 @@ struct ContentView: View {
                 MagnificationGesture()
                     .onChanged { scale in
                         if pinchStart == nil { pinchStart = camera.zoom }
-                        camera.setZoom((pinchStart ?? 1) * scale, settle: false)
+                        camera.pinchZoom((pinchStart ?? 1) * scale)
                     }
                     .onEnded { _ in
                         pinchStart = nil
