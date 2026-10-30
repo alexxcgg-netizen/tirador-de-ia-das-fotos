@@ -30,10 +30,19 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
         }
     }
 
-    func stop() {
-        queue.async {
-            if self.session.isRunning { self.session.stopRunning() }
-            self.latestFront = nil
+    /// Para e solta as câmeras (espera terminar), para a sessão principal poder reabrir a câmera de trás no formato de foto.
+    func stopAndRelease() {
+        queue.sync {
+            if session.isRunning { session.stopRunning() }
+            latestFront = nil
+            guard configured else { return }
+            session.beginConfiguration()
+            session.connections.forEach { session.removeConnection($0) }
+            session.inputs.forEach { session.removeInput($0) }
+            session.outputs.forEach { session.removeOutput($0) }
+            session.commitConfiguration()
+            configured = false
+            dlog("Câmera dupla desligada e câmeras soltas")
         }
     }
 

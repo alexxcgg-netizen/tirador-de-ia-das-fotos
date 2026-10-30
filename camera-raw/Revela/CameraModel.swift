@@ -1067,12 +1067,25 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 return
             }
             // AÇÃO: o maior formato com 120 fps. CONGELAR máx.: o formato mais rápido (leitura mais curta)
-            let candidates = d.formats.filter { f in f.videoSupportedFrameRateRanges.contains { $0.maxFrameRate >= rate } }
+            // Só formatos YUV comuns: o ProRes RAW também tem 4K 120, mas só aceita o vídeo deitado (ângulo 0) e fecha o app
+            let preference: [FourCharCode] = [kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
+                                              kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                                              kCVPixelFormatType_420YpCbCr10BiPlanarFullRange,
+                                              kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange]
+            func rank(_ f: AVCaptureDevice.Format) -> Int {
+                preference.firstIndex(of: CMFormatDescriptionGetMediaSubType(f.formatDescription)) ?? preference.count
+            }
+            let candidates = d.formats.filter { f in
+                rank(f) < preference.count && f.videoSupportedFrameRateRanges.contains { $0.maxFrameRate >= rate }
+            }
             func pixels(_ f: AVCaptureDevice.Format) -> Int {
                 let dims = CMVideoFormatDescriptionGetDimensions(f.formatDescription)
                 return Int(dims.width) * Int(dims.height)
             }
-            let chosen = rate >= 240 ? candidates.min(by: { pixels($0) < pixels($1) }) : candidates.max(by: { pixels($0) < pixels($1) })
+            // Mesmo tamanho: fica o de 8 bits (mais leve para o visor e para o gravador)
+            let chosen = rate >= 240
+                ? candidates.min(by: { (pixels($0), rank($0)) < (pixels($1), rank($1)) })
+                : candidates.max(by: { (pixels($0), -rank($0)) < (pixels($1), -rank($1)) })
             guard let format = chosen else {
                 dlog("⚠️ \(d.localizedName) não tem formato com \(Int(rate)) fps")
                 DispatchQueue.main.async { self.message = "Esta lente não grava a \(Int(rate)) fps. Tente a 1×." }
@@ -1095,7 +1108,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 self.photoOutput.maxPhotoDimensions = dims
             }
             }
-            self.session.commitConfiguration()
+            let accepted = attempt("Salvar o sensor a \(Int(rate)) fps") { self.session.commitConfiguration() }
+            guard accepted else {
+                // A câmera recusou: volta ao formato de foto em vez de ficar travada no meio do caminho
+                self.setupSession(lens: lens, mode: rawMode)
+                DispatchQueue.main.async { self.message = "A câmera não aceitou \(Int(rate)) fps nesta lente." }
+                return
+            }
             self.specialFormatActive = true
             self.applyRawMode(rawMode)
             let dims = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
@@ -1105,8 +1124,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func setPreviewSized(_ on: Bool) {
-        guard videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))) else { return }
+        guard videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))),
+              videoOutput.responds(to: Selector(("setAutomaticallyConfiguresOutputBufferDimensions:"))) else { return }
         attempt("Vídeo do visor no tamanho da tela") {
+            // O iOS só deixa escolher o tamanho depois de desligar a escolha automática
+            videoOutput.setValue(false, forKey: "automaticallyConfiguresOutputBufferDimensions")
             videoOutput.setValue(on, forKey: "deliversPreviewSizedOutputBuffers")
         }
     }
@@ -1595,9 +1617,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
         } else {
             if isRecordingVideo { stopRecording() }
-            dual.stop()
+            let lens = self.lens, raw = rawMode
             sessionQueue.async {
+                // A dupla deixou a câmera de trás em 1080p sem RAW: desmonta a dupla e reabre a câmera no formato de foto
+                self.dual.stopAndRelease()
                 self.dualActive = false
+                self.setupSession(lens: lens, mode: raw)
                 if !self.session.isRunning { self.session.startRunning() }
             }
         }
