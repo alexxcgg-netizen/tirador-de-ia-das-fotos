@@ -18,6 +18,17 @@ namespace revela {
         return max(w, floorWeight);
     }
 
+    // Quanto um quadro "bate" com a referência (1 = igual, 0 = algo se mexeu).
+    // A tolerância cresce com a raiz da luz (o ruído do sensor cresce assim). Referência estourada: sempre 1.
+    inline float ghost(float3 frame, float3 ref, float k) {
+        float rp = max(ref.r, max(ref.g, ref.b));
+        if (rp > 0.85f) return 1.0f;
+        float d = abs(dot(frame - ref, kLuma));
+        float sigma = k * sqrt(max(dot(ref, kLuma), 0.0005f)) + 0.004f;
+        float x = d / sigma;
+        return exp(-0.5f * x * x);
+    }
+
     // Inversa da curva: estima a luz da cena a partir de uma imagem já com curva (vídeo, HEIC)
     inline float3 inverseFilmic(float3 v) {
         float3 x = clamp(v, 0.0f, 0.985f);
@@ -130,6 +141,46 @@ namespace coreimage {
     float4 revelaHDRWeight(sample_t s, float floorWeight) {
         float w = revela::hdrWeight(max(s.rgb, float3(0.0f)), floorWeight);
         return float4(w, w, w, 1.0f);
+    }
+
+    // HDR sem fantasma: o quadro (já na exposição normal) só conta onde bate com o de referência.
+    // Onde a referência estourou não dá para comparar: aí o quadro escuro manda.
+    float4 revelaHDRGhostColor(sample_t s, sample_t sBlur, sample_t refBlur, float gain, float floorWeight, float k) {
+        float3 c = max(s.rgb, float3(0.0f));
+        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)) * gain, max(refBlur.rgb, float3(0.0f)), k);
+        return float4(c * gain * revela::hdrWeight(c, floorWeight) * g, 1.0f);
+    }
+
+    float4 revelaHDRGhostWeight(sample_t s, sample_t sBlur, sample_t refBlur, float gain, float floorWeight, float k) {
+        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)) * gain, max(refBlur.rgb, float3(0.0f)), k);
+        float w = revela::hdrWeight(max(s.rgb, float3(0.0f)), floorWeight) * g;
+        return float4(w, w, w, 1.0f);
+    }
+
+    // NOITE sem fantasma: cada quadro conta menos onde difere da referência (algo se mexeu).
+    float4 revelaRobustColor(sample_t s, sample_t sBlur, sample_t refBlur, float k) {
+        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
+        return float4(max(s.rgb, float3(0.0f)) * g, 1.0f);
+    }
+
+    float4 revelaRobustWeight(sample_t sBlur, sample_t refBlur, float k) {
+        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
+        return float4(g, g, g, 1.0f);
+    }
+
+    // Tons locais: log da luminância (para borrar e achar a "luz de fundo" de cada região)
+    float4 revelaLogLuma(sample_t s) {
+        float l = log2(max(dot(max(s.rgb, float3(0.0f)), revela::kLuma), 1e-5f));
+        return float4(l, l, l, 1.0f);
+    }
+
+    // Tons locais: aproxima a luz de fundo de cada região da média (strength < 1) e mantém o detalhe.
+    float4 revelaLocalTone(sample_t s, sample_t base, float mean, float strength) {
+        float3 c = max(s.rgb, float3(0.0f));
+        float lg = log2(max(dot(c, revela::kLuma), 1e-5f));
+        float b = base.r;
+        float target = mean + (b - mean) * strength + (lg - b) * 1.08f;
+        return float4(c * exp2(clamp(target - lg, -3.0f, 3.0f)), 1.0f);
     }
 
     float4 revelaDivide(sample_t sum, sample_t weight) {

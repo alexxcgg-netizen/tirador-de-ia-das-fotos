@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var showLooks = false
     @State private var editingLook: CustomLook?
     @State private var importingLUT = false
+    @State private var showModes = false
     @State private var colorReference: PhotosPickerItem?
     @State private var showStudio = false
     @State private var pressStart: CGPoint?
@@ -46,10 +47,23 @@ struct ContentView: View {
                 noAccess
             }
         }
+        .overlay(alignment: .top) {
+            if let days = Expiration.daysLeft, days <= 1 {
+                Text(days == 0 ? "O Revela vence hoje: reinstale pelo Sideloadly" : "O Revela vence amanhã: reinstale pelo Sideloadly")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.black)
+                    .padding(.horizontal, 12).padding(.vertical, 6)
+                    .background(Capsule().fill(accent))
+                    .padding(.top, 2)
+                    .allowsHitTesting(false)
+            }
+        }
+        .simultaneousGesture(TapGesture().onEnded { camera.userInteracted() })
         .preferredColorScheme(.dark)
         .statusBarHidden()
         .onAppear {
             camera.start()
+            Expiration.scheduleReminders()
             // Ficou de pé por 6 s: a abertura deu certo
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                 LaunchGuard.markStable()
@@ -67,6 +81,7 @@ struct ContentView: View {
         .fullScreenCover(isPresented: $camera.showScanner, onDismiss: { camera.scannerClosed() }) { ScannerView() }
         .sheet(isPresented: $showGuide) { GuideView() }
         .fullScreenCover(isPresented: $showStudio) { StudioView(camera: camera) }
+        .sheet(isPresented: $showModes) { ModesEditor(camera: camera) }
         .fullScreenCover(isPresented: $camera.showDocument, onDismiss: { camera.documentClosed() }) { DocumentScanView() }
         .alert("Revela", isPresented: Binding(
             get: { camera.message != nil },
@@ -230,7 +245,7 @@ struct ContentView: View {
             ScrollViewReader { proxy in
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 22) {
-                        ForEach(CaptureMode.allCases) { mode in
+                        ForEach(camera.visibleModes) { mode in
                             Button(mode.rawValue) {
                                 withAnimation(.snappy(duration: 0.2)) {
                                     camera.select(captureMode: mode)
@@ -352,7 +367,18 @@ struct ContentView: View {
                 .buttonStyle(.plain)
                 .disabled(camera.isRecordingVideo)
             }
-            Text("1080p").font(.caption.weight(.bold)).foregroundStyle(.secondary)
+            Menu {
+                Picker("Estabilização", selection: $camera.stabilization) {
+                    ForEach(CameraModel.Stabilization.allCases) { Text($0.rawValue).tag($0) }
+                }
+            } label: {
+                Label(camera.stabilization.rawValue, systemImage: "hand.raised.slash")
+                    .font(.system(size: 12, weight: .bold))
+                    .padding(.horizontal, 10).frame(height: 36)
+                    .foregroundStyle(camera.stabilization == .off ? Color.white : Color.black)
+                    .background(Capsule().fill(camera.stabilization == .off ? panelFill : accent))
+            }
+            .disabled(camera.isRecordingVideo)
         }
     }
 
@@ -862,6 +888,13 @@ struct ContentView: View {
                         Toggle("Grade de terços", isOn: $camera.showGrid)
                         Toggle("Nível (horizonte e de cima para baixo)", isOn: $camera.showLevel)
                         Toggle("Macro automático (chegou perto, troca sozinho)", isOn: $camera.autoMacro)
+                        Toggle("Visor a 60 quadros/s (gasta mais bateria)", isOn: $camera.preview60)
+                        Button {
+                            showSettings = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { showModes = true }
+                        } label: {
+                            Label("Escolher e ordenar os modos", systemImage: "list.bullet")
+                        }
                         Toggle("Histograma colorido (R, G, B)", isOn: $camera.rgbHistogram)
                         Toggle("Cor falsa (exposição por cores)", isOn: $camera.falseColor)
                         if camera.falseColor {
@@ -874,6 +907,12 @@ struct ContentView: View {
                             Text("10 s").tag(10)
                         }
                         .pickerStyle(.segmented)
+                    }
+
+                    settingsSection("Instalação") {
+                        Text("Vale até \(Expiration.text)" + (Expiration.daysLeft.map { " · faltam \($0) dia(s)" } ?? ""))
+                        Text("Conta grátis da Apple: reinstale pelo Sideloadly a cada 7 dias. O app avisa um dia antes.")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
 
                     settingsSection("Três looks por foto") {
@@ -1126,7 +1165,7 @@ struct ContentView: View {
         case .average: return "8×\nMÉDIA"
         case .night: return "\(camera.nightFrames)×\nNOITE"
         case .stars: return "16×\nCÉU"
-        case .moon: return "8×\nLUA"
+        case .moon: return "5×\nLUA"
         case .flash: return "DNG\nFLASH"
         case .fast: return camera.rawMode == .bayer ? "RAW\n12MP" : "HEIC\n12MP"
         case .action: return "4K\n120"

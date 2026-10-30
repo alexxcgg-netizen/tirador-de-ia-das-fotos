@@ -96,7 +96,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan,
              .document, .panorama: return 1
         case .superRes: return 4
-        case .night, .moon, .average: return 8
+        case .night, .average: return 8
+        case .moon: return 5
         case .stars: return 16
         case .focusStack: return 7
         }
@@ -108,7 +109,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes, .video, .cinematic, .dual, .scan,
              .document, .panorama: return nil
         case .focusStack: return .focus
-        case .night, .stars, .moon, .average: return .average
+        case .night, .stars, .average: return .average
+        case .moon: return nil
         }
     }
 
@@ -126,11 +128,11 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .document: return "Documentos de várias páginas, sem marca d'água, num PDF só."
         case .panorama: return "Toque e gire o iPhone devagar para a direita, sem subir nem descer. Toque de novo para terminar."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
-        case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Apoie o iPhone."
+        case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Funciona na mão (o app alinha cada quadro); apoiado fica ainda mais nítido."
         case .superRes: return "4 fotos de 48 MP juntadas no sub-pixel: o dobro de detalhe no zoom (2× a 25×). Segure firme."
-        case .night: return "Várias fotos alinhadas e somadas. Apoiado, cada foto fica mais longa e a noite mais limpa."
+        case .night: return "Várias fotos alinhadas e somadas, sem fantasma de quem se mexeu. Apoiado, cada foto fica mais longa e a noite mais limpa."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
-        case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 8 fotos somadas para mais detalhe."
+        case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 5 fotos de 48 MP juntadas no sub-pixel: mais detalhe nas crateras."
         case .flash: return "Uma foto RAW com o flash."
         case .focusStack: return "7 fotos com foco do perto ao longe, juntadas no mais nítido. Apoie o iPhone."
         case .average: return "8 fotos somadas: menos ruído, ou água lisa com obturador lento."
@@ -331,6 +333,75 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Foco e exposição travados (segurar o dedo no visor). Um toque solta.
     @Published var aeafLocked = false
 
+    // Modos na fileira: ordem e quais aparecem
+    @Published var modeOrder: [CaptureMode] = CameraModel.loadModeOrder()
+    @Published var hiddenModes: Set<CaptureMode> = Set((UserDefaults.standard.stringArray(forKey: "hiddenModes") ?? [])
+        .compactMap(CaptureMode.init(rawValue:)))
+    var visibleModes: [CaptureMode] { modeOrder.filter { !hiddenModes.contains($0) || $0 == captureMode } }
+
+    private static func loadModeOrder() -> [CaptureMode] {
+        let saved = (UserDefaults.standard.stringArray(forKey: "modeOrder") ?? []).compactMap(CaptureMode.init(rawValue:))
+        // Modos novos (de versões futuras) entram no fim
+        return saved + CaptureMode.allCases.filter { !saved.contains($0) }
+    }
+
+    func saveModes() {
+        defaults.set(modeOrder.map(\.rawValue), forKey: "modeOrder")
+        defaults.set(hiddenModes.map(\.rawValue), forKey: "hiddenModes")
+    }
+
+    // Economia: iPhone parado e sem toque por 30 s -> visor a 15 quadros por segundo
+    @Published private(set) var idle = false
+    private var lastInteraction = Date()
+
+    /// Qualquer toque na tela acorda o visor.
+    func userInteracted() {
+        lastInteraction = Date()
+        if idle { setIdle(false) }
+    }
+
+    private func setIdle(_ on: Bool) {
+        idle = on
+        idleThrottle = on
+        dlog(on ? "Visor em economia (15 quadros/s)" : "Visor normal")
+    }
+
+    /// Lido na fila de vídeo.
+    private var idleThrottle = false
+
+    // Estabilização do vídeo
+    enum Stabilization: String, CaseIterable, Identifiable {
+        case off = "Sem"
+        case standard = "Normal"
+        case strong = "Forte"
+        case max = "Máxima"
+        var id: String { rawValue }
+        var mode: AVCaptureVideoStabilizationMode {
+            switch self {
+            case .off: return .off
+            case .standard: return .standard
+            case .strong: return .cinematicExtended
+            case .max:
+                if #available(iOS 18.0, *) { return .cinematicExtendedEnhanced }
+                return .cinematicExtended
+            }
+        }
+    }
+    @Published var stabilization: Stabilization = Stabilization(rawValue: UserDefaults.standard.string(forKey: "stabilization") ?? "") ?? .strong {
+        didSet {
+            defaults.set(stabilization.rawValue, forKey: "stabilization")
+            sessionQueue.async { self.applyStabilization() }
+        }
+    }
+
+    /// Visor a até 60 quadros por segundo nos modos de foto (cai para 30 no escuro).
+    @Published var preview60 = UserDefaults.standard.bool(forKey: "preview60") {
+        didSet {
+            defaults.set(preview60, forKey: "preview60")
+            sessionQueue.async { self.applyPreviewRate() }
+        }
+    }
+
     // Macro
     /// Com a 1×, chegou perto demais para focar: troca sozinho para o macro (e volta ao afastar).
     @Published var autoMacro = UserDefaults.standard.object(forKey: "autoMacro") as? Bool ?? true {
@@ -446,6 +517,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Pinça: a lente certa já começa a abrir no meio do gesto; até ela chegar, o visor recorta a lente atual.
     func pinchZoom(_ value: CGFloat) {
+        userInteracted()
         zoomRamp?.invalidate()
         zoomRamp = nil
         zoom = min(max(value, minZoom), maxZoom)
@@ -457,6 +529,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Botões de zoom: a lente nova começa a abrir na hora e o visor desliza até o zoom pedido (~0,2 s).
     func animateZoom(to value: CGFloat) {
+        userInteracted()
         let target = min(max(value, minZoom), maxZoom)
         if lens == .macro { select(lens: .wide) }
         zoomRamp?.invalidate()
@@ -594,6 +667,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if self.recentRotation.count > 15 { self.recentRotation.removeFirst() }
             let steady = self.recentRotation.count == 15 && (self.recentRotation.max() ?? 1) < 0.03
             if steady != self.isSteady { self.isSteady = steady }
+            // Mexeu no iPhone: acorda. Parado e sem toque por 30 s (e nada acontecendo): economia
+            if !steady, self.idle, (self.recentRotation.last ?? 0) > 0.08 { self.userInteracted() }
+            let busy = self.isRecordingVideo || self.longRemaining != nil || self.panoramaProgress != nil
+                || self.processing > 0 || self.stackProgress != nil || self.actionRecording
+            if !self.idle, steady, !busy, Date().timeIntervalSince(self.lastInteraction) > 30 { self.setIdle(true) }
         }
     }
 
@@ -859,6 +937,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
         loggedBufferSize = false
         if videoWanted { applyVideoFrameRate() }
+        applyStabilization()
+        applyPreviewRate()
         // Cada câmera é montada num ângulo; o coordinator, com a camada do visor, diz o ângulo certo
         DispatchQueue.main.async {
             self.activeLens = lens
@@ -1103,6 +1183,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Toque no visor: foca e mede a luz naquele ponto. `point` vai de 0 a 1 nos dois eixos.
     func focus(at point: CGPoint) {
+        userInteracted()
         aeafLocked = false
         focusPoint = point
         // O visor mostra o centro ampliado pelo zoom digital
@@ -1134,6 +1215,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Botão do app, volume ou Controle da Câmera.
     func shutter() {
+        userInteracted()
         guard countdown == 0, stackProgress == nil else { return }
         if captureMode == .video || captureMode == .cinematic {
             toggleRecording()
@@ -1502,7 +1584,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             : nil
         stackProgress = "0/\(count)"
         // Macro empilhado em 48 MP: o recorte do macro precisa do sensor inteiro
-        let fullResolution = mode == .superRes || macroStacking
+        let fullResolution = mode == .superRes || mode == .moon || macroStacking
         let nightPlan = mode == .night && !manualExposure
         // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/15 s na mão
         let nightSeconds = nightTime.seconds ?? (isSteady ? 0.5 : 1.0 / 15)
@@ -1806,6 +1888,37 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         d.unlockForConfiguration()
     }
 
+    /// Estabilização só nos modos de vídeo (na foto ela atrasaria o visor).
+    private func applyStabilization() {
+        let wanted = (videoWanted || cinematicWanted) ? DispatchQueue.main.sync { self.stabilization } : .off
+        let mode = wanted.mode
+        for output in [videoOutput, movieOutput] as [AVCaptureOutput] where session.outputs.contains(output) {
+            guard let connection = output.connection(with: .video), connection.isVideoStabilizationSupported else { continue }
+            let supported = device?.activeFormat.isVideoStabilizationModeSupported(mode) ?? false
+            let chosen: AVCaptureVideoStabilizationMode = supported ? mode : (wanted == .off ? .off : .standard)
+            if connection.preferredVideoStabilizationMode != chosen {
+                attempt("Estabilização") { connection.preferredVideoStabilizationMode = chosen }
+                if wanted != .off { dlog("Estabilização: \(wanted.rawValue)\(supported ? "" : " (este formato só aceita a normal)")") }
+            }
+        }
+    }
+
+    /// 60 quadros no visor quando o formato de foto aceita; o automático ainda pode baixar para 30 no escuro.
+    private func applyPreviewRate() {
+        guard !videoWanted, !cinematicWanted, !specialFormatActive, let d = device else { return }
+        let want60 = DispatchQueue.main.sync { self.preview60 }
+        let maxRate = d.activeFormat.videoSupportedFrameRateRanges.map(\.maxFrameRate).max() ?? 30
+        let fast = want60 && maxRate >= 60
+        guard (try? d.lockForConfiguration()) != nil else { return }
+        attempt("Quadros do visor") {
+            // .invalid devolve o padrão do formato (o automático continua livre para alongar a exposição no escuro)
+            d.activeVideoMinFrameDuration = fast ? CMTime(value: 1, timescale: 60) : .invalid
+            d.activeVideoMaxFrameDuration = .invalid
+        }
+        d.unlockForConfiguration()
+        if want60 { dlog(fast ? "Visor até 60 quadros/s" : "Visor: \(d.localizedName) não passa de \(Int(maxRate)) quadros/s no formato de foto") }
+    }
+
     func setVideoFPS(_ fps: Int) {
         videoFPS = fps
         sessionQueue.async { self.applyVideoFrameRate() }
@@ -2034,10 +2147,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func startLongExposure(options: DevelopOptions, started t0: CFAbsoluteTime) {
         let seconds = longSecondsChoice
         let style = longStyle
+        // Apoiado não precisa alinhar; na mão, cada quadro é alinhado com o primeiro
+        let handheld = !isSteady
         let manual = manualExposure
         stackProgress = "0 s"
         longRemaining = seconds
-        dlog("Exposição longa: \(seconds) s · \(style.rawValue)")
+        dlog("Exposição longa: \(seconds) s · \(style.rawValue)\(handheld ? " · na mão (alinhando)" : " · apoiado")")
         sessionQueue.async {
             // Vídeo em resolução cheia durante a exposição, e cada quadro exposto o quadro inteiro (sem buracos no movimento)
             self.session.beginConfiguration()
@@ -2051,7 +2166,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 d.unlockForConfiguration()
             }
             self.videoQueue.async {
-                self.longExposure.start(seconds: seconds, style: style) { image, count in
+                self.longExposure.start(seconds: seconds, style: style, handheld: handheld) { image, count in
                     self.finishLongExposure(image, frames: count, options: options, started: t0)
                 }
             }
@@ -2169,8 +2284,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     output = Developer.hdr(frames, options: options)
                 } else if mode == .superRes {
                     output = Developer.superResolution(frames, options: options)
+                } else if mode == .moon {
+                    output = Developer.superResolution(frames, options: options, sharpen: 0.9)
                 } else if let kind = mode.stackKind {
-                    output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, options: options)
+                    output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, robust: mode == .night, options: options)
                 } else if let first = frames.first, first.hasDepth {
                     output = Developer.developPortrait(first.data, aperture: aperture, focusPoint: focusPoint, options: options)
                 } else {
@@ -2274,14 +2391,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if recorder.isRecording {
             recorder.append(recordingImage(frame), at: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         }
-        if videoFrameIndex % renderEvery == 0 { renderer.enqueue(frame) }
+        let every = idleThrottle ? max(renderEvery, 2) : renderEvery
+        if videoFrameIndex % every == 0 { renderer.enqueue(frame) }
         lastFrameSize = CGSize(width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer))
         if !loggedBufferSize {
             loggedBufferSize = true
             dlog("Vídeo do visor chegando em \(CVPixelBufferGetWidth(pixelBuffer))×\(CVPixelBufferGetHeight(pixelBuffer))")
         }
         videoFrameIndex += 1
-        if videoFrameIndex % (8 * renderEvery) == 0 { detectFace(in: frame) }
+        if !idleThrottle, videoFrameIndex % (8 * renderEvery) == 0 { detectFace(in: frame) }
         // Retrato: máscara de pessoa para borrar o fundo no visor
         if portraitPreviewOn, videoFrameIndex % 2 == 0,
            (try? VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up).perform([personRequest])) != nil,

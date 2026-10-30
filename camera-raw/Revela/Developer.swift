@@ -373,6 +373,12 @@ enum Developer {
     private static let hdrWeightKernel = kernel("revelaHDRWeight")
     private static let divideKernel = kernel("revelaDivide")
     static let paperKernel = kernel("revelaPaper")
+    private static let hdrGhostColorKernel = kernel("revelaHDRGhostColor")
+    private static let hdrGhostWeightKernel = kernel("revelaHDRGhostWeight")
+    private static let robustColorKernel = kernel("revelaRobustColor")
+    private static let robustWeightKernel = kernel("revelaRobustWeight")
+    private static let logLumaKernel = kernel("revelaLogLuma")
+    private static let localToneKernel = kernel("revelaLocalTone")
     static let cylinderKernel: CIWarpKernel? = library.flatMap {
         try? CIWarpKernel(functionName: "revelaCylinder", fromMetalLibraryData: $0)
     }
@@ -399,6 +405,10 @@ enum Developer {
                      "revelaMax": maxKernel, "revelaFalseColor": falseColorKernel]
         var missing = names.filter { $0.value == nil }.map(\.key).sorted()
         if cylinderKernel == nil { missing.append("revelaCylinder") }
+        let more: [String: CIColorKernel?] = ["revelaHDRGhostColor": hdrGhostColorKernel, "revelaHDRGhostWeight": hdrGhostWeightKernel,
+                                              "revelaRobustColor": robustColorKernel, "revelaRobustWeight": robustWeightKernel,
+                                              "revelaLogLuma": logLumaKernel, "revelaLocalTone": localToneKernel]
+        missing += more.filter { $0.value == nil }.map(\.key).sorted()
         return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
 
@@ -584,7 +594,7 @@ enum Developer {
     /// Junta várias fotos de 48 MP com o tremido natural da mão: cada uma vê o detalhe num lugar um pouquinho
     /// diferente. Ampliadas, alinhadas no sub-pixel e somadas, dão mais resolução do que uma foto sozinha.
     /// Faz diferença no zoom (recortes do sensor); na 1× sem zoom vira só uma foto com menos ruído.
-    static func superResolution(_ frames: [CapturedFrame], options: DevelopOptions) -> Output? {
+    static func superResolution(_ frames: [CapturedFrame], options: DevelopOptions, sharpen: Double = 0.5) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
         guard let reference = frames.first.flatMap({ image(from: $0) }) else { return nil }
         let full = reference.extent
@@ -615,7 +625,7 @@ enum Developer {
         }
         guard let sum, used > 0 else { return nil }
         let mean = scaled(sum, by: 1 / Float(used))
-            .applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: 2.0 * Double(factor), kCIInputIntensityKey: 0.5])
+            .applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: 2.0 * Double(factor), kCIInputIntensityKey: sharpen])
             .cropped(to: outExtent)
         var opts = options
         opts.zoom = 1
@@ -647,7 +657,7 @@ enum Developer {
     /// Junta vários quadros em lotes pequenos (para não esgotar a memória):
     /// foco empilhado (pega o pedaço mais nítido de cada um) ou média (menos ruído / exposição longa).
     static func stack(_ frames: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
-                      options: DevelopOptions) -> Output? {
+                      robust: Bool = false, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
         guard let reference = frames.first.flatMap({ image(from: $0) }) else { return nil }
         let extent = reference.extent
@@ -670,6 +680,8 @@ enum Developer {
 
         let merged: CIImage?
         switch kind {
+        case .average where robust:
+            merged = robustMerge(count: frames.count, extent: extent, frame: aligned)
         case .average:
             var mean = average(count: frames.count, extent: extent, frame: aligned)
             if removeOutliers, let first = mean, let clipKernel {
@@ -734,6 +746,30 @@ enum Developer {
     }
 
     /// Soma em lotes de 3, guardando o parcial em memória de vídeo: nunca há mais de 3 RAW abertos ao mesmo tempo.
+    /// NOITE sem fantasma: o primeiro quadro é a referência; os outros só somam onde batem com ela.
+    /// Onde algo se mexeu (pessoa, carro, folha), fica a referência (com um pouco mais de ruído ali, sem duplicar).
+    private static func robustMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+        guard let reference = frame(0) else { return nil }
+        guard let robustColorKernel, let robustWeightKernel, let divideKernel, count > 1 else {
+            return average(count: count, extent: extent, frame: frame)
+        }
+        let refBlur = materialize(blurred(reference, extent: extent), extent: extent)
+        var sumColor = materialize(reference, extent: extent)
+        var sumWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: extent)
+        let k: Float = 0.1
+        for i in 1..<count {
+            guard let image = frame(i) else { continue }
+            let imageBlur = blurred(image, extent: extent)
+            guard let color = robustColorKernel.apply(extent: extent, arguments: [image, imageBlur, refBlur, k]),
+                  let weight = robustWeightKernel.apply(extent: extent, arguments: [imageBlur, refBlur, k]) else { continue }
+            sumColor = materialize(add(sumColor, color), extent: extent)
+            sumWeight = materialize(add(sumWeight, weight), extent: extent)
+        }
+        dlog("Noite: quadros juntados só onde nada se mexeu")
+        guard let merged = divideKernel.apply(extent: extent, arguments: [sumColor, sumWeight]) else { return nil }
+        return materialize(merged, extent: extent)
+    }
+
     private static func average(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
         var sum: CIImage?
         var used = 0
@@ -816,21 +852,33 @@ enum Developer {
         // Alinha cada quadro (já trazido para a exposição normal) com o de referência
         let small: Float = 0.25
         guard let refSmall = hdrImage(reference, scale: small) else { return nil }
+        let refBlur = materialize(blurred(refImage, extent: extent), extent: extent)
         var sumColor: CIImage?
         var sumWeight: CIImage?
         for (index, frame) in sorted.enumerated() {
             let gain = Float(pow(2.0, Double(-frame.exposureBias)))
             guard let image = hdrImage(frame) else { continue }
             var aligned = image
-            if frame.exposureBias != reference.exposureBias, let smallImage = hdrImage(frame, scale: small) {
+            let isReference = frame.exposureBias == reference.exposureBias
+            if !isReference, let smallImage = hdrImage(frame, scale: small) {
                 let warp = alignment(of: scaled(smallImage, by: gain), to: refSmall, scale: CGFloat(small),
                                      fullExtent: extent, homography: false)
                 aligned = warp(image).cropped(to: extent)
             }
-            // O quadro mais escuro sempre conta um pouco: é o único com detalhe onde os outros estouraram
-            let floor: Float = index == 0 ? 0.01 : 0
-            guard let color = hdrColorKernel.apply(extent: extent, arguments: [aligned, gain, floor]),
-                  let weight = hdrWeightKernel.apply(extent: extent, arguments: [aligned, floor]) else { continue }
+            // O mais escuro e o de referência sempre contam um pouco (o escuro é o único com detalhe no estourado)
+            let floor: Float = index == 0 ? 0.01 : (isReference ? 0.02 : 0)
+            let color: CIImage?, weight: CIImage?
+            if !isReference, let hdrGhostColorKernel, let hdrGhostWeightKernel {
+                // Sem fantasma: onde algo se mexeu entre as fotos, fica só o quadro de referência
+                let frameBlur = blurred(aligned, extent: extent)
+                let k: Float = 0.12
+                color = hdrGhostColorKernel.apply(extent: extent, arguments: [aligned, frameBlur, refBlur, gain, floor, k])
+                weight = hdrGhostWeightKernel.apply(extent: extent, arguments: [aligned, frameBlur, refBlur, gain, floor, k])
+            } else {
+                color = hdrColorKernel.apply(extent: extent, arguments: [aligned, gain, floor])
+                weight = hdrWeightKernel.apply(extent: extent, arguments: [aligned, floor])
+            }
+            guard let color, let weight else { continue }
             sumColor = materialize(sumColor.map { add($0, color) } ?? color, extent: extent)
             sumWeight = materialize(sumWeight.map { add($0, weight) } ?? weight, extent: extent)
         }
@@ -840,11 +888,43 @@ enum Developer {
         if reference.isRaw, let raw = CIRAWFilter(imageData: reference.data, identifierHint: "com.adobe.raw-image") {
             merged = scaled(merged, by: Float(pow(2.0, Double(raw.baselineExposure))))
         }
+        merged = materialize(merged, extent: extent)
+        merged = localTone(merged, strength: 0.62)
         var hdrOptions = options
         hdrOptions.hdrCompress = true
         let output = finish(merged.settingProperties(refImage.properties), options: hdrOptions)
         dlog("HDR revelado: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
+    }
+
+    /// Versão levemente borrada, para comparar quadros sem confundir ruído com movimento.
+    private static func blurred(_ image: CIImage, extent: CGRect) -> CIImage {
+        image.clampedToExtent().applyingGaussianBlur(sigma: 2.5).cropped(to: extent)
+    }
+
+    /// Tons locais: cada região tem a "luz de fundo" puxada para perto da média (céu desce, sombra sobe)
+    /// e o detalhe fica. Calculado numa versão pequena: a luz de fundo é borrada de qualquer jeito.
+    static func localTone(_ scene: CIImage, strength: Float) -> CIImage {
+        guard let logLumaKernel, let localToneKernel else { return scene }
+        let e = scene.extent
+        let s: CGFloat = 0.125
+        guard let logL = logLumaKernel.apply(extent: e, arguments: [scene]) else { return scene }
+        let small = logL.transformed(by: CGAffineTransform(scaleX: s, y: s))
+        let smallExtent = small.extent
+        // Duas larguras de borrão misturadas: menos auréola nas bordas fortes
+        let short = min(smallExtent.width, smallExtent.height)
+        let wide = small.clampedToExtent().applyingGaussianBlur(sigma: Double(short * 0.06)).cropped(to: smallExtent)
+        let tight = small.clampedToExtent().applyingGaussianBlur(sigma: Double(short * 0.015)).cropped(to: smallExtent)
+        let mixedSmall = tight.applyingFilter("CIDissolveTransition", parameters: [kCIInputTargetImageKey: wide, kCIInputTimeKey: 0.5])
+        let base = materialize(mixedSmall, extent: smallExtent).clampedToExtent()
+            .transformed(by: CGAffineTransform(scaleX: 1 / s, y: 1 / s))
+            .cropped(to: e)
+        let average = small.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: smallExtent)])
+        var pixel = [Float](repeating: 0, count: 4)
+        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+        dlog(String(format: "Tons locais: luz média %.2f EV · força %.2f", pixel[0], 1 - strength))
+        return localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], strength]) ?? scene
     }
 
     private static func hdrImage(_ frame: CapturedFrame, scale: Float = 1) -> CIImage? {
