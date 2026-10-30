@@ -13,6 +13,10 @@ struct GuideView: View {
 
     private let sections: [(String, [Item])] = [
         ("Topo", [
+            Item(symbol: "camera.filters", title: "Botão do look",
+                 text: "Mostra o look atual (ex.: Portra 400). Toque para escolher outro e ajustar intensidade e grão; o visor muda na hora."),
+            Item(symbol: "slider.horizontal.3", title: "Ajustes",
+                 text: "Tudo o que é técnico mora aqui: formato RAW, luz, foco, cor, timer, peaking, zebra, espelhar e o relatório. Abre pela metade, com o visor visível."),
             Item(symbol: "camera.aperture", title: "ProRAW",
                  text: "Foto RAW de 48 MP em que a Apple já juntou alguns quadros e limpou o ruído. Muito detalhe; a melhor escolha no dia a dia."),
             Item(symbol: "camera.aperture", title: "RAW puro",
@@ -52,7 +56,7 @@ struct GuideView: View {
                  text: "Macro foca a 2 cm. Foco empilhado faz 7 fotos com foco diferente e junta tudo nítido."),
             Item(symbol: "square.stack.3d.up", title: "Média", text: "8 fotos somadas: menos ruído, ou água lisa com obturador lento."),
         ]),
-        ("Menu …", [
+        ("Dentro de Ajustes", [
             Item(symbol: "arrow.left.and.right", title: "Espelhar", text: "Salva a foto invertida, como você se vê no espelho."),
             Item(symbol: "doc.badge.plus", title: "Guardar DNG",
                  text: "Guarda também o arquivo RAW original (uns 50 MB) para revelar depois no Lightroom."),
