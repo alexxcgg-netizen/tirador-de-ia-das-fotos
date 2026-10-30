@@ -57,6 +57,13 @@ struct GuideView: View {
             Item(symbol: "plus.magnifyingglass", title: "Botões de zoom",
                  text: "0,5×, 1×, 2× e 4× são câmeras ou recortes de 48 MP com qualidade óptica. O ··· tem o 8× e o Macro."),
         ]),
+        ("Vídeo", [
+            Item(symbol: "video.fill", title: "Vídeo", text: "1080p a 24, 30 ou 60 fps com o look gravado junto. Toque para começar e parar."),
+            Item(symbol: "camera.aperture", title: "Cinemático",
+                 text: "Vídeo com o fundo desfocado (Modo Cinema da Apple). O foco segue as pessoas, e no app Fotos dá para mudar o foco e o desfoque depois."),
+            Item(symbol: "rectangle.inset.topright.filled", title: "Dupla",
+                 text: "Câmera de trás e da frente ao mesmo tempo, com você num quadrinho. Toque: foto. Segure: vídeo."),
+        ]),
         ("Modos", [
             Item(symbol: "person.crop.rectangle", title: "Retrato",
                  text: "Fundo desfocado pela profundidade medida com o LiDAR. f/1,4 borra muito, f/16 quase nada. Também avisa a distância para o rosto não deformar."),

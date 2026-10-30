@@ -6,7 +6,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "0.10.0"
+    MARKETING_VERSION: "0.11.0"
     CURRENT_PROJECT_VERSION: "1"
 targets:
   Revela:
@@ -25,6 +25,7 @@ targets:
         UIStatusBarHidden: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSCameraUsageDescription: O Revela usa a câmera para fotografar em RAW.
+        NSMicrophoneUsageDescription: O Revela usa o microfone para gravar o som dos vídeos.
         NSPhotoLibraryAddUsageDescription: O Revela salva as fotos (DNG + revelada) na sua galeria.
     settings:
       base:

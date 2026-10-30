@@ -20,11 +20,6 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            // Invisível: só para o iPhone informar o ângulo certo do visor de cada câmera
-            AngleLayerView(layer: camera.angleLayer)
-                .frame(width: 2, height: 2)
-                .opacity(0.02)
-                .allowsHitTesting(false)
             if camera.authorized {
                 VStack(spacing: 14) {
                     topBar
@@ -233,6 +228,8 @@ struct ContentView: View {
             if camera.captureMode == .portrait { apertureControls }
             if camera.captureMode == .night { nightControls }
             if camera.captureMode == .longExposure { longControls }
+            if camera.captureMode == .video { videoControls }
+            if camera.captureMode == .cinematic { cinematicControls }
             if !camera.captureMode.hint.isEmpty {
                 Text(camera.captureMode.hint)
                     .font(.caption).opacity(0.6)
@@ -262,6 +259,43 @@ struct ContentView: View {
     private func apertureLabel(_ f: Float) -> String {
         if f == f.rounded() { return "f/\(Int(f))" }
         return "f/" + String(format: "%.1f", f).replacingOccurrences(of: ".", with: ",")
+    }
+
+    /// Vídeo: quadros por segundo.
+    private var videoControls: some View {
+        HStack(spacing: 6) {
+            ForEach(CameraModel.videoRates, id: \.self) { fps in
+                Button("\(fps) fps") {
+                    camera.setVideoFPS(fps)
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 10).frame(height: 36)
+                .foregroundStyle(camera.videoFPS == fps ? Color.black : Color.white)
+                .background(Capsule().fill(camera.videoFPS == fps ? accent : panelFill))
+                .buttonStyle(.plain)
+                .disabled(camera.isRecordingVideo)
+            }
+            Text("1080p").font(.caption.weight(.bold)).foregroundStyle(.secondary)
+        }
+    }
+
+    /// Cinema: quanto desfocar o fundo (dentro do que a câmera aceita).
+    private var cinematicControls: some View {
+        HStack(spacing: 6) {
+            ForEach([Float(2), 2.8, 4, 5.6, 8, 16].filter { camera.cinematicRange.contains($0) }, id: \.self) { f in
+                Button(apertureLabel(f)) {
+                    camera.setCinematicAperture(f)
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
+                .font(.system(size: 12, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 8).frame(height: 36)
+                .foregroundStyle(camera.cinematicAperture == f ? Color.black : Color.white)
+                .background(Capsule().fill(camera.cinematicAperture == f ? accent : panelFill))
+                .buttonStyle(.plain)
+                .disabled(camera.isRecordingVideo)
+            }
+        }
     }
 
     /// Exposição longa: duração e estilo.
@@ -360,7 +394,13 @@ struct ContentView: View {
     private var viewfinder: some View {
         GeometryReader { geo in
             ZStack {
+                // Visor do sistema: escondido (serve para o iPhone informar o ângulo de cada câmera);
+                // no modo CINEMÁTICO é ele que aparece, porque só ele mostra o desfoque ao vivo
+                AngleLayerView(layer: camera.angleLayer)
+                    .opacity(camera.captureMode == .cinematic ? 1 : 0.02)
+                    .allowsHitTesting(false)
                 LivePreview(renderer: camera.renderer)
+                    .opacity(camera.captureMode == .cinematic ? 0 : 1)
                 if camera.showGrid {
                     ThirdsGrid().stroke(.white.opacity(0.22), lineWidth: 0.5)
                 }
@@ -454,6 +494,21 @@ struct ContentView: View {
                     }
                     .padding(16)
                     .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 14))
+                }
+                if let started = camera.recordingStarted {
+                    TimelineView(.periodic(from: started, by: 1)) { context in
+                        let seconds = Int(context.date.timeIntervalSince(started))
+                        HStack(spacing: 6) {
+                            Circle().fill(Color.red).frame(width: 9, height: 9)
+                            Text(String(format: "REC %02d:%02d", seconds / 60, seconds % 60))
+                                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                        }
+                        .padding(.horizontal, 10).padding(.vertical, 6)
+                        .background(.black.opacity(0.6), in: Capsule())
+                    }
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .padding(.top, 52)
+                    .allowsHitTesting(false)
                 }
                 if camera.actionRecording || camera.bursting || camera.lowLight {
                     HStack(spacing: 6) {
@@ -554,13 +609,13 @@ struct ContentView: View {
             ZStack {
                 Circle().stroke(.white, lineWidth: 5).frame(width: 84, height: 84)
                 Circle()
-                    .fill(camera.actionRecording ? Color.red : (camera.countdown > 0 || camera.bursting ? accent : .white))
-                    .frame(width: camera.actionRecording ? 36 : 68, height: camera.actionRecording ? 36 : 68)
-                    .clipShape(RoundedRectangle(cornerRadius: camera.actionRecording ? 8 : 34))
+                    .fill(shutterColor)
+                    .frame(width: shutterIsStop ? 36 : 68, height: shutterIsStop ? 36 : 68)
+                    .clipShape(RoundedRectangle(cornerRadius: shutterIsStop ? 8 : 34))
             }
             .scaleEffect(pressingShutter ? 0.9 : 1)
             .animation(.spring(response: 0.2, dampingFraction: 0.6), value: pressingShutter)
-            .animation(.snappy(duration: 0.2), value: camera.actionRecording)
+            .animation(.snappy(duration: 0.2), value: shutterIsStop)
             .contentShape(Circle())
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -810,6 +865,9 @@ struct ContentView: View {
         case .action: return "4K\n120"
         case .freeze: return camera.freezeMax ? "1/\(Int((1 / camera.freezeShutter).rounded()))\nMÁX" : "1/\(Int((1 / camera.freezeShutter).rounded()))\n12MP"
         case .hdr: return "HDR\n3× RAW"
+        case .video: return "1080p\n\(camera.videoFPS) fps"
+        case .cinematic: return apertureLabel(camera.cinematicAperture) + "\nCINEMA"
+        case .dual: return "DUPLA\nFOTO · VÍDEO"
         case .longExposure: return "\(Int(camera.longSecondsChoice)) s\n\(camera.longStyle.rawValue.uppercased())"
         case .superRes: return "4× 48MP\nSUPER"
         case .portrait: return apertureLabel(camera.portraitAperture) + "\nRETRATO"
@@ -817,6 +875,16 @@ struct ContentView: View {
             if camera.rawMode == .bayer { return "DNG\nRAW" }
             return camera.crop > 1.4 ? "DNG\n\(camera.zoomText)" : "DNG\n48MP"
         }
+    }
+
+    /// Botão vira um quadrado vermelho enquanto grava.
+    private var shutterIsStop: Bool { camera.actionRecording || camera.isRecordingVideo }
+
+    private var shutterColor: Color {
+        if shutterIsStop { return .red }
+        if camera.captureMode == .video || camera.captureMode == .cinematic { return .red }
+        if camera.countdown > 0 || camera.bursting { return accent }
+        return .white
     }
 
     /// O que está na mão, para lembrar no visor (ex.: "ISO 200 · 1/250 · MF").
@@ -984,16 +1052,26 @@ private extension View {
     }
 }
 
-/// Hospeda a camada invisível do visor, usada só pelo RotationCoordinator.
+/// Hospeda o visor do sistema. Fica quase invisível (serve para o RotationCoordinator)
+/// e aparece de verdade no modo CINEMÁTICO.
 private struct AngleLayerView: UIViewRepresentable {
     let layer: AVCaptureVideoPreviewLayer
 
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView()
+    final class Host: UIView {
+        var previewLayer: AVCaptureVideoPreviewLayer?
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            previewLayer?.frame = bounds
+        }
+    }
+
+    func makeUIView(context: Context) -> Host {
+        let view = Host()
+        layer.videoGravity = .resizeAspectFill
         view.layer.addSublayer(layer)
-        layer.frame = CGRect(x: 0, y: 0, width: 2, height: 2)
+        view.previewLayer = layer
         return view
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_ uiView: Host, context: Context) {}
 }

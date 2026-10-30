@@ -72,6 +72,9 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     case action = "AÇÃO"
     case freeze = "CONGELAR"
     case portrait = "RETRATO"
+    case video = "VÍDEO"
+    case cinematic = "CINEMÁTICO"
+    case dual = "DUPLA"
     case hdr = "HDR"
     case longExposure = "LONGA"
     case superRes = "SUPER RES"
@@ -86,7 +89,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var frameCount: Int {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure: return 1
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual: return 1
         case .superRes: return 4
         case .night, .moon, .average: return 8
         case .stars: return 16
@@ -97,7 +100,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     /// Como juntar os quadros, quando há mais de um.
     var stackKind: Developer.StackKind? {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes: return nil
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes, .video, .cinematic, .dual: return nil
         case .focusStack: return .focus
         case .night, .stars, .moon, .average: return .average
         }
@@ -110,6 +113,9 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .action: return "4K a 120 fps: toque grava 1 s, segure para mais. O app salva as 8 fotos mais nítidas e o vídeo."
         case .freeze: return "Obturador rapidíssimo para congelar movimento. Precisa de muita luz; segure para rajada."
         case .portrait: return "2× a 1,5–2 m, fundo desfocado pela profundidade (LiDAR). Escolha o quanto borra acima."
+        case .video: return "Vídeo 1080p com o look gravado junto. Toque para começar e parar."
+        case .cinematic: return "Vídeo com o fundo desfocado, como o Modo Cinema do iPhone. O foco segue as pessoas; dá para mudar depois no app Fotos."
+        case .dual: return "Câmera de trás e da frente juntas. Toque: foto. Segure: vídeo enquanto segura."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
         case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Apoie o iPhone."
         case .superRes: return "4 fotos de 48 MP juntadas no sub-pixel: o dobro de detalhe no zoom (2× a 25×). Segure firme."
@@ -146,7 +152,8 @@ enum RevelaError: LocalizedError {
     }
 }
 
-final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate,
+                         AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate {
     static let allISO: [Float] = [25, 32, 40, 50, 64, 80, 100, 125, 160, 200, 250, 320, 400, 500, 640,
                                   800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 8000, 10000, 12800]
     static let allShutter: [Double] = [8000, 6400, 5000, 4000, 3200, 2500, 2000, 1600, 1250, 1000, 800, 640,
@@ -195,6 +202,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private let motion = CMMotionManager()
     private var recentRotation: [Double] = []
     private let longExposure = LongExposure()
+    // Vídeo
+    private let movieOutput = AVCaptureMovieFileOutput()
+    private let audioOutput = AVCaptureAudioDataOutput()
+    private var audioInput: AVCaptureDeviceInput?
+    private let recorder = VideoRecorder()
+    private let dual = DualCamera()
+    private let dualLock = NSLock()
+    private var latestDualFrame: CIImage?
+    /// Lado da sessão: modo de vídeo comum, modo cinema (fundo desfocado) e câmera dupla.
+    private var videoWanted = false
+    private var cinematicWanted = false
+    /// Com o modo cinema ligado o iPhone não deixa mexer no foco (fecharia o app).
+    private var cinematicActive = false
+    private var dualActive = false
     private var readoutTimer: Timer?
     private var lastBackLens: Lens = .wide
     private var videoFrameIndex = 0
@@ -220,6 +241,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Segundos que faltam na exposição longa (nil = parada).
     @Published var longRemaining: Double?
     @Published var rgbHistogram = false
+    static let videoRates = [24, 30, 60]
+    @Published var videoFPS = 30
+    @Published var isRecordingVideo = false
+    @Published var recordingStarted: Date?
+    /// Modo cinema: abertura simulada e os limites que a câmera aceita.
+    @Published var cinematicAperture: Float = 2.8
+    @Published var cinematicRange: ClosedRange<Float> = 2...16
     @Published var histogramRGB: [[Float]] = []
     @Published var falseColor = false { didSet { renderer.options.falseColor = falseColor } }
     @Published var nightFrames = 8
@@ -482,14 +510,25 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if mode.fixesShutter || leavingSpecial { applySpecialFormat() }
         if mode == .fast { prepareFastCapture() }
 
-        // Retrato troca para a câmera com profundidade; HDR precisa do RAW puro para o bracketing
+        // Câmera dupla usa uma sessão própria
+        if mode == .dual || oldMode == .dual { switchDual(on: mode == .dual) }
+        if mode == .video || mode == .cinematic || mode == .dual { requestMicrophone() }
+
+        // Retrato troca para a câmera com profundidade; HDR precisa do RAW puro; vídeo e cinema mudam o formato
         let wantsDepth = mode == .portrait, wantsHDR = mode == .hdr
-        if wantsDepth != (oldMode == .portrait) || wantsHDR != (oldMode == .hdr) {
+        let wantsVideo = mode == .video, wantsCinematic = mode == .cinematic
+        let changed = wantsDepth != (oldMode == .portrait) || wantsHDR != (oldMode == .hdr)
+            || wantsVideo != (oldMode == .video) || wantsCinematic != (oldMode == .cinematic)
+        if changed {
             let lens = self.lens, raw = rawMode
-            let reopen = wantsDepth != (oldMode == .portrait)
+            let reopen = wantsDepth != (oldMode == .portrait) || wantsVideo != (oldMode == .video)
+                || wantsCinematic != (oldMode == .cinematic)
+            if wantsCinematic && lens != .front && zoom != 1 { setZoom(1) }
             sessionQueue.async {
                 self.depthWanted = wantsDepth
                 self.hdrWanted = wantsHDR
+                self.videoWanted = wantsVideo
+                self.cinematicWanted = wantsCinematic
                 if reopen { self.setupSession(lens: lens, mode: raw) } else { self.applyRawMode(raw) }
                 DispatchQueue.main.async {
                     self.updateExposure()
@@ -544,15 +583,22 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     private func setupSession(lens: Lens, mode: RawMode) {
         specialFormatActive = false
+        cinematicActive = false
         session.beginConfiguration()
-        session.sessionPreset = .photo
         session.inputs.forEach { session.removeInput($0) }
+        session.sessionPreset = cinematicWanted ? .inputPriority : (videoWanted && session.canSetSessionPreset(.hd1920x1080) ? .hd1920x1080 : .photo)
 
         // Retrato: a câmera que entrega profundidade (principal + LiDAR, ou a TrueDepth na frente)
-        let types: [AVCaptureDevice.DeviceType] = depthWanted && (lens == .wide || lens == .front)
-            ? (lens == .front ? [.builtInTrueDepthCamera, .builtInWideAngleCamera]
-                              : [.builtInLiDARDepthCamera, .builtInDualWideCamera, .builtInWideAngleCamera])
-            : [lens.deviceType]
+        let types: [AVCaptureDevice.DeviceType]
+        if cinematicWanted {
+            // Modo cinema: a câmera dupla de trás (calcula profundidade) ou a TrueDepth na frente
+            types = lens == .front ? [.builtInTrueDepthCamera, .builtInWideAngleCamera] : [.builtInDualWideCamera, .builtInWideAngleCamera]
+        } else if depthWanted && (lens == .wide || lens == .front) {
+            types = lens == .front ? [.builtInTrueDepthCamera, .builtInWideAngleCamera]
+                                   : [.builtInLiDARDepthCamera, .builtInDualWideCamera, .builtInWideAngleCamera]
+        } else {
+            types = [lens.deviceType]
+        }
         guard let dev = types.lazy.compactMap({ AVCaptureDevice.default($0, for: .video, position: lens.position) }).first
                 ?? AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
               let input = try? AVCaptureDeviceInput(device: dev),
@@ -563,10 +609,37 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             return
         }
         session.addInput(input)
-        if !session.outputs.contains(photoOutput), session.canAddOutput(photoOutput) {
+        if cinematicWanted {
+            // Cinema: grava com o AVCaptureMovieFileOutput, que guarda a profundidade para editar o foco depois
+            if session.outputs.contains(videoOutput) { session.removeOutput(videoOutput) }
+            if session.outputs.contains(photoOutput) { session.removeOutput(photoOutput) }
+            if !session.outputs.contains(movieOutput), session.canAddOutput(movieOutput) { session.addOutput(movieOutput) }
+            configureCinematic(device: dev, input: input)
+        } else if session.outputs.contains(movieOutput) {
+            session.removeOutput(movieOutput)
+        }
+        // Microfone só nos modos de vídeo
+        if videoWanted || cinematicWanted {
+            if audioInput == nil, AVCaptureDevice.authorizationStatus(for: .audio) == .authorized,
+               let mic = AVCaptureDevice.default(for: .audio), let micInput = try? AVCaptureDeviceInput(device: mic),
+               session.canAddInput(micInput) {
+                session.addInput(micInput)
+                audioInput = micInput
+            } else if let audioInput, session.canAddInput(audioInput) {
+                session.addInput(audioInput)
+            }
+            if videoWanted, !session.outputs.contains(audioOutput), session.canAddOutput(audioOutput) {
+                audioOutput.setSampleBufferDelegate(self, queue: videoQueue)
+                session.addOutput(audioOutput)
+            }
+        } else {
+            if session.outputs.contains(audioOutput) { session.removeOutput(audioOutput) }
+            audioInput = nil
+        }
+        if !cinematicWanted, !session.outputs.contains(photoOutput), session.canAddOutput(photoOutput) {
             session.addOutput(photoOutput)
         }
-        if !session.outputs.contains(videoOutput), session.canAddOutput(videoOutput) {
+        if !cinematicWanted, !session.outputs.contains(videoOutput), session.canAddOutput(videoOutput) {
             videoOutput.alwaysDiscardsLateVideoFrames = true
             // Vídeo do visor no tamanho da tela em vez de 12 MP (onde o iOS oferecer)
             if videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))) {
@@ -575,6 +648,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
             session.addOutput(videoOutput)
         }
+        // No VÍDEO o arquivo precisa do 1080p cheio; nos outros modos o visor basta no tamanho da tela
+        if session.outputs.contains(videoOutput) { setPreviewSized(!videoWanted) }
         // O visor da câmera da frente fica espelhado, como num espelho. O ângulo vem do RotationCoordinator, logo abaixo.
         if let connection = videoOutput.connection(with: .video) {
             if connection.isVideoRotationAngleSupported(90) { connection.videoRotationAngle = 90 }
@@ -590,6 +665,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
         device = dev
         loggedBufferSize = false
+        if videoWanted { applyVideoFrameRate() }
         // Cada câmera é montada num ângulo; o coordinator, com a camada do visor, diz o ângulo certo
         DispatchQueue.main.async { self.makeRotationCoordinator(for: dev) }
         applyRawMode(mode)
@@ -620,6 +696,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         previewAngleObservation = coordinator.observe(\.videoRotationAngleForHorizonLevelPreview, options: [.initial, .new]) {
             [weak self] coordinator, _ in
             let angle = coordinator.videoRotationAngleForHorizonLevelPreview
+            if let connection = self?.angleLayer.connection, connection.isVideoRotationAngleSupported(angle) {
+                connection.videoRotationAngle = angle
+            }
             self?.sessionQueue.async { self?.applyPreviewAngle(angle, device: dev) }
         }
     }
@@ -648,6 +727,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func applyRawMode(_ mode: RawMode) {
+        guard session.outputs.contains(photoOutput) else { return }
         session.beginConfiguration()
         let proSupported = photoOutput.isAppleProRAWSupported
         let depth = depthWanted && photoOutput.isDepthDataDeliverySupported
@@ -726,7 +806,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let manual = manualFocus
         let position = lensPosition
         sessionQueue.async {
-            guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
+            guard !self.cinematicActive, let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
             defer { d.unlockForConfiguration() }
             if manual, d.isLockingFocusWithCustomLensPositionSupported {
                 d.setFocusModeLocked(lensPosition: min(max(position, 0), 1), completionHandler: nil)
@@ -759,7 +839,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
             defer { d.unlockForConfiguration() }
-            if !manualFocus, d.isFocusPointOfInterestSupported, d.isFocusModeSupported(.autoFocus) {
+            if !manualFocus, !self.cinematicActive, d.isFocusPointOfInterestSupported, d.isFocusModeSupported(.autoFocus) {
                 d.focusPointOfInterest = devicePoint
                 d.focusMode = .autoFocus
             }
@@ -780,6 +860,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Botão do app, volume ou Controle da Câmera.
     func shutter() {
         guard countdown == 0, stackProgress == nil else { return }
+        if captureMode == .video || captureMode == .cinematic {
+            toggleRecording()
+            return
+        }
         guard timerSeconds > 0 else { return capture() }
         countdown = timerSeconds
         tick()
@@ -803,6 +887,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         holding = true
         if captureMode == .action {
             startAction()
+        } else if captureMode == .dual {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                if self.holding && !self.isRecordingVideo { self.startDualRecording() }
+            }
         } else if captureMode.holdsForBurst {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                 if self.holding && !self.bursting { self.startBurst() }
@@ -817,6 +905,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Toque rápido: completa pelo menos 1 segundo de gravação
             let recorded = actionRecordingStarted.map { Date().timeIntervalSince($0) } ?? 0
             DispatchQueue.main.asyncAfter(deadline: .now() + max(0, 1.0 - recorded)) { self.stopAction() }
+        } else if captureMode == .dual && isRecordingVideo {
+            stopRecording()
         } else if bursting {
             stopBurst()
         } else {
@@ -1067,6 +1157,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             startLongExposure(options: options, started: t0)
             return
         }
+        if mode == .dual {
+            saveDualPhoto(options: options, started: t0)
+            return
+        }
         let portraitFocus: CGPoint? = faceRect.map {
             // Rosto no visor -> posição na foto (o visor mostra o centro ampliado pelo recorte)
             let c = crop
@@ -1239,6 +1333,255 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
         inFlight[id] = delegate
         photoOutput.capturePhoto(with: settings, delegate: delegate)
+    }
+
+    // MARK: - Vídeo, cinema e câmera dupla
+
+    private func requestMicrophone() {
+        guard AVCaptureDevice.authorizationStatus(for: .audio) == .notDetermined else { return }
+        AVCaptureDevice.requestAccess(for: .audio) { granted in
+            dlog("Microfone: \(granted ? "liberado" : "negado (vídeo sem som)")")
+            guard granted else { return }
+            // Reabre a sessão para incluir o microfone
+            DispatchQueue.main.async {
+                let lens = self.lens, raw = self.rawMode
+                self.sessionQueue.async { self.setupSession(lens: lens, mode: raw) }
+            }
+        }
+    }
+
+    private func applyVideoFrameRate() {
+        guard let d = device else { return }
+        let fps = Double(DispatchQueue.main.sync { self.videoFPS })
+        guard d.activeFormat.videoSupportedFrameRateRanges.contains(where: { $0.minFrameRate <= fps && fps <= $0.maxFrameRate }),
+              (try? d.lockForConfiguration()) != nil else {
+            dlog("⚠️ Vídeo: \(Int(fps)) fps não disponível neste formato")
+            return
+        }
+        let duration = CMTime(value: 1, timescale: CMTimeScale(fps))
+        d.activeVideoMinFrameDuration = duration
+        d.activeVideoMaxFrameDuration = duration
+        d.unlockForConfiguration()
+    }
+
+    func setVideoFPS(_ fps: Int) {
+        videoFPS = fps
+        sessionQueue.async { self.applyVideoFrameRate() }
+    }
+
+    /// Cinema: escolhe um formato 1080p que suporta o modo e liga o desfoque simulado.
+    private func configureCinematic(device dev: AVCaptureDevice, input: AVCaptureDeviceInput) {
+        guard #available(iOS 26.0, *) else {
+            post("O vídeo com fundo desfocado precisa do iOS 26 ou mais novo.")
+            return
+        }
+        let formats = dev.formats.filter { $0.isCinematicVideoCaptureSupported }
+        func dims(_ f: AVCaptureDevice.Format) -> CMVideoDimensions { CMVideoFormatDescriptionGetDimensions(f.formatDescription) }
+        guard let format = formats.first(where: { dims($0).width == 1920 && dims($0).height == 1080 }) ?? formats.first else {
+            dlog("⚠️ Cinema: \(dev.localizedName) não tem formato para o modo cinema")
+            post("Esta câmera não grava no modo cinema. Tente a 1× ou a frontal.")
+            return
+        }
+        if (try? dev.lockForConfiguration()) != nil {
+            dev.activeFormat = format
+            dev.unlockForConfiguration()
+        }
+        guard input.isCinematicVideoCaptureSupported else {
+            dlog("⚠️ Cinema: a entrada não suporta o modo cinema")
+            return
+        }
+        input.isCinematicVideoCaptureEnabled = true
+        cinematicActive = true
+        let minA = format.minSimulatedAperture, maxA = format.maxSimulatedAperture
+        if minA > 0, maxA >= minA {
+            let wanted = DispatchQueue.main.sync { self.cinematicAperture }
+            input.simulatedAperture = min(max(wanted, minA), maxA)
+            DispatchQueue.main.async {
+                self.cinematicRange = minA...maxA
+                if !(minA...maxA).contains(self.cinematicAperture) { self.cinematicAperture = format.defaultSimulatedAperture }
+            }
+        }
+        let d = dims(format)
+        dlog("Cinema: \(dev.localizedName) \(d.width)×\(d.height) · abertura f/\(minA)–f/\(maxA)")
+    }
+
+    func setCinematicAperture(_ value: Float) {
+        cinematicAperture = value
+        guard !isRecordingVideo else { return }
+        sessionQueue.async {
+            guard #available(iOS 26.0, *), self.cinematicActive,
+                  let input = self.session.inputs.compactMap({ $0 as? AVCaptureDeviceInput }).first(where: { $0.device.hasMediaType(.video) }),
+                  input.device.activeFormat.minSimulatedAperture > 0 else { return }
+            let f = input.device.activeFormat
+            input.simulatedAperture = min(max(value, f.minSimulatedAperture), f.maxSimulatedAperture)
+        }
+    }
+
+    private func toggleRecording() {
+        if isRecordingVideo { stopRecording() } else { startRecording() }
+    }
+
+    /// Giro do vídeo na reprodução quando o iPhone está deitado (o visor fica sempre em pé).
+    private var recordingTransform: CGAffineTransform {
+        guard let coordinator = rotationCoordinator else { return .identity }
+        let delta = coordinator.videoRotationAngleForHorizonLevelCapture - coordinator.videoRotationAngleForHorizonLevelPreview
+        return CGAffineTransform(rotationAngle: delta * .pi / 180)
+    }
+
+    private func startRecording() {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        isRecordingVideo = true
+        recordingStarted = Date()
+        if captureMode == .cinematic {
+            let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelCapture
+            sessionQueue.async {
+                if let angle, let c = self.movieOutput.connection(with: .video), c.isVideoRotationAngleSupported(angle) {
+                    c.videoRotationAngle = angle
+                }
+                let url = FileManager.default.temporaryDirectory.appendingPathComponent("cinema-\(UUID().uuidString).mov")
+                self.movieOutput.startRecording(to: url, recordingDelegate: self)
+                dlog("Cinema: gravando")
+            }
+        } else {
+            let fps = videoFPS
+            let transform = recordingTransform
+            videoQueue.async {
+                let size = self.lastFrameSize
+                self.recorder.start(width: Int(size.width), height: Int(size.height), fps: fps, transform: transform)
+            }
+        }
+    }
+
+    func stopRecording() {
+        guard isRecordingVideo else { return }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        isRecordingVideo = false
+        recordingStarted = nil
+        if movieOutput.isRecording {
+            sessionQueue.async { self.movieOutput.stopRecording() }
+            return
+        }
+        processing += 1
+        recorder.stop { url, frames in
+            dlog("Vídeo: \(frames) quadros gravados")
+            guard let url else {
+                DispatchQueue.main.async {
+                    self.processing -= 1
+                    self.message = "O vídeo não foi gravado."
+                }
+                return
+            }
+            Library.saveVideo(url) { error in
+                try? FileManager.default.removeItem(at: url)
+                DispatchQueue.main.async {
+                    self.processing -= 1
+                    if let error { self.message = error.localizedDescription } else { self.show("Vídeo salvo na galeria") }
+                }
+            }
+        }
+    }
+
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL,
+                    from connections: [AVCaptureConnection], error: Error?) {
+        // O arquivo pode estar bom mesmo com erro (ex.: parou por falta de espaço)
+        let finished = (error as NSError?)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool ?? (error == nil)
+        dlog("Cinema: gravação terminou\(finished ? "" : " com erro: \(error?.localizedDescription ?? "")")")
+        guard finished else {
+            DispatchQueue.main.async { self.message = "O vídeo no modo cinema não foi gravado." }
+            return
+        }
+        Library.saveVideo(outputFileURL) { saveError in
+            try? FileManager.default.removeItem(at: outputFileURL)
+            DispatchQueue.main.async {
+                if let saveError { self.message = saveError.localizedDescription }
+                else { self.show("Vídeo cinema salvo. No app Fotos dá para mudar o foco e o desfoque.") }
+            }
+        }
+    }
+
+    /// Tamanho do último quadro do visor (para o gravador saber a resolução). Lido na fila de vídeo.
+    private var lastFrameSize = CGSize(width: 1080, height: 1920)
+
+    /// Quadro com o look e o zoom, do jeito que vai para o arquivo de vídeo.
+    private func recordingImage(_ frame: CIImage) -> CIImage {
+        var options = renderer.options
+        options.zebra = false
+        options.peaking = false
+        options.falseColor = false
+        let c = options.develop.zoom
+        var image = frame
+        if c > 1.01 {
+            let e = frame.extent
+            let rect = CGRect(x: e.midX - e.width / c / 2, y: e.midY - e.height / c / 2, width: e.width / c, height: e.height / c)
+            image = frame.cropped(to: rect)
+                .transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
+                .transformed(by: CGAffineTransform(scaleX: c, y: c))
+                .transformed(by: CGAffineTransform(translationX: e.minX, y: e.minY))
+                .cropped(to: e)
+        }
+        return Developer.preview(image, options: options)
+    }
+
+    private func switchDual(on: Bool) {
+        guard DualCamera.isSupported else {
+            if on { message = "Este iPhone não usa as duas câmeras ao mesmo tempo." }
+            return
+        }
+        if on {
+            dual.onFrame = { [weak self] image, time in
+                guard let self else { return }
+                self.dualLock.lock()
+                self.latestDualFrame = image
+                self.dualLock.unlock()
+                self.renderer.enqueue(image)
+                if self.recorder.isRecording { self.recorder.append(self.recordingImage(image), at: time) }
+            }
+            dual.onAudio = { [weak self] buffer in self?.recorder.appendAudio(buffer) }
+            sessionQueue.async {
+                self.dualActive = true
+                if self.session.isRunning { self.session.stopRunning() }
+                self.dual.start(withAudio: AVCaptureDevice.authorizationStatus(for: .audio) == .authorized)
+            }
+        } else {
+            if isRecordingVideo { stopRecording() }
+            dual.stop()
+            sessionQueue.async {
+                self.dualActive = false
+                if !self.session.isRunning { self.session.startRunning() }
+            }
+        }
+    }
+
+    private func startDualRecording() {
+        dualLock.lock()
+        let size = latestDualFrame?.extent.size ?? CGSize(width: 1080, height: 1920)
+        dualLock.unlock()
+        isRecordingVideo = true
+        recordingStarted = Date()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        recorder.start(width: Int(size.width), height: Int(size.height), fps: 30, transform: .identity)
+    }
+
+    private func saveDualPhoto(options: DevelopOptions, started t0: CFAbsoluteTime) {
+        dualLock.lock()
+        let frame = latestDualFrame
+        dualLock.unlock()
+        guard let frame else {
+            processing -= 1
+            return
+        }
+        var opts = options
+        opts.zoom = 1
+        processingQueue.async {
+            let output = Developer.developVideoImage(frame, options: opts)
+            Library.save(dng: nil, developed: output?.heic, tryPair: false) { error in
+                dlog(error == nil ? "✅ Foto dupla salva: \(Diagnostics.ms(since: t0))" : "❌ \(error!.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.processing -= 1
+                    if let thumb = output?.thumbnail { self.thumbnail = thumb }
+                }
+            }
+        }
     }
 
     // MARK: - Exposição longa
@@ -1448,11 +1791,19 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     // MARK: - Visor
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        if output === audioOutput {
+            recorder.appendAudio(sampleBuffer)
+            return
+        }
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         actionRecorder.append(sampleBuffer)
         let frame = CIImage(cvPixelBuffer: pixelBuffer)
         if longExposure.isRunning { longExposure.add(frame) }
+        if recorder.isRecording {
+            recorder.append(recordingImage(frame), at: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+        }
         if videoFrameIndex % renderEvery == 0 { renderer.enqueue(frame) }
+        lastFrameSize = CGSize(width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer))
         if !loggedBufferSize {
             loggedBufferSize = true
             dlog("Vídeo do visor chegando em \(CVPixelBufferGetWidth(pixelBuffer))×\(CVPixelBufferGetHeight(pixelBuffer))")
@@ -1505,7 +1856,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
             defer { d.unlockForConfiguration() }
-            if d.isFocusPointOfInterestSupported, d.isFocusModeSupported(.continuousAutoFocus) {
+            if !self.cinematicActive, d.isFocusPointOfInterestSupported, d.isFocusModeSupported(.continuousAutoFocus) {
                 d.focusPointOfInterest = devicePoint
                 d.focusMode = .continuousAutoFocus
             }
