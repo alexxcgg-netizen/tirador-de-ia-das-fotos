@@ -17,6 +17,8 @@ enum SourceStore {
         var focusY: Double?
         var date: Date
         var mode: String
+        /// ETTR: quanto a revelação descontou (a foto foi exposta mais clara). Opcional: originais antigos não têm.
+        var exposureOffset: Float?
 
         var focusPoint: CGPoint? { focusX.flatMap { x in focusY.map { CGPoint(x: x, y: $0) } } }
     }
@@ -58,7 +60,8 @@ enum SourceStore {
                                  zoom: Double(options.zoom), aspect: options.originalAspect ? "" : options.aspect.rawValue,
                                  mirror: options.mirror,
                                  aperture: aperture, focusX: focusPoint.map { Double($0.x) }, focusY: focusPoint.map { Double($0.y) },
-                                 date: Date(), mode: mode), at: 0)
+                                 date: Date(), mode: mode,
+                                 exposureOffset: options.exposureOffset == 0 ? nil : options.exposureOffset), at: 0)
             // No máximo `limit` fotos e uns 700 MB (um ProRAW de 48 MP passa de 70 MB)
             func size(_ e: Entry) -> Int {
                 (try? directory.appendingPathComponent(e.file).resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0

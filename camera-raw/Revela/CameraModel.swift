@@ -2446,6 +2446,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         stored.zoom = 1
         stored.mirror = false
         stored.originalAspect = true
+        // A versão neutra já saiu com a exposição descontada (ETTR): não desconta de novo ao reabrir
+        stored.exposureOffset = 0
         let frame = CapturedFrame(data: plain.heic, isRaw: false)
         return { id in SourceStore.keep(frame, options: stored, assetID: id, mode: mode, aperture: 2.8, focusPoint: nil) }
     }

@@ -123,7 +123,10 @@ final class StudioModel: ObservableObject {
         focus = entry.focusPoint
         suspendRefresh = false
         title = "\(entry.mode) · \(entry.date.formatted(date: .omitted, time: .shortened))"
-        open(CapturedFrame(data: data, isRaw: entry.isRaw, hasDepth: entry.hasDepth))
+        // Foto com ETTR: o original veio mais claro; começa com a mesma exposição da foto salva
+        var start = Developer.Adjust()
+        start.exposure = entry.exposureOffset ?? 0
+        open(CapturedFrame(data: data, isRaw: entry.isRaw, hasDepth: entry.hasDepth), adjust: start)
     }
 
     func load(_ item: PhotosPickerItem) {
@@ -165,9 +168,9 @@ final class StudioModel: ObservableObject {
         return type.conforms(to: .rawImage)
     }
 
-    private func open(_ newFrame: CapturedFrame) {
+    private func open(_ newFrame: CapturedFrame, adjust startAdjust: Developer.Adjust = Developer.Adjust()) {
         suspendRefresh = true
-        adjust = Developer.Adjust()
+        adjust = startAdjust
         suspendRefresh = false
         frame = newFrame
         previewScene = nil
@@ -521,7 +524,7 @@ struct StudioView: View {
     private var adjustControls: some View {
         VStack(spacing: 4) {
             row("Exposição", value: String(format: "%+.1f", model.adjust.exposure)) {
-                Slider(value: $model.adjust.exposure, in: -2...2, step: 0.1)
+                Slider(value: $model.adjust.exposure, in: -3...3, step: 0.1)
             }
             row("Temperatura", value: String(format: "%+.0f", model.adjust.temperature * 100)) {
                 Slider(value: $model.adjust.temperature, in: -1...1, step: 0.02)
