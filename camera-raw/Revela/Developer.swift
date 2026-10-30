@@ -290,6 +290,10 @@ enum AspectRatio: String, CaseIterable, Identifiable {
 struct CapturedFrame {
     let data: Data
     let isRaw: Bool
+    /// HEIC com mapa de profundidade e máscara de pessoa (Retrato).
+    var hasDepth = false
+    /// Desvio de exposição do quadro no HDR (−2, 0, +2).
+    var exposureBias: Float = 0
 }
 
 /// Tudo que define como a foto é revelada.
@@ -301,8 +305,17 @@ struct DevelopOptions {
     var aspect: AspectRatio = .r43
     /// Inverte na horizontal, como num espelho.
     var mirror = false
+    /// HDR: um pouco menos de contraste e um pouco mais de luz, para caber o céu e a sombra.
+    var hdrCompress = false
 
-    var params: LookParams { look.params.scaled(amount: amount, grain: grain) }
+    var params: LookParams {
+        var p = look.params.scaled(amount: amount, grain: grain)
+        if hdrCompress {
+            p.contrast *= 0.85
+            p.exposure += 0.15
+        }
+        return p
+    }
 }
 
 /// Revela o DNG com a nossa própria curva, sem o processamento de "aparência" da Apple.
@@ -339,6 +352,11 @@ enum Developer {
     private static let sharpnessKernel = kernel("revelaSharpness")
     private static let pickKernel = kernel("revelaPick")
     private static let clipKernel = kernel("revelaClip")
+    private static let addKernel = kernel("revelaAdd")
+    private static let hdrColorKernel = kernel("revelaHDRColor")
+    private static let hdrWeightKernel = kernel("revelaHDRWeight")
+    private static let divideKernel = kernel("revelaDivide")
+    private static let blurMapKernel = kernel("revelaBlurMap")
 
     private static let noise = CIFilter.randomGenerator().outputImage!
 
@@ -353,7 +371,8 @@ enum Developer {
     static var kernelStatus: String {
         let names = ["revelaTone": toneKernel, "revelaToScene": toSceneKernel, "revelaHighlights": highlightsKernel,
                      "revelaPeaking": peakingKernel, "revelaSharpness": sharpnessKernel, "revelaPick": pickKernel,
-                     "revelaClip": clipKernel]
+                     "revelaClip": clipKernel, "revelaAdd": addKernel, "revelaHDRColor": hdrColorKernel,
+                     "revelaHDRWeight": hdrWeightKernel, "revelaDivide": divideKernel, "revelaBlurMap": blurMapKernel]
         let missing = names.filter { $0.value == nil }.map(\.key).sorted()
         return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
@@ -361,12 +380,14 @@ enum Developer {
     // MARK: - Abrir os quadros
 
     /// RAW -> luz linear da cena, sem boost de contraste e sem tone mapping local da Apple.
-    static func linear(dng: Data, scale: Float = 1) -> CIImage? {
+    /// `neutralExposure`: sem a exposição de base do DNG (HDR: o branco do sensor fica em 1,0 em todos os quadros).
+    static func linear(dng: Data, scale: Float = 1, neutralExposure: Bool = false) -> CIImage? {
         guard let raw = CIRAWFilter(imageData: dng, identifierHint: "com.adobe.raw-image") else { return nil }
         raw.boostAmount = 0
         raw.boostShadowAmount = 0
         if raw.isLocalToneMapSupported { raw.localToneMapAmount = 0 }
         raw.extendedDynamicRangeAmount = 0
+        if neutralExposure { raw.baselineExposure = 0 }
         if scale < 1 {
             raw.scaleFactor = scale
             raw.isDraftModeEnabled = true
@@ -601,7 +622,7 @@ enum Developer {
         var used = 0
         for i in 0..<count {
             guard let image = frame(i) else { continue }
-            sum = sum.map { image.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: $0]) } ?? image
+            sum = sum.map { add($0, image) } ?? image
             used += 1
             if used % 3 == 0, let partial = sum { sum = materialize(partial, extent: extent) }
         }
@@ -656,6 +677,127 @@ enum Developer {
         context.render(shifted, to: buffer, bounds: CGRect(x: 0, y: 0, width: w, height: h), colorSpace: linearP3)
         return CIImage(cvPixelBuffer: buffer, options: [.colorSpace: linearP3])
             .transformed(by: CGAffineTransform(translationX: extent.minX, y: extent.minY))
+    }
+
+    private static func add(_ a: CIImage, _ b: CIImage) -> CIImage {
+        addKernel?.apply(extent: a.extent, arguments: [a, b])
+            ?? b.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: a])
+    }
+
+    // MARK: - HDR
+
+    /// Junta os quadros do bracketing (escuro, normal, claro): cada pixel vem dos quadros em que não estourou
+    /// nem ficou escuro demais, todos trazidos para a mesma exposição.
+    static func hdr(_ frames: [CapturedFrame], options: DevelopOptions) -> Output? {
+        let t0 = CFAbsoluteTimeGetCurrent()
+        let sorted = frames.sorted { $0.exposureBias < $1.exposureBias }
+        guard let reference = sorted.min(by: { abs($0.exposureBias) < abs($1.exposureBias) }),
+              let refImage = hdrImage(reference), let hdrColorKernel, let hdrWeightKernel, let divideKernel else { return nil }
+        let extent = refImage.extent
+        dlog("HDR: \(sorted.count) quadros (\(sorted.map { String(format: "%+.0f", $0.exposureBias) }.joined(separator: " ")) EV) · \(Int(extent.width))×\(Int(extent.height))")
+
+        // Alinha cada quadro (já trazido para a exposição normal) com o de referência
+        let small: Float = 0.25
+        guard let refSmall = hdrImage(reference, scale: small) else { return nil }
+        var sumColor: CIImage?
+        var sumWeight: CIImage?
+        for (index, frame) in sorted.enumerated() {
+            let gain = Float(pow(2.0, Double(-frame.exposureBias)))
+            guard let image = hdrImage(frame) else { continue }
+            var aligned = image
+            if frame.exposureBias != reference.exposureBias, let smallImage = hdrImage(frame, scale: small) {
+                let warp = alignment(of: scaled(smallImage, by: gain), to: refSmall, scale: CGFloat(small),
+                                     fullExtent: extent, homography: false)
+                aligned = warp(image).cropped(to: extent)
+            }
+            // O quadro mais escuro sempre conta um pouco: é o único com detalhe onde os outros estouraram
+            let floor: Float = index == 0 ? 0.01 : 0
+            guard let color = hdrColorKernel.apply(extent: extent, arguments: [aligned, gain, floor]),
+                  let weight = hdrWeightKernel.apply(extent: extent, arguments: [aligned, floor]) else { continue }
+            sumColor = materialize(sumColor.map { add($0, color) } ?? color, extent: extent)
+            sumWeight = materialize(sumWeight.map { add($0, weight) } ?? weight, extent: extent)
+        }
+        guard let sumColor, let sumWeight,
+              var merged = divideKernel.apply(extent: extent, arguments: [sumColor, sumWeight]) else { return nil }
+        // Devolve a exposição de base do DNG normal (tirada para alinhar o branco dos quadros)
+        if reference.isRaw, let raw = CIRAWFilter(imageData: reference.data, identifierHint: "com.adobe.raw-image") {
+            merged = scaled(merged, by: Float(pow(2.0, Double(raw.baselineExposure))))
+        }
+        var hdrOptions = options
+        hdrOptions.hdrCompress = true
+        let output = finish(merged.settingProperties(refImage.properties), options: hdrOptions)
+        dlog("HDR revelado: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
+        return output
+    }
+
+    private static func hdrImage(_ frame: CapturedFrame, scale: Float = 1) -> CIImage? {
+        frame.isRaw ? linear(dng: frame.data, scale: scale, neutralExposure: true) : processed(frame.data, scale: scale)
+    }
+
+    private static func scaled(_ image: CIImage, by k: Float) -> CIImage {
+        let v = CGFloat(k)
+        return image.applyingFilter("CIColorMatrix", parameters: [
+            "inputRVector": CIVector(x: v, y: 0, z: 0, w: 0),
+            "inputGVector": CIVector(x: 0, y: v, z: 0, w: 0),
+            "inputBVector": CIVector(x: 0, y: 0, z: v, w: 0),
+            "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
+        ])
+    }
+
+    // MARK: - Retrato com desfoque
+
+    /// HEIC com mapa de profundidade: borra o fundo conforme a distância até o plano em foco.
+    /// `aperture` imita a abertura de uma lente (f/1.4 borra muito, f/16 quase nada).
+    /// `focusPoint`: onde está o rosto (0…1, origem em cima à esquerda); nil = centro.
+    static func developPortrait(_ data: Data, aperture: Float, focusPoint: CGPoint?, options: DevelopOptions) -> Output? {
+        let t0 = CFAbsoluteTimeGetCurrent()
+        guard let raw = CIImage(data: data) else { return nil }
+        let orientationValue = (raw.properties[kCGImagePropertyOrientation as String] as? NSNumber)?.uint32Value ?? 1
+        let orientation = CGImagePropertyOrientation(rawValue: orientationValue) ?? .up
+        func upright(_ image: CIImage) -> CIImage {
+            let o = image.oriented(orientation)
+            return o.transformed(by: CGAffineTransform(translationX: -o.extent.minX, y: -o.extent.minY))
+        }
+        let image = upright(raw)
+        let extent = image.extent
+        var properties = raw.properties
+        properties[kCGImagePropertyOrientation as String] = nil
+
+        guard let disparityRaw = CIImage(data: data, options: [.auxiliaryDisparity: true]), let blurMapKernel else {
+            dlog("Retrato: a foto veio sem profundidade; revelando sem desfoque")
+            let scene = toSceneKernel?.apply(extent: extent, arguments: [image]) ?? image
+            return finish(scene.settingProperties(properties), options: options)
+        }
+        func fit(_ aux: CIImage) -> CIImage {
+            let a = upright(aux)
+            return a.transformed(by: CGAffineTransform(scaleX: extent.width / a.extent.width, y: extent.height / a.extent.height))
+                .cropped(to: extent)
+        }
+        let disparity = fit(disparityRaw)
+        let matte = CIImage(data: data, options: [.auxiliaryPortraitEffectsMatte: true]).map(fit)
+            ?? CIImage(color: .black).cropped(to: extent)
+
+        // Profundidade do plano em foco: média num quadradinho em volta do rosto (ou do centro)
+        let p = focusPoint ?? CGPoint(x: 0.5, y: 0.45)
+        let box = CGRect(x: p.x * extent.width - extent.width * 0.05, y: (1 - p.y) * extent.height - extent.width * 0.05,
+                         width: extent.width * 0.1, height: extent.width * 0.1).intersection(extent)
+        let average = disparity.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: box)])
+        var pixel = [Float](repeating: 0, count: 4)
+        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+        let focus = pixel[0]
+
+        let strength = Float(2.8 / max(aperture, 0.7)) * 3
+        let radius = min(extent.width, extent.height) * 0.012 * CGFloat(2.8 / max(aperture, 0.7))
+        guard let map = blurMapKernel.apply(extent: extent, arguments: [disparity, matte, focus, strength]) else { return nil }
+        let blurred = image.clampedToExtent()
+            .applyingFilter("CIMaskedVariableBlur", parameters: ["inputMask": map, kCIInputRadiusKey: radius])
+            .cropped(to: extent)
+        let scene = toSceneKernel?.apply(extent: extent, arguments: [blurred]) ?? blurred
+        let output = finish(scene.settingProperties(properties), options: options)
+        dlog(String(format: "Retrato revelado f/%.1f · foco na disparidade %.2f · raio %.0f px: ", aperture, focus, radius)
+             + Diagnostics.ms(since: t0) + (output == nil ? " · FALHOU" : ""))
+        return output
     }
 
     // MARK: - Visor

@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var showReport = false
     @State private var showGuide = false
     @State private var pressingShutter = false
+    @State private var pinchStart: CGFloat?
     @AppStorage("guideSeen") private var guideSeen = false
 
     var body: some View {
@@ -115,62 +116,93 @@ struct ContentView: View {
 
     // MARK: - Lentes e modos
 
-    /// Lentes do dia a dia ficam à vista; 8× e Macro ficam no "···".
-    private var mainLenses: [Lens] {
-        camera.availableLenses.filter { [.ultraWide, .wide, .wide2x, .tele].contains($0) }
+    /// Zooms do dia a dia ficam à vista; 8× e Macro ficam no "···". Pinça no visor faz qualquer zoom entre eles.
+    private var zoomPresets: [CGFloat] {
+        var presets: [CGFloat] = []
+        if camera.availableLenses.contains(.ultraWide) { presets.append(0.5) }
+        presets += [1, 2]
+        if camera.availableLenses.contains(.tele) { presets.append(4) }
+        return presets
     }
 
-    private var extraLenses: [Lens] {
-        camera.availableLenses.filter { $0 == .tele8x || $0 == .macro }
+    private func zoomLabel(_ z: CGFloat) -> String {
+        z == 0.5 ? "0,5×" : "\(Int(z))×"
+    }
+
+    private func isCurrent(_ z: CGFloat) -> Bool {
+        camera.lens != .macro && abs(camera.zoom - z) < 0.05
     }
 
     private var lensPicker: some View {
         HStack(spacing: 12) {
             if camera.lens == .front {
-                lensButton(.front)
+                ForEach([CGFloat(1), 2], id: \.self) { z in zoomButton(z) }
             } else {
-                ForEach(mainLenses) { lens in lensButton(lens) }
-                if !extraLenses.isEmpty {
-                    let extraOn = extraLenses.contains(camera.lens)
-                    Menu {
-                        ForEach(extraLenses) { lens in
-                            Button {
-                                withAnimation(.snappy(duration: 0.2)) { camera.select(lens: lens) }
-                                if lens == .macro { camera.show("Macro: chegue até 2 cm. O peaking liga sozinho para mostrar o que está em foco.") }
-                            } label: {
-                                Label(lens == .macro ? "Macro (até 2 cm)" : "8× (tele recortada)",
-                                      systemImage: lens == .macro ? "camera.macro" : "plus.magnifyingglass")
-                            }
+                ForEach(zoomPresets, id: \.self) { z in zoomButton(z) }
+                let extraOn = camera.lens == .macro || isCurrent(8)
+                Menu {
+                    if camera.availableLenses.contains(.tele) {
+                        Button { withAnimation(.snappy(duration: 0.2)) { camera.setZoom(8) } } label: {
+                            Label("8× (tele recortada)", systemImage: "plus.magnifyingglass")
                         }
-                    } label: {
-                        Group {
-                            if camera.lens == .macro { Image(systemName: "camera.macro") }
-                            else if camera.lens == .tele8x { Text("8×") }
-                            else { Text("···") }
-                        }
-                        .font(.system(size: 15, weight: .bold))
-                        .frame(width: 52, height: 52)
-                        .foregroundStyle(extraOn ? accent : Color.white)
-                        .background(Circle().fill(extraOn ? panelOn : panelFill))
                     }
-                    .accessibilityLabel("Mais lentes")
+                    if camera.availableLenses.contains(.macro) {
+                        Button {
+                            withAnimation(.snappy(duration: 0.2)) { camera.select(lens: .macro) }
+                            camera.show("Macro: chegue até 2 cm. O peaking liga sozinho para mostrar o que está em foco.")
+                        } label: {
+                            Label("Macro (até 2 cm)", systemImage: "camera.macro")
+                        }
+                    }
+                } label: {
+                    Group {
+                        if camera.lens == .macro { Image(systemName: "camera.macro") }
+                        else if isCurrent(8) { Text("8×") }
+                        else { Text("···") }
+                    }
+                    .font(.system(size: 15, weight: .bold))
+                    .frame(width: 52, height: 52)
+                    .foregroundStyle(extraOn ? accent : Color.white)
+                    .background(Circle().fill(extraOn ? panelOn : panelFill))
                 }
+                .accessibilityLabel("Mais lentes")
             }
         }
     }
 
-    private func lensButton(_ lens: Lens) -> some View {
-        Button {
-            withAnimation(.snappy(duration: 0.2)) { camera.select(lens: lens) }
+    /// Este botão mostra o zoom atual? (o exato, ou o mais perto quando a pinça parou entre dois)
+    private func showsCurrentZoom(_ z: CGFloat) -> Bool {
+        if camera.lens == .macro { return false }
+        if isCurrent(z) { return true }
+        let anyExact = zoomPresets.contains { isCurrent($0) }
+        return !anyExact && nearestPreset == z
+    }
+
+    private func zoomButton(_ z: CGFloat) -> some View {
+        let current: Bool = showsCurrentZoom(z)
+        let title: String = current ? camera.zoomText : zoomLabel(z)
+        let fill: Color = isCurrent(z) ? panelOn : panelFill
+        return Button {
+            withAnimation(.snappy(duration: 0.2)) {
+                if camera.lens == .macro { camera.select(lens: .wide) }
+                camera.setZoom(z)
+            }
         } label: {
-            Text(lens.rawValue.replacingOccurrences(of: "0.5", with: "0,5"))
+            Text(title)
                 .font(.system(size: 15, weight: .bold))
                 .minimumScaleFactor(0.6).lineLimit(1)
                 .frame(width: 52, height: 52)
-                .foregroundStyle(camera.lens == lens ? accent : Color.white)
-                .background(Circle().fill(camera.lens == lens ? panelOn : panelFill))
+                .foregroundStyle(current ? accent : Color.white)
+                .background(Circle().fill(fill))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Zoom \(zoomLabel(z))")
+    }
+
+    /// O botão mais perto do zoom atual mostra o valor exato (ex.: 2,7×) quando você usa a pinça.
+    private var nearestPreset: CGFloat {
+        let presets = camera.lens == .front ? [CGFloat(1), 2] : zoomPresets
+        return presets.last(where: { $0 <= camera.zoom + 0.01 }) ?? presets.first ?? 1
     }
 
     private var modePicker: some View {
@@ -198,11 +230,70 @@ struct ContentView: View {
                 .onAppear { proxy.scrollTo(camera.captureMode, anchor: .center) }
             }
             if camera.captureMode == .freeze { freezeControls }
+            if camera.captureMode == .portrait { apertureControls }
+            if camera.captureMode == .night { nightControls }
             if !camera.captureMode.hint.isEmpty {
                 Text(camera.captureMode.hint)
                     .font(.caption).opacity(0.6)
                     .multilineTextAlignment(.center)
                     .transition(.opacity)
+            }
+        }
+    }
+
+    /// Retrato: quanto borrar o fundo, como a abertura de uma lente.
+    private var apertureControls: some View {
+        HStack(spacing: 6) {
+            ForEach(CameraModel.apertures, id: \.self) { f in
+                Button(apertureLabel(f)) {
+                    camera.portraitAperture = f
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
+                .font(.system(size: 12, weight: .bold, design: .monospaced))
+                .padding(.horizontal, 8).frame(height: 36)
+                .foregroundStyle(camera.portraitAperture == f ? Color.black : Color.white)
+                .background(Capsule().fill(camera.portraitAperture == f ? accent : panelFill))
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func apertureLabel(_ f: Float) -> String {
+        if f == f.rounded() { return "f/\(Int(f))" }
+        return "f/" + String(format: "%.1f", f).replacingOccurrences(of: ".", with: ",")
+    }
+
+    /// Noite: tempo de cada foto e quantas fotos somar.
+    private var nightControls: some View {
+        VStack(spacing: 6) {
+            HStack(spacing: 6) {
+                ForEach(NightTime.allCases) { t in
+                    Button(t.rawValue) {
+                        camera.nightTime = t
+                        UISelectionFeedbackGenerator().selectionChanged()
+                    }
+                    .font(.system(size: 12, weight: .bold))
+                    .padding(.horizontal, 9).frame(height: 36)
+                    .foregroundStyle(camera.nightTime == t ? Color.black : Color.white)
+                    .background(Capsule().fill(camera.nightTime == t ? accent : panelFill))
+                    .buttonStyle(.plain)
+                }
+            }
+            HStack(spacing: 6) {
+                ForEach([4, 8, 16], id: \.self) { n in
+                    Button("\(n) fotos") {
+                        camera.nightFrames = n
+                        UISelectionFeedbackGenerator().selectionChanged()
+                    }
+                    .font(.system(size: 12, weight: .bold))
+                    .padding(.horizontal, 9).frame(height: 36)
+                    .foregroundStyle(camera.nightFrames == n ? Color.black : Color.white)
+                    .background(Capsule().fill(camera.nightFrames == n ? accent : panelFill))
+                    .buttonStyle(.plain)
+                }
+                Label(camera.isSteady ? "Apoiado" : "Na mão", systemImage: camera.isSteady ? "checkmark.circle.fill" : "hand.raised.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(camera.isSteady ? Color.green : Color.white.opacity(0.7))
             }
         }
     }
@@ -296,7 +387,7 @@ struct ContentView: View {
                         .padding(.bottom, 10)
                 }
                 if let face = camera.faceRect, camera.stackProgress == nil {
-                    let zoom = camera.lens.zoom
+                    let zoom = camera.crop
                     let advice = camera.distanceAdvice
                     let color: Color = advice == nil ? .white.opacity(0.6) : (advice!.good ? .green : accent)
                     RoundedRectangle(cornerRadius: 10)
@@ -364,7 +455,27 @@ struct ContentView: View {
                     .animation(.easeOut(duration: 0.2), value: camera.flash)
                     .allowsHitTesting(false)
             }
+            .overlay {
+                if pinchStart != nil {
+                    Text(camera.zoomText)
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background(.black.opacity(0.6), in: Capsule())
+                        .allowsHitTesting(false)
+                }
+            }
             .contentShape(Rectangle())
+            .simultaneousGesture(
+                MagnificationGesture()
+                    .onChanged { scale in
+                        if pinchStart == nil { pinchStart = camera.zoom }
+                        camera.setZoom((pinchStart ?? 1) * scale, settle: false)
+                    }
+                    .onEnded { _ in
+                        pinchStart = nil
+                        camera.setZoom(camera.zoom, settle: true)
+                    }
+            )
             .onTapGesture(coordinateSpace: .local) { location in
                 camera.focus(at: CGPoint(x: location.x / geo.size.width, y: location.y / geo.size.height))
             }
@@ -655,16 +766,18 @@ struct ContentView: View {
         switch camera.captureMode {
         case .focusStack: return "7×\nFOCO"
         case .average: return "8×\nMÉDIA"
-        case .night: return "8×\nNOITE"
+        case .night: return "\(camera.nightFrames)×\nNOITE"
         case .stars: return "16×\nCÉU"
         case .moon: return "8×\nLUA"
         case .flash: return "DNG\nFLASH"
         case .fast: return camera.rawMode == .bayer ? "RAW\n12MP" : "HEIC\n12MP"
         case .action: return "4K\n120"
         case .freeze: return camera.freezeMax ? "1/\(Int((1 / camera.freezeShutter).rounded()))\nMÁX" : "1/\(Int((1 / camera.freezeShutter).rounded()))\n12MP"
-        case .photo, .portrait:
+        case .hdr: return "HDR\n3× RAW"
+        case .portrait: return apertureLabel(camera.portraitAperture) + "\nRETRATO"
+        case .photo:
             if camera.rawMode == .bayer { return "DNG\nRAW" }
-            return camera.lens.zoom > 1 ? "DNG\n12MP" : "DNG\n48MP"
+            return camera.crop > 1.4 ? "DNG\n\(camera.zoomText)" : "DNG\n48MP"
         }
     }
 

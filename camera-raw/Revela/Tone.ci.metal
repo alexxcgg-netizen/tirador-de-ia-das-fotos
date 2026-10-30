@@ -10,6 +10,14 @@ namespace revela {
         return clamp((x * (kA * x + kB)) / (x * (kC * x + kD) + kE), 0.0f, 1.0f);
     }
 
+    // HDR: peso de cada pixel de um quadro (evita o estourado e o muito escuro, que tem ruído)
+    inline float hdrWeight(float3 c, float floorWeight) {
+        float peak = max(c.r, max(c.g, c.b));
+        float l = dot(c, kLuma);
+        float w = (1.0f - smoothstep(0.75f, 0.97f, peak)) * smoothstep(0.0f, 0.04f, l);
+        return max(w, floorWeight);
+    }
+
     // Inversa da curva: estima a luz da cena a partir de uma imagem já com curva (vídeo, HEIC)
     inline float3 inverseFilmic(float3 v) {
         float3 x = clamp(v, 0.0f, 0.985f);
@@ -106,6 +114,33 @@ namespace coreimage {
     float4 revelaPick(sample_t candidate, sample_t current) {
         float m = candidate.r > current.r * 1.05f ? 1.0f : 0.0f;
         return float4(m, m, m, 1.0f);
+    }
+
+    // Soma simples (alfa sempre 1, para a média e o HDR não acumularem alfa)
+    float4 revelaAdd(sample_t a, sample_t b) {
+        return float4(a.rgb + b.rgb, 1.0f);
+    }
+
+    // HDR: cor do quadro trazida para a exposição normal (gain) e multiplicada pelo peso
+    float4 revelaHDRColor(sample_t s, float gain, float floorWeight) {
+        float3 c = max(s.rgb, float3(0.0f));
+        return float4(c * gain * revela::hdrWeight(c, floorWeight), 1.0f);
+    }
+
+    float4 revelaHDRWeight(sample_t s, float floorWeight) {
+        float w = revela::hdrWeight(max(s.rgb, float3(0.0f)), floorWeight);
+        return float4(w, w, w, 1.0f);
+    }
+
+    float4 revelaDivide(sample_t sum, sample_t weight) {
+        return float4(sum.rgb / max(weight.r, 1e-4f), 1.0f);
+    }
+
+    // Retrato: quanto borrar cada ponto, pela distância até o plano em foco.
+    // A máscara de pessoa (matte) protege o rosto e o cabelo.
+    float4 revelaBlurMap(sample_t disparity, sample_t matte, float focus, float strength) {
+        float v = clamp(abs(disparity.r - focus) * strength, 0.0f, 1.0f) * (1.0f - matte.r);
+        return float4(v, v, v, 1.0f);
     }
 
     // Estrelas: corta o que brilha muito acima da média (avião, satélite, pixel quente)

@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreMotion
 import ImageIO
 import Photos
 import UIKit
@@ -11,14 +12,12 @@ enum RawMode: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-/// Cada "lente" do app é uma câmera física + um recorte digital do sensor de 48 MP.
+/// As câmeras físicas. O zoom (0,5× a 25×) escolhe uma delas e recorta o centro do sensor de 48 MP.
 enum Lens: String, CaseIterable, Identifiable {
     case macro = "Macro"
     case ultraWide = "0.5×"
     case wide = "1×"
-    case wide2x = "2×"
     case tele = "4×"
-    case tele8x = "8×"
     case front = "Frente"
 
     var id: String { rawValue }
@@ -26,8 +25,8 @@ enum Lens: String, CaseIterable, Identifiable {
     var deviceType: AVCaptureDevice.DeviceType {
         switch self {
         case .macro, .ultraWide: return .builtInUltraWideCamera
-        case .wide, .wide2x, .front: return .builtInWideAngleCamera
-        case .tele, .tele8x: return .builtInTelephotoCamera
+        case .wide, .front: return .builtInWideAngleCamera
+        case .tele: return .builtInTelephotoCamera
         }
     }
 
@@ -36,11 +35,33 @@ enum Lens: String, CaseIterable, Identifiable {
     /// Mesma câmera física (troca só o recorte, sem reabrir a sessão).
     func sameCamera(as other: Lens) -> Bool { deviceType == other.deviceType && position == other.position }
 
-    /// Recorte central do sensor. 2× de 48 MP = 12 MP com qualidade óptica.
-    var zoom: CGFloat {
+    /// Zoom desta câmera sem recorte, em relação à 1×.
+    var baseZoom: CGFloat {
         switch self {
-        case .macro, .wide2x, .tele8x: return 2
-        default: return 1
+        case .macro, .ultraWide: return 0.5
+        case .wide, .front: return 1
+        case .tele: return 4
+        }
+    }
+}
+
+/// Tempo de cada foto no modo NOITE.
+enum NightTime: String, CaseIterable, Identifiable {
+    case auto = "Auto"
+    case s15 = "1/15"
+    case s4 = "1/4"
+    case s2 = "1/2"
+    case s1 = "1 s"
+
+    var id: String { rawValue }
+
+    var seconds: Double? {
+        switch self {
+        case .auto: return nil
+        case .s15: return 1.0 / 15
+        case .s4: return 1.0 / 4
+        case .s2: return 1.0 / 2
+        case .s1: return 1
         }
     }
 }
@@ -51,6 +72,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     case action = "AÇÃO"
     case freeze = "CONGELAR"
     case portrait = "RETRATO"
+    case hdr = "HDR"
     case night = "NOITE"
     case stars = "ESTRELAS"
     case moon = "LUA"
@@ -62,7 +84,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var frameCount: Int {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .flash: return 1
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash: return 1
         case .night, .moon, .average: return 8
         case .stars: return 16
         case .focusStack: return 7
@@ -72,7 +94,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     /// Como juntar os quadros, quando há mais de um.
     var stackKind: Developer.StackKind? {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .flash: return nil
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash: return nil
         case .focusStack: return .focus
         case .night, .stars, .moon, .average: return .average
         }
@@ -84,10 +106,11 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .fast: return "Disparo sem atraso em 12 MP (HEIC, ou RAW no RAW puro). Toque várias vezes ou segure para rajada."
         case .action: return "4K a 120 fps: toque grava 1 s, segure para mais. O app salva as 8 fotos mais nítidas e o vídeo."
         case .freeze: return "Obturador rapidíssimo para congelar movimento. Precisa de muita luz; segure para rajada."
-        case .portrait: return "Lente 2× a 1,5–2 m: o rosto fica com as proporções que as pessoas veem. Look Portra 400."
-        case .night: return "8 fotos a 1/15 s alinhadas e somadas: noite limpa, sem o processamento da Apple."
+        case .portrait: return "2× a 1,5–2 m, fundo desfocado pela profundidade (LiDAR). Escolha o quanto borra acima."
+        case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
+        case .night: return "Várias fotos alinhadas e somadas. Apoiado, cada foto fica mais longa e a noite mais limpa."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
-        case .moon: return "Lente 8×, foco no infinito e exposição para a Lua. 8 fotos somadas para mais detalhe."
+        case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 8 fotos somadas para mais detalhe."
         case .flash: return "Uma foto RAW com o flash."
         case .focusStack: return "7 fotos com foco do perto ao longe, juntadas no mais nítido. Apoie o iPhone."
         case .average: return "8 fotos somadas: menos ruído, ou água lisa com obturador lento."
@@ -151,7 +174,21 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var holding = false
     private var burstTimer: Timer?
     private var shutterPriorityISO: Float = 0
-    private var inFlight: [Int64: RawCaptureDelegate] = [:]
+    private var inFlight: [Int64: NSObject] = [:]
+    /// Lado da sessão: Retrato pede a câmera com profundidade; HDR desliga o ProRAW (bracketing é com RAW puro).
+    private var depthWanted = false
+    private var hdrWanted = false
+    private var lastBackZoom: CGFloat = 1
+    private let personRequest: VNGeneratePersonSegmentationRequest = {
+        let request = VNGeneratePersonSegmentationRequest()
+        request.qualityLevel = .balanced
+        request.outputPixelFormat = kCVPixelFormatType_OneComponent8
+        return request
+    }()
+    /// Lido na fila de vídeo: o Retrato precisa da máscara de pessoa para o visor.
+    private var portraitPreviewOn = false
+    private let motion = CMMotionManager()
+    private var recentRotation: [Double] = []
     private var readoutTimer: Timer?
     private var lastBackLens: Lens = .wide
     private var videoFrameIndex = 0
@@ -165,6 +202,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var availableLenses: [Lens] = []
     @Published var hasFront = false
     @Published var lens: Lens = .wide
+    /// Zoom em relação à 1× (0,5× a 25×). A pinça e os botões mexem aqui.
+    @Published private(set) var zoom: CGFloat = 1
+    /// Retrato: abertura simulada (f/1.4 borra muito, f/16 quase nada).
+    static let apertures: [Float] = [1.4, 2, 2.8, 4, 8, 16]
+    @Published var portraitAperture: Float = 2.8 { didSet { updatePortraitPreview() } }
+    @Published var nightTime: NightTime = .auto
+    @Published var nightFrames = 8
+    /// iPhone parado (apoiado ou no tripé), pelo giroscópio.
+    @Published var isSteady = false
     @Published var rawMode: RawMode = .proRAW
     @Published var proRAWSupported = true
     @Published private(set) var captureMode: CaptureMode = .photo
@@ -232,8 +278,40 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var selectedISO: Float { isoStops[min(max(Int(isoIndex), 0), isoStops.count - 1)] }
     var selectedShutter: Double { shutterStops[min(max(Int(shutterIndex), 0), shutterStops.count - 1)] }
 
+    /// Recorte central do sensor da câmera atual para chegar no zoom pedido.
+    var crop: CGFloat {
+        switch lens {
+        case .macro: return 2
+        case .front: return min(max(zoom, 1), 3)
+        default: return max(1, zoom / lens.baseZoom)
+        }
+    }
+
+    var minZoom: CGFloat { lens == .front ? 1 : (availableLenses.contains(.ultraWide) ? 0.5 : 1) }
+    var maxZoom: CGFloat { lens == .front ? 3 : (availableLenses.contains(.tele) ? 25 : 10) }
+
+    /// "2,7×" para mostrar no visor.
+    var zoomText: String {
+        let z = lens == .macro ? 1 : zoom
+        let text = z < 10 ? String(format: "%.1f", z) : String(format: "%.0f", z)
+        return text.replacingOccurrences(of: ".0", with: "").replacingOccurrences(of: ".", with: ",") + "×"
+    }
+
     var developOptions: DevelopOptions {
-        DevelopOptions(look: look, amount: lookAmount, grain: grainAmount, zoom: lens.zoom, aspect: aspect, mirror: mirror)
+        DevelopOptions(look: look, amount: lookAmount, grain: grainAmount, zoom: crop, aspect: aspect, mirror: mirror)
+    }
+
+    /// Pinça e botões. `settle` escolhe a melhor câmera física para esse zoom (no fim do gesto, para não piscar no meio).
+    func setZoom(_ value: CGFloat, settle: Bool = true) {
+        zoom = min(max(value, minZoom), maxZoom)
+        if settle && lens != .front {
+            let best: Lens
+            if zoom < 1 && availableLenses.contains(.ultraWide) { best = .ultraWide }
+            else if zoom >= 4 && availableLenses.contains(.tele) { best = .tele }
+            else { best = .wide }
+            if best != lens { select(lens: best) }
+        }
+        optionsChanged()
     }
 
     override init() {
@@ -301,6 +379,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if !self.session.isRunning { self.session.startRunning() }
         }
         startReadout()
+        startSteadyMonitor()
+    }
+
+    /// Giroscópio: o iPhone está parado (apoiado ou no tripé)?
+    private func startSteadyMonitor() {
+        guard motion.isDeviceMotionAvailable, !motion.isDeviceMotionActive else { return }
+        motion.deviceMotionUpdateInterval = 0.1
+        motion.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
+            guard let self, let r = data?.rotationRate else { return }
+            self.recentRotation.append((r.x * r.x + r.y * r.y + r.z * r.z).squareRoot())
+            if self.recentRotation.count > 15 { self.recentRotation.removeFirst() }
+            let steady = self.recentRotation.count == 15 && (self.recentRotation.max() ?? 1) < 0.03
+            if steady != self.isSteady { self.isSteady = steady }
+        }
     }
 
     func select(lens newLens: Lens) {
@@ -314,7 +406,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         } else if old == .macro {
             peaking = false
         }
-        if newLens != .front { lastBackLens = newLens }
+        if newLens == .front {
+            lastBackLens = old
+            lastBackZoom = zoom
+            zoom = 1
+        } else if old == .front {
+            zoom = lastBackZoom
+        }
+        if newLens != .front && newLens != .macro { lastBackLens = newLens }
         faceRect = nil
         faceDistance = nil
         // Mesma câmera física (ex.: 1× -> 2×): só muda o recorte, sem reabrir a sessão
@@ -334,7 +433,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Botão de virar a câmera.
     func flipCamera() {
-        select(lens: lens == .front ? lastBackLens : .front)
+        if lens == .front {
+            select(lens: lastBackLens)
+            optionsChanged()
+        } else {
+            select(lens: .front)
+        }
     }
 
     func select(mode: RawMode) {
@@ -355,21 +459,43 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             lookBeforePortrait = nil
         }
         let leavingSpecial = captureMode == .action || captureMode == .freeze
+        let oldMode = captureMode
         captureMode = mode
         dlog("Modo: \(mode.rawValue)")
         if mode.fixesShutter || leavingSpecial { applySpecialFormat() }
         if mode == .fast { prepareFastCapture() }
+
+        // Retrato troca para a câmera com profundidade; HDR precisa do RAW puro para o bracketing
+        let wantsDepth = mode == .portrait, wantsHDR = mode == .hdr
+        if wantsDepth != (oldMode == .portrait) || wantsHDR != (oldMode == .hdr) {
+            let lens = self.lens, raw = rawMode
+            let reopen = wantsDepth != (oldMode == .portrait)
+            sessionQueue.async {
+                self.depthWanted = wantsDepth
+                self.hdrWanted = wantsHDR
+                if reopen { self.setupSession(lens: lens, mode: raw) } else { self.applyRawMode(raw) }
+                DispatchQueue.main.async {
+                    self.updateExposure()
+                    self.updateWhiteBalance()
+                    self.updateFocus()
+                }
+            }
+        }
+        updatePortraitPreview()
+
         switch mode {
         case .moon:
-            let tele = availableLenses.contains(.tele8x) ? Lens.tele8x : (availableLenses.contains(.tele) ? .tele : .wide2x)
-            select(lens: tele)
+            setZoom(8)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 50, shutter: 1.0 / 500) }
         case .portrait:
-            if lens != .front { select(lens: availableLenses.contains(.wide2x) ? .wide2x : .wide) }
+            if lens != .front { setZoom(2) }
             lookBeforePortrait = look
             look = .portra
+        case .hdr:
+            // O bracketing mexe na exposição sozinho a partir do automático
+            manualExposure = false
         case .stars:
-            select(lens: .wide)
+            setZoom(1)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 2000, shutter: 10) }
         default:
             break
@@ -387,6 +513,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         dlog("Cena ajustou: ISO \(Int(selectedISO)), \(String(format: "%.4f", selectedShutter)) s, foco 1.0")
     }
 
+    private func updatePortraitPreview() {
+        let on = captureMode == .portrait
+        portraitPreviewOn = on
+        renderer.portraitBlur = on ? 2.8 / portraitAperture : 0
+        if !on { renderer.setPersonMask(nil) }
+    }
+
     func cycleAspect() {
         let all = AspectRatio.allCases
         aspect = all[(all.firstIndex(of: aspect)! + 1) % all.count]
@@ -398,7 +531,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         session.sessionPreset = .photo
         session.inputs.forEach { session.removeInput($0) }
 
-        guard let dev = AVCaptureDevice.default(lens.deviceType, for: .video, position: lens.position)
+        // Retrato: a câmera que entrega profundidade (principal + LiDAR, ou a TrueDepth na frente)
+        let types: [AVCaptureDevice.DeviceType] = depthWanted && (lens == .wide || lens == .front)
+            ? (lens == .front ? [.builtInTrueDepthCamera, .builtInWideAngleCamera]
+                              : [.builtInLiDARDepthCamera, .builtInDualWideCamera, .builtInWideAngleCamera])
+            : [lens.deviceType]
+        guard let dev = types.lazy.compactMap({ AVCaptureDevice.default($0, for: .video, position: lens.position) }).first
                 ?? AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
               let input = try? AVCaptureDeviceInput(device: dev),
               session.canAddInput(input) else {
@@ -495,12 +633,23 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func applyRawMode(_ mode: RawMode) {
         session.beginConfiguration()
         let proSupported = photoOutput.isAppleProRAWSupported
-        photoOutput.isAppleProRAWEnabled = proSupported && mode == .proRAW
+        let depth = depthWanted && photoOutput.isDepthDataDeliverySupported
+        // Profundidade e bracketing não combinam com ProRAW nem com o disparo sem atraso
+        let special = depth || hdrWanted
+        if photoOutput.isFastCapturePrioritizationSupported { photoOutput.isFastCapturePrioritizationEnabled = false }
+        if photoOutput.isResponsiveCaptureSupported { photoOutput.isResponsiveCaptureEnabled = false }
+        if photoOutput.isZeroShutterLagSupported { photoOutput.isZeroShutterLagEnabled = false }
+        photoOutput.isAppleProRAWEnabled = proSupported && mode == .proRAW && !special
         photoOutput.maxPhotoQualityPrioritization = .quality
-        // Disparo sem atraso: a câmera guarda os quadros de antes do toque e usa o do instante certo
-        if photoOutput.isZeroShutterLagSupported { photoOutput.isZeroShutterLagEnabled = true }
-        if photoOutput.isResponsiveCaptureSupported { photoOutput.isResponsiveCaptureEnabled = true }
-        if photoOutput.isFastCapturePrioritizationSupported { photoOutput.isFastCapturePrioritizationEnabled = true }
+        if photoOutput.isDepthDataDeliverySupported { photoOutput.isDepthDataDeliveryEnabled = depth }
+        if photoOutput.isPortraitEffectsMatteDeliverySupported { photoOutput.isPortraitEffectsMatteDeliveryEnabled = depth }
+        if !special {
+            // Disparo sem atraso: a câmera guarda os quadros de antes do toque e usa o do instante certo
+            if photoOutput.isZeroShutterLagSupported { photoOutput.isZeroShutterLagEnabled = true }
+            if photoOutput.isResponsiveCaptureSupported { photoOutput.isResponsiveCaptureEnabled = true }
+            if photoOutput.isFastCapturePrioritizationSupported { photoOutput.isFastCapturePrioritizationEnabled = true }
+        }
+        if depthWanted { dlog("Retrato: \(device?.localizedName ?? "?") · profundidade \(depth ? "sim" : "não") · máscara de pessoa \(photoOutput.isPortraitEffectsMatteDeliveryEnabled ? "sim" : "não")") }
         if let dims = device?.activeFormat.supportedMaxPhotoDimensions.max(by: { $0.pixels < $1.pixels }) {
             photoOutput.maxPhotoDimensions = dims
         }
@@ -585,7 +734,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     func focus(at point: CGPoint) {
         focusPoint = point
         // O visor mostra o centro ampliado pelo zoom digital
-        let zoom = lens.zoom
+        let zoom = crop
         let sensorPoint = CGPoint(x: 0.5 + (point.x - 0.5) / zoom, y: 0.5 + (point.y - 0.5) / zoom)
         let devicePoint = self.sensorPoint(fromView: sensorPoint)
         let manualFocus = self.manualFocus
@@ -884,7 +1033,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let options = developOptions
         let mode = captureMode
         let t0 = CFAbsoluteTimeGetCurrent()
-        dlog("📸 \(mode.rawValue) · \(lens.rawValue) · \(rawMode.rawValue) · look \(look.rawValue) · \(aspect.rawValue) · " +
+        dlog("📸 \(mode.rawValue) · \(lens.rawValue) zoom \(zoomText) · \(rawMode.rawValue) · look \(look.rawValue) · \(aspect.rawValue) · " +
              (manualExposure ? "ISO \(Int(selectedISO)) \(String(format: "%.4f", selectedShutter))s" : "auto ISO \(Int(readoutISO)) \(String(format: "%.4f", readoutShutter))s"))
         if mode == .action {
             // AÇÃO sem segurar: grava 1 segundo
@@ -893,20 +1042,32 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { self.stopAction() }
             return
         }
-        guard mode.frameCount > 1 else {
+        if mode == .hdr {
+            sessionQueue.async { self.captureHDR(options: options, started: t0) }
+            return
+        }
+        let portraitFocus: CGPoint? = faceRect.map {
+            // Rosto no visor -> posição na foto (o visor mostra o centro ampliado pelo recorte)
+            let c = crop
+            return CGPoint(x: 0.5 + ($0.midX - 0.5) / c, y: 0.5 + ($0.midY - 0.5) / c)
+        }
+        let aperture = portraitAperture
+        guard mode.frameCount > 1 || mode == .night else {
             let flash = mode == .flash
             let fast = mode.usesFastFormat
+            let portrait = mode == .portrait
             sessionQueue.async {
-                self.captureRAW(forStack: false, flash: flash, fast: fast) { result in
+                self.captureRAW(forStack: false, flash: flash, fast: fast, portrait: portrait) { result in
                     dlog("RAW recebido: \(Diagnostics.ms(since: t0))")
-                    self.process(result.map { [$0] }, mode: mode, options: options, started: t0)
+                    self.process(result.map { [$0] }, mode: mode, options: options, started: t0,
+                                 aperture: aperture, focusPoint: portraitFocus)
                 }
             }
             return
         }
 
         // Sequência: no foco empilhado, cada quadro com o foco um pouco mais longe
-        let count = mode.frameCount
+        let count = mode == .night ? nightFrames : mode.frameCount
         let center = manualFocus ? lensPosition : readoutLensPosition
         let span: Float = lens == .macro ? 0.1 : 0.16
         let positions: [Float]? = mode == .focusStack
@@ -917,6 +1078,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             : nil
         stackProgress = "0/\(count)"
         let nightPlan = mode == .night && !manualExposure
+        // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/15 s na mão
+        let nightSeconds = nightTime.seconds ?? (isSteady ? 0.5 : 1.0 / 15)
         sessionQueue.async {
             let run = {
                 self.shootSequence(index: 0, count: count, positions: positions, frames: []) { result in
@@ -933,9 +1096,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             guard nightPlan, let d = self.device, (try? d.lockForConfiguration()) != nil else { return run() }
             let f = d.activeFormat
             let current = d.exposureDuration.seconds
-            let target = min(max(current, 1.0 / 15), f.maxExposureDuration.seconds)
+            let target = min(max(nightSeconds, f.minExposureDuration.seconds), f.maxExposureDuration.seconds)
             let iso = min(max(d.iso * Float(current / target), f.minISO), f.maxISO)
-            dlog(String(format: "Noite: %.4fs ISO %.0f → %.4fs ISO %.0f", current, d.iso, target, iso))
+            dlog(String(format: "Noite: %.4fs ISO %.0f → %.4fs ISO %.0f · %d fotos", current, d.iso, target, iso, count))
             d.setExposureModeCustom(duration: CMTime(seconds: target, preferredTimescale: 1_000_000_000), iso: iso) { _ in
                 self.sessionQueue.async { run() }
             }
@@ -970,12 +1133,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Fotografa um RAW e devolve o DNG. Em sequências usa 12 MP para caber na memória.
-    private func captureRAW(forStack: Bool, flash: Bool = false, fast: Bool = false,
+    private func captureRAW(forStack: Bool, flash: Bool = false, fast: Bool = false, portrait: Bool = false,
                             completion: @escaping (Result<CapturedFrame, Error>) -> Void) {
         let mode = rawMode
         let types = photoOutput.availableRawPhotoPixelFormatTypes
         let format: OSType?
-        if fast {
+        let withDepth = portrait && photoOutput.isDepthDataDeliveryEnabled
+        if withDepth {
+            // Retrato: HEIC com o mapa de profundidade e a máscara de pessoa dentro
+            format = nil
+        } else if fast {
             // Rápido: RAW de 12 MP no RAW puro; com ProRAW, HEIC de 12 MP (o mais rápido de todos)
             format = mode == .bayer ? types.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) } : nil
         } else if mode == .proRAW && photoOutput.isAppleProRAWEnabled {
@@ -1007,8 +1174,22 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 .filter { $0.pixels >= 11_000_000 && $0.pixels <= photoOutput.maxPhotoDimensions.pixels }
                 .min(by: { $0.pixels < $1.pixels })
             settings.maxPhotoDimensions = twelve ?? photoOutput.maxPhotoDimensions
+        } else if withDepth, let d = device {
+            // Profundidade costuma vir até 12 MP; mais que isso pode ser recusado
+            let dims = d.activeFormat.supportedMaxPhotoDimensions
+                .filter { $0.pixels <= 12_600_000 && $0.pixels <= photoOutput.maxPhotoDimensions.pixels }
+                .max(by: { $0.pixels < $1.pixels })
+            if let dims { settings.maxPhotoDimensions = dims }
         } else if format == nil, !forStack {
             settings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
+        }
+        if withDepth {
+            settings.isDepthDataDeliveryEnabled = true
+            settings.embedsDepthDataInPhoto = true
+            if photoOutput.isPortraitEffectsMatteDeliveryEnabled {
+                settings.isPortraitEffectsMatteDeliveryEnabled = true
+                settings.embedsPortraitEffectsMatteInPhoto = true
+            }
         }
         if flash {
             if photoOutput.supportedFlashModes.contains(.on) {
@@ -1027,7 +1208,45 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let id = settings.uniqueID
         let delegate = RawCaptureDelegate { result in
             self.sessionQueue.async { self.inFlight[id] = nil }
-            completion(result)
+            completion(result.map { frame in
+                var f = frame
+                f.hasDepth = withDepth
+                return f
+            })
+        }
+        inFlight[id] = delegate
+        photoOutput.capturePhoto(with: settings, delegate: delegate)
+    }
+
+    /// HDR: 3 RAW de uma vez (−2, 0 e +2 EV) com o bracketing do próprio sensor.
+    private func captureHDR(options: DevelopOptions, started t0: CFAbsoluteTime) {
+        let biases: [Float] = [-2, 0, 2]
+        guard photoOutput.maxBracketedCapturePhotoCount >= biases.count else {
+            dlog("⚠️ HDR: esta câmera não faz \(biases.count) fotos de bracketing")
+            DispatchQueue.main.async {
+                self.processing -= 1
+                self.message = "Esta lente não faz HDR. Tente a 1×."
+            }
+            return
+        }
+        let brackets = biases.map { AVCaptureAutoExposureBracketedStillImageSettings.autoExposureSettings(exposureTargetBias: $0) }
+        let bayer = photoOutput.availableRawPhotoPixelFormatTypes.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }
+        let settings = AVCapturePhotoBracketSettings(
+            rawPixelFormatType: bayer ?? 0,
+            processedFormat: bayer == nil ? [AVVideoCodecKey: AVVideoCodecType.hevc] : nil,
+            bracketedSettings: brackets)
+        if photoOutput.isLensStabilizationDuringBracketedCaptureSupported { settings.isLensStabilizationEnabled = true }
+        if let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelCapture,
+           let connection = photoOutput.connection(with: .video),
+           connection.isVideoRotationAngleSupported(angle) {
+            connection.videoRotationAngle = angle
+        }
+        dlog("HDR: bracketing \(bayer != nil ? "RAW puro" : "HEIC") \(biases.map { String(format: "%+.0f", $0) }.joined(separator: " ")) EV")
+        let id = settings.uniqueID
+        let delegate = BracketCaptureDelegate { result in
+            self.sessionQueue.async { self.inFlight[id] = nil }
+            dlog("HDR: quadros recebidos: \(Diagnostics.ms(since: t0))")
+            self.process(result, mode: .hdr, options: options, started: t0)
         }
         inFlight[id] = delegate
         photoOutput.capturePhoto(with: settings, delegate: delegate)
@@ -1035,7 +1254,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Revela (e junta, se for sequência) e salva na galeria.
     private func process(_ result: Result<[CapturedFrame], Error>, mode: CaptureMode, options: DevelopOptions,
-                         started t0: CFAbsoluteTime) {
+                         started t0: CFAbsoluteTime, aperture: Float = 2.8, focusPoint: CGPoint? = nil) {
         let done: (Result<UIImage?, Error>) -> Void = { result in
             switch result {
             case .success: dlog("✅ Salvo na galeria. Total: \(Diagnostics.ms(since: t0)) · memória livre \(Diagnostics.freeMemory)")
@@ -1058,8 +1277,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Uma revelação por vez: na rajada as fotos entram numa fila em vez de lotar a memória
             processingQueue.async {
                 let output: Developer.Output?
-                if let kind = mode.stackKind {
+                if mode == .hdr {
+                    output = Developer.hdr(frames, options: options)
+                } else if let kind = mode.stackKind {
                     output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, options: options)
+                } else if let first = frames.first, first.hasDepth {
+                    output = Developer.developPortrait(first.data, aperture: aperture, focusPoint: focusPoint, options: options)
                 } else {
                     output = frames.first.flatMap { Developer.develop($0, options: options) }
                 }
@@ -1083,7 +1306,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Tudo que a câmera deste iPhone oferece, para o relatório.
     func describeCapabilities(completion: @escaping (String) -> Void) {
-        let settings = "- Ajustes: lente \(lens.rawValue), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(look.rawValue) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
+        let settings = "- Ajustes: lente \(lens.rawValue) zoom \(zoomText) (recorte \(String(format: "%.2f", crop))), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(look.rawValue) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
             "exposição \(manualExposure ? "manual ISO \(Int(selectedISO)) \(selectedShutter)s" : "auto EV \(evBias)"), " +
             "balanço \(manualWB ? "\(Int(kelvin))K" : "auto"), foco \(manualFocus ? "manual \(lensPosition)" : "auto"), " +
             "peaking \(peaking), zebra \(zebra), espelhar \(mirror), guardar DNG \(saveDNG), visor \(Int(previewAngle))°, " +
@@ -1092,6 +1315,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             var out = settings
             out += "- Kernels de revelação: \(Developer.kernelStatus)\n"
+            out += "- Profundidade: entrega \(self.photoOutput.isDepthDataDeliverySupported ? "sim" : "não") · bracketing até \(self.photoOutput.maxBracketedCapturePhotoCount) fotos\n"
+            let lidar = AVCaptureDevice.default(.builtInLiDARDepthCamera, for: .video, position: .back) != nil
+            out += "- LiDAR: \(lidar ? "sim" : "não") · parado agora: \(self.isSteady ? "sim" : "não")\n"
             out += "- ProRAW suportado: \(self.photoOutput.isAppleProRAWSupported), ligado: \(self.photoOutput.isAppleProRAWEnabled)\n"
             let types = self.photoOutput.availableRawPhotoPixelFormatTypes
             out += "- Formatos RAW agora: " + types.map {
@@ -1136,6 +1362,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
         videoFrameIndex += 1
         if videoFrameIndex % (8 * renderEvery) == 0 { detectFace(in: frame) }
+        // Retrato: máscara de pessoa para borrar o fundo no visor
+        if portraitPreviewOn, videoFrameIndex % 2 == 0,
+           (try? VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up).perform([personRequest])) != nil,
+           let mask = personRequest.results?.first?.pixelBuffer {
+            renderer.setPersonMask(CIImage(cvPixelBuffer: mask))
+        }
     }
 
     /// Acha o maior rosto e estima a distância pelo tamanho dele (um rosto tem uns 16 cm de largura).
@@ -1279,6 +1511,37 @@ final class RawCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
             completion(.success(CapturedFrame(data: processed, isRaw: false)))
         } else {
             completion(.failure(RevelaError.noRawData))
+        }
+    }
+}
+
+/// Recebe as 3 fotos do bracketing do HDR.
+final class BracketCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
+    private let completion: (Result<[CapturedFrame], Error>) -> Void
+    private var frames: [CapturedFrame] = []
+    private var captureError: Error?
+
+    init(completion: @escaping (Result<[CapturedFrame], Error>) -> Void) {
+        self.completion = completion
+    }
+
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let error {
+            captureError = error
+            return
+        }
+        guard let data = photo.fileDataRepresentation() else { return }
+        let bias = (photo.bracketSettings as? AVCaptureAutoExposureBracketedStillImageSettings)?.exposureTargetBias ?? 0
+        frames.append(CapturedFrame(data: data, isRaw: photo.isRawPhoto, exposureBias: bias))
+    }
+
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
+        if let error = error ?? captureError {
+            completion(.failure(error))
+        } else if frames.isEmpty {
+            completion(.failure(RevelaError.noRawData))
+        } else {
+            completion(.success(frames))
         }
     }
 }

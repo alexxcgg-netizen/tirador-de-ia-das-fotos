@@ -25,6 +25,16 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     var options = Developer.PreviewOptions()
     /// Lupa de foco: amplia o centro 4× enquanto você ajusta o foco.
     var loupe = false
+    /// Retrato: quanto borrar o fundo no visor (0 = nada). A foto final usa a profundidade de verdade.
+    var portraitBlur: Float = 0
+    private var personMask: CIImage?
+
+    /// Máscara de pessoa vinda da fila de vídeo (branco = pessoa).
+    func setPersonMask(_ mask: CIImage?) {
+        lock.lock()
+        personMask = mask
+        lock.unlock()
+    }
     var onHistogram: (([Float]) -> Void)?
 
     /// Chamado na fila de vídeo a cada quadro.
@@ -40,6 +50,7 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     func draw(in view: MTKView) {
         lock.lock()
         let frame = self.frame
+        let mask = personMask
         lock.unlock()
         guard let frame, let drawable = view.currentDrawable, let buffer = queue.makeCommandBuffer() else { return }
 
@@ -53,6 +64,19 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         image = image.transformed(by: CGAffineTransform(
             translationX: (size.width - image.extent.width) / 2,
             y: (size.height - image.extent.height) / 2))
+        // Retrato: fundo borrado no visor, pessoa nítida
+        if portraitBlur > 0, let mask {
+            let fitted = mask.transformed(by: CGAffineTransform(scaleX: image.extent.width / mask.extent.width,
+                                                                y: image.extent.height / mask.extent.height))
+                .transformed(by: CGAffineTransform(translationX: image.extent.minX, y: image.extent.minY))
+            let blurred = image.clampedToExtent()
+                .applyingGaussianBlur(sigma: Double(CGFloat(portraitBlur) * size.width * 0.01))
+                .cropped(to: image.extent)
+            image = image.applyingFilter("CIBlendWithMask", parameters: [
+                kCIInputBackgroundImageKey: blurred,
+                kCIInputMaskImageKey: fitted,
+            ])
+        }
         image = Developer.preview(image, options: options)
             .cropped(to: CGRect(origin: .zero, size: size))
 
