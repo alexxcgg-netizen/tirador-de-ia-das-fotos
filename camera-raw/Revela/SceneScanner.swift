@@ -358,7 +358,7 @@ final class SceneScanner: NSObject, ObservableObject, ARSessionDelegate {
         """
         var data = Data(header.utf8)
         data.reserveCapacity(data.count + points.count * 15)
-        for (p, c) in zip(points, colors) {
+        for (p, c) in Swift.zip(points, colors) {
             var xyz = (p.x, p.y, p.z)
             withUnsafeBytes(of: &xyz) { data.append(contentsOf: $0) }
             data.append(contentsOf: [c.x, c.y, c.z])
