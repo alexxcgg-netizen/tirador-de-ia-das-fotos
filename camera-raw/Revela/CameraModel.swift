@@ -282,6 +282,40 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var customLooks: [CustomLook] = CustomLookStore.load()
     /// Nome do look em uso, pronto ou próprio.
     var lookName: String { customLook?.name ?? look.rawValue }
+    /// Cada foto sai também em mais dois looks (fotos de um quadro só).
+    @Published var multiLook = UserDefaults.standard.bool(forKey: "multiLook") {
+        didSet { defaults.set(multiLook, forKey: "multiLook") }
+    }
+    /// Os dois looks extras: "b:<nome do look pronto>" ou "c:<id do filme próprio>".
+    @Published var extraLookIDs: [String] = UserDefaults.standard.stringArray(forKey: "extraLooks")
+        ?? ["b:" + Look.kodachrome.rawValue, "b:" + Look.trix.rawValue] {
+        didSet { defaults.set(extraLookIDs, forKey: "extraLooks") }
+    }
+
+    /// Todos os looks para escolher como extra: os próprios primeiro.
+    struct LookChoice: Identifiable {
+        let id: String
+        let name: String
+    }
+
+    var lookChoices: [LookChoice] {
+        customLooks.map { LookChoice(id: "c:" + $0.id.uuidString, name: $0.name) }
+            + Look.allCases.map { LookChoice(id: "b:" + $0.rawValue, name: $0.rawValue) }
+    }
+
+    /// As opções de revelação da foto, trocando só o look.
+    private func options(swappingLookTo id: String, from base: DevelopOptions) -> DevelopOptions? {
+        var o = base
+        if id.hasPrefix("c:") {
+            guard let custom = customLooks.first(where: { "c:" + $0.id.uuidString == id }) else { return nil }
+            o.custom = custom
+        } else {
+            guard let look = Look(rawValue: String(id.dropFirst(2))) else { return nil }
+            o.custom = nil
+            o.look = look
+        }
+        return o
+    }
     @Published var lookAmount: Float = 1 { didSet { optionsChanged() } }
     @Published var grainAmount: Float = 1 { didSet { optionsChanged() } }
     @Published var aspect: AspectRatio = .r43 { didSet { optionsChanged() } }
@@ -296,6 +330,25 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
     /// Foco e exposição travados (segurar o dedo no visor). Um toque solta.
     @Published var aeafLocked = false
+
+    // Macro
+    /// Com a 1×, chegou perto demais para focar: troca sozinho para o macro (e volta ao afastar).
+    @Published var autoMacro = UserDefaults.standard.object(forKey: "autoMacro") as? Bool ?? true {
+        didSet { defaults.set(autoMacro, forKey: "autoMacro") }
+    }
+    /// Zoom dentro do macro: 1× (12 MP), 2× e 3× (recorte do sensor de 48 MP + super resolução).
+    @Published var macroZoom: CGFloat = 1 { didSet { renderer.options.develop = developOptions } }
+    static let macroZooms: [CGFloat] = [1, 2, 3]
+    /// Macro empilhado: várias fotos com o foco andando um pouquinho, juntadas no mais nítido.
+    @Published var macroStack = false
+    /// Lanterna como luz contínua no macro (0 = desligada).
+    @Published var macroLight: Float = 0 { didSet { applyTorch() } }
+    static let macroLights: [Float] = [0, 0.1, 0.35, 1]
+    /// O macro entrou sozinho (só nesse caso ele sai sozinho).
+    private var macroIsAuto = false
+    private var closeFocusTicks = 0
+    private var farFocusTicks = 0
+    private var lastAutoMacroSwitch = Date.distantPast
     /// Salva a foto invertida, como num espelho.
     @Published var mirror = false { didSet { optionsChanged() } }
     /// Guarda também o DNG na galeria (ocupa uns 50 MB por foto).
@@ -352,7 +405,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var crop: CGFloat {
         if activeLens == .front { return lens == .front ? min(max(zoom, 1), 3) : 1 }
         if lens == .front { return 1 }
-        let wanted = lens == .macro ? 1 : zoom
+        let wanted = lens == .macro ? macroZoom : zoom
         return max(1, wanted / activeLens.baseZoom)
     }
 
@@ -361,7 +414,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// "2,7×" para mostrar no visor.
     var zoomText: String {
-        let z = lens == .macro ? 1 : zoom
+        let z = lens == .macro ? macroZoom : zoom
         let text = z < 10 ? String(format: "%.1f", z) : String(format: "%.0f", z)
         return text.replacingOccurrences(of: ".0", with: "").replacingOccurrences(of: ".", with: ",") + "×"
     }
@@ -472,6 +525,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     func deleteCustomLook(_ custom: CustomLook) {
+        if let file = custom.lutFile, !customLooks.contains(where: { $0.id != custom.id && $0.lutFile == file }) {
+            LUTStore.delete(file)
+        }
         customLooks.removeAll { $0.id == custom.id }
         CustomLookStore.save(customLooks)
         if customLook?.id == custom.id { customLook = nil }
@@ -551,6 +607,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if !manualFocus { lensPosition = 0 }
         } else if old == .macro {
             peaking = false
+            macroIsAuto = false
+            macroZoom = 1
+            macroStack = false
+            if macroLight > 0 { macroLight = 0 }
         }
         if newLens == .front {
             lastBackLens = old
@@ -584,6 +644,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 self.updateFocus()
                 // A câmera nova abre no formato de foto: AÇÃO e CONGELAR precisam do formato rápido de novo
                 if self.captureMode.fixesShutter { self.applySpecialFormat() }
+                if self.macroLight > 0 { self.applyTorch() }
             }
         }
     }
@@ -963,6 +1024,54 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
+    /// Macro automático: a 1× com a lente no limite de perto por quase 1 s -> macro.
+    /// No macro que entrou sozinho, assunto longe de novo por 1,5 s -> volta para a 1×.
+    private func checkAutoMacro(lensPosition: Float, focusMode: AVCaptureDevice.FocusMode) {
+        guard autoMacro, !manualFocus, focusMode == .continuousAutoFocus, captureMode == .photo,
+              Date().timeIntervalSince(lastAutoMacroSwitch) > 2.5, activeLens == lens else {
+            closeFocusTicks = 0
+            farFocusTicks = 0
+            return
+        }
+        if lens == .wide, zoom < 1.5, availableLenses.contains(.macro) {
+            closeFocusTicks = lensPosition <= 0.02 ? closeFocusTicks + 1 : 0
+            if closeFocusTicks >= 4 {
+                closeFocusTicks = 0
+                lastAutoMacroSwitch = Date()
+                macroIsAuto = true
+                dlog("Macro automático: ligou (1× sem conseguir focar de perto)")
+                select(lens: .macro)
+                macroIsAuto = true
+                show("Macro automático. Afaste para voltar à 1×.")
+            }
+        } else if lens == .macro, macroIsAuto {
+            farFocusTicks = lensPosition >= 0.5 ? farFocusTicks + 1 : 0
+            if farFocusTicks >= 6 {
+                farFocusTicks = 0
+                lastAutoMacroSwitch = Date()
+                dlog("Macro automático: voltou para a 1×")
+                select(lens: .wide)
+                setZoom(1, settle: false)
+            }
+        }
+    }
+
+    /// Lanterna ligada na intensidade escolhida (só no macro).
+    private func applyTorch() {
+        let level = lens == .macro ? macroLight : 0
+        sessionQueue.async {
+            guard let d = self.device, d.hasTorch, (try? d.lockForConfiguration()) != nil else { return }
+            defer { d.unlockForConfiguration() }
+            attempt("Luz do macro") {
+                if level <= 0 {
+                    if d.torchMode != .off { d.torchMode = .off }
+                } else {
+                    try? d.setTorchModeOn(level: min(level, AVCaptureDevice.maxAvailableTorchLevel))
+                }
+            }
+        }
+    }
+
     private func startReadout() {
         readoutTimer?.invalidate()
         readoutTimer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
@@ -971,10 +1080,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.readoutShutter = d.exposureDuration.seconds
             self.readoutLensPosition = d.lensPosition
             self.adjustShutterPriority()
+            self.checkAutoMacro(lensPosition: d.lensPosition, focusMode: d.focusMode)
         }
     }
 
-    /// Toque no visor: foca e mede a luz naquele ponto. `point` vai de 0 a 1 nos dois eixos.
     /// Segurar o dedo no visor: foca e mede a luz ali e trava as duas coisas até o próximo toque.
     func lockFocusExposure(at point: CGPoint) {
         focus(at: point)
@@ -992,6 +1101,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
+    /// Toque no visor: foca e mede a luz naquele ponto. `point` vai de 0 a 1 nos dois eixos.
     func focus(at point: CGPoint) {
         aeafLocked = false
         focusPoint = point
@@ -1332,7 +1442,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { self.flash = false }
 
         let options = developOptions
-        let mode = captureMode
+        var mode = captureMode
+        // Macro: empilhado vira foco empilhado; 2× e 3× usam a super resolução para não perder detalhe
+        if mode == .photo, lens == .macro {
+            if macroStack { mode = .focusStack } else if macroZoom > 1 { mode = .superRes }
+        }
         let t0 = CFAbsoluteTimeGetCurrent()
         dlog("📸 \(mode.rawValue) · \(lens.rawValue) zoom \(zoomText) · \(rawMode.rawValue) · look \(lookName) · \(aspect.rawValue) · " +
              (manualExposure ? "ISO \(Int(selectedISO)) \(String(format: "%.4f", selectedShutter))s" : "auto ISO \(Int(readoutISO)) \(String(format: "%.4f", readoutShutter))s"))
@@ -1376,7 +1490,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
 
         // Sequência: no foco empilhado, cada quadro com o foco um pouco mais longe
-        let count = mode == .night ? nightFrames : mode.frameCount
+        let macroStacking = mode == .focusStack && lens == .macro
+        let count = mode == .night ? nightFrames : (macroStacking ? 6 : mode.frameCount)
         let center = manualFocus ? lensPosition : readoutLensPosition
         let span: Float = lens == .macro ? 0.1 : 0.16
         let positions: [Float]? = mode == .focusStack
@@ -1386,7 +1501,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
             : nil
         stackProgress = "0/\(count)"
-        let fullResolution = mode == .superRes
+        // Macro empilhado em 48 MP: o recorte do macro precisa do sensor inteiro
+        let fullResolution = mode == .superRes || macroStacking
         let nightPlan = mode == .night && !manualExposure
         // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/15 s na mão
         let nightSeconds = nightTime.seconds ?? (isSteady ? 0.5 : 1.0 / 15)
@@ -2072,6 +2188,17 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                                          aperture: aperture, focusPoint: focusPoint)
                     }
                 } : nil
+                // Três looks: a mesma foto revelada de novo em cada look extra
+                if single, self.multiLook, output != nil, let first = frames.first {
+                    let extras = self.extraLookIDs.compactMap { self.options(swappingLookTo: $0, from: options) }
+                    for extra in extras {
+                        let t1 = CFAbsoluteTimeGetCurrent()
+                        guard let scene = Developer.scene(for: first, aperture: first.hasDepth ? aperture : nil, focusPoint: focusPoint),
+                              let out = Developer.finish(scene, options: extra) else { continue }
+                        Library.save(dng: nil, developed: out.heic, tryPair: false) { _ in }
+                        dlog("Look extra \(extra.lookName): \(Diagnostics.ms(since: t1))")
+                    }
+                }
                 Library.save(dng: keepDNG ? dng : nil, developed: output?.heic ?? original,
                              tryPair: output?.sameSizeAsRaw ?? false, onSaved: keep) { error in
                     if let error {

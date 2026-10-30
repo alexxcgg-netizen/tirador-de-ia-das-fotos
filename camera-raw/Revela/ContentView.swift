@@ -1,6 +1,8 @@
 import AVKit
 import CoreMotion
+import PhotosUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 private let accent = Color(red: 0.96, green: 0.64, blue: 0.24)
 private let panelFill = Color(white: 0.11)
@@ -11,6 +13,8 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var showLooks = false
     @State private var editingLook: CustomLook?
+    @State private var importingLUT = false
+    @State private var colorReference: PhotosPickerItem?
     @State private var showStudio = false
     @State private var pressStart: CGPoint?
     @State private var pressMoved = false
@@ -247,6 +251,7 @@ struct ContentView: View {
             }
             if camera.captureMode == .freeze { freezeControls }
             if camera.captureMode == .portrait { apertureControls }
+            if camera.lens == .macro && camera.captureMode == .photo { macroControls }
             if camera.captureMode == .night { nightControls }
             if camera.captureMode == .longExposure { longControls }
             if camera.captureMode == .video { videoControls }
@@ -275,6 +280,56 @@ struct ContentView: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+
+    /// Macro: zoom (1×, 2×, 3×), empilhar e luz.
+    private var macroControls: some View {
+        HStack(spacing: 6) {
+            ForEach(CameraModel.macroZooms, id: \.self) { z in
+                pill("\(Int(z))×", on: camera.macroZoom == z) {
+                    camera.macroZoom = z
+                    if z > 1 { camera.show("Macro \(Int(z))×: 4 fotos de 48 MP juntadas (super resolução). Segure firme.") }
+                }
+            }
+            pill("Empilhar", on: camera.macroStack) {
+                camera.macroStack.toggle()
+                if camera.macroStack { camera.show("6 fotos com o foco andando um pouco, juntadas: tudo nítido. Apoie o iPhone.") }
+            }
+            Menu {
+                ForEach(CameraModel.macroLights, id: \.self) { level in
+                    Button(lightLabel(level)) { camera.macroLight = level }
+                }
+            } label: {
+                Label(lightLabel(camera.macroLight), systemImage: camera.macroLight > 0 ? "flashlight.on.fill" : "flashlight.off.fill")
+                    .font(.system(size: 12, weight: .bold))
+                    .padding(.horizontal, 10).frame(height: 36)
+                    .foregroundStyle(camera.macroLight > 0 ? Color.black : Color.white)
+                    .background(Capsule().fill(camera.macroLight > 0 ? accent : panelFill))
+            }
+        }
+    }
+
+    private func lightLabel(_ level: Float) -> String {
+        switch level {
+        case 0: return "Luz"
+        case ..<0.2: return "Fraca"
+        case ..<0.5: return "Média"
+        default: return "Forte"
+        }
+    }
+
+    private func pill(_ title: String, on: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+            UISelectionFeedbackGenerator().selectionChanged()
+        } label: {
+            Text(title)
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 10).frame(height: 36)
+                .foregroundStyle(on ? Color.black : Color.white)
+                .background(Capsule().fill(on ? accent : panelFill))
+        }
+        .buttonStyle(.plain)
     }
 
     private func apertureLabel(_ f: Float) -> String {
@@ -806,6 +861,7 @@ struct ContentView: View {
                         Toggle("Zebra (listras onde estourou)", isOn: $camera.zebra)
                         Toggle("Grade de terços", isOn: $camera.showGrid)
                         Toggle("Nível (horizonte e de cima para baixo)", isOn: $camera.showLevel)
+                        Toggle("Macro automático (chegou perto, troca sozinho)", isOn: $camera.autoMacro)
                         Toggle("Histograma colorido (R, G, B)", isOn: $camera.rgbHistogram)
                         Toggle("Cor falsa (exposição por cores)", isOn: $camera.falseColor)
                         if camera.falseColor {
@@ -818,6 +874,28 @@ struct ContentView: View {
                             Text("10 s").tag(10)
                         }
                         .pickerStyle(.segmented)
+                    }
+
+                    settingsSection("Três looks por foto") {
+                        Toggle("Salvar cada foto em mais 2 looks", isOn: $camera.multiLook)
+                        if camera.multiLook {
+                            ForEach(0..<2, id: \.self) { i in
+                                Picker("Look extra \(i + 1)", selection: Binding(
+                                    get: { camera.extraLookIDs.indices.contains(i) ? camera.extraLookIDs[i] : "" },
+                                    set: { value in
+                                        var ids = camera.extraLookIDs
+                                        while ids.count < 2 { ids.append("b:" + Look.neutro.rawValue) }
+                                        ids[i] = value
+                                        camera.extraLookIDs = ids
+                                    })) {
+                                    ForEach(camera.lookChoices) { choice in
+                                        Text(choice.name).tag(choice.id)
+                                    }
+                                }
+                            }
+                            Text("Vale para FOTO, RÁPIDO, FLASH, CONGELAR e RETRATO. As 3 versões vão para a galeria.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
 
                     settingsSection("Ao salvar") {
@@ -938,6 +1016,22 @@ struct ContentView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(accent)
+                    HStack(spacing: 8) {
+                        Button { importingLUT = true } label: {
+                            Label("Importar LUT", systemImage: "square.and.arrow.down")
+                                .font(.footnote.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                                .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.07)))
+                        }
+                        .buttonStyle(.plain)
+                        PhotosPicker(selection: $colorReference, matching: .images, preferredItemEncoding: .compatible) {
+                            Label("Copiar cor de foto", systemImage: "eyedropper")
+                                .font(.footnote.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                                .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.07)))
+                        }
+                        .buttonStyle(.plain)
+                    }
                     if !camera.customLooks.isEmpty {
                         Text("Segure um filme seu para editar ou apagar.").font(.caption).opacity(0.5)
                     }
@@ -959,6 +1053,27 @@ struct ContentView: View {
             .navigationTitle("Looks")
             .sheet(item: $editingLook) { draft in
                 LookEditorView(camera: camera, draft: draft)
+            }
+            .fileImporter(isPresented: $importingLUT,
+                          allowedContentTypes: [UTType(filenameExtension: "cube") ?? .data, .data]) { result in
+                guard case .success(let url) = result else { return }
+                if let lut = LUTStore.importFile(at: url) {
+                    camera.saveCustomLook(.fromLUT(file: lut.file, name: lut.name))
+                    camera.show("LUT \(lut.name) importada e escolhida.")
+                } else {
+                    camera.show("Esse arquivo não é uma LUT .cube 3D.")
+                }
+            }
+            .onChange(of: colorReference) { _, item in
+                guard let item else { return }
+                colorReference = nil
+                Task {
+                    let data = try? await item.loadTransferable(type: Data.self)
+                    let look = data.flatMap { ColorMatch.look(from: $0, name: "Cor copiada") }
+                    await MainActor.run {
+                        if let look { editingLook = look } else { camera.show("Não consegui ler essa foto.") }
+                    }
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("OK") { showLooks = false } } }
@@ -1027,6 +1142,10 @@ struct ContentView: View {
         case .superRes: return "4× 48MP\nSUPER"
         case .portrait: return apertureLabel(camera.portraitAperture) + "\nRETRATO"
         case .photo:
+            if camera.lens == .macro {
+                if camera.macroStack { return "6×\nMACRO" }
+                return camera.macroZoom > 1 ? "SUPER\nMACRO \(Int(camera.macroZoom))×" : "DNG\nMACRO"
+            }
             if camera.rawMode == .bayer { return "DNG\nRAW" }
             return camera.crop > 1.4 ? "DNG\n\(camera.zoomText)" : "DNG\n48MP"
         }

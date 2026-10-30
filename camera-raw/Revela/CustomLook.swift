@@ -23,8 +23,22 @@ struct CustomLook: Codable, Identifiable, Equatable {
     var halation: Float = 0.05
     var bloom: Float = 0
     var blackAndWhite = false
+    /// LUT importada (.cube) guardada no app.
+    var lutFile: String?
 
     var baseLook: Look { Look(rawValue: base) ?? .neutro }
+
+    /// Filme a partir de uma LUT importada: parte do Neutro, sem grão nem vinheta (a LUT manda).
+    static func fromLUT(file: String, name: String) -> CustomLook {
+        var c = CustomLook()
+        c.name = name
+        c.base = Look.neutro.rawValue
+        c.grain = 0
+        c.vignette = 0
+        c.halation = 0
+        c.lutFile = file
+        return c
+    }
 
     /// Novo filme começando pelo look escolhido, com o grão, a vinheta e o brilho dele.
     static func starting(from look: Look) -> CustomLook {
@@ -56,6 +70,7 @@ struct CustomLook: Codable, Identifiable, Equatable {
         p.halation = halation
         p.bloom = bloom
         if blackAndWhite { p.mono = 1 }
+        if let lutFile { p.lut = LUTStore.cube(lutFile) }
         return p
     }
 }

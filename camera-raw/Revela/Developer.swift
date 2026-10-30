@@ -31,6 +31,9 @@ struct LookParams {
     var halationColor = SIMD3<Float>(1, 0.3, 0.1)
     /// Brilho suave e largo em volta das luzes.
     var bloom: Float = 0
+    /// LUT importada (.cube), aplicada depois da curva, e o quanto dela entra.
+    var lut: LUTCube?
+    var lutAmount: Float = 1
 
     static func make(_ build: (inout LookParams) -> Void) -> LookParams {
         var p = LookParams()
@@ -61,6 +64,7 @@ struct LookParams {
         p.vignette = vignette * a
         p.halation = halation * a
         p.bloom = bloom * a
+        p.lutAmount = lutAmount * a
         return p
     }
 }
@@ -517,8 +521,22 @@ enum Developer {
             p.vignette, CIVector(x: e.minX, y: e.minY, z: e.width, w: e.height),
             zebra ? zebraThreshold : Float(0),
         ]
-        return toneKernel.apply(extent: e, arguments: arguments) ?? scene
+        let toned = toneKernel.apply(extent: e, arguments: arguments) ?? scene
+        guard let lut = p.lut, p.lutAmount > 0.001 else { return toned }
+        // A LUT espera a imagem já codificada para a tela (sRGB/Rec. 709), como num editor de vídeo
+        let cubed = toned.applyingFilter("CIColorCubeWithColorSpace", parameters: [
+            "inputCubeDimension": lut.dimension,
+            "inputCubeData": lut.data,
+            "inputColorSpace": sRGB,
+        ]).cropped(to: e)
+        guard p.lutAmount < 0.999 else { return cubed }
+        return toned.applyingFilter("CIDissolveTransition", parameters: [
+            kCIInputTargetImageKey: cubed,
+            kCIInputTimeKey: p.lutAmount,
+        ]).cropped(to: e)
     }
+
+    private static let sRGB = CGColorSpace(name: CGColorSpace.sRGB)!
 
     /// Brilho em volta das luzes fortes, calculado numa versão pequena da imagem (o resultado é borrado de qualquer jeito).
     private static func addGlow(to scene: CIImage, look p: LookParams) -> CIImage {

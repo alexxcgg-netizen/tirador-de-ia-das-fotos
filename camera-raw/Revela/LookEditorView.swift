@@ -20,6 +20,10 @@ struct LookEditorView: View {
                         .padding(12)
                         .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.08)))
 
+                    if draft.lutFile != nil {
+                        Label("Com a LUT importada por cima", systemImage: "cube.transparent")
+                            .font(.footnote.weight(.semibold)).foregroundStyle(accent)
+                    }
                     Text("Começa do").font(.footnote.weight(.semibold)).opacity(0.7)
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
@@ -28,8 +32,10 @@ struct LookEditorView: View {
                                 Button {
                                     let keepName = draft.name
                                     let id = draft.id
+                                    let lut = draft.lutFile
                                     draft = .starting(from: look)
                                     draft.id = id
+                                    draft.lutFile = lut
                                     if !keepName.hasPrefix("Meu ") { draft.name = keepName }
                                 } label: {
                                     Text(look.rawValue)
