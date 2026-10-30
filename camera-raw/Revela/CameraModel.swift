@@ -424,8 +424,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if #available(iOS 18.0, *) {
                 self.session.setControlsDelegate(self, queue: self.sessionQueue)
             }
+            dlog("Abrindo a câmera…")
             self.setupSession(lens: lens, mode: mode)
-            if !self.session.isRunning { self.session.startRunning() }
+            if !self.session.isRunning {
+                dlog("Ligando a sessão…")
+                self.session.startRunning()
+                dlog("Sessão ligada: \(self.session.isRunning ? "rodando" : "parada")")
+            }
         }
         startReadout()
         startSteadyMonitor()
@@ -650,9 +655,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if !cinematicWanted, !session.outputs.contains(videoOutput), session.canAddOutput(videoOutput) {
             videoOutput.alwaysDiscardsLateVideoFrames = true
             // Vídeo do visor no tamanho da tela em vez de 12 MP (onde o iOS oferecer)
-            if videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))) {
-                videoOutput.setValue(true, forKey: "deliversPreviewSizedOutputBuffers")
-            }
+            setPreviewSized(true)
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
             session.addOutput(videoOutput)
         }
@@ -660,16 +663,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if session.outputs.contains(videoOutput) { setPreviewSized(!videoWanted) }
         // O visor da câmera da frente fica espelhado, como num espelho. O ângulo vem do RotationCoordinator, logo abaixo.
         if let connection = videoOutput.connection(with: .video) {
-            if connection.isVideoRotationAngleSupported(90) { connection.videoRotationAngle = 90 }
-            if connection.isVideoMirroringSupported {
-                connection.automaticallyAdjustsVideoMirroring = false
-                connection.isVideoMirrored = dev.position == .front
+            attempt("Girar e espelhar o visor") {
+                if connection.isVideoRotationAngleSupported(90) { connection.videoRotationAngle = 90 }
+                if connection.isVideoMirroringSupported {
+                    connection.automaticallyAdjustsVideoMirroring = false
+                    connection.isVideoMirrored = dev.position == .front
+                }
             }
             previewAngle = 90
             previewMirrored = connection.isVideoMirrored
         }
-        if #available(iOS 18.0, *) { installCameraControls(for: dev) }
+        if #available(iOS 18.0, *) { attempt("Controle da Câmera") { installCameraControls(for: dev) } }
+        dlog("Abrindo \(dev.localizedName): salvando a configuração…")
         session.commitConfiguration()
+        dlog("Configuração aceita")
 
         device = dev
         loggedBufferSize = false
@@ -715,7 +722,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         guard dev == device, let connection = videoOutput.connection(with: .video),
               connection.isVideoRotationAngleSupported(angle) else { return }
         if connection.videoRotationAngle != angle {
-            connection.videoRotationAngle = angle
+            attempt("Girar o visor") { connection.videoRotationAngle = angle }
             dlog("Visor de \(dev.localizedName): girado \(Int(angle))°\(connection.isVideoMirrored ? ", espelhado" : "")")
         }
         previewAngle = angle
@@ -737,6 +744,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func applyRawMode(_ mode: RawMode) {
         guard session.outputs.contains(photoOutput) else { return }
         session.beginConfiguration()
+        defer { session.commitConfiguration() }
+        attempt("Configurar a foto (RAW, profundidade, disparo rápido)") { configurePhotoOutput(mode) }
+    }
+
+    private func configurePhotoOutput(_ mode: RawMode) {
         let proSupported = photoOutput.isAppleProRAWSupported
         let depth = depthWanted && photoOutput.isDepthDataDeliverySupported
         // Profundidade e bracketing não combinam com ProRAW nem com o disparo sem atraso
@@ -758,7 +770,6 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if let dims = device?.activeFormat.supportedMaxPhotoDimensions.max(by: { $0.pixels < $1.pixels }) {
             photoOutput.maxPhotoDimensions = dims
         }
-        session.commitConfiguration()
         DispatchQueue.main.async { self.proRAWSupported = proSupported }
     }
 
@@ -780,13 +791,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
             defer { d.unlockForConfiguration() }
             let f = d.activeFormat
-            if manual, d.isExposureModeSupported(.custom) {
-                let seconds = min(max(shutter, f.minExposureDuration.seconds), f.maxExposureDuration.seconds)
-                let duration = CMTime(seconds: seconds, preferredTimescale: 1_000_000_000)
-                d.setExposureModeCustom(duration: duration, iso: min(max(iso, f.minISO), f.maxISO), completionHandler: nil)
-            } else if d.isExposureModeSupported(.continuousAutoExposure) {
-                d.exposureMode = .continuousAutoExposure
-                d.setExposureTargetBias(min(max(bias, d.minExposureTargetBias), d.maxExposureTargetBias), completionHandler: nil)
+            attempt("Exposição") {
+                if manual, d.isExposureModeSupported(.custom) {
+                    let seconds = min(max(shutter, f.minExposureDuration.seconds), f.maxExposureDuration.seconds)
+                    let duration = CMTime(seconds: seconds, preferredTimescale: 1_000_000_000)
+                    d.setExposureModeCustom(duration: duration, iso: min(max(iso, f.minISO), f.maxISO), completionHandler: nil)
+                } else if d.isExposureModeSupported(.continuousAutoExposure) {
+                    d.exposureMode = .continuousAutoExposure
+                    d.setExposureTargetBias(min(max(bias, d.minExposureTargetBias), d.maxExposureTargetBias), completionHandler: nil)
+                }
             }
         }
     }
@@ -816,10 +829,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             guard !self.cinematicActive, let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
             defer { d.unlockForConfiguration() }
-            if manual, d.isLockingFocusWithCustomLensPositionSupported {
-                d.setFocusModeLocked(lensPosition: min(max(position, 0), 1), completionHandler: nil)
-            } else if d.isFocusModeSupported(.continuousAutoFocus) {
-                d.focusMode = .continuousAutoFocus
+            attempt("Foco") {
+                if manual, d.isLockingFocusWithCustomLensPositionSupported {
+                    d.setFocusModeLocked(lensPosition: min(max(position, 0), 1), completionHandler: nil)
+                } else if d.isFocusModeSupported(.continuousAutoFocus) {
+                    d.focusMode = .continuousAutoFocus
+                }
             }
         }
     }
@@ -1064,6 +1079,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 return
             }
             self.session.beginConfiguration()
+            attempt("Trocar o sensor para \(Int(rate)) fps") {
             // O formato rápido não aceita ProRAW nem 48 MP: desliga antes de trocar
             self.photoOutput.isAppleProRAWEnabled = false
             self.session.sessionPreset = .inputPriority
@@ -1078,6 +1094,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if let dims = format.supportedMaxPhotoDimensions.max(by: { $0.pixels < $1.pixels }) {
                 self.photoOutput.maxPhotoDimensions = dims
             }
+            }
             self.session.commitConfiguration()
             self.specialFormatActive = true
             self.applyRawMode(rawMode)
@@ -1088,7 +1105,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func setPreviewSized(_ on: Bool) {
-        if videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))) {
+        guard videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))) else { return }
+        attempt("Vídeo do visor no tamanho da tela") {
             videoOutput.setValue(on, forKey: "deliversPreviewSizedOutputBuffers")
         }
     }
@@ -1340,7 +1358,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             })
         }
         inFlight[id] = delegate
-        photoOutput.capturePhoto(with: settings, delegate: delegate)
+        let accepted = attempt("Tirar a foto") { photoOutput.capturePhoto(with: settings, delegate: delegate) }
+        if !accepted {
+            inFlight[id] = nil
+            completion(.failure(RevelaError.noRawData))
+        }
     }
 
     // MARK: - Vídeo, cinema e câmera dupla
@@ -1419,12 +1441,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             dlog("⚠️ Cinema: a entrada não suporta o modo cinema")
             return
         }
-        input.isCinematicVideoCaptureEnabled = true
+        guard attempt("Ligar o modo cinema", { input.isCinematicVideoCaptureEnabled = true }) else { return }
         cinematicActive = true
         let minA = format.minSimulatedAperture, maxA = format.maxSimulatedAperture
         if minA > 0, maxA >= minA {
             let wanted = DispatchQueue.main.sync { self.cinematicAperture }
-            input.simulatedAperture = min(max(wanted, minA), maxA)
+            attempt("Abertura do modo cinema") { input.simulatedAperture = min(max(wanted, minA), maxA) }
             DispatchQueue.main.async {
                 self.cinematicRange = minA...maxA
                 if !(minA...maxA).contains(self.cinematicAperture) { self.cinematicAperture = format.defaultSimulatedAperture }
@@ -1442,7 +1464,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                   let input = self.session.inputs.compactMap({ $0 as? AVCaptureDeviceInput }).first(where: { $0.device.hasMediaType(.video) }),
                   input.device.activeFormat.minSimulatedAperture > 0 else { return }
             let f = input.device.activeFormat
-            input.simulatedAperture = min(max(value, f.minSimulatedAperture), f.maxSimulatedAperture)
+            attempt("Abertura do modo cinema") { input.simulatedAperture = min(max(value, f.minSimulatedAperture), f.maxSimulatedAperture) }
         }
     }
 
@@ -1468,7 +1490,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     c.videoRotationAngle = angle
                 }
                 let url = FileManager.default.temporaryDirectory.appendingPathComponent("cinema-\(UUID().uuidString).mov")
-                self.movieOutput.startRecording(to: url, recordingDelegate: self)
+                attempt("Gravar no modo cinema") { self.movieOutput.startRecording(to: url, recordingDelegate: self) }
                 dlog("Cinema: gravando")
             }
         } else {
@@ -1714,7 +1736,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.process(result, mode: .hdr, options: options, started: t0)
         }
         inFlight[id] = delegate
-        photoOutput.capturePhoto(with: settings, delegate: delegate)
+        let accepted = attempt("Tirar o HDR") { photoOutput.capturePhoto(with: settings, delegate: delegate) }
+        if !accepted {
+            inFlight[id] = nil
+            DispatchQueue.main.async {
+                self.processing -= 1
+                self.message = "O iPhone recusou o HDR nesta lente. Tente a 1×."
+            }
+        }
     }
 
     /// Revela (e junta, se for sequência) e salva na galeria.

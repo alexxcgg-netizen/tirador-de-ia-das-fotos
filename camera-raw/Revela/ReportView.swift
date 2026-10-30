@@ -2,7 +2,8 @@ import SwiftUI
 
 /// Tela do relatório: a pessoa escreve o que notou, e compartilha o texto com o Claude.
 struct ReportView: View {
-    @ObservedObject var camera: CameraModel
+    /// nil no modo seguro (a câmera não foi ligada).
+    var camera: CameraModel?
     @Environment(\.dismiss) private var dismiss
     @State private var note = ""
     @State private var report = ""
@@ -67,7 +68,10 @@ struct ReportView: View {
 
     private func build() {
         copied = false
-        camera.describeCapabilities { cameraText in
+        let describe: (@escaping (String) -> Void) -> Void = { done in
+            if let camera { camera.describeCapabilities(completion: done) } else { done("(modo seguro: câmera não ligada)\n") }
+        }
+        describe { cameraText in
             Diagnostics.shared.report(note: note, camera: cameraText) { text in
                 report = text
                 let url = FileManager.default.temporaryDirectory.appendingPathComponent("relatorio-revela.md")

@@ -58,7 +58,11 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
                 device.unlockForConfiguration()
             }
         }
-        guard connect(back, to: backOutput, mirrored: false), connect(front, to: frontOutput, mirrored: true) else { return false }
+        var connected = false
+        attempt("Ligar as duas câmeras") {
+            connected = connect(back, to: backOutput, mirrored: false) && connect(front, to: frontOutput, mirrored: true)
+        }
+        guard connected else { return false }
         if withAudio, let mic = AVCaptureDevice.default(for: .audio), let input = try? AVCaptureDeviceInput(device: mic),
            session.canAddInput(input), session.canAddOutput(audioOutput) {
             session.addInput(input)

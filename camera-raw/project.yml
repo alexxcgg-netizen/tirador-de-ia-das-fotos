@@ -6,7 +6,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "0.12.0"
+    MARKETING_VERSION: "0.12.1"
     CURRENT_PROJECT_VERSION: "1"
 targets:
   Revela:
@@ -30,6 +30,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.alexxcgg.revela
+        SWIFT_OBJC_BRIDGING_HEADER: Revela/Revela-Bridging-Header.h
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Os shaders em .ci.metal são kernels de Core Image

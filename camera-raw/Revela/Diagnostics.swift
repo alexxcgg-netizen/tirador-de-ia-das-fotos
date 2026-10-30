@@ -25,7 +25,16 @@ final class Diagnostics: NSObject, MXMetricManagerSubscriber {
         super.init()
     }
 
+    private var monitoring = false
+
     func startMonitoring() {
+        guard !monitoring else { return }
+        monitoring = true
+        // Erro do Objective-C que escapou: anota o motivo antes do app fechar
+        NSSetUncaughtExceptionHandler { exception in
+            let stack = exception.callStackSymbols.prefix(25).joined(separator: "\n")
+            Diagnostics.shared.log("💥 App fechou: \(exception.name.rawValue): \(exception.reason ?? "")\n\(stack)")
+        }
         MXMetricManager.shared.add(self)
         log("App aberto · \(Self.deviceModel) · iOS \(UIDevice.current.systemVersion) · Revela \(Self.appVersion)")
         let center = NotificationCenter.default
@@ -37,20 +46,23 @@ final class Diagnostics: NSObject, MXMetricManagerSubscriber {
         }
     }
 
+    private let writeLock = NSLock()
+
+    /// Grava na hora (não em fila): se o app fechar logo depois, a linha já está no arquivo.
     func log(_ message: String) {
         let elapsed = String(format: "%7.1fs", Date().timeIntervalSince(start))
         let line = "\(elapsed)  \(message)\n"
-        queue.async {
-            guard let data = line.data(using: .utf8) else { return }
-            if let handle = try? FileHandle(forWritingTo: self.logURL) {
-                handle.seekToEndOfFile()
-                handle.write(data)
-                try? handle.close()
-            } else {
-                try? data.write(to: self.logURL)
-            }
-            self.trimIfNeeded()
+        guard let data = line.data(using: .utf8) else { return }
+        writeLock.lock()
+        defer { writeLock.unlock() }
+        if let handle = try? FileHandle(forWritingTo: logURL) {
+            handle.seekToEndOfFile()
+            handle.write(data)
+            try? handle.close()
+        } else {
+            try? data.write(to: logURL)
         }
+        trimIfNeeded()
     }
 
     func set(_ key: String, _ value: String) {
@@ -167,3 +179,32 @@ final class Diagnostics: NSObject, MXMetricManagerSubscriber {
 
 /// Atalho curto.
 func dlog(_ message: String) { Diagnostics.shared.log(message) }
+
+/// Tenta um comando que a câmera pode recusar. Se recusar, anota o motivo e segue em vez de fechar o app.
+@discardableResult
+func attempt(_ label: String, _ block: () -> Void) -> Bool {
+    if let exception = RevelaCatch(block) {
+        dlog("💥 \(label) recusado: \(exception.name.rawValue): \(exception.reason ?? "")")
+        return false
+    }
+    return true
+}
+
+/// Abertura do app: se a anterior não chegou a ficar de pé, abre no modo seguro.
+enum LaunchGuard {
+    private static let key = "launchInProgress"
+
+    /// true = a última abertura fechou antes de terminar.
+    static func begin() -> Bool {
+        let defaults = UserDefaults.standard
+        let crashed = defaults.bool(forKey: key)
+        defaults.set(true, forKey: key)
+        Diagnostics.shared.startMonitoring()
+        if crashed { dlog("⚠️ A abertura anterior fechou antes de terminar: modo seguro") }
+        return crashed
+    }
+
+    static func markStable() {
+        UserDefaults.standard.set(false, forKey: key)
+    }
+}

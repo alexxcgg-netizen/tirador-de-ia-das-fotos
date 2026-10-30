@@ -40,6 +40,11 @@ struct ContentView: View {
         .onAppear {
             camera.start()
             level.start()
+            // Ficou de pé por 6 s: a abertura deu certo
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                LaunchGuard.markStable()
+                dlog("Abertura concluída")
+            }
             if !guideSeen {
                 guideSeen = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { showGuide = true }
