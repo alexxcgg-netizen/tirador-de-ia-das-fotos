@@ -64,12 +64,12 @@ final class ActionRecorder {
         return (last - startTime).seconds
     }
 
-    /// Termina o arquivo e devolve o endereço e o instante de cada quadro gravado.
+    /// Termina o arquivo e devolve o endereço e o instante de cada quadro, contado a partir do início do vídeo.
     func stop(completion: @escaping (URL?, [CMTime]) -> Void) {
         isRecording = false
-        guard let writer, let input, writer.status == .writing else { return completion(nil, []) }
+        guard let writer, let input, writer.status == .writing, let startTime else { return completion(nil, []) }
         input.markAsFinished()
-        let times = frameTimes
+        let times = frameTimes.map { $0 - startTime }
         let url = self.url
         writer.finishWriting {
             completion(writer.status == .completed ? url : nil, times)
@@ -85,9 +85,16 @@ final class ActionRecorder {
         scorer.maximumSize = CGSize(width: 640, height: 640)
 
         var scores: [(index: Int, score: Float)] = []
+        var failures = 0
         for (i, time) in times.enumerated() {
-            guard let image = try? scorer.copyCGImage(at: time, actualTime: nil) else { continue }
+            guard let image = try? scorer.copyCGImage(at: time, actualTime: nil) else {
+                failures += 1
+                continue
+            }
             scores.append((i, Developer.sharpnessScore(CIImage(cgImage: image))))
+        }
+        if failures > 0 {
+            dlog("AÇÃO: \(failures) de \(times.count) quadros não abriram (duração do vídeo \(String(format: "%.2f", asset.duration.seconds)) s)")
         }
         // Os mais nítidos, com pelo menos 3 quadros de distância (para não salvar 8 fotos iguais)
         var chosen: [Int] = []

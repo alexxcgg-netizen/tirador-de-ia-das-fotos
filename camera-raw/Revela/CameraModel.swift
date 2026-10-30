@@ -797,6 +797,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 return
             }
             self.session.beginConfiguration()
+            // O formato rápido não aceita ProRAW nem 48 MP: desliga antes de trocar
+            self.photoOutput.isAppleProRAWEnabled = false
             self.session.sessionPreset = .inputPriority
             self.setPreviewSized(mode != .action)
             if (try? d.lockForConfiguration()) != nil {
@@ -805,6 +807,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 d.activeVideoMinFrameDuration = duration
                 d.activeVideoMaxFrameDuration = duration
                 d.unlockForConfiguration()
+            }
+            if let dims = format.supportedMaxPhotoDimensions.max(by: { $0.pixels < $1.pixels }) {
+                self.photoOutput.maxPhotoDimensions = dims
             }
             self.session.commitConfiguration()
             self.specialFormatActive = true
@@ -825,6 +830,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func startShutterPriority() {
         guard captureMode.fixesShutter, !manualExposure else {
             lowLight = false
+            shutterPriorityISO = 0
+            // Saiu do CONGELAR/AÇÃO: volta para o automático (ou para o manual que estava)
+            updateExposure()
             return
         }
         let shutter = captureMode == .action ? 1.0 / 1000 : freezeShutter
