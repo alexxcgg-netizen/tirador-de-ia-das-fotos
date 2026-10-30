@@ -117,7 +117,7 @@ struct ContentView: View {
 
     // MARK: - Lentes e modos
 
-    /// Zooms do dia a dia ficam à vista; 8× e Macro ficam no "···". Pinça no visor faz qualquer zoom entre eles.
+    /// Zooms do dia a dia, a flor do macro e o 8× ficam à vista. Pinça no visor faz qualquer zoom entre eles.
     private var zoomPresets: [CGFloat] {
         var presets: [CGFloat] = []
         if camera.availableLenses.contains(.ultraWide) { presets.append(0.5) }
@@ -140,35 +140,45 @@ struct ContentView: View {
                 ForEach([CGFloat(1), 2], id: \.self) { z in zoomButton(z) }
             } else {
                 ForEach(zoomPresets, id: \.self) { z in zoomButton(z) }
-                let extraOn = camera.lens == .macro || isCurrent(8)
-                Menu {
-                    if camera.availableLenses.contains(.tele) {
-                        Button { withAnimation(.snappy(duration: 0.2)) { camera.setZoom(8) } } label: {
-                            Label("8× (tele recortada)", systemImage: "plus.magnifyingglass")
-                        }
+                if camera.availableLenses.contains(.macro) { macroButton }
+                if camera.availableLenses.contains(.tele) {
+                    let eightOn = isCurrent(8)
+                    Button { withAnimation(.snappy(duration: 0.2)) { camera.setZoom(8) } } label: {
+                        Text("8×")
+                            .font(.system(size: 15, weight: .bold))
+                            .frame(width: 52, height: 52)
+                            .foregroundStyle(eightOn ? accent : Color.white)
+                            .background(Circle().fill(eightOn ? panelOn : panelFill))
                     }
-                    if camera.availableLenses.contains(.macro) {
-                        Button {
-                            withAnimation(.snappy(duration: 0.2)) { camera.select(lens: .macro) }
-                            camera.show("Macro: chegue até 2 cm. O peaking liga sozinho para mostrar o que está em foco.")
-                        } label: {
-                            Label("Macro (até 2 cm)", systemImage: "camera.macro")
-                        }
-                    }
-                } label: {
-                    Group {
-                        if camera.lens == .macro { Image(systemName: "camera.macro") }
-                        else if isCurrent(8) { Text("8×") }
-                        else { Text("···") }
-                    }
-                    .font(.system(size: 15, weight: .bold))
-                    .frame(width: 52, height: 52)
-                    .foregroundStyle(extraOn ? accent : Color.white)
-                    .background(Circle().fill(extraOn ? panelOn : panelFill))
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Zoom 8×")
                 }
-                .accessibilityLabel("Mais lentes")
             }
         }
+    }
+
+    /// Flor = macro (foca a 2 cm). Toque de novo para voltar ao 1×.
+    private var macroButton: some View {
+        let on = camera.lens == .macro
+        return Button {
+            withAnimation(.snappy(duration: 0.2)) {
+                if on {
+                    camera.select(lens: .wide)
+                    camera.setZoom(1)
+                } else {
+                    camera.select(lens: .macro)
+                    camera.show("Macro: chegue até 2 cm. O peaking liga sozinho para mostrar o que está em foco.")
+                }
+            }
+        } label: {
+            Image(systemName: "camera.macro")
+                .font(.system(size: 18, weight: .bold))
+                .frame(width: 52, height: 52)
+                .foregroundStyle(on ? accent : Color.white)
+                .background(Circle().fill(on ? panelOn : panelFill))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(on ? "Sair do macro" : "Macro")
     }
 
     /// Este botão mostra o zoom atual? (o exato, ou o mais perto quando a pinça parou entre dois)

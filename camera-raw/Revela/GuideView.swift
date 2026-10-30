@@ -55,7 +55,7 @@ struct GuideView: View {
             Item(symbol: "arrow.up.left.and.arrow.down.right", title: "Pinça no visor",
                  text: "Afaste dois dedos para aproximar (até 25×). Ao soltar, o app escolhe sozinho a melhor câmera: ultra-angular, principal ou tele."),
             Item(symbol: "plus.magnifyingglass", title: "Botões de zoom",
-                 text: "0,5×, 1×, 2× e 4× são câmeras ou recortes de 48 MP com qualidade óptica. O ··· tem o 8× e o Macro."),
+                 text: "0,5×, 1×, 2× e 4× são câmeras ou recortes de 48 MP com qualidade óptica. A flor liga o Macro (foca a 2 cm) e o 8× é a tele recortada."),
         ]),
         ("Vídeo", [
             Item(symbol: "video.fill", title: "Vídeo", text: "1080p a 24, 30 ou 60 fps com o look gravado junto. Toque para começar e parar."),
