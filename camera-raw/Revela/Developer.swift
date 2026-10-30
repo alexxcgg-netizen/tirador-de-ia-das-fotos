@@ -299,6 +299,8 @@ struct CapturedFrame {
 /// Tudo que define como a foto é revelada.
 struct DevelopOptions {
     var look: Look = .portra
+    /// Filme próprio: quando existe, vale no lugar do `look`.
+    var custom: CustomLook?
     var amount: Float = 1
     var grain: Float = 1
     var zoom: CGFloat = 1
@@ -307,15 +309,25 @@ struct DevelopOptions {
     var mirror = false
     /// HDR: um pouco menos de contraste e um pouco mais de luz, para caber o céu e a sombra.
     var hdrCompress = false
+    /// Mantém a proporção da foto original (Revelar de novo).
+    var originalAspect = false
+
+    func cropRect(in extent: CGRect) -> CGRect {
+        guard originalAspect else { return aspect.crop(extent, zoom: zoom) }
+        let w = extent.width / zoom, h = extent.height / zoom
+        return CGRect(x: extent.midX - w / 2, y: extent.midY - h / 2, width: w, height: h).integral
+    }
 
     var params: LookParams {
-        var p = look.params.scaled(amount: amount, grain: grain)
+        var p = (custom?.params ?? look.params).scaled(amount: amount, grain: grain)
         if hdrCompress {
             p.contrast *= 0.85
             p.exposure += 0.15
         }
         return p
     }
+
+    var lookName: String { custom?.name ?? look.rawValue }
 }
 
 /// Revela o DNG com a nossa própria curva, sem o processamento de "aparência" da Apple.
@@ -356,6 +368,10 @@ enum Developer {
     private static let hdrColorKernel = kernel("revelaHDRColor")
     private static let hdrWeightKernel = kernel("revelaHDRWeight")
     private static let divideKernel = kernel("revelaDivide")
+    static let paperKernel = kernel("revelaPaper")
+    static let cylinderKernel: CIWarpKernel? = library.flatMap {
+        try? CIWarpKernel(functionName: "revelaCylinder", fromMetalLibraryData: $0)
+    }
     private static let blurMapKernel = kernel("revelaBlurMap")
     static let maxKernel = kernel("revelaMax")
     static let sumKernel = kernel("revelaAdd")
@@ -375,9 +391,10 @@ enum Developer {
         let names = ["revelaTone": toneKernel, "revelaToScene": toSceneKernel, "revelaHighlights": highlightsKernel,
                      "revelaPeaking": peakingKernel, "revelaSharpness": sharpnessKernel, "revelaPick": pickKernel,
                      "revelaClip": clipKernel, "revelaAdd": addKernel, "revelaHDRColor": hdrColorKernel,
-                     "revelaHDRWeight": hdrWeightKernel, "revelaDivide": divideKernel, "revelaBlurMap": blurMapKernel,
+                     "revelaHDRWeight": hdrWeightKernel, "revelaDivide": divideKernel, "revelaPaper": paperKernel, "revelaBlurMap": blurMapKernel,
                      "revelaMax": maxKernel, "revelaFalseColor": falseColorKernel]
-        let missing = names.filter { $0.value == nil }.map(\.key).sorted()
+        var missing = names.filter { $0.value == nil }.map(\.key).sorted()
+        if cylinderKernel == nil { missing.append("revelaCylinder") }
         return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
 
@@ -431,19 +448,13 @@ enum Developer {
             return nil
         }
         let output = finish(image, options: options)
-        dlog("Revelação \(options.look.rawValue) \(Int(image.extent.width))×\(Int(image.extent.height)) · \(frame.isRaw ? "DNG" : "HEIC") \(frame.data.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
+        dlog("Revelação \(options.lookName) \(Int(image.extent.width))×\(Int(image.extent.height)) · \(frame.isRaw ? "DNG" : "HEIC") \(frame.data.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
     }
 
     /// Luz de cena -> recorte, look e HEIC de 10 bits.
     static func finish(_ scene: CIImage, options: DevelopOptions) -> Output? {
-        let rect = options.aspect.crop(scene.extent, zoom: options.zoom)
-        var cropped = scene.cropped(to: rect)
-            .transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
-        if options.mirror {
-            cropped = cropped.transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -rect.width, y: 0))
-        }
-        let graded = grade(cropped, look: options.params, zebra: false).settingProperties(scene.properties)
+        let (graded, rect) = developed(scene, options: options)
 
         guard let heic = try? context.heif10Representation(
             of: graded,
@@ -453,6 +464,39 @@ enum Developer {
 
         let same = abs(rect.width - scene.extent.width) < 2 && abs(rect.height - scene.extent.height) < 2
         return Output(heic: heic, thumbnail: thumbnail(of: graded), sameSizeAsRaw: same)
+    }
+
+    /// Recorte (zoom e proporção), espelho e look. Devolve também o recorte usado, em coordenadas da cena.
+    static func developed(_ scene: CIImage, options: DevelopOptions) -> (CIImage, CGRect) {
+        let rect = options.cropRect(in: scene.extent)
+        var cropped = scene.cropped(to: rect)
+            .transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
+        if options.mirror {
+            cropped = cropped.transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -rect.width, y: 0))
+        }
+        return (grade(cropped, look: options.params, zebra: false).settingProperties(scene.properties), rect)
+    }
+
+    /// Versão pequena revelada, para mostrar na tela (Revelar de novo).
+    static func render(_ scene: CIImage, options: DevelopOptions) -> UIImage? {
+        let (graded, _) = developed(scene, options: options)
+        guard let cg = context.createCGImage(graded, from: graded.extent, format: .RGBA8, colorSpace: displayP3) else { return nil }
+        return UIImage(cgImage: cg)
+    }
+
+    /// A foto tem mapa de profundidade (Retrato do Revela ou do app Câmera)?
+    static func hasDepth(_ data: Data) -> Bool {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return false }
+        return CGImageSourceCopyAuxiliaryDataInfoAtIndex(source, 0, kCGImageAuxiliaryDataTypeDisparity) != nil
+            || CGImageSourceCopyAuxiliaryDataInfoAtIndex(source, 0, kCGImageAuxiliaryDataTypeDepth) != nil
+    }
+
+    /// Luz de cena de qualquer foto: RAW, HEIC/JPEG, ou retrato com o desfoque escolhido.
+    static func scene(for frame: CapturedFrame, scale: Float = 1, aperture: Float? = nil, focusPoint: CGPoint? = nil) -> CIImage? {
+        if frame.hasDepth, let aperture {
+            return portraitScene(frame.data, aperture: aperture, focusPoint: focusPoint, scale: CGFloat(scale))
+        }
+        return image(from: frame, scale: scale)
     }
 
     /// Halation/bloom + o kernel do look.
@@ -721,7 +765,7 @@ enum Developer {
     }
 
     /// Calcula a imagem agora e guarda num buffer de meia precisão, para soltar tudo que veio antes.
-    private static func materialize(_ image: CIImage, extent: CGRect) -> CIImage {
+    static func materialize(_ image: CIImage, extent: CGRect) -> CIImage {
         let w = Int(extent.width), h = Int(extent.height)
         var buffer: CVPixelBuffer?
         let attributes: [CFString: Any] = [kCVPixelBufferIOSurfacePropertiesKey: [:] as [CFString: Any],
@@ -806,6 +850,14 @@ enum Developer {
     /// `focusPoint`: onde está o rosto (0…1, origem em cima à esquerda); nil = centro.
     static func developPortrait(_ data: Data, aperture: Float, focusPoint: CGPoint?, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
+        guard let scene = portraitScene(data, aperture: aperture, focusPoint: focusPoint) else { return nil }
+        let output = finish(scene, options: options)
+        dlog(String(format: "Retrato revelado f/%.1f: ", aperture) + Diagnostics.ms(since: t0) + (output == nil ? " · FALHOU" : ""))
+        return output
+    }
+
+    /// Retrato -> luz de cena já com o fundo desfocado. `scale` < 1 para a prévia na tela.
+    static func portraitScene(_ data: Data, aperture: Float, focusPoint: CGPoint?, scale: CGFloat = 1) -> CIImage? {
         guard let raw = CIImage(data: data) else { return nil }
         let orientationValue = (raw.properties[kCGImagePropertyOrientation as String] as? NSNumber)?.uint32Value ?? 1
         let orientation = CGImagePropertyOrientation(rawValue: orientationValue) ?? .up
@@ -813,7 +865,8 @@ enum Developer {
             let o = image.oriented(orientation)
             return o.transformed(by: CGAffineTransform(translationX: -o.extent.minX, y: -o.extent.minY))
         }
-        let image = upright(raw)
+        var image = upright(raw)
+        if scale < 1 { image = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale)) }
         let extent = image.extent
         var properties = raw.properties
         properties[kCGImagePropertyOrientation as String] = nil
@@ -821,7 +874,7 @@ enum Developer {
         guard let disparityRaw = CIImage(data: data, options: [.auxiliaryDisparity: true]), let blurMapKernel else {
             dlog("Retrato: a foto veio sem profundidade; revelando sem desfoque")
             let scene = toSceneKernel?.apply(extent: extent, arguments: [image]) ?? image
-            return finish(scene.settingProperties(properties), options: options)
+            return scene.settingProperties(properties)
         }
         func fit(_ aux: CIImage) -> CIImage {
             let a = upright(aux)
@@ -849,10 +902,8 @@ enum Developer {
             .applyingFilter("CIMaskedVariableBlur", parameters: ["inputMask": map, kCIInputRadiusKey: radius])
             .cropped(to: extent)
         let scene = toSceneKernel?.apply(extent: extent, arguments: [blurred]) ?? blurred
-        let output = finish(scene.settingProperties(properties), options: options)
-        dlog(String(format: "Retrato revelado f/%.1f · foco na disparidade %.2f · raio %.0f px: ", aperture, focus, radius)
-             + Diagnostics.ms(since: t0) + (output == nil ? " · FALHOU" : ""))
-        return output
+        if scale >= 1 { dlog(String(format: "Retrato: f/%.1f · foco na disparidade %.2f · raio %.0f px", aperture, focus, radius)) }
+        return scene.settingProperties(properties)
     }
 
     // MARK: - Visor

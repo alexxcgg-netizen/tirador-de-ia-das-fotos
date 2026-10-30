@@ -6,7 +6,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "0.12.4"
+    MARKETING_VERSION: "0.13.0"
     CURRENT_PROJECT_VERSION: "1"
 targets:
   Revela:
@@ -27,6 +27,7 @@ targets:
         NSCameraUsageDescription: O Revela usa a câmera para fotografar em RAW.
         NSMicrophoneUsageDescription: O Revela usa o microfone para gravar o som dos vídeos.
         NSPhotoLibraryAddUsageDescription: O Revela salva as fotos (DNG + revelada) na sua galeria.
+        NSLocationWhenInUseUsageDescription: O Revela guarda onde cada foto foi tirada, para ela aparecer no mapa da galeria. Dá para desligar nos Ajustes do app.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.alexxcgg.revela

@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreLocation
 import CoreMotion
 import ImageIO
 import Photos
@@ -72,10 +73,12 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     case action = "AÇÃO"
     case freeze = "CONGELAR"
     case portrait = "RETRATO"
+    case panorama = "PANORAMA"
     case video = "VÍDEO"
     case cinematic = "CINEMÁTICO"
     case dual = "DUPLA"
     case scan = "3D"
+    case document = "DOC"
     case hdr = "HDR"
     case longExposure = "LONGA"
     case superRes = "SUPER RES"
@@ -90,7 +93,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var frameCount: Int {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan: return 1
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan,
+             .document, .panorama: return 1
         case .superRes: return 4
         case .night, .moon, .average: return 8
         case .stars: return 16
@@ -101,7 +105,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     /// Como juntar os quadros, quando há mais de um.
     var stackKind: Developer.StackKind? {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes, .video, .cinematic, .dual, .scan: return nil
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes, .video, .cinematic, .dual, .scan,
+             .document, .panorama: return nil
         case .focusStack: return .focus
         case .night, .stars, .moon, .average: return .average
         }
@@ -118,6 +123,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .cinematic: return "Vídeo com o fundo desfocado, como o Modo Cinema do iPhone. O foco segue as pessoas; dá para mudar depois no app Fotos."
         case .dual: return "Câmera de trás e da frente juntas. Toque: foto. Segure: vídeo enquanto segura."
         case .scan: return "Scanner 3D com LiDAR."
+        case .document: return "Documentos de várias páginas, sem marca d'água, num PDF só."
+        case .panorama: return "Toque e gire o iPhone devagar para a direita, sem subir nem descer. Toque de novo para terminar."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
         case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Apoie o iPhone."
         case .superRes: return "4 fotos de 48 MP juntadas no sub-pixel: o dobro de detalhe no zoom (2× a 25×). Segure firme."
@@ -270,6 +277,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     // Revelação
     @Published var look: Look = .portra { didSet { optionsChanged() } }
+    /// Filme próprio escolhido (nil = vale o `look`).
+    @Published var customLook: CustomLook? { didSet { optionsChanged() } }
+    @Published var customLooks: [CustomLook] = CustomLookStore.load()
+    /// Nome do look em uso, pronto ou próprio.
+    var lookName: String { customLook?.name ?? look.rawValue }
     @Published var lookAmount: Float = 1 { didSet { optionsChanged() } }
     @Published var grainAmount: Float = 1 { didSet { optionsChanged() } }
     @Published var aspect: AspectRatio = .r43 { didSet { optionsChanged() } }
@@ -279,6 +291,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var peaking = false { didSet { renderer.options.peaking = peaking } }
     @Published var loupe = false { didSet { renderer.loupe = loupe } }
     @Published var showGrid = true
+    @Published var showLevel = UserDefaults.standard.object(forKey: "showLevel") as? Bool ?? true {
+        didSet { defaults.set(showLevel, forKey: "showLevel") }
+    }
+    /// Foco e exposição travados (segurar o dedo no visor). Um toque solta.
+    @Published var aeafLocked = false
     /// Salva a foto invertida, como num espelho.
     @Published var mirror = false { didSet { optionsChanged() } }
     /// Guarda também o DNG na galeria (ocupa uns 50 MB por foto).
@@ -350,7 +367,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     var developOptions: DevelopOptions {
-        DevelopOptions(look: look, amount: lookAmount, grain: grainAmount, zoom: crop, aspect: aspect, mirror: mirror)
+        DevelopOptions(look: look, custom: customLook, amount: lookAmount, grain: grainAmount, zoom: crop, aspect: aspect, mirror: mirror)
     }
 
     /// Pinça e botões. `settle` escolhe a melhor câmera física para esse zoom (no fim do gesto, para não piscar no meio).
@@ -415,6 +432,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         super.init()
         Diagnostics.shared.startMonitoring()
         if let saved = defaults.string(forKey: "look").flatMap(Look.init(rawValue:)) { look = saved }
+        if let id = defaults.string(forKey: "customLook").flatMap(UUID.init(uuidString:)) {
+            customLook = customLooks.first { $0.id == id }
+        }
         if let saved = defaults.string(forKey: "aspect").flatMap(AspectRatio.init(rawValue:)) { aspect = saved }
         if defaults.object(forKey: "lookAmount") != nil { lookAmount = defaults.float(forKey: "lookAmount") }
         if defaults.object(forKey: "grainAmount") != nil { grainAmount = defaults.float(forKey: "grainAmount") }
@@ -430,10 +450,31 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func optionsChanged() {
         renderer.options.develop = developOptions
         defaults.set(look.rawValue, forKey: "look")
+        defaults.set(customLook?.id.uuidString, forKey: "customLook")
         defaults.set(aspect.rawValue, forKey: "aspect")
         defaults.set(lookAmount, forKey: "lookAmount")
         defaults.set(grainAmount, forKey: "grainAmount")
         defaults.set(mirror, forKey: "mirror")
+    }
+
+    /// Escolhe um look pronto (sai do filme próprio).
+    func choose(look newLook: Look) {
+        customLook = nil
+        look = newLook
+    }
+
+    /// Salva (ou atualiza) um filme próprio e já deixa ele escolhido.
+    func saveCustomLook(_ custom: CustomLook) {
+        if let i = customLooks.firstIndex(where: { $0.id == custom.id }) { customLooks[i] = custom } else { customLooks.append(custom) }
+        CustomLookStore.save(customLooks)
+        customLook = custom
+        dlog("Filme próprio salvo: \(custom.name) (base \(custom.base))")
+    }
+
+    func deleteCustomLook(_ custom: CustomLook) {
+        customLooks.removeAll { $0.id == custom.id }
+        CustomLookStore.save(customLooks)
+        if customLook?.id == custom.id { customLook = nil }
     }
 
     func show(_ text: String) {
@@ -568,7 +609,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             openScanner()
             return
         }
+        if mode == .document {
+            openDocumentScanner()
+            return
+        }
         guard mode != captureMode else { return }
+        if panoramaProgress != nil { finishPanorama() }
+        if mode == .panorama, lens != .front, crop > 1.01 { setZoom(lens.baseZoom) }
         if sceneTookOver {
             manualExposure = false
             manualFocus = false
@@ -928,7 +975,25 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Toque no visor: foca e mede a luz naquele ponto. `point` vai de 0 a 1 nos dois eixos.
+    /// Segurar o dedo no visor: foca e mede a luz ali e trava as duas coisas até o próximo toque.
+    func lockFocusExposure(at point: CGPoint) {
+        focus(at: point)
+        aeafLocked = true
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        dlog("Trava AE/AF")
+        let manualExposure = self.manualExposure
+        // Espera o foco e a exposição chegarem no ponto, depois trava
+        sessionQueue.asyncAfter(deadline: .now() + 0.6) {
+            guard self.aeafLocked, let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
+            defer { d.unlockForConfiguration() }
+            attempt("Travar a exposição") {
+                if !manualExposure, d.isExposureModeSupported(.locked) { d.exposureMode = .locked }
+            }
+        }
+    }
+
     func focus(at point: CGPoint) {
+        aeafLocked = false
         focusPoint = point
         // O visor mostra o centro ampliado pelo zoom digital
         let zoom = crop
@@ -949,7 +1014,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
-            if self.focusPoint == point { self.focusPoint = nil }
+            if self.focusPoint == point, !self.aeafLocked { self.focusPoint = nil }
         }
     }
 
@@ -962,6 +1027,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         guard countdown == 0, stackProgress == nil else { return }
         if captureMode == .video || captureMode == .cinematic {
             toggleRecording()
+            return
+        }
+        if captureMode == .panorama {
+            togglePanorama()
             return
         }
         guard timerSeconds > 0 else { return capture() }
@@ -1265,7 +1334,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let options = developOptions
         let mode = captureMode
         let t0 = CFAbsoluteTimeGetCurrent()
-        dlog("📸 \(mode.rawValue) · \(lens.rawValue) zoom \(zoomText) · \(rawMode.rawValue) · look \(look.rawValue) · \(aspect.rawValue) · " +
+        dlog("📸 \(mode.rawValue) · \(lens.rawValue) zoom \(zoomText) · \(rawMode.rawValue) · look \(lookName) · \(aspect.rawValue) · " +
              (manualExposure ? "ISO \(Int(selectedISO)) \(String(format: "%.4f", selectedShutter))s" : "auto ISO \(Int(readoutISO)) \(String(format: "%.4f", readoutShutter))s"))
         if mode == .action {
             // AÇÃO sem segurar: grava 1 segundo
@@ -1477,6 +1546,113 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             if self.session.isRunning { self.session.stopRunning() }
             DispatchQueue.main.async { self.showScanner = true }
+        }
+    }
+
+    @Published var showDocument = false
+
+    // MARK: - Panorama
+
+    private let panorama = PanoramaCapture()
+    /// Giro feito (0…1 de 180°) enquanto o panorama está gravando; nil parado.
+    @Published var panoramaProgress: Double?
+    @Published var panoramaWarning: String?
+
+    private func togglePanorama() {
+        if panoramaProgress != nil { return finishPanorama() }
+        guard lens != .front else {
+            message = "O panorama usa as câmeras de trás."
+            return
+        }
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        dlog("📸 PANORAMA · \(lens.rawValue) · look \(lookName)")
+        panoramaProgress = 0
+        panoramaWarning = nil
+        panorama.onProgress = { [weak self] progress, warning in
+            guard let self, self.panoramaProgress != nil else { return }
+            self.panoramaProgress = progress
+            if warning != self.panoramaWarning { self.panoramaWarning = warning }
+        }
+        panorama.onLimit = { [weak self] in
+            guard let self, self.panoramaProgress != nil else { return }
+            self.finishPanorama()
+        }
+        let step = shortSideFOV * 0.42
+        sessionQueue.async {
+            // Luz, cor e foco travados: as emendas não mudam de brilho nem de cor
+            if let d = self.device, (try? d.lockForConfiguration()) != nil {
+                attempt("Travar para o panorama") {
+                    if d.isExposureModeSupported(.locked) { d.exposureMode = .locked }
+                    if d.isWhiteBalanceModeSupported(.locked) { d.whiteBalanceMode = .locked }
+                    if d.isFocusModeSupported(.locked) { d.focusMode = .locked }
+                }
+                d.unlockForConfiguration()
+            }
+            // Quadros em resolução cheia enquanto gira
+            self.session.beginConfiguration()
+            self.setPreviewSized(false)
+            self.session.commitConfiguration()
+            self.panorama.start(step: step)
+        }
+    }
+
+    private func finishPanorama() {
+        guard panoramaProgress != nil else { return }
+        panoramaProgress = nil
+        panoramaWarning = nil
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        processing += 1
+        var options = developOptions
+        options.zoom = 1
+        let fov = shortSideFOV
+        let t0 = CFAbsoluteTimeGetCurrent()
+        panorama.finish { frames in
+            self.sessionQueue.async {
+                self.session.beginConfiguration()
+                self.setPreviewSized(true)
+                self.session.commitConfiguration()
+            }
+            DispatchQueue.main.async {
+                self.updateExposure()
+                self.updateWhiteBalance()
+                self.updateFocus()
+            }
+            guard frames.count >= 2 else {
+                DispatchQueue.main.async {
+                    self.processing -= 1
+                    self.message = "Gire mais o iPhone para fazer o panorama."
+                }
+                return
+            }
+            self.processingQueue.async {
+                let output = Developer.panorama(frames, fov: fov, options: options)
+                Library.save(dng: nil, developed: output?.heic, tryPair: false) { error in
+                    DispatchQueue.main.async {
+                        self.processing -= 1
+                        if let error { self.message = error.localizedDescription }
+                        else if output == nil { self.message = "Não consegui emendar o panorama." }
+                        else if let thumb = output?.thumbnail { self.thumbnail = thumb }
+                    }
+                    dlog(output == nil ? "❌ Panorama falhou" : "✅ Panorama salvo. Total: \(Diagnostics.ms(since: t0))")
+                }
+            }
+        }
+    }
+
+    private func openDocumentScanner() {
+        if captureMode == .dual { select(captureMode: .photo) }
+        if isRecordingVideo { stopRecording() }
+        dlog("Scanner de documentos aberto")
+        sessionQueue.async {
+            if self.session.isRunning { self.session.stopRunning() }
+            DispatchQueue.main.async { self.showDocument = true }
+        }
+    }
+
+    func documentClosed() {
+        dlog("Scanner de documentos fechado")
+        sessionQueue.async {
+            if !self.session.isRunning { self.session.startRunning() }
         }
     }
 
@@ -1888,8 +2064,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 let dng = frames.first.flatMap { $0.isRaw ? $0.data : nil }
                 let original = frames.first.flatMap { $0.isRaw ? nil : $0.data }
                 let keepDNG = self.saveDNG
+                // Foto de um quadro só: guarda o original para dar para revelar de novo depois
+                let single = frames.count == 1 && mode.stackKind == nil && mode != .hdr && mode != .superRes
+                let keep: ((String) -> Void)? = single ? { id in
+                    if let first = frames.first {
+                        SourceStore.keep(first, options: options, assetID: id, mode: mode.rawValue,
+                                         aperture: aperture, focusPoint: focusPoint)
+                    }
+                } : nil
                 Library.save(dng: keepDNG ? dng : nil, developed: output?.heic ?? original,
-                             tryPair: output?.sameSizeAsRaw ?? false) { error in
+                             tryPair: output?.sameSizeAsRaw ?? false, onSaved: keep) { error in
                     if let error {
                         done(.failure(error))
                     } else if output == nil {
@@ -1904,7 +2088,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Tudo que a câmera deste iPhone oferece, para o relatório.
     func describeCapabilities(completion: @escaping (String) -> Void) {
-        let settings = "- Ajustes: lente \(lens.rawValue) zoom \(zoomText) (recorte \(String(format: "%.2f", crop))), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(look.rawValue) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
+        let settings = "- Ajustes: lente \(lens.rawValue) zoom \(zoomText) (recorte \(String(format: "%.2f", crop))), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(lookName) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
             "exposição \(manualExposure ? "manual ISO \(Int(selectedISO)) \(selectedShutter)s" : "auto EV \(evBias)"), " +
             "balanço \(manualWB ? "\(Int(kelvin))K" : "auto"), foco \(manualFocus ? "manual \(lensPosition)" : "auto"), " +
             "peaking \(peaking), zebra \(zebra), espelhar \(mirror), guardar DNG \(saveDNG), visor \(Int(previewAngle))°, " +
@@ -1959,6 +2143,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         actionRecorder.append(sampleBuffer)
         let frame = CIImage(cvPixelBuffer: pixelBuffer)
         if longExposure.isRunning { longExposure.add(frame) }
+        if panorama.isRunning { panorama.offer(frame) }
         if recorder.isRecording {
             recorder.append(recordingImage(frame), at: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         }
@@ -2055,7 +2240,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         looks.selectedIndex = Look.allCases.firstIndex(of: look) ?? 0
         looks.setActionQueue(.main) { [weak self] index in
             guard let self, Look.allCases.indices.contains(index) else { return }
-            self.look = Look.allCases[index]
+            self.choose(look: Look.allCases[index])
         }
         let focus = AVCaptureSlider("Foco", symbolName: "camera.macro", in: 0...1)
         focus.value = lensPosition
@@ -2156,17 +2341,22 @@ final class BracketCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 
 enum Library {
     static func saveVideo(_ url: URL, completion: @escaping (Error?) -> Void) {
+        let location = Locator.shared.current
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             guard status == .authorized || status == .limited else { return completion(RevelaError.photosDenied) }
             PHPhotoLibrary.shared().performChanges({
-                PHAssetCreationRequest.forAsset().addResource(with: .video, fileURL: url, options: nil)
+                let request = PHAssetCreationRequest.forAsset()
+                request.addResource(with: .video, fileURL: url, options: nil)
+                request.location = location
             }, completionHandler: { _, error in completion(error) })
         }
     }
 
     /// Salva a foto revelada; com o DNG, tenta juntar os dois num item só (par RAW+HEIC).
     /// Se a galeria já recusou o par antes, salva separado direto.
-    static func save(dng: Data?, developed: Data?, tryPair: Bool, completion: @escaping (Error?) -> Void) {
+    /// `onSaved` recebe o identificador do item criado na galeria (para achar o original depois).
+    static func save(dng: Data?, developed: Data?, tryPair: Bool, location: CLLocation? = Locator.shared.current,
+                     onSaved: ((String) -> Void)? = nil, completion: @escaping (Error?) -> Void) {
         guard dng != nil || developed != nil else { return completion(RevelaError.noRawData) }
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             guard status == .authorized || status == .limited else {
@@ -2177,11 +2367,26 @@ enum Library {
             rawOptions.uniformTypeIdentifier = "com.adobe.raw-image"
             let pairRefused = UserDefaults.standard.bool(forKey: "pairRefused")
 
+            var createdID: String?
+            func finished(_ error: Error?) {
+                if error == nil, let createdID { onSaved?(createdID) }
+                completion(error)
+            }
             func saveSeparately() {
                 PHPhotoLibrary.shared().performChanges({
-                    if let developed { PHAssetCreationRequest.forAsset().addResource(with: .photo, data: developed, options: nil) }
-                    if let dng { PHAssetCreationRequest.forAsset().addResource(with: .photo, data: dng, options: rawOptions) }
-                }, completionHandler: { _, error in completion(error) })
+                    if let developed {
+                        let request = PHAssetCreationRequest.forAsset()
+                        request.addResource(with: .photo, data: developed, options: nil)
+                        request.location = location
+                        createdID = request.placeholderForCreatedAsset?.localIdentifier
+                    }
+                    if let dng {
+                        let request = PHAssetCreationRequest.forAsset()
+                        request.addResource(with: .photo, data: dng, options: rawOptions)
+                        request.location = location
+                        if createdID == nil { createdID = request.placeholderForCreatedAsset?.localIdentifier }
+                    }
+                }, completionHandler: { _, error in finished(error) })
             }
 
             guard let developed, let dng, tryPair, !pairRefused else { return saveSeparately() }
@@ -2189,8 +2394,11 @@ enum Library {
                 let request = PHAssetCreationRequest.forAsset()
                 request.addResource(with: .photo, data: developed, options: nil)
                 request.addResource(with: .alternatePhoto, data: dng, options: rawOptions)
+                request.location = location
+                createdID = request.placeholderForCreatedAsset?.localIdentifier
             }, completionHandler: { _, error in
-                guard let error else { return completion(nil) }
+                guard let error else { return finished(nil) }
+                createdID = nil
                 // A galeria recusou o par: não tenta mais e salva os dois separados
                 dlog("Par HEIC+DNG recusado (\(error.localizedDescription)); daqui em diante salvo separado")
                 UserDefaults.standard.set(true, forKey: "pairRefused")

@@ -98,7 +98,7 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         if now - fpsWindowStart > 3 {
             let fps: Double = Double(fpsFrames) / (now - fpsWindowStart)
             let fpsText = String(format: "%.0f", fps)
-            let lookName = options.develop.look.rawValue
+            let lookName = options.develop.lookName
             Diagnostics.shared.set("Visor", "\(fpsText) quadros/s · \(Int(size.width))×\(Int(size.height)) · look \(lookName)")
             fpsFrames = 0
             fpsWindowStart = now

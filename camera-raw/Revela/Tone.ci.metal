@@ -136,6 +136,18 @@ namespace coreimage {
         return float4(sum.rgb / max(weight.r, 1e-4f), 1.0f);
     }
 
+    // Panorama: projeta a foto num cilindro (girar a câmera vira só deslizar para o lado).
+    float2 revelaCylinder(float f, float2 center, destination dest) {
+        float2 d = dest.coord() - center;
+        float theta = d.x / f;
+        return center + float2(f * tan(theta), d.y / cos(theta));
+    }
+
+    // Documento: página ÷ papel (a página sem o texto) = papel branco por igual, sem sombra.
+    float4 revelaPaper(sample_t page, sample_t paper) {
+        return float4(clamp(page.rgb / max(paper.rgb, float3(0.04f)), 0.0f, 1.0f), 1.0f);
+    }
+
     // Retrato: quanto borrar cada ponto, pela distância até o plano em foco.
     // A máscara de pessoa (matte) protege o rosto e o cabelo.
     float4 revelaBlurMap(sample_t disparity, sample_t matte, float focus, float strength) {

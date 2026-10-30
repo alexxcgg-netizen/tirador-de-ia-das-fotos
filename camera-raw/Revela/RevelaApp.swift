@@ -15,7 +15,11 @@ struct RevelaApp: App {
         }
         .onChange(of: scenePhase) { _, phase in
             // Fechar o app de propósito não conta como travamento
-            if phase == .background { LaunchGuard.markStable() }
+            if phase == .background {
+                LaunchGuard.markStable()
+                Locator.shared.stop()
+            }
+            if phase == .active, !safeMode { Locator.shared.start() }
         }
     }
 }

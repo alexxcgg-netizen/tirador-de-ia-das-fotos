@@ -30,9 +30,11 @@ struct GuideView: View {
         ]),
         ("Visor", [
             Item(symbol: "hand.tap", title: "Tocar no visor", text: "Foca e mede a luz no ponto tocado."),
+            Item(symbol: "lock", title: "Segurar no visor", text: "Trava foco e exposição (TRAVA AE/AF). Um toque solta."),
+            Item(symbol: "photo.on.rectangle", title: "Miniatura", text: "Abre o Revelar de novo: troque o filme da última foto (ou de qualquer foto da galeria) e, no retrato, o foco e o desfoque."),
             Item(symbol: "chart.bar.fill", title: "Histograma",
                  text: "O gráfico no canto: à esquerda as sombras, à direita as luzes. Encostado na direita = estourado."),
-            Item(symbol: "minus", title: "Linha de nível", text: "Fica laranja quando o iPhone está reto."),
+            Item(symbol: "minus", title: "Nível", text: "Fica laranja quando o iPhone está reto. Apontando para baixo vira duas cruzes que se encontram."),
             Item(symbol: "paintpalette", title: "Cor falsa (em Ajustes)",
                  text: "Pinta a imagem por brilho: verde é o cinza médio, rosa é pele bem exposta, vermelho é estourado."),
         ]),
@@ -42,6 +44,7 @@ struct GuideView: View {
             Item(symbol: "thermometer.sun", title: "Balanço (AWB)", text: "Cor da luz. Kelvin baixo deixa a foto azulada, alto deixa alaranjada."),
             Item(symbol: "scope", title: "Foco manual", text: "Arraste de perto a longe. Enquanto arrasta, o visor amplia 4× (lupa)."),
             Item(symbol: "camera.filters", title: "Look", text: "O estilo de filme. O chip Look ajusta a intensidade e o tamanho do grão."),
+            Item(symbol: "paintbrush", title: "Meus filmes", text: "Na lista de looks, \"Criar filme\" parte do look atual: mexa em cor, contraste, grão e luz e salve com um nome."),
         ]),
         ("Modos rápidos", [
             Item(symbol: "bolt.fill", title: "Rápido",
@@ -84,9 +87,12 @@ struct GuideView: View {
             Item(symbol: "square.resize.up", title: "Super res",
                  text: "4 fotos de 48 MP alinhadas no sub-pixel: até o dobro de detalhe quando você usa zoom."),
             Item(symbol: "square.stack.3d.up", title: "Média", text: "8 fotos somadas: menos ruído, ou água lisa com obturador lento."),
+            Item(symbol: "pano", title: "Panorama", text: "Toque e gire o iPhone devagar para um lado, sem subir nem descer. Toque de novo para terminar (ou ele para sozinho em 240°)."),
+            Item(symbol: "doc.viewfinder", title: "DOC", text: "Documentos de várias páginas: acha a folha sozinho, deixa o papel branco e junta tudo num PDF, sem marca d'água."),
         ]),
         ("Dentro de Ajustes", [
             Item(symbol: "arrow.left.and.right", title: "Espelhar", text: "Salva a foto invertida, como você se vê no espelho."),
+            Item(symbol: "location", title: "Localização", text: "Guarda onde cada foto foi tirada, para ela aparecer no mapa da galeria."),
             Item(symbol: "doc.badge.plus", title: "Guardar DNG",
                  text: "Guarda também o arquivo RAW original (uns 50 MB) para revelar depois no Lightroom."),
             Item(symbol: "doc.text.magnifyingglass", title: "Relatório", text: "Junta o que aconteceu no app para você mandar ao Claude."),

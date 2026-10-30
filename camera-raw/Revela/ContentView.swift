@@ -8,9 +8,16 @@ private let panelOn = Color(white: 0.23)
 
 struct ContentView: View {
     @StateObject private var camera = CameraModel()
-    @StateObject private var level = LevelMeter()
     @State private var showSettings = false
     @State private var showLooks = false
+    @State private var editingLook: CustomLook?
+    @State private var showStudio = false
+    @State private var pressStart: CGPoint?
+    @State private var pressMoved = false
+    @State private var lockFired = false
+    @State private var lockWork: DispatchWorkItem?
+    @State private var locationOn = Locator.shared.enabled
+    @State private var originalsSize = "…"
     @State private var showReport = false
     @State private var showGuide = false
     @State private var pressingShutter = false
@@ -39,7 +46,6 @@ struct ContentView: View {
         .statusBarHidden()
         .onAppear {
             camera.start()
-            level.start()
             // Ficou de pé por 6 s: a abertura deu certo
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                 LaunchGuard.markStable()
@@ -56,6 +62,8 @@ struct ContentView: View {
         .sheet(isPresented: $showReport) { ReportView(camera: camera) }
         .fullScreenCover(isPresented: $camera.showScanner, onDismiss: { camera.scannerClosed() }) { ScannerView() }
         .sheet(isPresented: $showGuide) { GuideView() }
+        .fullScreenCover(isPresented: $showStudio) { StudioView(camera: camera) }
+        .fullScreenCover(isPresented: $camera.showDocument, onDismiss: { camera.documentClosed() }) { DocumentScanView() }
         .alert("Revela", isPresented: Binding(
             get: { camera.message != nil },
             set: { if !$0 { camera.message = nil } }
@@ -77,14 +85,14 @@ struct ContentView: View {
             Button { showLooks = true } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "camera.filters").foregroundStyle(accent)
-                    Text(camera.look.rawValue).font(.body.weight(.semibold)).lineLimit(1)
+                    Text(camera.lookName).font(.body.weight(.semibold)).lineLimit(1)
                 }
                 .padding(.horizontal, 18)
                 .frame(height: 48)
                 .background(Capsule().fill(panelFill))
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Look: \(camera.look.rawValue)")
+            .accessibilityLabel("Look: \(camera.lookName)")
 
             Spacer(minLength: 0)
 
@@ -418,7 +426,39 @@ struct ContentView: View {
                     ThirdsGrid().stroke(.white.opacity(0.22), lineWidth: 0.5)
                 }
                 AspectMask(aspect: camera.aspect)
-                LevelLine(roll: level.roll)
+                if camera.showLevel { LevelOverlay() }
+                if let progress = camera.panoramaProgress {
+                    VStack(spacing: 8) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.right")
+                            Text(camera.panoramaWarning ?? "Gire devagar, na linha")
+                        }
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(camera.panoramaWarning == nil ? Color.white : accent)
+                        GeometryReader { bar in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(.white.opacity(0.25))
+                                Capsule().fill(accent).frame(width: bar.size.width * progress)
+                            }
+                        }
+                        .frame(height: 6)
+                        Text("Toque de novo para terminar").font(.caption2).opacity(0.7)
+                    }
+                    .padding(12)
+                    .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 40)
+                    .allowsHitTesting(false)
+                }
+                if camera.aeafLocked {
+                    Text("TRAVA AE/AF")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 10).padding(.vertical, 5)
+                        .background(Capsule().fill(accent))
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .padding(.top, 10)
+                        .allowsHitTesting(false)
+                }
                 if let p = camera.focusPoint {
                     FocusSquare()
                         .position(x: p.x * geo.size.width, y: p.y * geo.size.height)
@@ -574,9 +614,37 @@ struct ContentView: View {
                         camera.setZoom(camera.zoom, settle: true)
                     }
             )
-            .onTapGesture(coordinateSpace: .local) { location in
-                camera.focus(at: CGPoint(x: location.x / geo.size.width, y: location.y / geo.size.height))
-            }
+            // Toque: foca e mede a luz ali. Segurar: trava foco e exposição (AE/AF).
+            .gesture(
+                DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                    .onChanged { value in
+                        guard let start = pressStart else {
+                            pressStart = value.location
+                            pressMoved = false
+                            lockFired = false
+                            let p = CGPoint(x: value.location.x / geo.size.width, y: value.location.y / geo.size.height)
+                            let work = DispatchWorkItem {
+                                guard pinchStart == nil else { return }
+                                lockFired = true
+                                camera.lockFocusExposure(at: p)
+                            }
+                            lockWork = work
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: work)
+                            return
+                        }
+                        if hypot(value.location.x - start.x, value.location.y - start.y) > 14 {
+                            pressMoved = true
+                            lockWork?.cancel()
+                        }
+                    }
+                    .onEnded { value in
+                        lockWork?.cancel()
+                        if !pressMoved, !lockFired, pinchStart == nil {
+                            camera.focus(at: CGPoint(x: value.location.x / geo.size.width, y: value.location.y / geo.size.height))
+                        }
+                        pressStart = nil
+                    }
+            )
         }
         .aspectRatio(3 / 4, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -597,7 +665,8 @@ struct ContentView: View {
     private var bottomBar: some View {
         HStack {
             Button {
-                if let url = URL(string: "photos-redirect://") { UIApplication.shared.open(url) }
+                // A miniatura abre o Revelar de novo com a última foto (lá dentro tem o atalho para o Fotos)
+                showStudio = true
             } label: {
                 ZStack {
                     if let thumb = camera.thumbnail {
@@ -736,6 +805,7 @@ struct ContentView: View {
                         Toggle("Peaking (bordas em foco em laranja)", isOn: $camera.peaking)
                         Toggle("Zebra (listras onde estourou)", isOn: $camera.zebra)
                         Toggle("Grade de terços", isOn: $camera.showGrid)
+                        Toggle("Nível (horizonte e de cima para baixo)", isOn: $camera.showLevel)
                         Toggle("Histograma colorido (R, G, B)", isOn: $camera.rgbHistogram)
                         Toggle("Cor falsa (exposição por cores)", isOn: $camera.falseColor)
                         if camera.falseColor {
@@ -753,6 +823,30 @@ struct ContentView: View {
                     settingsSection("Ao salvar") {
                         Toggle("Espelhar (como no espelho)", isOn: $camera.mirror)
                         Toggle("Guardar também o DNG (RAW)", isOn: $camera.saveDNG)
+                        Toggle("Localização nas fotos", isOn: Binding(
+                            get: { locationOn },
+                            set: { locationOn = $0; Locator.shared.enabled = $0 }))
+                        if locationOn {
+                            Text("Localização: \(Locator.shared.statusText)").font(.footnote).foregroundStyle(.secondary)
+                        }
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Originais para revelar de novo")
+                                Text("Últimas \(SourceStore.limit) fotos · \(originalsSize)").font(.footnote).foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Button("Apagar", role: .destructive) {
+                                SourceStore.clear()
+                                originalsSize = "0 MB"
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        .onAppear {
+                            DispatchQueue.global(qos: .utility).async {
+                                let mb = "\(SourceStore.totalBytes() / 1_048_576) MB"
+                                DispatchQueue.main.async { originalsSize = mb }
+                            }
+                        }
                     }
 
                     VStack(spacing: 10) {
@@ -818,30 +912,54 @@ struct ContentView: View {
                     .padding(14)
                     .background(RoundedRectangle(cornerRadius: 14).fill(Color.white.opacity(0.07)))
 
-                    ForEach(Look.allCases) { look in
-                        Button {
-                            withAnimation(.snappy(duration: 0.2)) { camera.look = look }
-                            UISelectionFeedbackGenerator().selectionChanged()
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(look.rawValue).font(.body.weight(.semibold))
-                                    Text(look.subtitle).font(.footnote).opacity(0.7)
-                                }
-                                Spacer()
-                                if camera.look == look { Image(systemName: "checkmark").font(.body.weight(.bold)) }
-                            }
-                            .padding(.horizontal, 16)
-                            .frame(minHeight: 56)
-                            .foregroundStyle(camera.look == look ? Color.black : Color.white)
-                            .background(RoundedRectangle(cornerRadius: 14).fill(camera.look == look ? accent : Color.white.opacity(0.07)))
+                    // Meus filmes
+                    HStack {
+                        Text("Meus filmes").font(.footnote.weight(.semibold)).opacity(0.7)
+                        Spacer()
+                    }
+                    .padding(.top, 4)
+                    ForEach(camera.customLooks) { custom in
+                        let on = camera.customLook?.id == custom.id
+                        lookRow(title: custom.name, subtitle: "Feito por você · base \(custom.base)", selected: on) {
+                            camera.customLook = custom
                         }
-                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button { editingLook = custom } label: { Label("Editar", systemImage: "slider.horizontal.3") }
+                            Button(role: .destructive) { camera.deleteCustomLook(custom) } label: { Label("Apagar", systemImage: "trash") }
+                        }
+                    }
+                    Button {
+                        editingLook = .starting(from: camera.customLook?.baseLook ?? camera.look)
+                    } label: {
+                        Label("Criar filme a partir do look atual", systemImage: "plus")
+                            .font(.body.weight(.semibold))
+                            .frame(maxWidth: .infinity, minHeight: 50)
+                            .background(RoundedRectangle(cornerRadius: 14).strokeBorder(accent.opacity(0.6), style: StrokeStyle(lineWidth: 1, dash: [5, 4])))
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(accent)
+                    if !camera.customLooks.isEmpty {
+                        Text("Segure um filme seu para editar ou apagar.").font(.caption).opacity(0.5)
+                    }
+
+                    HStack {
+                        Text("Filmes").font(.footnote.weight(.semibold)).opacity(0.7)
+                        Spacer()
+                    }
+                    .padding(.top, 8)
+                    ForEach(Look.allCases) { look in
+                        lookRow(title: look.rawValue, subtitle: look.subtitle,
+                                selected: camera.customLook == nil && camera.look == look) {
+                            camera.choose(look: look)
+                        }
                     }
                 }
                 .padding(16)
             }
             .navigationTitle("Looks")
+            .sheet(item: $editingLook) { draft in
+                LookEditorView(camera: camera, draft: draft)
+            }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("OK") { showLooks = false } } }
         }
@@ -850,6 +968,27 @@ struct ContentView: View {
         .presentationDetents([.medium, .large])
         .presentationBackgroundInteraction(.enabled(upThrough: .medium))
         .presentationDragIndicator(.visible)
+    }
+
+    private func lookRow(title: String, subtitle: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(.snappy(duration: 0.2)) { action() }
+            UISelectionFeedbackGenerator().selectionChanged()
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.body.weight(.semibold))
+                    Text(subtitle).font(.footnote).opacity(0.7)
+                }
+                Spacer()
+                if selected { Image(systemName: "checkmark").font(.body.weight(.bold)) }
+            }
+            .padding(.horizontal, 16)
+            .frame(minHeight: 56)
+            .foregroundStyle(selected ? Color.black : Color.white)
+            .background(RoundedRectangle(cornerRadius: 14).fill(selected ? accent : Color.white.opacity(0.07)))
+        }
+        .buttonStyle(.plain)
     }
 
     private var noAccess: some View {
@@ -882,6 +1021,8 @@ struct ContentView: View {
         case .cinematic: return apertureLabel(camera.cinematicAperture) + "\nCINEMA"
         case .dual: return "DUPLA\nFOTO · VÍDEO"
         case .scan: return "3D\nLIDAR"
+        case .document: return "PDF\nDOC"
+        case .panorama: return camera.panoramaProgress.map { "\(Int($0 * 180))°\nPANO" } ?? "PANO\n180°"
         case .longExposure: return "\(Int(camera.longSecondsChoice)) s\n\(camera.longStyle.rawValue.uppercased())"
         case .superRes: return "4× 48MP\nSUPER"
         case .portrait: return apertureLabel(camera.portraitAperture) + "\nRETRATO"
@@ -892,7 +1033,7 @@ struct ContentView: View {
     }
 
     /// Botão vira um quadrado vermelho enquanto grava.
-    private var shutterIsStop: Bool { camera.actionRecording || camera.isRecordingVideo }
+    private var shutterIsStop: Bool { camera.actionRecording || camera.isRecordingVideo || camera.panoramaProgress != nil }
 
     private var shutterColor: Color {
         if shutterIsStop { return .red }
@@ -919,17 +1060,75 @@ struct ContentView: View {
 
 // MARK: - Peças do visor
 
-/// Inclinação lateral do iPhone, para a linha de nível.
+/// Inclinação do iPhone para o nível. Fica numa view só dela: atualizar 30 vezes por segundo
+/// não redesenha o resto da tela.
 final class LevelMeter: ObservableObject {
+    /// Inclinação lateral em relação à posição em pé ou deitada mais próxima.
     @Published var roll: Double = 0
+    /// Apontando para baixo (ou para cima): quanto falta para ficar reto, em x e y.
+    @Published var flat: CGPoint?
     private let motion = CMMotionManager()
 
     func start() {
         guard motion.isDeviceMotionAvailable, !motion.isDeviceMotionActive else { return }
         motion.deviceMotionUpdateInterval = 1 / 30
         motion.startDeviceMotionUpdates(to: .main) { [weak self] data, _ in
-            guard let g = data?.gravity else { return }
-            self?.roll = atan2(g.x, -g.y)
+            guard let self, let g = data?.gravity else { return }
+            if abs(g.z) > 0.88 {
+                let p = CGPoint(x: g.x, y: g.y)
+                if self.flat == nil || hypot(p.x - self.flat!.x, p.y - self.flat!.y) > 0.002 { self.flat = p }
+            } else {
+                if self.flat != nil { self.flat = nil }
+                let angle = atan2(g.x, -g.y)
+                let quarter = (angle / (.pi / 2)).rounded() * (.pi / 2)
+                let roll = angle - quarter
+                if abs(roll - self.roll) > 0.0015 { self.roll = roll }
+            }
+        }
+    }
+
+    func stop() { motion.stopDeviceMotionUpdates() }
+}
+
+private struct LevelOverlay: View {
+    @StateObject private var meter = LevelMeter()
+
+    var body: some View {
+        ZStack {
+            if let flat = meter.flat {
+                FlatLevel(offset: flat)
+            } else {
+                LevelLine(roll: meter.roll)
+            }
+        }
+        .allowsHitTesting(false)
+        .onAppear { meter.start() }
+        .onDisappear { meter.stop() }
+    }
+}
+
+/// Câmera apontada para baixo (mesa, chão, documento): duas cruzes que se encontram quando está reto.
+private struct FlatLevel: View {
+    let offset: CGPoint
+    @State private var wasLevel = false
+
+    private var isLevel: Bool { hypot(offset.x, offset.y) < 0.017 }
+
+    var body: some View {
+        ZStack {
+            cross.foregroundStyle(Color.white.opacity(0.5))
+            cross.foregroundStyle(isLevel ? accent : Color.white)
+                .offset(x: offset.x * 600, y: -offset.y * 600)
+        }
+        .onChange(of: isLevel) { _, level in
+            if level { UISelectionFeedbackGenerator().selectionChanged() }
+        }
+    }
+
+    private var cross: some View {
+        ZStack {
+            Rectangle().frame(width: 34, height: 1.5)
+            Rectangle().frame(width: 1.5, height: 34)
         }
     }
 }
