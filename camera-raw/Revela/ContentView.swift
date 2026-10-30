@@ -9,12 +9,19 @@ struct ContentView: View {
     @StateObject private var level = LevelMeter()
     @State private var panel: Panel?
     @State private var showReport = false
+    @State private var showGuide = false
+    @AppStorage("guideSeen") private var guideSeen = false
 
     enum Panel { case exposure, whiteBalance, focus, look }
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
+            // Invisível: só para o iPhone informar o ângulo certo do visor de cada câmera
+            AngleLayerView(layer: camera.angleLayer)
+                .frame(width: 2, height: 2)
+                .opacity(0.02)
+                .allowsHitTesting(false)
             if camera.authorized {
                 VStack(spacing: 10) {
                     topBar
@@ -38,9 +45,14 @@ struct ContentView: View {
         .onAppear {
             camera.start()
             level.start()
+            if !guideSeen {
+                guideSeen = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { showGuide = true }
+            }
         }
         .physicalShutter { camera.shutter() }
         .sheet(isPresented: $showReport) { ReportView(camera: camera) }
+        .sheet(isPresented: $showGuide) { GuideView() }
         .alert("Revela", isPresented: Binding(
             get: { camera.message != nil },
             set: { if !$0 { camera.message = nil } }
@@ -55,7 +67,11 @@ struct ContentView: View {
 
     private var topBar: some View {
         HStack(spacing: 8) {
-            Picker("Modo", selection: Binding(get: { camera.rawMode }, set: { camera.select(mode: $0) })) {
+            Picker("Modo", selection: Binding(get: { camera.rawMode }, set: {
+                camera.select(mode: $0)
+                camera.show($0 == .proRAW ? "ProRAW: 48 MP, detalhe e pouco ruído. O melhor no dia a dia."
+                                          : "RAW puro: o sinal cru do sensor, 12 MP, sem nada da Apple. Mais ruído, mais controle.")
+            })) {
                 ForEach(RawMode.allCases) { mode in
                     Text(mode.rawValue).tag(mode)
                 }
@@ -66,13 +82,27 @@ struct ContentView: View {
             Spacer(minLength: 0)
 
             iconToggle(camera.timerSeconds == 0 ? "timer" : "\(camera.timerSeconds)s",
-                       isSymbol: camera.timerSeconds == 0, isOn: camera.timerSeconds > 0) { camera.cycleTimer() }
-            iconToggle("circle.lefthalf.striped.horizontal", isOn: camera.zebra) { camera.zebra.toggle() }
-            iconToggle("scope", isOn: camera.peaking) { camera.peaking.toggle() }
-            iconToggle(camera.aspect.rawValue, isSymbol: false, isOn: camera.aspect != .r43) { camera.cycleAspect() }
+                       isSymbol: camera.timerSeconds == 0, isOn: camera.timerSeconds > 0) {
+                camera.cycleTimer()
+                camera.show(camera.timerSeconds == 0 ? "Timer desligado" : "Timer: a foto sai \(camera.timerSeconds) s depois de apertar")
+            }
+            iconToggle("circle.lefthalf.striped.horizontal", isOn: camera.zebra) {
+                camera.zebra.toggle()
+                camera.show(camera.zebra ? "Zebra: listras onde a luz estourou (branco sem detalhe)" : "Zebra desligada")
+            }
+            iconToggle("scope", isOn: camera.peaking) {
+                camera.peaking.toggle()
+                camera.show(camera.peaking ? "Peaking: o que está em foco fica com borda laranja" : "Peaking desligado")
+            }
+            iconToggle(camera.aspect.rawValue, isSymbol: false, isOn: camera.aspect != .r43) {
+                camera.cycleAspect()
+                camera.show("Proporção da foto: \(camera.aspect.rawValue)")
+            }
             Menu {
+                Button { showGuide = true } label: { Label("Guia rápido", systemImage: "questionmark.circle") }
                 Toggle(isOn: $camera.showGrid) { Label("Grade de terços", systemImage: "grid") }
                 Toggle(isOn: $camera.mirror) { Label("Espelhar foto (como no espelho)", systemImage: "arrow.left.and.right.righttriangle.left.righttriangle.right") }
+                Toggle(isOn: $camera.saveDNG) { Label("Guardar DNG original", systemImage: "doc.badge.plus") }
                 Button { showReport = true } label: { Label("Relatório para o Claude", systemImage: "doc.text.magnifyingglass") }
             } label: {
                 Image(systemName: "ellipsis")
@@ -142,6 +172,19 @@ struct ContentView: View {
                     FocusSquare()
                         .position(x: p.x * geo.size.width, y: p.y * geo.size.height)
                         .id(p)
+                }
+                if let toast = camera.toast {
+                    Text(toast)
+                        .font(.footnote.weight(.semibold))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 12).padding(.vertical, 8)
+                        .background(.black.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal, 24)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .padding(.top, 56)
+                        .transition(.opacity)
+                        .allowsHitTesting(false)
+                        .id(toast)
                 }
                 VStack {
                     HStack {
@@ -223,6 +266,7 @@ struct ContentView: View {
         .aspectRatio(3 / 4, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .animation(.snappy(duration: 0.25), value: camera.countdown)
+        .animation(.easeOut(duration: 0.2), value: camera.toast)
     }
 
     // MARK: - Controles
@@ -380,6 +424,7 @@ struct ContentView: View {
             ForEach(camera.lens == .front ? [Lens.front] : camera.availableLenses) { lens in
                 Button {
                     withAnimation(.snappy(duration: 0.2)) { camera.select(lens: lens) }
+                    if lens == .macro { camera.show("Macro: chegue até 2 cm. O peaking liga sozinho para mostrar o que está em foco.") }
                 } label: {
                     if lens == .macro {
                         Image(systemName: "camera.macro")
@@ -623,4 +668,18 @@ private extension View {
             self
         }
     }
+}
+
+/// Hospeda a camada invisível do visor, usada só pelo RotationCoordinator.
+private struct AngleLayerView: UIViewRepresentable {
+    let layer: AVCaptureVideoPreviewLayer
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.layer.addSublayer(layer)
+        layer.frame = CGRect(x: 0, y: 0, width: 2, height: 2)
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
 }

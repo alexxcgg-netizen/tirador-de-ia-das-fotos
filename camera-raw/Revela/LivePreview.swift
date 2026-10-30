@@ -65,7 +65,7 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         buffer.commit()
 
         frameCount += 1
-        if frameCount % 6 == 0 { computeHistogram(of: image) }
+        if frameCount % 10 == 0 { computeHistogram(of: image) }
 
         // Quadros por segundo do visor, para o relatório
         fpsFrames += 1
@@ -86,9 +86,12 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         let callback = onHistogram
         histogramQueue.async {
             defer { DispatchQueue.main.async { self.histogramBusy = false } }
+            // Uma versão pequena basta para o histograma
+            let scale = min(1, 256 / max(image.extent.width, image.extent.height))
+            let small = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
             let filter = CIFilter.areaHistogram()
-            filter.inputImage = image.applyingFilter("CILinearToSRGBToneCurve")
-            filter.extent = image.extent
+            filter.inputImage = small.applyingFilter("CILinearToSRGBToneCurve")
+            filter.extent = small.extent
             filter.count = 64
             filter.scale = 1
             guard let output = filter.outputImage else { return }
@@ -116,6 +119,8 @@ struct LivePreview: UIViewRepresentable {
         view.isPaused = true
         view.enableSetNeedsDisplay = false
         view.colorPixelFormat = .bgra8Unorm
+        // 2× em vez de 3×: na tela do visor não dá para ver a diferença, e são metade dos pixels para revelar
+        view.contentScaleFactor = min(UIScreen.main.scale, 2)
         view.backgroundColor = .black
         view.delegate = renderer
         renderer.view = view

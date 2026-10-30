@@ -1,4 +1,5 @@
 import AVFoundation
+import ImageIO
 import Photos
 import UIKit
 import Vision
@@ -77,9 +78,9 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     var hint: String {
         switch self {
         case .photo: return ""
-        case .portrait: return "Lente 2× a 1,5–2 m: o rosto fica com as proporções que as pessoas veem."
+        case .portrait: return "Lente 2× a 1,5–2 m: o rosto fica com as proporções que as pessoas veem. Look Portra 400."
         case .night: return "8 fotos a 1/15 s alinhadas e somadas: noite limpa, sem o processamento da Apple."
-        case .stars: return "16 exposições longas com foco no infinito. Use tripé ou apoie o iPhone."
+        case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
         case .moon: return "Lente 8×, foco no infinito e exposição para a Lua. 8 fotos somadas para mais detalhe."
         case .flash: return "Uma foto RAW com o flash."
         case .focusStack: return "7 fotos com foco do perto ao longe, juntadas no mais nítido. Apoie o iPhone."
@@ -117,6 +118,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private let videoQueue = DispatchQueue(label: "revela.video", qos: .userInteractive)
     private var device: AVCaptureDevice?
     private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
+    private var previewAngleObservation: NSKeyValueObservation?
+    /// Camada invisível: só serve para o iPhone dizer o ângulo certo do visor de cada câmera.
+    let angleLayer = AVCaptureVideoPreviewLayer()
+    /// Ângulo e espelho aplicados ao vídeo do visor (para converter toques em pontos do sensor).
+    private var previewAngle: CGFloat = 90
+    private var previewMirrored = false
+    private var loggedBufferSize = false
+    /// Look de antes do Retrato, para devolver ao sair dele.
+    private var lookBeforePortrait: Look?
     private var inFlight: [Int64: RawCaptureDelegate] = [:]
     private var readoutTimer: Timer?
     private var lastBackLens: Lens = .wide
@@ -138,7 +148,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var sceneTookOver = false
 
     // Revelação
-    @Published var look: Look = .filme { didSet { optionsChanged() } }
+    @Published var look: Look = .portra { didSet { optionsChanged() } }
     @Published var lookAmount: Float = 1 { didSet { optionsChanged() } }
     @Published var grainAmount: Float = 1 { didSet { optionsChanged() } }
     @Published var aspect: AspectRatio = .r43 { didSet { optionsChanged() } }
@@ -150,6 +160,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var showGrid = true
     /// Salva a foto invertida, como num espelho.
     @Published var mirror = false { didSet { optionsChanged() } }
+    /// Guarda também o DNG na galeria (ocupa uns 50 MB por foto).
+    @Published var saveDNG = false { didSet { defaults.set(saveDNG, forKey: "saveDNG") } }
+    /// Frase curta que aparece no visor explicando o botão que você tocou.
+    @Published var toast: String?
     /// Rosto encontrado no visor (0…1, origem no canto de cima à esquerda) e distância estimada em metros.
     @Published var faceRect: CGRect?
     @Published var faceDistance: Double?
@@ -196,6 +210,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if defaults.object(forKey: "lookAmount") != nil { lookAmount = defaults.float(forKey: "lookAmount") }
         if defaults.object(forKey: "grainAmount") != nil { grainAmount = defaults.float(forKey: "grainAmount") }
         mirror = defaults.bool(forKey: "mirror")
+        saveDNG = defaults.bool(forKey: "saveDNG")
         optionsChanged()
         renderer.onHistogram = { [weak self] bins in self?.histogram = bins }
     }
@@ -207,6 +222,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         defaults.set(lookAmount, forKey: "lookAmount")
         defaults.set(grainAmount, forKey: "grainAmount")
         defaults.set(mirror, forKey: "mirror")
+    }
+
+    func show(_ text: String) {
+        toast = text
+        let current = text
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) {
+            if self.toast == current { self.toast = nil }
+        }
     }
 
     // MARK: - Sessão
@@ -228,6 +251,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func configure() {
+        angleLayer.session = session
         availableLenses = Lens.allCases.filter {
             $0 != .front && AVCaptureDevice.default($0.deviceType, for: .video, position: $0.position) != nil
         }
@@ -290,6 +314,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             manualFocus = false
             sceneTookOver = false
         }
+        if captureMode == .portrait, let previous = lookBeforePortrait {
+            if look == .portra { look = previous }
+            lookBeforePortrait = nil
+        }
         captureMode = mode
         dlog("Modo: \(mode.rawValue)")
         switch mode {
@@ -299,7 +327,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 50, shutter: 1.0 / 500) }
         case .portrait:
             if lens != .front { select(lens: availableLenses.contains(.wide2x) ? .wide2x : .wide) }
-            look = .retrato
+            lookBeforePortrait = look
+            look = .portra
         case .stars:
             select(lens: .wide)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 2000, shutter: 10) }
@@ -344,22 +373,30 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
         if !session.outputs.contains(videoOutput), session.canAddOutput(videoOutput) {
             videoOutput.alwaysDiscardsLateVideoFrames = true
+            // Vídeo do visor no tamanho da tela em vez de 12 MP (onde o iOS oferecer)
+            if videoOutput.responds(to: Selector(("setDeliversPreviewSizedOutputBuffers:"))) {
+                videoOutput.setValue(true, forKey: "deliversPreviewSizedOutputBuffers")
+            }
             videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
             session.addOutput(videoOutput)
         }
-        // O app é só em retrato; o visor da câmera da frente fica espelhado, como num espelho
+        // O visor da câmera da frente fica espelhado, como num espelho. O ângulo vem do RotationCoordinator, logo abaixo.
         if let connection = videoOutput.connection(with: .video) {
             if connection.isVideoRotationAngleSupported(90) { connection.videoRotationAngle = 90 }
             if connection.isVideoMirroringSupported {
                 connection.automaticallyAdjustsVideoMirroring = false
                 connection.isVideoMirrored = dev.position == .front
             }
+            previewAngle = 90
+            previewMirrored = connection.isVideoMirrored
         }
         if #available(iOS 18.0, *) { installCameraControls(for: dev) }
         session.commitConfiguration()
 
         device = dev
-        rotationCoordinator = AVCaptureDevice.RotationCoordinator(device: dev, previewLayer: nil)
+        loggedBufferSize = false
+        // Cada câmera é montada num ângulo; o coordinator, com a camada do visor, diz o ângulo certo
+        DispatchQueue.main.async { self.makeRotationCoordinator(for: dev) }
         applyRawMode(mode)
         let dims = CMVideoFormatDescriptionGetDimensions(dev.activeFormat.formatDescription)
         let aspect = Double(min(dims.width, dims.height)) / Double(max(dims.width, dims.height))
@@ -379,6 +416,39 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.shutterStops = shutters.isEmpty ? [format.minExposureDuration.seconds] : shutters
             self.isoIndex = Double(Self.nearestIndex(of: oldISO, in: self.isoStops))
             self.shutterIndex = Double(Self.nearestIndex(of: Float(oldShutter), in: self.shutterStops.map { Float($0) }))
+        }
+    }
+
+    private func makeRotationCoordinator(for dev: AVCaptureDevice) {
+        let coordinator = AVCaptureDevice.RotationCoordinator(device: dev, previewLayer: angleLayer)
+        rotationCoordinator = coordinator
+        previewAngleObservation = coordinator.observe(\.videoRotationAngleForHorizonLevelPreview, options: [.initial, .new]) {
+            [weak self] coordinator, _ in
+            let angle = coordinator.videoRotationAngleForHorizonLevelPreview
+            self?.sessionQueue.async { self?.applyPreviewAngle(angle, device: dev) }
+        }
+    }
+
+    private func applyPreviewAngle(_ angle: CGFloat, device dev: AVCaptureDevice) {
+        guard dev == device, let connection = videoOutput.connection(with: .video),
+              connection.isVideoRotationAngleSupported(angle) else { return }
+        if connection.videoRotationAngle != angle {
+            connection.videoRotationAngle = angle
+            dlog("Visor de \(dev.localizedName): girado \(Int(angle))°\(connection.isVideoMirrored ? ", espelhado" : "")")
+        }
+        previewAngle = angle
+        previewMirrored = connection.isVideoMirrored
+    }
+
+    /// Ponto no visor (0…1, origem em cima à esquerda) -> ponto do sensor, desfazendo espelho e rotação.
+    private func sensorPoint(fromView point: CGPoint) -> CGPoint {
+        var p = point
+        if previewMirrored { p.x = 1 - p.x }
+        switch Int(previewAngle.rounded()) % 360 {
+        case 0: return p
+        case 180: return CGPoint(x: 1 - p.x, y: 1 - p.y)
+        case 270: return CGPoint(x: 1 - p.y, y: p.x)
+        default: return CGPoint(x: p.y, y: 1 - p.x)
         }
     }
 
@@ -472,10 +542,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // O visor mostra o centro ampliado pelo zoom digital
         let zoom = lens.zoom
         let sensorPoint = CGPoint(x: 0.5 + (point.x - 0.5) / zoom, y: 0.5 + (point.y - 0.5) / zoom)
-        // Sensor fica deitado: girar 90° do retrato para as coordenadas da câmera (na da frente o visor é espelhado)
-        let devicePoint = lens == .front
-            ? CGPoint(x: sensorPoint.y, y: sensorPoint.x)
-            : CGPoint(x: sensorPoint.y, y: 1 - sensorPoint.x)
+        let devicePoint = self.sensorPoint(fromView: sensorPoint)
         let manualFocus = self.manualFocus
         let manualExposure = self.manualExposure
         sessionQueue.async {
@@ -686,14 +753,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             DispatchQueue.global(qos: .userInitiated).async {
                 let output: Developer.Output?
                 if let kind = mode.stackKind {
-                    output = Developer.stack(frames, kind: kind, options: options)
+                    output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, options: options)
                 } else {
                     output = frames.first.flatMap { Developer.develop($0, options: options) }
                 }
                 // Na foto simples o DNG vai junto; nas sequências, o DNG do primeiro quadro
                 let dng = frames.first.flatMap { $0.isRaw ? $0.data : nil }
                 let original = frames.first.flatMap { $0.isRaw ? nil : $0.data }
-                Library.save(dng: dng, developed: output?.heic ?? original) { error in
+                let keepDNG = self.saveDNG
+                Library.save(dng: keepDNG ? dng : nil, developed: output?.heic ?? original,
+                             tryPair: output?.sameSizeAsRaw ?? false) { error in
                     if let error {
                         done(.failure(error))
                     } else if output == nil {
@@ -711,7 +780,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let settings = "- Ajustes: lente \(lens.rawValue), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(look.rawValue) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
             "exposição \(manualExposure ? "manual ISO \(Int(selectedISO)) \(selectedShutter)s" : "auto EV \(evBias)"), " +
             "balanço \(manualWB ? "\(Int(kelvin))K" : "auto"), foco \(manualFocus ? "manual \(lensPosition)" : "auto"), " +
-            "peaking \(peaking), zebra \(zebra), espelhar \(mirror)" +
+            "peaking \(peaking), zebra \(zebra), espelhar \(mirror), guardar DNG \(saveDNG), visor \(Int(previewAngle))°" +
             (faceDistance.map { String(format: ", rosto a %.2f m", $0) } ?? "") + "\n"
         sessionQueue.async {
             var out = settings
@@ -751,15 +820,23 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        renderer.enqueue(CIImage(cvPixelBuffer: pixelBuffer))
+        let frame = CIImage(cvPixelBuffer: pixelBuffer)
+        renderer.enqueue(frame)
+        if !loggedBufferSize {
+            loggedBufferSize = true
+            dlog("Vídeo do visor chegando em \(CVPixelBufferGetWidth(pixelBuffer))×\(CVPixelBufferGetHeight(pixelBuffer))")
+        }
         videoFrameIndex += 1
-        if videoFrameIndex % 5 == 0 { detectFace(in: pixelBuffer) }
+        if videoFrameIndex % 8 == 0 { detectFace(in: frame) }
     }
 
     /// Acha o maior rosto e estima a distância pelo tamanho dele (um rosto tem uns 16 cm de largura).
-    private func detectFace(in pixelBuffer: CVPixelBuffer) {
+    private func detectFace(in frame: CIImage) {
+        // Vision numa versão pequena: acha o rosto do mesmo jeito, gastando bem menos
+        let scale = min(1, 480 / max(frame.extent.width, frame.extent.height))
+        let small = frame.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
         let request = VNDetectFaceRectanglesRequest()
-        guard (try? VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up).perform([request])) != nil else { return }
+        guard (try? VNImageRequestHandler(ciImage: small, orientation: .up).perform([request])) != nil else { return }
         let face = request.results?.max(by: { $0.boundingBox.width < $1.boundingBox.width })
         guard let box = face?.boundingBox, box.width > 0.02 else {
             facelessFrames += 1
@@ -786,8 +863,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func focusOnFaceIfNeeded(_ rect: CGRect) {
         guard captureMode == .portrait, !manualFocus, Date().timeIntervalSince(lastFaceFocus) > 1 else { return }
         lastFaceFocus = Date()
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let devicePoint = lens == .front ? CGPoint(x: center.y, y: center.x) : CGPoint(x: center.y, y: 1 - center.x)
+        let devicePoint = sensorPoint(fromView: CGPoint(x: rect.midX, y: rect.midY))
         let manualExposure = self.manualExposure
         sessionQueue.async {
             guard let d = self.device, (try? d.lockForConfiguration()) != nil else { return }
@@ -876,6 +952,14 @@ final class RawCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
             return
         }
         if photo.isRawPhoto { dng = photo.fileDataRepresentation() } else { processed = photo.fileDataRepresentation() }
+        // O que a foto usou de verdade (pode ser diferente do visor, por exemplo com flash)
+        if let exif = photo.metadata[kCGImagePropertyExifDictionary as String] as? [String: Any] {
+            let iso = (exif[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.intValue ?? 0
+            let time = (exif[kCGImagePropertyExifExposureTime as String] as? NSNumber)?.doubleValue ?? 0
+            let flash = (exif[kCGImagePropertyExifFlash as String] as? NSNumber)?.intValue ?? 0
+            let fired = flash & 1 == 1 ? "disparou" : "não disparou"
+            dlog("Foto real: ISO \(iso) · " + String(format: "%.4f", time) + " s · flash \(fired)")
+        }
     }
 
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
@@ -892,8 +976,9 @@ final class RawCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
 }
 
 enum Library {
-    /// Salva como um único item na galeria: a foto revelada + o DNG original (par RAW+HEIC).
-    static func save(dng: Data?, developed: Data?, completion: @escaping (Error?) -> Void) {
+    /// Salva a foto revelada; com o DNG, tenta juntar os dois num item só (par RAW+HEIC).
+    /// Se a galeria já recusou o par antes, salva separado direto.
+    static func save(dng: Data?, developed: Data?, tryPair: Bool, completion: @escaping (Error?) -> Void) {
         guard dng != nil || developed != nil else { return completion(RevelaError.noRawData) }
         PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
             guard status == .authorized || status == .limited else {
@@ -902,22 +987,26 @@ enum Library {
             }
             let rawOptions = PHAssetResourceCreationOptions()
             rawOptions.uniformTypeIdentifier = "com.adobe.raw-image"
+            let pairRefused = UserDefaults.standard.bool(forKey: "pairRefused")
+
+            func saveSeparately() {
+                PHPhotoLibrary.shared().performChanges({
+                    if let developed { PHAssetCreationRequest.forAsset().addResource(with: .photo, data: developed, options: nil) }
+                    if let dng { PHAssetCreationRequest.forAsset().addResource(with: .photo, data: dng, options: rawOptions) }
+                }, completionHandler: { _, error in completion(error) })
+            }
+
+            guard let developed, let dng, tryPair, !pairRefused else { return saveSeparately() }
             PHPhotoLibrary.shared().performChanges({
                 let request = PHAssetCreationRequest.forAsset()
-                if let developed {
-                    request.addResource(with: .photo, data: developed, options: nil)
-                    if let dng { request.addResource(with: .alternatePhoto, data: dng, options: rawOptions) }
-                } else if let dng {
-                    request.addResource(with: .photo, data: dng, options: rawOptions)
-                }
+                request.addResource(with: .photo, data: developed, options: nil)
+                request.addResource(with: .alternatePhoto, data: dng, options: rawOptions)
             }, completionHandler: { _, error in
-                guard let error, let developed, let dng else { return completion(error) }
-                // A galeria pode recusar o par (ex.: tamanhos diferentes depois do recorte): salva os dois separados
-                dlog("Par HEIC+DNG recusado (\(error.localizedDescription)); salvando separados")
-                PHPhotoLibrary.shared().performChanges({
-                    PHAssetCreationRequest.forAsset().addResource(with: .photo, data: developed, options: nil)
-                    PHAssetCreationRequest.forAsset().addResource(with: .photo, data: dng, options: rawOptions)
-                }, completionHandler: { _, error in completion(error) })
+                guard let error else { return completion(nil) }
+                // A galeria recusou o par: não tenta mais e salva os dois separados
+                dlog("Par HEIC+DNG recusado (\(error.localizedDescription)); daqui em diante salvo separado")
+                UserDefaults.standard.set(true, forKey: "pairRefused")
+                saveSeparately()
             })
         }
     }

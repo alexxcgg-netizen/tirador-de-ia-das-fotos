@@ -3,66 +3,114 @@ import CoreImage.CIFilterBuiltins
 import ImageIO
 import UIKit
 import Vision
+import simd
 
+/// Tudo que um look faz com a imagem. Os valores neutros não mudam nada.
 struct LookParams {
     var exposure: Float = 0
     var saturation: Float = 1
-    var warmth: Float = 0
     var mono: Float = 0
     var toe: Float = 0
     var contrast: Float = 1
     var grain: Float = 0
+    /// Tamanho do grão: 1 é fino, 2,5 é grão de Super 8.
+    var grainSize: Float = 1.4
+    /// Mistura de canais (como os corantes do filme reagem a cada cor).
+    var matR = SIMD3<Float>(1, 0, 0)
+    var matG = SIMD3<Float>(0, 1, 0)
+    var matB = SIMD3<Float>(0, 0, 1)
+    /// Curva de cada cor depois da curva fílmica (ASC CDL).
+    var slope = SIMD3<Float>(1, 1, 1)
+    var offset = SIMD3<Float>(0, 0, 0)
+    var power = SIMD3<Float>(1, 1, 1)
     var shadowTint = SIMD3<Float>(0, 0, 0)
     var highTint = SIMD3<Float>(0, 0, 0)
+    var vignette: Float = 0
+    /// Brilho colorido em volta das luzes fortes (o vermelho do CineStill).
+    var halation: Float = 0
+    var halationColor = SIMD3<Float>(1, 0.3, 0.1)
+    /// Brilho suave e largo em volta das luzes.
+    var bloom: Float = 0
+
+    static func make(_ build: (inout LookParams) -> Void) -> LookParams {
+        var p = LookParams()
+        build(&p)
+        return p
+    }
 
     /// Mistura com o Neutro (`amount` 0…1) e escala o grão.
-    func scaled(amount: Float, grain grainScale: Float) -> LookParams {
+    func scaled(amount a: Float, grain grainScale: Float) -> LookParams {
         let n = LookParams()
-        func mix(_ a: Float, _ b: Float) -> Float { a + (b - a) * amount }
-        return LookParams(
-            exposure: mix(n.exposure, exposure), saturation: mix(n.saturation, saturation),
-            warmth: mix(n.warmth, warmth), mono: mix(n.mono, mono), toe: mix(n.toe, toe),
-            contrast: mix(n.contrast, contrast), grain: grain * amount * grainScale,
-            shadowTint: shadowTint * amount, highTint: highTint * amount)
+        func mix(_ x: Float, _ y: Float) -> Float { x + (y - x) * a }
+        func mix(_ x: SIMD3<Float>, _ y: SIMD3<Float>) -> SIMD3<Float> { x + (y - x) * a }
+        var p = self
+        p.exposure = mix(n.exposure, exposure)
+        p.saturation = mix(n.saturation, saturation)
+        p.mono = mix(n.mono, mono)
+        p.toe = mix(n.toe, toe)
+        p.contrast = mix(n.contrast, contrast)
+        p.grain = grain * a * grainScale
+        p.matR = mix(n.matR, matR)
+        p.matG = mix(n.matG, matG)
+        p.matB = mix(n.matB, matB)
+        p.slope = mix(n.slope, slope)
+        p.offset = mix(n.offset, offset)
+        p.power = mix(n.power, power)
+        p.shadowTint = shadowTint * a
+        p.highTint = highTint * a
+        p.vignette = vignette * a
+        p.halation = halation * a
+        p.bloom = bloom * a
+        return p
     }
 }
 
 enum Look: String, CaseIterable, Identifiable {
     case neutro = "Neutro"
-    case filme = "Filme"
-    case cine = "Cine"
-    case suave = "Suave"
-    case prata = "Prata"
-    case paisagem = "Paisagem"
-    case retrato = "Retrato"
-    case slide = "Slide"
-    case dourado = "Dourado"
-    case nordico = "Nórdico"
-    case vintage = "Vintage"
-    case bleach = "Bleach"
-    case neon = "Neon"
-    case noite = "Noite"
+    case portra = "Portra 400"
+    case gold = "Gold 200"
+    case ektar = "Ektar 100"
+    case velvia = "Velvia 50"
+    case kodachrome = "Kodachrome"
+    case pro400h = "Pro 400H"
+    case cinestill = "CineStill 800T"
+    case blockbuster = "Blockbuster"
+    case technicolor = "Technicolor"
+    case bleach = "Bleach Bypass"
+    case matrix = "Matrix"
+    case pastel = "Pastel"
+    case cross = "Cross-process"
+    case polaroid = "Polaroid"
+    case super8 = "Super 8"
+    case trix = "Tri-X 400"
+    case hp5 = "HP5"
+    case noir = "Noir"
     case sepia = "Sépia"
 
     var id: String { rawValue }
 
     var subtitle: String {
         switch self {
-        case .neutro: return "Fiel ao sensor"
-        case .filme: return "Negativo colorido, grão fino"
-        case .cine: return "Sombras frias, pele quente"
-        case .suave: return "Baixo contraste, preto lavado"
-        case .prata: return "P&B de alto contraste"
-        case .paisagem: return "Céu e verde vivos, muito detalhe"
-        case .retrato: return "Pele quente, contraste macio"
-        case .slide: return "Cromo saturado, preto profundo"
-        case .dourado: return "Fim de tarde, luz quente"
-        case .nordico: return "Frio, claro e dessaturado"
-        case .vintage: return "Foto antiga, cor desbotada"
-        case .bleach: return "Pouca cor, muito contraste"
-        case .neon: return "Noite urbana, ciano e magenta"
-        case .noite: return "Sombras azuis, luzes limpas"
-        case .sepia: return "Monocromático marrom"
+        case .neutro: return "Fiel ao sensor, sem look"
+        case .portra: return "Pele quente, cor suave e pastel"
+        case .gold: return "Amarelo quente, cara de anos 90"
+        case .ektar: return "Cor forte e limpa, céu azul"
+        case .velvia: return "Saturação extrema, paisagem"
+        case .kodachrome: return "Vermelho profundo, cor clássica"
+        case .pro400h: return "Verde ciano, luz clara e fria"
+        case .cinestill: return "Noite azul, halo vermelho nas luzes"
+        case .blockbuster: return "Sombras azul-petróleo, pele laranja"
+        case .technicolor: return "Cor de cinema dos anos 50"
+        case .bleach: return "Pouca cor, contraste de prata"
+        case .matrix: return "Verde frio, contraste duro"
+        case .pastel: return "Rosa e amarelo, contraste baixo"
+        case .cross: return "Revelado errado: amarelo e azul"
+        case .polaroid: return "Instantânea, preto lavado"
+        case .super8: return "Filme caseiro, grão grosso"
+        case .trix: return "P&B de reportagem, grão forte"
+        case .hp5: return "P&B suave, grão médio"
+        case .noir: return "P&B de cinema, preto profundo"
+        case .sepia: return "Monocromático marrom antigo"
         }
     }
 
@@ -70,46 +118,139 @@ enum Look: String, CaseIterable, Identifiable {
         switch self {
         case .neutro:
             return LookParams()
-        case .filme:
-            return LookParams(saturation: 0.9, warmth: 0.03, toe: 0.004, contrast: 1.06, grain: 0.035,
-                              shadowTint: SIMD3(0, 0.002, 0.004), highTint: SIMD3(0.012, 0.005, -0.01))
-        case .cine:
-            return LookParams(saturation: 0.8, toe: 0.002, contrast: 1.12, grain: 0.02,
-                              shadowTint: SIMD3(-0.003, 0.004, 0.008), highTint: SIMD3(0.03, 0.012, -0.02))
-        case .suave:
-            return LookParams(saturation: 0.85, warmth: 0.015, toe: 0.012, contrast: 0.88, grain: 0.015)
-        case .prata:
-            return LookParams(mono: 1, toe: 0.003, contrast: 1.2, grain: 0.05)
-        case .paisagem:
-            return LookParams(saturation: 1.22, warmth: 0.01, contrast: 1.1,
-                              shadowTint: SIMD3(0, 0.001, 0.003), highTint: SIMD3(0.004, 0.004, 0))
-        case .retrato:
-            return LookParams(exposure: 0.1, saturation: 0.92, warmth: 0.035, toe: 0.003, contrast: 0.94, grain: 0.012,
-                              highTint: SIMD3(0.014, 0.006, -0.004))
-        case .slide:
-            return LookParams(saturation: 1.3, warmth: 0.01, contrast: 1.22, grain: 0.015,
-                              shadowTint: SIMD3(0.001, -0.001, 0.003))
-        case .dourado:
-            return LookParams(saturation: 1.05, warmth: 0.07, toe: 0.003, contrast: 1.05, grain: 0.02,
-                              shadowTint: SIMD3(0.002, 0.0005, -0.002), highTint: SIMD3(0.035, 0.018, -0.025))
-        case .nordico:
-            return LookParams(exposure: 0.15, saturation: 0.7, warmth: -0.035, toe: 0.01, contrast: 0.92, grain: 0.012,
-                              shadowTint: SIMD3(-0.001, 0.001, 0.004), highTint: SIMD3(-0.004, 0.002, 0.008))
-        case .vintage:
-            return LookParams(saturation: 0.72, warmth: 0.05, toe: 0.02, contrast: 0.86, grain: 0.07,
-                              shadowTint: SIMD3(0.004, 0.003, -0.001), highTint: SIMD3(0.02, 0.012, -0.03))
+        case .portra:
+            return .make {
+                $0.saturation = 0.82; $0.contrast = 0.9; $0.toe = 0.008
+                $0.matR = SIMD3(1.04, -0.02, -0.02); $0.matG = SIMD3(0.05, 0.92, 0.03); $0.matB = SIMD3(-0.02, 0.06, 0.96)
+                $0.slope = SIMD3(1.05, 1.0, 0.92); $0.offset = SIMD3(0.006, 0.004, 0.003); $0.power = SIMD3(0.98, 1.0, 1.05)
+                $0.highTint = SIMD3(0.02, 0.01, -0.006)
+                $0.grain = 0.035; $0.grainSize = 1.4; $0.vignette = 0.12; $0.halation = 0.08
+            }
+        case .gold:
+            return .make {
+                $0.saturation = 1.12; $0.contrast = 1.06; $0.toe = 0.006
+                $0.matG = SIMD3(0.06, 0.94, 0.0)
+                $0.slope = SIMD3(1.1, 1.03, 0.8); $0.offset = SIMD3(0.008, 0.005, 0.0)
+                $0.shadowTint = SIMD3(0.004, 0.002, -0.003); $0.highTint = SIMD3(0.04, 0.025, -0.04)
+                $0.grain = 0.045; $0.grainSize = 1.6; $0.vignette = 0.22; $0.halation = 0.12
+            }
+        case .ektar:
+            return .make {
+                $0.saturation = 1.38; $0.contrast = 1.12
+                $0.matR = SIMD3(1.1, -0.06, -0.04); $0.matG = SIMD3(-0.03, 1.07, -0.04); $0.matB = SIMD3(-0.02, -0.05, 1.07)
+                $0.slope = SIMD3(1.02, 1.0, 1.04)
+                $0.grain = 0.015; $0.grainSize = 1.1; $0.vignette = 0.08
+            }
+        case .velvia:
+            return .make {
+                $0.saturation = 1.6; $0.contrast = 1.28
+                $0.matR = SIMD3(1.12, -0.08, -0.04); $0.matG = SIMD3(-0.06, 1.12, -0.06); $0.matB = SIMD3(-0.02, -0.08, 1.1)
+                $0.slope = SIMD3(1.04, 0.96, 1.06); $0.power = SIMD3(1.06, 1.06, 1.0)
+                $0.shadowTint = SIMD3(0.002, -0.002, 0.006)
+                $0.grain = 0.012; $0.grainSize = 1.0; $0.vignette = 0.18
+            }
+        case .kodachrome:
+            return .make {
+                $0.saturation = 1.25; $0.contrast = 1.22
+                $0.matR = SIMD3(1.15, -0.1, -0.05); $0.matG = SIMD3(-0.02, 1.0, 0.02); $0.matB = SIMD3(-0.04, -0.02, 1.06)
+                $0.slope = SIMD3(1.05, 0.98, 0.94); $0.offset = SIMD3(0.0, 0.002, 0.005)
+                $0.shadowTint = SIMD3(-0.003, 0.002, 0.008); $0.highTint = SIMD3(0.025, 0.012, -0.012)
+                $0.grain = 0.025; $0.grainSize = 1.2; $0.vignette = 0.2
+            }
+        case .pro400h:
+            return .make {
+                $0.exposure = 0.15; $0.saturation = 0.8; $0.contrast = 0.88; $0.toe = 0.012
+                $0.matG = SIMD3(0.0, 0.92, 0.1); $0.matB = SIMD3(0.0, 0.05, 0.98)
+                $0.slope = SIMD3(0.96, 1.02, 1.04); $0.offset = SIMD3(0.003, 0.007, 0.008)
+                $0.highTint = SIMD3(0.012, 0.0, 0.014)
+                $0.grain = 0.03; $0.grainSize = 1.3; $0.vignette = 0.06
+            }
+        case .cinestill:
+            return .make {
+                $0.saturation = 1.08; $0.contrast = 1.1; $0.toe = 0.006
+                $0.slope = SIMD3(0.78, 0.94, 1.22); $0.offset = SIMD3(0.0, 0.002, 0.006)
+                $0.shadowTint = SIMD3(-0.003, 0.005, 0.012)
+                $0.halation = 0.9; $0.halationColor = SIMD3(1.0, 0.22, 0.08); $0.bloom = 0.2
+                $0.grain = 0.055; $0.grainSize = 1.6; $0.vignette = 0.15
+            }
+        case .blockbuster:
+            return .make {
+                $0.saturation = 1.1; $0.contrast = 1.2
+                $0.slope = SIMD3(1.06, 1.0, 0.94)
+                $0.shadowTint = SIMD3(-0.008, 0.008, 0.018); $0.highTint = SIMD3(0.06, 0.025, -0.045)
+                $0.grain = 0.015; $0.vignette = 0.28; $0.bloom = 0.08
+            }
+        case .technicolor:
+            return .make {
+                $0.saturation = 1.2; $0.contrast = 1.15
+                $0.matR = SIMD3(1.3, -0.18, -0.12); $0.matG = SIMD3(-0.12, 1.25, -0.13); $0.matB = SIMD3(-0.1, -0.18, 1.28)
+                $0.slope = SIMD3(1.05, 1.0, 0.97)
+                $0.grain = 0.02; $0.vignette = 0.15; $0.bloom = 0.06
+            }
         case .bleach:
-            return LookParams(saturation: 0.45, toe: 0.001, contrast: 1.3, grain: 0.04,
-                              highTint: SIMD3(0.004, 0.004, 0.002))
-        case .neon:
-            return LookParams(saturation: 1.18, warmth: -0.04, contrast: 1.15, grain: 0.03,
-                              shadowTint: SIMD3(-0.002, 0.004, 0.009), highTint: SIMD3(0.03, -0.01, 0.03))
-        case .noite:
-            return LookParams(exposure: -0.1, saturation: 0.85, warmth: -0.02, contrast: 1.08, grain: 0.03,
-                              shadowTint: SIMD3(-0.002, 0.001, 0.007), highTint: SIMD3(0.006, 0.004, 0))
+            return .make {
+                $0.saturation = 0.32; $0.contrast = 1.42
+                $0.power = SIMD3(1.12, 1.12, 1.1); $0.highTint = SIMD3(0.012, 0.012, 0.01)
+                $0.grain = 0.055; $0.grainSize = 1.5; $0.vignette = 0.28
+            }
+        case .matrix:
+            return .make {
+                $0.saturation = 0.68; $0.contrast = 1.22
+                $0.slope = SIMD3(0.82, 1.08, 0.78)
+                $0.shadowTint = SIMD3(-0.002, 0.008, 0.0); $0.highTint = SIMD3(0.0, 0.025, -0.012)
+                $0.grain = 0.03; $0.vignette = 0.32
+            }
+        case .pastel:
+            return .make {
+                $0.exposure = 0.2; $0.saturation = 0.92; $0.contrast = 0.78; $0.toe = 0.03
+                $0.slope = SIMD3(1.06, 1.0, 0.95); $0.offset = SIMD3(0.012, 0.009, 0.013)
+                $0.shadowTint = SIMD3(0.008, 0.003, 0.006); $0.highTint = SIMD3(0.03, 0.02, 0.008)
+                $0.grain = 0.012
+            }
+        case .cross:
+            return .make {
+                $0.saturation = 1.3; $0.contrast = 1.28
+                $0.slope = SIMD3(0.95, 1.06, 0.74); $0.power = SIMD3(0.95, 0.94, 1.25); $0.offset = SIMD3(0.0, 0.0, 0.02)
+                $0.shadowTint = SIMD3(0.0, 0.003, 0.016); $0.highTint = SIMD3(0.03, 0.045, -0.04)
+                $0.grain = 0.045; $0.grainSize = 1.6; $0.vignette = 0.32
+            }
+        case .polaroid:
+            return .make {
+                $0.saturation = 0.85; $0.contrast = 0.84; $0.toe = 0.035
+                $0.slope = SIMD3(1.05, 1.0, 0.9); $0.offset = SIMD3(0.008, 0.016, 0.022)
+                $0.highTint = SIMD3(0.035, 0.022, -0.02)
+                $0.grain = 0.03; $0.vignette = 0.38; $0.bloom = 0.12
+            }
+        case .super8:
+            return .make {
+                $0.saturation = 1.12; $0.contrast = 1.12; $0.toe = 0.018
+                $0.slope = SIMD3(1.12, 1.0, 0.78); $0.offset = SIMD3(0.006, 0.003, 0.0)
+                $0.highTint = SIMD3(0.03, 0.015, -0.02)
+                $0.grain = 0.13; $0.grainSize = 2.5; $0.vignette = 0.55
+                $0.halation = 0.25; $0.halationColor = SIMD3(1.0, 0.5, 0.2); $0.bloom = 0.15
+            }
+        case .trix:
+            return .make {
+                $0.mono = 1; $0.contrast = 1.32; $0.toe = 0.002
+                $0.matR = SIMD3(1.15, -0.1, -0.05)  // como um filtro amarelo: céu mais escuro
+                $0.grain = 0.1; $0.grainSize = 1.8; $0.vignette = 0.15
+            }
+        case .hp5:
+            return .make {
+                $0.mono = 1; $0.contrast = 1.05; $0.toe = 0.01
+                $0.grain = 0.065; $0.grainSize = 1.5; $0.vignette = 0.1
+            }
+        case .noir:
+            return .make {
+                $0.mono = 1; $0.contrast = 1.6; $0.power = SIMD3(1.12, 1.12, 1.12)
+                $0.grain = 0.045; $0.vignette = 0.5; $0.bloom = 0.1
+            }
         case .sepia:
-            return LookParams(mono: 1, toe: 0.006, contrast: 1.05, grain: 0.04,
-                              shadowTint: SIMD3(0.004, 0.002, -0.002), highTint: SIMD3(0.045, 0.022, -0.03))
+            return .make {
+                $0.mono = 1; $0.contrast = 1.05; $0.toe = 0.012
+                $0.slope = SIMD3(1.12, 1.0, 0.76); $0.offset = SIMD3(0.006, 0.003, 0.0)
+                $0.grain = 0.055; $0.grainSize = 1.6; $0.vignette = 0.3
+            }
         }
     }
 }
@@ -145,7 +286,7 @@ enum AspectRatio: String, CaseIterable, Identifiable {
     }
 }
 
-/// Um quadro vindo da câmera: DNG, ou HEIC quando a câmera não oferece RAW (ex.: a da frente).
+/// Um quadro vindo da câmera: DNG, ou HEIC quando a câmera não oferece RAW.
 struct CapturedFrame {
     let data: Data
     let isRaw: Bool
@@ -153,7 +294,7 @@ struct CapturedFrame {
 
 /// Tudo que define como a foto é revelada.
 struct DevelopOptions {
-    var look: Look = .filme
+    var look: Look = .portra
     var amount: Float = 1
     var grain: Float = 1
     var zoom: CGFloat = 1
@@ -169,6 +310,8 @@ enum Developer {
     struct Output {
         let heic: Data
         let thumbnail: UIImage?
+        /// O recorte deixou a foto do mesmo tamanho do DNG (necessário para a galeria aceitar o par).
+        let sameSizeAsRaw: Bool
     }
 
     static let displayP3 = CGColorSpace(name: CGColorSpace.displayP3)!
@@ -190,22 +333,44 @@ enum Developer {
     }
 
     private static let toneKernel = kernel("revelaTone")
-    private static let previewKernel = kernel("revelaPreview")
+    private static let toSceneKernel = kernel("revelaToScene")
+    private static let highlightsKernel = kernel("revelaHighlights")
     private static let peakingKernel = kernel("revelaPeaking")
     private static let sharpnessKernel = kernel("revelaSharpness")
     private static let pickKernel = kernel("revelaPick")
+    private static let clipKernel = kernel("revelaClip")
 
     private static let noise = CIFilter.randomGenerator().outputImage!
 
-    // MARK: - Foto
+    /// Valor de cena em que o vídeo do iPhone já chega estourado (0,97 na tela), para a zebra.
+    private static let zebraThreshold: Float = {
+        let x: Float = 0.97, a: Float = 2.51, b: Float = 0.03, c: Float = 2.43, d: Float = 0.59, e: Float = 0.14
+        let A = x * c - a, B = x * d - b, C = x * e
+        return (-B - (B * B - 4 * A * C).squareRoot()) / (2 * A) / 0.8
+    }()
+
+    /// Diz se os kernels de Metal carregaram (sem eles a revelação sai sem look).
+    static var kernelStatus: String {
+        let names = ["revelaTone": toneKernel, "revelaToScene": toSceneKernel, "revelaHighlights": highlightsKernel,
+                     "revelaPeaking": peakingKernel, "revelaSharpness": sharpnessKernel, "revelaPick": pickKernel,
+                     "revelaClip": clipKernel]
+        let missing = names.filter { $0.value == nil }.map(\.key).sorted()
+        return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
+    }
+
+    // MARK: - Abrir os quadros
 
     /// RAW -> luz linear da cena, sem boost de contraste e sem tone mapping local da Apple.
-    static func linear(dng: Data) -> CIImage? {
+    static func linear(dng: Data, scale: Float = 1) -> CIImage? {
         guard let raw = CIRAWFilter(imageData: dng, identifierHint: "com.adobe.raw-image") else { return nil }
         raw.boostAmount = 0
         raw.boostShadowAmount = 0
         if raw.isLocalToneMapSupported { raw.localToneMapAmount = 0 }
         raw.extendedDynamicRangeAmount = 0
+        if scale < 1 {
+            raw.scaleFactor = scale
+            raw.isDraftModeEnabled = true
+        }
         guard let image = raw.outputImage else { return nil }
 
         // A orientação já foi aplicada pelo CIRAWFilter; não deixar a tag girar a foto de novo.
@@ -218,17 +383,21 @@ enum Developer {
         return image.settingProperties(properties)
     }
 
-    /// HEIC já processado pela Apple -> luz linear de tela (o look é aplicado como no visor).
-    static func processed(_ data: Data) -> CIImage? {
-        guard let image = CIImage(data: data, options: [.applyOrientationProperty: true]) else { return nil }
+    /// HEIC já processado pela Apple -> luz de cena aproximada (desfaz a curva antes do look).
+    static func processed(_ data: Data, scale: Float = 1) -> CIImage? {
+        guard var image = CIImage(data: data, options: [.applyOrientationProperty: true]) else { return nil }
         var properties = image.properties
         properties[kCGImagePropertyOrientation as String] = nil
-        return image.settingProperties(properties)
+        if scale < 1 { image = image.transformed(by: CGAffineTransform(scaleX: CGFloat(scale), y: CGFloat(scale))) }
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        return scene.settingProperties(properties)
     }
 
-    static func image(from frame: CapturedFrame) -> CIImage? {
-        frame.isRaw ? linear(dng: frame.data) : processed(frame.data)
+    static func image(from frame: CapturedFrame, scale: Float = 1) -> CIImage? {
+        frame.isRaw ? linear(dng: frame.data, scale: scale) : processed(frame.data, scale: scale)
     }
+
+    // MARK: - Foto
 
     static func develop(_ frame: CapturedFrame, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
@@ -236,32 +405,20 @@ enum Developer {
             dlog("❌ Não abriu o \(frame.isRaw ? "DNG" : "HEIC") (\(frame.data.count / 1024) KB)")
             return nil
         }
-        let output = finish(image, options: options, displayReferred: !frame.isRaw)
+        let output = finish(image, options: options)
         dlog("Revelação \(options.look.rawValue) \(Int(image.extent.width))×\(Int(image.extent.height)) · \(frame.isRaw ? "DNG" : "HEIC") \(frame.data.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
     }
 
-    /// Diz se os kernels de Metal carregaram (sem eles a revelação sai sem look).
-    static var kernelStatus: String {
-        let names = ["revelaTone": toneKernel, "revelaPreview": previewKernel, "revelaPeaking": peakingKernel,
-                     "revelaSharpness": sharpnessKernel, "revelaPick": pickKernel]
-        let missing = names.filter { $0.value == nil }.map(\.key).sorted()
-        return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
-    }
-
-    /// Luz linear -> look, recorte e HEIC de 10 bits.
-    static func finish(_ linear: CIImage, options: DevelopOptions, displayReferred: Bool = false) -> Output? {
-        let rect = options.aspect.crop(linear.extent, zoom: options.zoom)
-        var cropped = linear.cropped(to: rect)
+    /// Luz de cena -> recorte, look e HEIC de 10 bits.
+    static func finish(_ scene: CIImage, options: DevelopOptions) -> Output? {
+        let rect = options.aspect.crop(scene.extent, zoom: options.zoom)
+        var cropped = scene.cropped(to: rect)
             .transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
         if options.mirror {
             cropped = cropped.transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -rect.width, y: 0))
         }
-        // Imagem já com a curva da Apple: usa o kernel do visor, que desfaz a curva antes do look
-        let graded = (displayReferred
-            ? apply(previewKernel, to: cropped, look: options.params, extra: [0])
-            : apply(toneKernel, to: cropped, look: options.params, extra: []))
-            .settingProperties(linear.properties)
+        let graded = grade(cropped, look: options.params, zebra: false).settingProperties(scene.properties)
 
         guard let heic = try? context.heif10Representation(
             of: graded,
@@ -269,61 +426,169 @@ enum Developer {
             options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.92]
         ) else { return nil }
 
-        return Output(heic: heic, thumbnail: thumbnail(of: graded))
+        let same = abs(rect.width - scene.extent.width) < 2 && abs(rect.height - scene.extent.height) < 2
+        return Output(heic: heic, thumbnail: thumbnail(of: graded), sameSizeAsRaw: same)
+    }
+
+    /// Halation/bloom + o kernel do look.
+    private static func grade(_ scene: CIImage, look p: LookParams, zebra: Bool) -> CIImage {
+        guard let toneKernel else { return scene }
+        let glowing = addGlow(to: scene, look: p)
+        let size = CGFloat(p.grainSize)
+        let grainNoise = noise
+            .transformed(by: CGAffineTransform(translationX: .random(in: 0...512), y: .random(in: 0...512)))
+            .transformed(by: CGAffineTransform(scaleX: size, y: size))
+        let e = scene.extent
+        let arguments: [Any] = [
+            glowing, grainNoise,
+            p.exposure, p.saturation, p.mono, p.toe, p.contrast, p.grain,
+            vector(p.matR), vector(p.matG), vector(p.matB),
+            vector(p.slope), vector(p.offset), vector(p.power),
+            vector(p.shadowTint), vector(p.highTint),
+            p.vignette, CIVector(x: e.minX, y: e.minY, z: e.width, w: e.height),
+            zebra ? zebraThreshold : Float(0),
+        ]
+        return toneKernel.apply(extent: e, arguments: arguments) ?? scene
+    }
+
+    /// Brilho em volta das luzes fortes, calculado numa versão pequena da imagem (o resultado é borrado de qualquer jeito).
+    private static func addGlow(to scene: CIImage, look p: LookParams) -> CIImage {
+        guard p.halation > 0.001 || p.bloom > 0.001, let highlightsKernel else { return scene }
+        let e = scene.extent
+        let small: CGFloat = 0.25
+        let shortSide = min(e.width, e.height) * small
+        let highlights = highlightsKernel.apply(extent: e, arguments: [scene, Float(0.9)]) ?? scene
+        let reduced = highlights.transformed(by: CGAffineTransform(scaleX: small, y: small)).clampedToExtent()
+        var out = scene
+        func glow(sigma: CGFloat, color: SIMD3<Float>, amount: Float) {
+            let blurred = reduced.applyingGaussianBlur(sigma: Double(sigma))
+                .transformed(by: CGAffineTransform(scaleX: 1 / small, y: 1 / small))
+                .cropped(to: e)
+                .applyingFilter("CIColorMatrix", parameters: [
+                    "inputRVector": CIVector(x: CGFloat(color.x * amount), y: 0, z: 0, w: 0),
+                    "inputGVector": CIVector(x: 0, y: CGFloat(color.y * amount), z: 0, w: 0),
+                    "inputBVector": CIVector(x: 0, y: 0, z: CGFloat(color.z * amount), w: 0),
+                    "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
+                ])
+            out = blurred.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: out])
+        }
+        if p.halation > 0.001 { glow(sigma: shortSide * 0.006, color: p.halationColor, amount: p.halation * 0.8) }
+        if p.bloom > 0.001 { glow(sigma: shortSide * 0.03, color: SIMD3(1, 0.95, 0.9), amount: p.bloom) }
+        return out
     }
 
     // MARK: - Empilhamento
 
     enum StackKind { case focus, average }
 
-    /// Junta vários RAW: foco empilhado (pega o pedaço mais nítido de cada quadro) ou média (menos ruído / exposição longa).
-    static func stack(_ frames: [CapturedFrame], kind: StackKind, options: DevelopOptions) -> Output? {
+    /// Junta vários quadros em lotes pequenos (para não esgotar a memória):
+    /// foco empilhado (pega o pedaço mais nítido de cada um) ou média (menos ruído / exposição longa).
+    static func stack(_ frames: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
+                      options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
-        let images = frames.compactMap { image(from: $0) }
-        guard let reference = images.first else { return nil }
-        dlog("Empilhando \(images.count) de \(frames.count) quadros (\(kind == .focus ? "foco" : "média")) · \(Int(reference.extent.width))×\(Int(reference.extent.height))")
-        let aligned = [reference] + images.dropFirst().map { align($0, to: reference) }
+        guard let reference = frames.first.flatMap({ image(from: $0) }) else { return nil }
+        let extent = reference.extent
+        dlog("Empilhando \(frames.count) quadros (\(kind == .focus ? "foco" : "média")) · \(Int(extent.width))×\(Int(extent.height)) · memória livre \(Diagnostics.freeMemory)")
+
+        // Alinha numa versão pequena de cada quadro (rápido e leve); aplica depois no tamanho cheio
+        let alignScale: Float = 0.25
+        guard let smallReference = image(from: frames[0], scale: alignScale) else { return nil }
+        var warps: [(CIImage) -> CIImage] = [{ $0 }]
+        for frame in frames.dropFirst() {
+            guard let small = image(from: frame, scale: alignScale) else { warps.append({ $0 }); continue }
+            warps.append(alignment(of: small, to: smallReference, scale: CGFloat(alignScale),
+                                   fullExtent: extent, homography: kind == .focus))
+        }
         dlog("Alinhamento: \(Diagnostics.ms(since: t0))")
 
-        let merged: CIImage
+        func aligned(_ i: Int) -> CIImage? {
+            image(from: frames[i]).map { warps[i]($0).cropped(to: extent) }
+        }
+
+        let merged: CIImage?
         switch kind {
         case .average:
-            merged = average(aligned)
+            var mean = average(count: frames.count, extent: extent, frame: aligned)
+            if removeOutliers, let first = mean, let clipKernel {
+                // Segunda passada: cada quadro é limitado ao que a média permite
+                mean = average(count: frames.count, extent: extent) { i in
+                    aligned(i).flatMap { clipKernel.apply(extent: extent, arguments: [$0, first, Float(0.6)]) }
+                }
+                dlog("Estrelas: pontos que apareceram em poucos quadros removidos")
+            }
+            merged = mean
         case .focus:
-            merged = focusMerge(aligned) ?? average(aligned)
+            merged = focusMerge(count: frames.count, extent: extent, frame: aligned)
         }
-        let output = finish(merged.cropped(to: reference.extent).settingProperties(reference.properties), options: options,
-                            displayReferred: !(frames.first?.isRaw ?? true))
-        dlog("Empilhamento + revelação: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
+        guard let merged else { return nil }
+        let output = finish(merged.settingProperties(reference.properties), options: options)
+        dlog("Empilhamento + revelação: \(Diagnostics.ms(since: t0)) · memória livre \(Diagnostics.freeMemory)\(output == nil ? " · FALHOU" : "")")
         return output
     }
 
-    /// Corrige o tremido entre quadros (só translação, que é o que a mão faz em frações de segundo).
-    private static func align(_ image: CIImage, to reference: CIImage) -> CIImage {
-        let request = VNTranslationalImageRegistrationRequest(targetedCIImage: image, options: [:])
+    /// Vision compara a versão pequena com a de referência. Translação para o tremido da mão;
+    /// homografia no foco empilhado, porque a imagem também cresce um pouco quando o foco muda.
+    private static func alignment(of small: CIImage, to reference: CIImage, scale: CGFloat,
+                                  fullExtent: CGRect, homography: Bool) -> (CIImage) -> CIImage {
         let handler = VNImageRequestHandler(ciImage: reference, options: [:])
+        if homography {
+            let request = VNHomographicImageRegistrationRequest(targetedCIImage: small, options: [:])
+            if (try? handler.perform([request])) != nil,
+               let observation = request.results?.first as? VNImageHomographicAlignmentObservation {
+                let s = simd_float3x3(diagonal: SIMD3(Float(scale), Float(scale), 1))
+                let h = s.inverse * observation.warpTransform * s
+                let e = fullExtent
+                func map(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+                    let v = h * SIMD3(Float(x), Float(y), 1)
+                    return CGPoint(x: CGFloat(v.x / v.z), y: CGFloat(v.y / v.z))
+                }
+                let corners = [map(e.minX, e.maxY), map(e.maxX, e.maxY), map(e.maxX, e.minY), map(e.minX, e.minY)]
+                let original = [CGPoint(x: e.minX, y: e.maxY), CGPoint(x: e.maxX, y: e.maxY),
+                                CGPoint(x: e.maxX, y: e.minY), CGPoint(x: e.minX, y: e.minY)]
+                let maxShift = zip(corners, original).map { hypot($0.x - $1.x, $0.y - $1.y) }.max() ?? 0
+                if maxShift < e.width * 0.08 {
+                    dlog(String(format: "Quadro alinhado (homografia), canto mais deslocado %.0f px", maxShift))
+                    return { image in
+                        image.applyingFilter("CIPerspectiveTransform", parameters: [
+                            "inputTopLeft": CIVector(cgPoint: corners[0]), "inputTopRight": CIVector(cgPoint: corners[1]),
+                            "inputBottomRight": CIVector(cgPoint: corners[2]), "inputBottomLeft": CIVector(cgPoint: corners[3]),
+                        ])
+                    }
+                }
+                dlog(String(format: "Homografia exagerada (%.0f px); usando só translação", maxShift))
+            }
+        }
+        let request = VNTranslationalImageRegistrationRequest(targetedCIImage: small, options: [:])
         guard (try? handler.perform([request])) != nil,
               let observation = request.results?.first as? VNImageTranslationAlignmentObservation else {
             dlog("Alinhamento falhou num quadro (usado sem alinhar)")
-            return image
+            return { $0 }
         }
         let t = observation.alignmentTransform
-        dlog(String(format: "Quadro deslocado %.1f, %.1f px", t.tx, t.ty))
-        return image.transformed(by: t)
+        let tx = t.tx / scale, ty = t.ty / scale
+        dlog(String(format: "Quadro deslocado %.0f, %.0f px", tx, ty))
+        return { $0.transformed(by: CGAffineTransform(translationX: tx, y: ty)) }
     }
 
-    private static func average(_ images: [CIImage]) -> CIImage {
-        guard var sum = images.first else { return CIImage.empty() }
-        for image in images.dropFirst() {
-            sum = image.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: sum])
+    /// Soma em lotes de 3, guardando o parcial em memória de vídeo: nunca há mais de 3 RAW abertos ao mesmo tempo.
+    private static func average(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+        var sum: CIImage?
+        var used = 0
+        for i in 0..<count {
+            guard let image = frame(i) else { continue }
+            sum = sum.map { image.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: $0]) } ?? image
+            used += 1
+            if used % 3 == 0, let partial = sum { sum = materialize(partial, extent: extent) }
         }
-        let k = CGFloat(1) / CGFloat(images.count)
-        return sum.applyingFilter("CIColorMatrix", parameters: [
+        guard let sum, used > 0 else { return nil }
+        let k = CGFloat(1) / CGFloat(used)
+        let mean = sum.applyingFilter("CIColorMatrix", parameters: [
             "inputRVector": CIVector(x: k, y: 0, z: 0, w: 0),
             "inputGVector": CIVector(x: 0, y: k, z: 0, w: 0),
             "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0),
             "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
         ])
+        return materialize(mean, extent: extent)
     }
 
     private static func sharpness(_ image: CIImage) -> CIImage? {
@@ -335,19 +600,37 @@ enum Developer {
         return s.clampedToExtent().applyingGaussianBlur(sigma: 6).cropped(to: image.extent)
     }
 
-    private static func focusMerge(_ images: [CIImage]) -> CIImage? {
-        guard var result = images.first, var resultSharpness = sharpness(result), let pickKernel else { return nil }
-        for image in images.dropFirst() {
-            guard let s = sharpness(image),
-                  let mask = pickKernel.apply(extent: image.extent, arguments: [s, resultSharpness]) else { continue }
-            let softMask = mask.clampedToExtent().applyingGaussianBlur(sigma: 2).cropped(to: image.extent)
-            result = image.applyingFilter("CIBlendWithMask", parameters: [
+    private static func focusMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+        guard let first = frame(0), let firstSharpness = sharpness(first), let pickKernel else { return nil }
+        var result = materialize(first, extent: extent)
+        var resultSharpness = materialize(firstSharpness, extent: extent)
+        for i in 1..<max(count, 1) {
+            guard let image = frame(i), let s = sharpness(image),
+                  let mask = pickKernel.apply(extent: extent, arguments: [s, resultSharpness]) else { continue }
+            let softMask = mask.clampedToExtent().applyingGaussianBlur(sigma: 2).cropped(to: extent)
+            let blended = image.applyingFilter("CIBlendWithMask", parameters: [
                 kCIInputBackgroundImageKey: result,
                 kCIInputMaskImageKey: softMask,
             ])
-            resultSharpness = s.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: resultSharpness])
+            let maxSharpness = s.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: resultSharpness])
+            result = materialize(blended, extent: extent)
+            resultSharpness = materialize(maxSharpness, extent: extent)
         }
         return result
+    }
+
+    /// Calcula a imagem agora e guarda num buffer de meia precisão, para soltar tudo que veio antes.
+    private static func materialize(_ image: CIImage, extent: CGRect) -> CIImage {
+        let w = Int(extent.width), h = Int(extent.height)
+        var buffer: CVPixelBuffer?
+        let attributes: [CFString: Any] = [kCVPixelBufferIOSurfacePropertiesKey: [:] as [CFString: Any],
+                                           kCVPixelBufferMetalCompatibilityKey: true]
+        guard CVPixelBufferCreate(nil, w, h, kCVPixelFormatType_64RGBAHalf, attributes as CFDictionary, &buffer) == kCVReturnSuccess,
+              let buffer else { return image }
+        let shifted = image.transformed(by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY))
+        context.render(shifted, to: buffer, bounds: CGRect(x: 0, y: 0, width: w, height: h), colorSpace: linearP3)
+        return CIImage(cvPixelBuffer: buffer, options: [.colorSpace: linearP3])
+            .transformed(by: CGAffineTransform(translationX: extent.minX, y: extent.minY))
     }
 
     // MARK: - Visor
@@ -360,23 +643,13 @@ enum Developer {
 
     /// Aplica o look ao vídeo do visor, para ver o resultado antes de fotografar.
     static func preview(_ image: CIImage, options: PreviewOptions) -> CIImage {
-        var out = apply(previewKernel, to: image, look: options.develop.params, extra: [options.zebra ? 1 : 0] as [Any])
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        var out = grade(scene, look: options.develop.params, zebra: options.zebra)
         if options.peaking, let peakingKernel {
             let edges = image.applyingFilter("CIEdges", parameters: [kCIInputIntensityKey: 3.0])
             out = peakingKernel.apply(extent: image.extent, arguments: [out, edges, 0.18]) ?? out
         }
         return out
-    }
-
-    private static func apply(_ kernel: CIColorKernel?, to image: CIImage, look p: LookParams, extra: [Any]) -> CIImage {
-        guard let kernel else { return image }
-        // Grão que muda a cada quadro, como em filme
-        let grainNoise = noise
-            .transformed(by: CGAffineTransform(translationX: .random(in: 0...512), y: .random(in: 0...512)))
-            .transformed(by: CGAffineTransform(scaleX: 1.6, y: 1.6))
-        let arguments: [Any] = [image, grainNoise, p.exposure, p.saturation, p.warmth, p.mono, p.toe, p.contrast, p.grain,
-                                vector(p.shadowTint), vector(p.highTint)] + extra
-        return kernel.apply(extent: image.extent, arguments: arguments) ?? image
     }
 
     private static func vector(_ v: SIMD3<Float>) -> CIVector {
