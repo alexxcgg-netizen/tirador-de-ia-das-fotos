@@ -370,7 +370,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func setIdle(_ on: Bool) {
         idle = on
         idleThrottle = on
-        dlog(on ? "Visor em economia (15 quadros/s)" : "Visor normal")
+        dlog(on ? "Visor em economia (metade dos quadros)" : "Visor normal")
     }
 
     /// Lido na fila de vídeo.
@@ -1064,6 +1064,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     // MARK: - Controles manuais
 
     private func updateExposure() {
+        // Voltou para o automático (troca de lente, fim de sequência…): a trava AE/AF acabou
+        aeafLocked = false
         guard !isoStops.isEmpty, !shutterStops.isEmpty else { return }
         let manual = manualExposure
         let iso = selectedISO
@@ -1124,7 +1126,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Macro automático: a 1× com a lente no limite de perto por quase 1 s -> macro.
     /// No macro que entrou sozinho, assunto longe de novo por 1,5 s -> volta para a 1×.
     private func checkAutoMacro(lensPosition: Float, focusMode: AVCaptureDevice.FocusMode) {
-        guard autoMacro, !manualFocus, focusMode == .continuousAutoFocus, captureMode == .photo,
+        // Depois de um toque o foco fica em .autoFocus: também vale (é justamente quando se chega perto)
+        guard autoMacro, !manualFocus, !aeafLocked, focusMode != .locked, captureMode == .photo,
               Date().timeIntervalSince(lastAutoMacroSwitch) > 2.5, activeLens == lens else {
             closeFocusTicks = 0
             farFocusTicks = 0
@@ -1574,6 +1577,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             return CGPoint(x: 0.5 + ($0.midX - 0.5) / c, y: 0.5 + ($0.midY - 0.5) / c)
         }
         let aperture = portraitAperture
+        // Três looks: lidos aqui (na fila principal); rajada não entra (seriam centenas de fotos)
+        let extraLooks = multiLook && !mode.holdsForBurst
+            ? extraLookIDs.compactMap { self.options(swappingLookTo: $0, from: options) } : []
         guard mode.frameCount > 1 || mode == .night else {
             let flash = mode == .flash
             let fast = mode.usesFastFormat
@@ -1582,7 +1588,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 self.captureRAW(forStack: false, flash: flash, fast: fast, portrait: portrait) { result in
                     dlog("RAW recebido: \(Diagnostics.ms(since: t0))")
                     self.process(result.map { [$0] }, mode: mode, options: options, started: t0,
-                                 aperture: aperture, focusPoint: portraitFocus)
+                                 aperture: aperture, focusPoint: portraitFocus, extraLooks: extraLooks)
                 }
             }
             return
@@ -1825,7 +1831,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         options.zoom = 1
         let fov = shortSideFOV
         let t0 = CFAbsoluteTimeGetCurrent()
-        panorama.finish { frames in
+        // Na mesma fila do começo: um toque duplo rápido não deixa o fim passar na frente do começo
+        sessionQueue.async { self.panorama.finish { frames in
             self.sessionQueue.async {
                 self.session.beginConfiguration()
                 self.setPreviewSized(true)
@@ -1858,7 +1865,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     dlog(output == nil ? "❌ Panorama falhou" : "✅ Panorama salvo. Total: \(Diagnostics.ms(since: t0))")
                 }
             }
-        }
+        } }
     }
 
     private func openDocumentScanner() {
@@ -2296,7 +2303,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Revela (e junta, se for sequência) e salva na galeria.
     private func process(_ result: Result<[CapturedFrame], Error>, mode: CaptureMode, options: DevelopOptions,
-                         started t0: CFAbsoluteTime, aperture: Float = 2.8, focusPoint: CGPoint? = nil) {
+                         started t0: CFAbsoluteTime, aperture: Float = 2.8, focusPoint: CGPoint? = nil,
+                         extraLooks: [DevelopOptions] = []) {
         let done: (Result<UIImage?, Error>) -> Void = { result in
             switch result {
             case .success: dlog("✅ Salvo na galeria. Total: \(Diagnostics.ms(since: t0)) · memória livre \(Diagnostics.freeMemory)")
@@ -2344,15 +2352,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                                          aperture: aperture, focusPoint: focusPoint)
                     }
                 } : self.keepNeutral(output, options: options, mode: mode.rawValue)
-                // Três looks: a mesma foto revelada de novo em cada look extra
-                if single, self.multiLook, output != nil, let first = frames.first {
-                    let extras = self.extraLookIDs.compactMap { self.options(swappingLookTo: $0, from: options) }
-                    for extra in extras {
-                        let t1 = CFAbsoluteTimeGetCurrent()
-                        guard let scene = Developer.scene(for: first, aperture: first.hasDepth ? aperture : nil, focusPoint: focusPoint),
-                              let out = Developer.finish(scene, options: extra) else { continue }
-                        Library.save(dng: nil, developed: out.heic, tryPair: false) { _ in }
-                        dlog("Look extra \(extra.lookName): \(Diagnostics.ms(since: t1))")
+                defer {
+                    // Três looks: depois da foto principal, a mesma foto revelada em cada look extra
+                    if single, output != nil, let first = frames.first {
+                        for extra in extraLooks {
+                            let t1 = CFAbsoluteTimeGetCurrent()
+                            guard let scene = Developer.scene(for: first, aperture: first.hasDepth ? aperture : nil, focusPoint: focusPoint),
+                                  let out = Developer.finish(scene, options: extra) else { continue }
+                            Library.save(dng: nil, developed: out.heic, tryPair: false) { _ in }
+                            dlog("Look extra \(extra.lookName): \(Diagnostics.ms(since: t1))")
+                        }
                     }
                 }
                 Library.save(dng: keepDNG ? dng : nil, developed: output?.heic ?? original,
@@ -2503,7 +2512,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// No Retrato, mantém o foco e a luz no rosto.
     private func focusOnFaceIfNeeded(_ rect: CGRect) {
-        guard captureMode == .portrait, !manualFocus, Date().timeIntervalSince(lastFaceFocus) > 1 else { return }
+        guard captureMode == .portrait, !manualFocus, !aeafLocked, Date().timeIntervalSince(lastFaceFocus) > 1 else { return }
         lastFaceFocus = Date()
         let devicePoint = sensorPoint(fromView: CGPoint(x: rect.midX, y: rect.midY))
         let manualExposure = self.manualExposure

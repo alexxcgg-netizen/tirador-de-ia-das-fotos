@@ -511,7 +511,8 @@ struct ContentView: View {
                     ThirdsGrid().stroke(.white.opacity(0.22), lineWidth: 0.5)
                 }
                 AspectMask(aspect: camera.aspect)
-                if camera.showLevel { LevelOverlay() }
+                // No panorama o giroscópio fica só para ele
+                if camera.showLevel, camera.panoramaProgress == nil { LevelOverlay() }
                 if let progress = camera.panoramaProgress {
                     VStack(spacing: 8) {
                         HStack(spacing: 6) {

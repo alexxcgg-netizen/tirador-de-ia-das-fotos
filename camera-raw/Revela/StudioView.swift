@@ -239,7 +239,8 @@ final class StudioModel: ObservableObject {
                 }
                 return
             }
-            Library.save(dng: nil, developed: output.heic, tryPair: false) { error in
+            // Foto antiga revelada de novo: sem a localização de agora
+            Library.save(dng: nil, developed: output.heic, tryPair: false, location: nil) { error in
                 dlog("Revelar de novo: \(options.lookName) salvo em \(Diagnostics.ms(since: t0))\(error.map { " · erro \($0.localizedDescription)" } ?? "")")
                 DispatchQueue.main.async {
                     self.saving = false

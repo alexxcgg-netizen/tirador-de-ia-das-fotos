@@ -17,6 +17,8 @@ struct DocumentScanView: View {
     @State private var working = false
     @State private var pdfURL: URL?
     @State private var message: String?
+    /// Só a montagem mais recente vale (trocar o estilo várias vezes rápido não embaralha as páginas).
+    @State private var generation = 0
 
     var body: some View {
         Group {
@@ -99,7 +101,7 @@ struct DocumentScanView: View {
                             .foregroundStyle(.black)
                     }
                     .padding(.horizontal, 16)
-                } else {
+                } else if working {
                     ProgressView("Montando o PDF…").frame(minHeight: 50)
                 }
             }
@@ -120,6 +122,8 @@ struct DocumentScanView: View {
     private func rebuild() {
         working = true
         pdfURL = nil
+        generation += 1
+        let gen = generation
         let pages = self.pages, style = self.style
         DispatchQueue.global(qos: .userInitiated).async {
             let t0 = CFAbsoluteTimeGetCurrent()
@@ -129,6 +133,7 @@ struct DocumentScanView: View {
             let size = bytes.map { "\($0 / 1024) KB" } ?? "falhou"
             dlog("Documento: \(pages.count) página(s) · \(style.rawValue) · PDF \(size) · \(Diagnostics.ms(since: t0))")
             DispatchQueue.main.async {
+                guard gen == generation else { return }
                 processed = cleaned
                 pdfURL = url
                 working = false

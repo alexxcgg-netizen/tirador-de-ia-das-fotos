@@ -1101,7 +1101,8 @@ enum Developer {
                          width: extent.width * 0.1, height: extent.width * 0.1).intersection(extent)
         let average = disparity.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: box)])
         var pixel = [Float](repeating: 0, count: 4)
-        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+        // O pixel da média fica na origem do quadradinho, não em (0, 0)
+        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: average.extent,
                        format: .RGBAf, colorSpace: nil)
         let focus = pixel[0]
 

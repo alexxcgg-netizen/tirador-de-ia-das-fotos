@@ -41,6 +41,15 @@ final class LongExposure {
 
     func add(_ frame: CIImage) {
         guard isRunning else { return }
+        // Logo depois de ligar ainda podem chegar quadros no tamanho do visor: recomeça no tamanho novo
+        if accumulated != nil, frame.extent.size != extent.size {
+            guard count < 20 else { return }
+            accumulated = nil
+            buffers = []
+            count = 0
+            referenceSmall = nil
+            maxShift = .zero
+        }
         if accumulated == nil {
             extent = frame.extent
             guard makeBuffers() else {

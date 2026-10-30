@@ -41,8 +41,19 @@ final class PanoramaCapture {
     /// Chegou no limite do giro.
     var onLimit: (() -> Void)?
 
+    /// Cada panorama tem um número: um fim atrasado de um panorama antigo não mexe no novo.
+    private var run = 0
+    /// Os primeiros quadros depois de ligar ainda podem vir no tamanho do visor: são pulados.
+    private var warmup = 0
+    private var frameSize: CGSize?
+    /// Limite de quadros (na tele, cada um cobre pouco do giro e a memória acabaria).
+    static let maxFrames = 22
+
     func start(step: Double) {
         lock.lock()
+        run += 1
+        warmup = 8
+        frameSize = nil
         frames = []
         takenCount = 0
         yaw = 0
@@ -91,6 +102,22 @@ final class PanoramaCapture {
     func offer(_ image: CIImage) {
         lock.lock()
         guard isRunning, !finishing else { lock.unlock(); return }
+        if warmup > 0 {
+            warmup -= 1
+            lock.unlock()
+            return
+        }
+        // Todos os quadros do mesmo tamanho (se um veio diferente, a câmera ainda estava trocando)
+        if let frameSize, frameSize != image.extent.size {
+            lock.unlock()
+            return
+        }
+        frameSize = image.extent.size
+        if takenCount >= Self.maxFrames {
+            lock.unlock()
+            DispatchQueue.main.async { self.onLimit?() }
+            return
+        }
         let current = yaw
         let first = takenCount == 0
         // Rápido demais o quadro sai tremido: espera a mão desacelerar
@@ -122,10 +149,15 @@ final class PanoramaCapture {
     func finish(completion: @escaping ([Frame]) -> Void) {
         lock.lock()
         finishing = true
+        let token = run
         lock.unlock()
         motion.stopDeviceMotionUpdates()
         encodeGroup.notify(queue: encodeQueue) {
             self.lock.lock()
+            guard token == self.run else {
+                self.lock.unlock()
+                return completion([])
+            }
             let result = self.frames.sorted { $0.yaw < $1.yaw }
             self.frames = []
             self.takenCount = 0
@@ -221,8 +253,10 @@ extension Developer {
         let curve = H / 2 * (1 - CGFloat(cos(fov / 2)))
         let top = (ys.min() ?? 0) + H - curve
         let bottom = (ys.max() ?? 0) + curve
-        let left = (positions.map(\.x).min() ?? 0)
-        let right = (positions.map(\.x).max() ?? 0) + W
+        // O cilindro não preenche a largura toda do quadro: tira a faixa vazia dos dois lados
+        let empty = max(0, W / 2 - f * CGFloat(fov) / 2) + 2
+        let left = (positions.map(\.x).min() ?? 0) + empty
+        let right = (positions.map(\.x).max() ?? 0) + W - empty
         let rect = CGRect(x: left, y: bottom, width: right - left, height: max(top - bottom, H * 0.5)).integral
         let stitched = canvas.cropped(to: rect).transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
 
