@@ -232,6 +232,7 @@ struct ContentView: View {
             if camera.captureMode == .freeze { freezeControls }
             if camera.captureMode == .portrait { apertureControls }
             if camera.captureMode == .night { nightControls }
+            if camera.captureMode == .longExposure { longControls }
             if !camera.captureMode.hint.isEmpty {
                 Text(camera.captureMode.hint)
                     .font(.caption).opacity(0.6)
@@ -261,6 +262,34 @@ struct ContentView: View {
     private func apertureLabel(_ f: Float) -> String {
         if f == f.rounded() { return "f/\(Int(f))" }
         return "f/" + String(format: "%.1f", f).replacingOccurrences(of: ".", with: ",")
+    }
+
+    /// Exposição longa: duração e estilo.
+    private var longControls: some View {
+        HStack(spacing: 6) {
+            ForEach(CameraModel.longSeconds, id: \.self) { sec in
+                Button("\(Int(sec)) s") {
+                    camera.longSecondsChoice = sec
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 9).frame(height: 36)
+                .foregroundStyle(camera.longSecondsChoice == sec ? Color.black : Color.white)
+                .background(Capsule().fill(camera.longSecondsChoice == sec ? accent : panelFill))
+                .buttonStyle(.plain)
+            }
+            ForEach(LongExposure.Style.allCases) { style in
+                Button(style.rawValue) {
+                    camera.longStyle = style
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 10).frame(height: 36)
+                .foregroundStyle(camera.longStyle == style ? Color.black : Color.white)
+                .background(Capsule().fill(camera.longStyle == style ? accent : panelFill))
+                .buttonStyle(.plain)
+            }
+        }
     }
 
     /// Noite: tempo de cada foto e quantas fotos somar.
@@ -357,7 +386,7 @@ struct ContentView: View {
                 }
                 VStack {
                     HStack {
-                        Histogram(bins: camera.histogram)
+                        Histogram(bins: camera.histogram, rgb: camera.rgbHistogram ? camera.histogramRGB : [])
                             .frame(width: 96, height: 40)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
@@ -419,7 +448,8 @@ struct ContentView: View {
                 if let progress = camera.stackProgress {
                     VStack(spacing: 6) {
                         ProgressView().tint(.white)
-                        Text("Fotografando \(progress)").font(.subheadline.weight(.semibold))
+                        Text(camera.captureMode == .longExposure ? "Expondo · faltam \(progress)" : "Fotografando \(progress)")
+                            .font(.subheadline.weight(.semibold))
                         Text("Não mexa o iPhone").font(.caption).opacity(0.7)
                     }
                     .padding(16)
@@ -638,6 +668,12 @@ struct ContentView: View {
                         Toggle("Peaking (bordas em foco em laranja)", isOn: $camera.peaking)
                         Toggle("Zebra (listras onde estourou)", isOn: $camera.zebra)
                         Toggle("Grade de terços", isOn: $camera.showGrid)
+                        Toggle("Histograma colorido (R, G, B)", isOn: $camera.rgbHistogram)
+                        Toggle("Cor falsa (exposição por cores)", isOn: $camera.falseColor)
+                        if camera.falseColor {
+                            Text("Roxo: preto sem detalhe · azul: sombra · verde: cinza médio · rosa: pele bem exposta · amarelo: quase estourando · vermelho: estourado")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
                         Picker("Timer", selection: $camera.timerSeconds) {
                             Text("Sem timer").tag(0)
                             Text("3 s").tag(3)
@@ -774,6 +810,8 @@ struct ContentView: View {
         case .action: return "4K\n120"
         case .freeze: return camera.freezeMax ? "1/\(Int((1 / camera.freezeShutter).rounded()))\nMÁX" : "1/\(Int((1 / camera.freezeShutter).rounded()))\n12MP"
         case .hdr: return "HDR\n3× RAW"
+        case .longExposure: return "\(Int(camera.longSecondsChoice)) s\n\(camera.longStyle.rawValue.uppercased())"
+        case .superRes: return "4× 48MP\nSUPER"
         case .portrait: return apertureLabel(camera.portraitAperture) + "\nRETRATO"
         case .photo:
             if camera.rawMode == .bayer { return "DNG\nRAW" }
@@ -870,19 +908,32 @@ private struct FocusSquare: View {
 
 private struct Histogram: View {
     let bins: [Float]
+    /// Vermelho, verde e azul; vazio mostra só a luminância.
+    var rgb: [[Float]] = []
+
+    private func path(_ values: [Float], in size: CGSize) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: 0, y: size.height))
+        for (i, v) in values.enumerated() {
+            let x = size.width * CGFloat(i) / CGFloat(max(values.count - 1, 1))
+            path.addLine(to: CGPoint(x: x, y: size.height * (1 - CGFloat(min(v, 1)))))
+        }
+        path.addLine(to: CGPoint(x: size.width, y: size.height))
+        path.closeSubpath()
+        return path
+    }
 
     var body: some View {
         Canvas { ctx, size in
-            guard bins.count > 1 else { return }
-            var path = Path()
-            path.move(to: CGPoint(x: 0, y: size.height))
-            for (i, v) in bins.enumerated() {
-                let x = size.width * CGFloat(i) / CGFloat(bins.count - 1)
-                path.addLine(to: CGPoint(x: x, y: size.height * (1 - CGFloat(min(v, 1)))))
+            if rgb.count == 3 {
+                ctx.blendMode = .plusLighter
+                let colors: [Color] = [.red, .green, .blue]
+                for (channel, color) in zip(rgb, colors) where channel.count > 1 {
+                    ctx.fill(path(channel, in: size), with: .color(color.opacity(0.7)))
+                }
+            } else if bins.count > 1 {
+                ctx.fill(path(bins, in: size), with: .color(.white.opacity(0.75)))
             }
-            path.addLine(to: CGPoint(x: size.width, y: size.height))
-            path.closeSubpath()
-            ctx.fill(path, with: .color(.white.opacity(0.75)))
         }
         .padding(4)
         .background(.black.opacity(0.45), in: RoundedRectangle(cornerRadius: 6))

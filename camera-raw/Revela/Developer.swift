@@ -357,6 +357,9 @@ enum Developer {
     private static let hdrWeightKernel = kernel("revelaHDRWeight")
     private static let divideKernel = kernel("revelaDivide")
     private static let blurMapKernel = kernel("revelaBlurMap")
+    static let maxKernel = kernel("revelaMax")
+    static let sumKernel = kernel("revelaAdd")
+    private static let falseColorKernel = kernel("revelaFalseColor")
 
     private static let noise = CIFilter.randomGenerator().outputImage!
 
@@ -372,7 +375,8 @@ enum Developer {
         let names = ["revelaTone": toneKernel, "revelaToScene": toSceneKernel, "revelaHighlights": highlightsKernel,
                      "revelaPeaking": peakingKernel, "revelaSharpness": sharpnessKernel, "revelaPick": pickKernel,
                      "revelaClip": clipKernel, "revelaAdd": addKernel, "revelaHDRColor": hdrColorKernel,
-                     "revelaHDRWeight": hdrWeightKernel, "revelaDivide": divideKernel, "revelaBlurMap": blurMapKernel]
+                     "revelaHDRWeight": hdrWeightKernel, "revelaDivide": divideKernel, "revelaBlurMap": blurMapKernel,
+                     "revelaMax": maxKernel, "revelaFalseColor": falseColorKernel]
         let missing = names.filter { $0.value == nil }.map(\.key).sorted()
         return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
@@ -505,6 +509,57 @@ enum Developer {
         let image = CIImage(cgImage: frame)
         let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
         return finish(scene, options: options)
+    }
+
+    /// Imagem de vídeo (exposição longa) -> look e HEIC.
+    static func developVideoImage(_ image: CIImage, options: DevelopOptions) -> Output? {
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        return finish(scene, options: options)
+    }
+
+    // MARK: - Super resolução
+
+    /// Junta várias fotos de 48 MP com o tremido natural da mão: cada uma vê o detalhe num lugar um pouquinho
+    /// diferente. Ampliadas, alinhadas no sub-pixel e somadas, dão mais resolução do que uma foto sozinha.
+    /// Faz diferença no zoom (recortes do sensor); na 1× sem zoom vira só uma foto com menos ruído.
+    static func superResolution(_ frames: [CapturedFrame], options: DevelopOptions) -> Output? {
+        let t0 = CFAbsoluteTimeGetCurrent()
+        guard let reference = frames.first.flatMap({ image(from: $0) }) else { return nil }
+        let full = reference.extent
+        let region = options.aspect.crop(full, zoom: options.zoom)
+        let regionPixels = Double(region.width * region.height)
+        let factor = CGFloat(min(2, max(1, (48_000_000 / regionPixels).squareRoot())))
+        let outExtent = CGRect(x: 0, y: 0, width: (region.width * factor).rounded(), height: (region.height * factor).rounded())
+        dlog(String(format: "Super resolução: %d fotos · recorte %.0f×%.0f · ampliação %.2f× → %.0f×%.0f",
+                    frames.count, region.width, region.height, factor, outExtent.width, outExtent.height))
+
+        let alignScale: Float = 0.25
+        guard let smallReference = image(from: frames[0], scale: alignScale) else { return nil }
+        var sum: CIImage?
+        var used = 0
+        for (i, frame) in frames.enumerated() {
+            guard let img = image(from: frame) else { continue }
+            var aligned = img
+            if i > 0, let small = image(from: frame, scale: alignScale) {
+                aligned = alignment(of: small, to: smallReference, scale: CGFloat(alignScale),
+                                    fullExtent: full, homography: false)(img)
+            }
+            let piece = aligned.cropped(to: region)
+                .transformed(by: CGAffineTransform(translationX: -region.minX, y: -region.minY))
+                .applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: factor, kCIInputAspectRatioKey: 1])
+                .cropped(to: outExtent)
+            sum = materialize(sum.map { add($0, piece) } ?? piece, extent: outExtent)
+            used += 1
+        }
+        guard let sum, used > 0 else { return nil }
+        let mean = scaled(sum, by: 1 / Float(used))
+            .applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: 2.0 * Double(factor), kCIInputIntensityKey: 0.5])
+            .cropped(to: outExtent)
+        var opts = options
+        opts.zoom = 1
+        let output = finish(mean.settingProperties(reference.properties), options: opts)
+        dlog("Super resolução revelada: \(Diagnostics.ms(since: t0)) · memória livre \(Diagnostics.freeMemory)")
+        return output
     }
 
     /// Nota de nitidez (média do |laplaciano|): quanto maior, menos tremida/borrada.
@@ -806,12 +861,16 @@ enum Developer {
         var develop = DevelopOptions()
         var zebra = false
         var peaking = false
+        var falseColor = false
     }
 
     /// Aplica o look ao vídeo do visor, para ver o resultado antes de fotografar.
     static func preview(_ image: CIImage, options: PreviewOptions) -> CIImage {
         let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
         var out = grade(scene, look: options.develop.params, zebra: options.zebra)
+        if options.falseColor, let falseColorKernel {
+            out = falseColorKernel.apply(extent: out.extent, arguments: [out]) ?? out
+        }
         if options.peaking, let peakingKernel {
             let edges = image.applyingFilter("CIEdges", parameters: [kCIInputIntensityKey: 3.0])
             out = peakingKernel.apply(extent: image.extent, arguments: [out, edges, 0.18]) ?? out

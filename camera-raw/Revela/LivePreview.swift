@@ -35,7 +35,8 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         personMask = mask
         lock.unlock()
     }
-    var onHistogram: (([Float]) -> Void)?
+    /// Luminância e, separados, vermelho, verde e azul (64 faixas cada, de 0 a 1).
+    var onHistogram: (([Float], [[Float]]) -> Void)?
 
     /// Chamado na fila de vídeo a cada quadro.
     func enqueue(_ image: CIImage) {
@@ -124,12 +125,20 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
             self.context.render(output, toBitmap: &bins, rowBytes: 64 * 4 * MemoryLayout<Float>.size,
                                 bounds: CGRect(x: 0, y: 0, width: 64, height: 1), format: .RGBAf, colorSpace: nil)
             var luma = [Float](repeating: 0, count: 64)
+            var red = [Float](repeating: 0, count: 64)
+            var green = [Float](repeating: 0, count: 64)
+            var blue = [Float](repeating: 0, count: 64)
             for i in 0..<64 {
                 let r: Float = bins[i * 4], g: Float = bins[i * 4 + 1], b: Float = bins[i * 4 + 2]
+                red[i] = r
+                green[i] = g
+                blue[i] = b
                 luma[i] = 0.2126 * r + 0.7152 * g + 0.0722 * b
             }
             if let peak = luma.max(), peak > 0 { luma = luma.map { $0 / peak } }
-            DispatchQueue.main.async { callback?(luma) }
+            let peakRGB = max(red.max() ?? 0, green.max() ?? 0, blue.max() ?? 0)
+            let rgb: [[Float]] = peakRGB > 0 ? [red, green, blue].map { channel in channel.map { $0 / peakRGB } } : []
+            DispatchQueue.main.async { callback?(luma, rgb) }
         }
     }
 }

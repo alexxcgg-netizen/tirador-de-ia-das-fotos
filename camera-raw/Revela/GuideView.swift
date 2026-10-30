@@ -33,6 +33,8 @@ struct GuideView: View {
             Item(symbol: "chart.bar.fill", title: "Histograma",
                  text: "O gráfico no canto: à esquerda as sombras, à direita as luzes. Encostado na direita = estourado."),
             Item(symbol: "minus", title: "Linha de nível", text: "Fica laranja quando o iPhone está reto."),
+            Item(symbol: "paintpalette", title: "Cor falsa (em Ajustes)",
+                 text: "Pinta a imagem por brilho: verde é o cinza médio, rosa é pele bem exposta, vermelho é estourado."),
         ]),
         ("Controles", [
             Item(symbol: "dial.low", title: "ISO e obturador",
@@ -64,6 +66,10 @@ struct GuideView: View {
                  text: "Várias fotos alinhadas e somadas: muito menos ruído no escuro. Na Noite você escolhe o tempo de cada foto e quantas; no Auto, se o iPhone estiver apoiado, cada foto fica mais longa."),
             Item(symbol: "camera.macro", title: "Macro e Foco empilhado",
                  text: "Macro foca a 2 cm. Foco empilhado faz 7 fotos com foco diferente e junta tudo nítido."),
+            Item(symbol: "timer", title: "Longa",
+                 text: "Junta 1 a 8 segundos de vídeo numa foto. Seda deixa água e nuvens lisas; Rastros desenha as luzes dos carros e estrelas. Apoie o iPhone."),
+            Item(symbol: "square.resize.up", title: "Super res",
+                 text: "4 fotos de 48 MP alinhadas no sub-pixel: até o dobro de detalhe quando você usa zoom."),
             Item(symbol: "square.stack.3d.up", title: "Média", text: "8 fotos somadas: menos ruído, ou água lisa com obturador lento."),
         ]),
         ("Dentro de Ajustes", [

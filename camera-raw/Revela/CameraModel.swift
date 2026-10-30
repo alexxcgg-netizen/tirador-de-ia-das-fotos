@@ -73,6 +73,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     case freeze = "CONGELAR"
     case portrait = "RETRATO"
     case hdr = "HDR"
+    case longExposure = "LONGA"
+    case superRes = "SUPER RES"
     case night = "NOITE"
     case stars = "ESTRELAS"
     case moon = "LUA"
@@ -84,7 +86,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var frameCount: Int {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash: return 1
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure: return 1
+        case .superRes: return 4
         case .night, .moon, .average: return 8
         case .stars: return 16
         case .focusStack: return 7
@@ -94,7 +97,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     /// Como juntar os quadros, quando há mais de um.
     var stackKind: Developer.StackKind? {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash: return nil
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes: return nil
         case .focusStack: return .focus
         case .night, .stars, .moon, .average: return .average
         }
@@ -108,6 +111,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .freeze: return "Obturador rapidíssimo para congelar movimento. Precisa de muita luz; segure para rajada."
         case .portrait: return "2× a 1,5–2 m, fundo desfocado pela profundidade (LiDAR). Escolha o quanto borra acima."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
+        case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Apoie o iPhone."
+        case .superRes: return "4 fotos de 48 MP juntadas no sub-pixel: o dobro de detalhe no zoom (2× a 25×). Segure firme."
         case .night: return "Várias fotos alinhadas e somadas. Apoiado, cada foto fica mais longa e a noite mais limpa."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
         case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 8 fotos somadas para mais detalhe."
@@ -189,6 +194,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var portraitPreviewOn = false
     private let motion = CMMotionManager()
     private var recentRotation: [Double] = []
+    private let longExposure = LongExposure()
     private var readoutTimer: Timer?
     private var lastBackLens: Lens = .wide
     private var videoFrameIndex = 0
@@ -208,6 +214,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     static let apertures: [Float] = [1.4, 2, 2.8, 4, 8, 16]
     @Published var portraitAperture: Float = 2.8 { didSet { updatePortraitPreview() } }
     @Published var nightTime: NightTime = .auto
+    static let longSeconds: [Double] = [1, 2, 4, 8]
+    @Published var longSecondsChoice: Double = 2
+    @Published var longStyle: LongExposure.Style = .silk
+    /// Segundos que faltam na exposição longa (nil = parada).
+    @Published var longRemaining: Double?
+    @Published var rgbHistogram = false
+    @Published var histogramRGB: [[Float]] = []
+    @Published var falseColor = false { didSet { renderer.options.falseColor = falseColor } }
     @Published var nightFrames = 8
     /// iPhone parado (apoiado ou no tripé), pelo giroscópio.
     @Published var isSteady = false
@@ -324,7 +338,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         mirror = defaults.bool(forKey: "mirror")
         saveDNG = defaults.bool(forKey: "saveDNG")
         optionsChanged()
-        renderer.onHistogram = { [weak self] bins in self?.histogram = bins }
+        renderer.onHistogram = { [weak self] bins, rgb in
+            self?.histogram = bins
+            self?.histogramRGB = rgb
+        }
     }
 
     private func optionsChanged() {
@@ -1046,6 +1063,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             sessionQueue.async { self.captureHDR(options: options, started: t0) }
             return
         }
+        if mode == .longExposure {
+            startLongExposure(options: options, started: t0)
+            return
+        }
         let portraitFocus: CGPoint? = faceRect.map {
             // Rosto no visor -> posição na foto (o visor mostra o centro ampliado pelo recorte)
             let c = crop
@@ -1077,12 +1098,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
             : nil
         stackProgress = "0/\(count)"
+        let fullResolution = mode == .superRes
         let nightPlan = mode == .night && !manualExposure
         // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/15 s na mão
         let nightSeconds = nightTime.seconds ?? (isSteady ? 0.5 : 1.0 / 15)
         sessionQueue.async {
             let run = {
-                self.shootSequence(index: 0, count: count, positions: positions, frames: []) { result in
+                self.shootSequence(index: 0, count: count, positions: positions, frames: [], fullResolution: fullResolution) { result in
                     dlog("Sequência de \(count) fotografada: \(Diagnostics.ms(since: t0))")
                     DispatchQueue.main.async {
                         self.stackProgress = nil
@@ -1107,10 +1129,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func shootSequence(index: Int, count: Int, positions: [Float]?, frames: [CapturedFrame],
+                               fullResolution: Bool = false,
                                completion: @escaping (Result<[CapturedFrame], Error>) -> Void) {
         guard index < count else { return completion(.success(frames)) }
         let shoot = {
-            self.captureRAW(forStack: true) { result in
+            self.captureRAW(forStack: !fullResolution) { result in
                 switch result {
                 case .failure(let error):
                     completion(.failure(error))
@@ -1118,7 +1141,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     DispatchQueue.main.async { self.stackProgress = "\(index + 1)/\(count)" }
                     self.sessionQueue.async {
                         self.shootSequence(index: index + 1, count: count, positions: positions,
-                                           frames: frames + [data], completion: completion)
+                                           frames: frames + [data], fullResolution: fullResolution, completion: completion)
                     }
                 }
             }
@@ -1218,6 +1241,76 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         photoOutput.capturePhoto(with: settings, delegate: delegate)
     }
 
+    // MARK: - Exposição longa
+
+    private func startLongExposure(options: DevelopOptions, started t0: CFAbsoluteTime) {
+        let seconds = longSecondsChoice
+        let style = longStyle
+        let manual = manualExposure
+        stackProgress = "0 s"
+        longRemaining = seconds
+        dlog("Exposição longa: \(seconds) s · \(style.rawValue)")
+        sessionQueue.async {
+            // Vídeo em resolução cheia durante a exposição, e cada quadro exposto o quadro inteiro (sem buracos no movimento)
+            self.session.beginConfiguration()
+            self.setPreviewSized(false)
+            self.session.commitConfiguration()
+            if !manual, let d = self.device, (try? d.lockForConfiguration()) != nil {
+                let f = d.activeFormat
+                let target = min(1.0 / 30, f.maxExposureDuration.seconds)
+                let iso = min(max(d.iso * Float(d.exposureDuration.seconds / target), f.minISO), f.maxISO)
+                d.setExposureModeCustom(duration: CMTime(seconds: target, preferredTimescale: 1_000_000_000), iso: iso, completionHandler: nil)
+                d.unlockForConfiguration()
+            }
+            self.videoQueue.async {
+                self.longExposure.start(seconds: seconds, style: style) { image, count in
+                    self.finishLongExposure(image, frames: count, options: options, started: t0)
+                }
+            }
+        }
+        tickLongExposure(until: CFAbsoluteTimeGetCurrent() + seconds)
+    }
+
+    private func tickLongExposure(until end: CFAbsoluteTime) {
+        let left = end - CFAbsoluteTimeGetCurrent()
+        guard left > 0, longRemaining != nil else { return }
+        longRemaining = left
+        stackProgress = String(format: "%.1f s", left).replacingOccurrences(of: ".", with: ",")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.tickLongExposure(until: end) }
+    }
+
+    private func finishLongExposure(_ image: CIImage?, frames: Int, options: DevelopOptions, started t0: CFAbsoluteTime) {
+        dlog("Exposição longa: \(frames) quadros somados \(image.map { "\(Int($0.extent.width))×\(Int($0.extent.height))" } ?? "—")")
+        sessionQueue.async {
+            self.session.beginConfiguration()
+            self.setPreviewSized(true)
+            self.session.commitConfiguration()
+        }
+        DispatchQueue.main.async {
+            self.longRemaining = nil
+            self.stackProgress = nil
+            self.updateExposure()
+        }
+        guard let image else {
+            DispatchQueue.main.async {
+                self.processing -= 1
+                self.message = "A exposição longa não recebeu imagem."
+            }
+            return
+        }
+        processingQueue.async {
+            let output = Developer.developVideoImage(image, options: options)
+            Library.save(dng: nil, developed: output?.heic, tryPair: false) { error in
+                dlog(error == nil ? "✅ Exposição longa salva. Total: \(Diagnostics.ms(since: t0))" : "❌ \(error!.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.processing -= 1
+                    if let thumb = output?.thumbnail { self.thumbnail = thumb }
+                    if let error { self.message = error.localizedDescription }
+                }
+            }
+        }
+    }
+
     /// HDR: 3 RAW de uma vez (−2, 0 e +2 EV) com o bracketing do próprio sensor.
     private func captureHDR(options: DevelopOptions, started t0: CFAbsoluteTime) {
         let biases: [Float] = [-2, 0, 2]
@@ -1279,6 +1372,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 let output: Developer.Output?
                 if mode == .hdr {
                     output = Developer.hdr(frames, options: options)
+                } else if mode == .superRes {
+                    output = Developer.superResolution(frames, options: options)
                 } else if let kind = mode.stackKind {
                     output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, options: options)
                 } else if let first = frames.first, first.hasDepth {
@@ -1310,6 +1405,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             "exposição \(manualExposure ? "manual ISO \(Int(selectedISO)) \(selectedShutter)s" : "auto EV \(evBias)"), " +
             "balanço \(manualWB ? "\(Int(kelvin))K" : "auto"), foco \(manualFocus ? "manual \(lensPosition)" : "auto"), " +
             "peaking \(peaking), zebra \(zebra), espelhar \(mirror), guardar DNG \(saveDNG), visor \(Int(previewAngle))°, " +
+            "cor falsa \(falseColor), histograma colorido \(rgbHistogram), " +
             "congelar 1/\(Int((1 / freezeShutter).rounded()))\(freezeMax ? " máx" : "")" +
             (faceDistance.map { String(format: ", rosto a %.2f m", $0) } ?? "") + "\n"
         sessionQueue.async {
@@ -1355,6 +1451,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         actionRecorder.append(sampleBuffer)
         let frame = CIImage(cvPixelBuffer: pixelBuffer)
+        if longExposure.isRunning { longExposure.add(frame) }
         if videoFrameIndex % renderEvery == 0 { renderer.enqueue(frame) }
         if !loggedBufferSize {
             loggedBufferSize = true

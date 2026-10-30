@@ -143,6 +143,25 @@ namespace coreimage {
         return float4(v, v, v, 1.0f);
     }
 
+    // Exposição longa no estilo rastros: fica o mais claro de cada ponto (luzes de carro, estrelas)
+    float4 revelaMax(sample_t a, sample_t b) {
+        return float4(max(a.rgb, b.rgb), 1.0f);
+    }
+
+    // Cor falsa: pinta cada faixa de brilho de uma cor, para acertar a exposição no olho
+    float4 revelaFalseColor(sample_t s) {
+        float l = dot(max(s.rgb, float3(0.0f)), revela::kLuma);
+        float v = pow(l, 1.0f / 2.2f);
+        float3 c = float3(v * 0.85f);
+        if (v < 0.03f) c = float3(0.45f, 0.0f, 0.6f);          // preto sem detalhe
+        else if (v < 0.12f) c = float3(0.05f, 0.25f, 0.9f);    // sombra funda
+        else if (v > 0.40f && v < 0.47f) c = float3(0.2f, 0.75f, 0.25f);  // cinza médio (18%)
+        else if (v > 0.62f && v < 0.70f) c = float3(0.95f, 0.55f, 0.65f); // pele bem exposta
+        if (v > 0.93f) c = float3(1.0f, 0.85f, 0.0f);          // quase estourando
+        if (v > 0.985f) c = float3(1.0f, 0.1f, 0.1f);          // estourado
+        return float4(c * c, 1.0f);
+    }
+
     // Estrelas: corta o que brilha muito acima da média (avião, satélite, pixel quente)
     float4 revelaClip(sample_t frame, sample_t mean, float allowance) {
         float3 limit = mean.rgb * (1.0f + allowance) + 0.0004f;
