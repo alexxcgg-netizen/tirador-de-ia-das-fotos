@@ -527,6 +527,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Pinça: a lente certa já começa a abrir no meio do gesto; até ela chegar, o visor recorta a lente atual.
     func pinchZoom(_ value: CGFloat) {
         userInteracted()
+        // No macro a pinça mexe no zoom do macro (1× a 3×), sem trocar de lente
+        if lens == .macro {
+            macroZoom = min(max(value, 1), 3)
+            return
+        }
         zoomRamp?.invalidate()
         zoomRamp = nil
         zoom = min(max(value, minZoom), maxZoom)
@@ -1840,7 +1845,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
             self.processingQueue.async {
                 let output = Developer.panorama(frames, fov: fov, options: options)
-                Library.save(dng: nil, developed: output?.heic, tryPair: false) { error in
+                var stored = options
+                stored.originalAspect = true
+                let keep = self.keepNeutral(output, options: stored, mode: CaptureMode.panorama.rawValue)
+                Library.save(dng: nil, developed: output?.heic, tryPair: false, onSaved: keep) { error in
                     DispatchQueue.main.async {
                         self.processing -= 1
                         if let error { self.message = error.localizedDescription }
@@ -1860,6 +1868,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             if self.session.isRunning { self.session.stopRunning() }
             DispatchQueue.main.async { self.showDocument = true }
+        }
+    }
+
+    /// Revelar de novo aberto: a câmera descansa (bateria e GPU livres para revelar).
+    func pauseSession() {
+        guard !isRecordingVideo, panoramaProgress == nil else { return }
+        sessionQueue.async {
+            if self.session.isRunning { self.session.stopRunning() }
+        }
+    }
+
+    func resumeSession() {
+        sessionQueue.async {
+            if !self.session.isRunning, !self.dualActive { self.session.startRunning() }
         }
     }
 
@@ -2219,7 +2241,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
         processingQueue.async {
             let output = Developer.developVideoImage(image, options: options)
-            Library.save(dng: nil, developed: output?.heic, tryPair: false) { error in
+            let keep = self.keepNeutral(output, options: options, mode: CaptureMode.longExposure.rawValue)
+            Library.save(dng: nil, developed: output?.heic, tryPair: false, onSaved: keep) { error in
                 dlog(error == nil ? "✅ Exposição longa salva. Total: \(Diagnostics.ms(since: t0))" : "❌ \(error!.localizedDescription)")
                 DispatchQueue.main.async {
                     self.processing -= 1
@@ -2320,7 +2343,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                         SourceStore.keep(first, options: options, assetID: id, mode: mode.rawValue,
                                          aperture: aperture, focusPoint: focusPoint)
                     }
-                } : nil
+                } : self.keepNeutral(output, options: options, mode: mode.rawValue)
                 // Três looks: a mesma foto revelada de novo em cada look extra
                 if single, self.multiLook, output != nil, let first = frames.first {
                     let extras = self.extraLookIDs.compactMap { self.options(swappingLookTo: $0, from: options) }
@@ -2346,6 +2369,26 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
+    /// Fotos de vários quadros (HDR, noite, panorama…): guarda uma versão neutra já juntada,
+    /// para o Revelar de novo abrir a última foto qualquer que seja o modo. Roda na fila de revelação.
+    private func keepNeutral(_ output: Developer.Output?, options: DevelopOptions, mode: String) -> ((String) -> Void)? {
+        guard let scene = output?.scene else { return nil }
+        var neutral = options
+        neutral.look = .neutro
+        neutral.custom = nil
+        neutral.amount = 0
+        neutral.grain = 0
+        neutral.hdrCompress = false
+        guard let plain = Developer.finish(scene, options: neutral) else { return nil }
+        // Já recortada e espelhada: guardada sem recorte nem espelho extra
+        var stored = options
+        stored.zoom = 1
+        stored.mirror = false
+        stored.originalAspect = true
+        let frame = CapturedFrame(data: plain.heic, isRaw: false)
+        return { id in SourceStore.keep(frame, options: stored, assetID: id, mode: mode, aperture: 2.8, focusPoint: nil) }
+    }
+
     /// Tudo que a câmera deste iPhone oferece, para o relatório.
     func describeCapabilities(completion: @escaping (String) -> Void) {
         let settings = "- Ajustes: lente \(lens.rawValue) zoom \(zoomText) (recorte \(String(format: "%.2f", crop))), \(rawMode.rawValue), modo \(captureMode.rawValue), look \(lookName) \(Int(lookAmount * 100))% grão \(grainAmount)×, \(aspect.rawValue), " +
@@ -2355,8 +2398,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             "cor falsa \(falseColor), histograma colorido \(rgbHistogram), " +
             "congelar 1/\(Int((1 / freezeShutter).rounded()))\(freezeMax ? " máx" : "")" +
             (faceDistance.map { String(format: ", rosto a %.2f m", $0) } ?? "") + "\n"
+        let extras = "- Extras: localização \(Locator.shared.enabled ? Locator.shared.statusText : "desligada"), " +
+            "instalação até \(Expiration.text), economia \(idle ? "ligada agora" : "não"), visor 60 \(preview60), " +
+            "estabilização \(stabilization.rawValue), proteger pele \(skinProtection), macro automático \(autoMacro), " +
+            "três looks \(multiLook), filme próprio \(customLook?.name ?? "—"), modos escondidos \(hiddenModes.count)\n"
         sessionQueue.async {
-            var out = settings
+            var out = settings + extras
+            out += "- Originais guardados: \(SourceStore.totalBytes() / 1_048_576) MB\n"
             out += "- Kernels de revelação: \(Developer.kernelStatus)\n"
             out += "- Profundidade: entrega \(self.photoOutput.isDepthDataDeliverySupported ? "sim" : "não") · bracketing até \(self.photoOutput.maxBracketedCapturePhotoCount) fotos\n"
             let lidar = AVCaptureDevice.default(.builtInLiDARDepthCamera, for: .video, position: .back) != nil

@@ -23,6 +23,7 @@ enum SourceStore {
 
     /// Quantas fotos ficam guardadas (as mais antigas saem).
     static let limit = 12
+    static let maxBytes = 700 * 1_048_576
 
     private static let queue = DispatchQueue(label: "revela.sources")
     private static let directory: URL = {
@@ -54,11 +55,18 @@ enum SourceStore {
             }
             var entries = readIndex()
             entries.insert(Entry(assetID: assetID, file: file, isRaw: frame.isRaw, hasDepth: frame.hasDepth,
-                                 zoom: Double(options.zoom), aspect: options.aspect.rawValue, mirror: options.mirror,
+                                 zoom: Double(options.zoom), aspect: options.originalAspect ? "" : options.aspect.rawValue,
+                                 mirror: options.mirror,
                                  aperture: aperture, focusX: focusPoint.map { Double($0.x) }, focusY: focusPoint.map { Double($0.y) },
                                  date: Date(), mode: mode), at: 0)
-            while entries.count > limit {
+            // No máximo `limit` fotos e uns 700 MB (um ProRAW de 48 MP passa de 70 MB)
+            func size(_ e: Entry) -> Int {
+                (try? directory.appendingPathComponent(e.file).resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+            }
+            var total = entries.reduce(0) { $0 + size($1) }
+            while entries.count > 1, entries.count > limit || total > maxBytes {
                 let old = entries.removeLast()
+                total -= size(old)
                 try? FileManager.default.removeItem(at: directory.appendingPathComponent(old.file))
             }
             writeIndex(entries)

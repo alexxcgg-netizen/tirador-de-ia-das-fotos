@@ -63,6 +63,8 @@ struct ContentView: View {
         .statusBarHidden()
         .onAppear {
             camera.start()
+            // O app abriu agora: o scenePhase ainda não "mudou", então liga a localização aqui
+            Locator.shared.start()
             Expiration.scheduleReminders()
             // Ficou de pé por 6 s: a abertura deu certo
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
@@ -80,7 +82,9 @@ struct ContentView: View {
         .sheet(isPresented: $showReport) { ReportView(camera: camera) }
         .fullScreenCover(isPresented: $camera.showScanner, onDismiss: { camera.scannerClosed() }) { ScannerView() }
         .sheet(isPresented: $showGuide) { GuideView() }
-        .fullScreenCover(isPresented: $showStudio) { StudioView(camera: camera) }
+        .fullScreenCover(isPresented: $showStudio, onDismiss: { camera.resumeSession() }) {
+            StudioView(camera: camera).onAppear { camera.pauseSession() }
+        }
         .sheet(isPresented: $showModes) { ModesEditor(camera: camera) }
         .fullScreenCover(isPresented: $camera.showDocument, onDismiss: { camera.documentClosed() }) { DocumentScanView() }
         .alert("Revela", isPresented: Binding(
@@ -687,12 +691,12 @@ struct ContentView: View {
             .simultaneousGesture(
                 MagnificationGesture()
                     .onChanged { scale in
-                        if pinchStart == nil { pinchStart = camera.zoom }
+                        if pinchStart == nil { pinchStart = camera.lens == .macro ? camera.macroZoom : camera.zoom }
                         camera.pinchZoom((pinchStart ?? 1) * scale)
                     }
                     .onEnded { _ in
                         pinchStart = nil
-                        camera.setZoom(camera.zoom, settle: true)
+                        if camera.lens != .macro { camera.setZoom(camera.zoom, settle: true) }
                     }
             )
             // Toque: foca e mede a luz ali. Segurar: trava foco e exposição (AE/AF).

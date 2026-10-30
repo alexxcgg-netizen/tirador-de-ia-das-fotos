@@ -358,6 +358,8 @@ enum Developer {
         let thumbnail: UIImage?
         /// O recorte deixou a foto do mesmo tamanho do DNG (necessário para a galeria aceitar o par).
         let sameSizeAsRaw: Bool
+        /// A luz de cena que gerou a foto (para guardar uma versão neutra e revelar de novo depois).
+        var scene: CIImage?
     }
 
     static let displayP3 = CGColorSpace(name: CGColorSpace.displayP3)!
@@ -499,7 +501,9 @@ enum Developer {
         ) else { return nil }
 
         let same = abs(rect.width - scene.extent.width) < 2 && abs(rect.height - scene.extent.height) < 2
-        return Output(heic: heic, thumbnail: thumbnail(of: graded), sameSizeAsRaw: same)
+        var output = Output(heic: heic, thumbnail: thumbnail(of: graded), sameSizeAsRaw: same)
+        output.scene = scene
+        return output
     }
 
     /// Recorte (zoom e proporção), espelho e look. Devolve também o recorte usado, em coordenadas da cena.
@@ -752,6 +756,15 @@ enum Developer {
     static func stack(_ frames: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
                       robust: Bool = false, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
+        var frames = frames
+        if robust, frames.count > 2 {
+            // Noite: a referência (que manda onde algo se mexeu) é a foto mais nítida, não a primeira
+            let scores = frames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
+            if let best = scores.indices.max(by: { scores[$0] < scores[$1] }), best != 0 {
+                frames.swapAt(0, best)
+                dlog(String(format: "Noite: referência é a foto %d (a mais nítida)", best + 1))
+            }
+        }
         guard let reference = frames.first.flatMap({ image(from: $0) }) else { return nil }
         let extent = reference.extent
         dlog("Empilhando \(frames.count) quadros (\(kind == .focus ? "foco" : "média")) · \(Int(extent.width))×\(Int(extent.height)) · memória livre \(Diagnostics.freeMemory)")
