@@ -49,6 +49,7 @@ struct ContentView: View {
         .sheet(isPresented: $showSettings) { settingsSheet }
         .sheet(isPresented: $showLooks) { looksSheet }
         .sheet(isPresented: $showReport) { ReportView(camera: camera) }
+        .fullScreenCover(isPresented: $camera.showScanner, onDismiss: { camera.scannerClosed() }) { ScannerView() }
         .sheet(isPresented: $showGuide) { GuideView() }
         .alert("Revela", isPresented: Binding(
             get: { camera.message != nil },
@@ -868,6 +869,7 @@ struct ContentView: View {
         case .video: return "1080p\n\(camera.videoFPS) fps"
         case .cinematic: return apertureLabel(camera.cinematicAperture) + "\nCINEMA"
         case .dual: return "DUPLA\nFOTO · VÍDEO"
+        case .scan: return "3D\nLIDAR"
         case .longExposure: return "\(Int(camera.longSecondsChoice)) s\n\(camera.longStyle.rawValue.uppercased())"
         case .superRes: return "4× 48MP\nSUPER"
         case .portrait: return apertureLabel(camera.portraitAperture) + "\nRETRATO"

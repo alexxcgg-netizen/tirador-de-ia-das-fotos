@@ -34,6 +34,15 @@ App de câmera para iPhone que fotografa em **RAW** e revela a foto com uma curv
 - Vinte looks de filme (Portra 400, Gold 200, Ektar 100, Velvia 50, Kodachrome, Pro 400H, CineStill 800T, Blockbuster, Technicolor, Bleach Bypass, Matrix, Pastel, Cross-process, Polaroid, Super 8, Tri-X 400, HP5, Noir, Sépia), com mistura de canais, curva por cor, vinheta, halation e grão de tamanhos diferentes; intensidade e grão ajustáveis.
 - Salva na galeria a foto revelada (HEIC de 10 bits) + o **DNG original** num único item. Nas sequências, o DNG que vai junto é o do primeiro quadro.
 
+**Vídeo**
+- **Vídeo**: 1080p a 24/30/60 fps com o look gravado junto.
+- **Cinemático**: fundo desfocado (Modo Cinema da Apple, iOS 26+), editável depois no app Fotos.
+- **Dupla**: câmera traseira e frontal ao mesmo tempo, foto ou vídeo.
+
+**Scanner 3D (modo 3D)**
+- **CENA**: ARKit + LiDAR. Fotos 4K com a posição exata de cada uma, profundidade do LiDAR, nuvem de pontos colorida (PLY), malha (OBJ/USDZ) e um .zip no formato do nerfstudio para treinar um Gaussian splat no PC com o [Brush](https://github.com/ArthurBrussee/brush).
+- **OBJETO**: Object Capture da Apple (experimental no iPhone 17 Pro, que tem um defeito conhecido do iOS).
+
 **Relatório**
 - Menu `…` → **Relatório para o Claude**: junta o modelo do iPhone, o que cada lente suporta, os ajustes atuais, o tempo de cada etapa das últimas fotos, erros, avisos de memória e temperatura, e os travamentos que o iOS registrar. Dá para escrever o que você notou e compartilhar o arquivo.
 

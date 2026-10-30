@@ -64,6 +64,12 @@ struct GuideView: View {
             Item(symbol: "rectangle.inset.topright.filled", title: "Dupla",
                  text: "Câmera de trás e da frente ao mesmo tempo, com você num quadrinho. Toque: foto. Segure: vídeo."),
         ]),
+        ("Scanner 3D", [
+            Item(symbol: "cube.transparent", title: "CENA (LiDAR + fotos)",
+                 text: "Ande devagar em volta: o app guarda fotos 4K com a posição exata de cada uma e a profundidade do LiDAR. No fim: nuvem de pontos colorida, malha para ver em AR e um .zip para gerar um Gaussian splat realista no PC com o Brush."),
+            Item(symbol: "cube", title: "OBJETO",
+                 text: "Object Capture da Apple: modelo 3D de um objeto, montado no iPhone. No iPhone 17 Pro ele tem um defeito conhecido do iOS; se falhar, use CENA."),
+        ]),
         ("Modos", [
             Item(symbol: "person.crop.rectangle", title: "Retrato",
                  text: "Fundo desfocado pela profundidade medida com o LiDAR. f/1,4 borra muito, f/16 quase nada. Também avisa a distância para o rosto não deformar."),

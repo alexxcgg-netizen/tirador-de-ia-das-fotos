@@ -75,6 +75,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     case video = "VÍDEO"
     case cinematic = "CINEMÁTICO"
     case dual = "DUPLA"
+    case scan = "3D"
     case hdr = "HDR"
     case longExposure = "LONGA"
     case superRes = "SUPER RES"
@@ -89,7 +90,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var frameCount: Int {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual: return 1
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan: return 1
         case .superRes: return 4
         case .night, .moon, .average: return 8
         case .stars: return 16
@@ -100,7 +101,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     /// Como juntar os quadros, quando há mais de um.
     var stackKind: Developer.StackKind? {
         switch self {
-        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes, .video, .cinematic, .dual: return nil
+        case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes, .video, .cinematic, .dual, .scan: return nil
         case .focusStack: return .focus
         case .night, .stars, .moon, .average: return .average
         }
@@ -116,6 +117,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .video: return "Vídeo 1080p com o look gravado junto. Toque para começar e parar."
         case .cinematic: return "Vídeo com o fundo desfocado, como o Modo Cinema do iPhone. O foco segue as pessoas; dá para mudar depois no app Fotos."
         case .dual: return "Câmera de trás e da frente juntas. Toque: foto. Segure: vídeo enquanto segura."
+        case .scan: return "Scanner 3D com LiDAR."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
         case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Apoie o iPhone."
         case .superRes: return "4 fotos de 48 MP juntadas no sub-pixel: o dobro de detalhe no zoom (2× a 25×). Segure firme."
@@ -244,6 +246,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     static let videoRates = [24, 30, 60]
     @Published var videoFPS = 30
     @Published var isRecordingVideo = false
+    /// Scanner 3D aberto (a câmera normal fica parada, porque o ARKit usa o sensor).
+    @Published var showScanner = false
     @Published var recordingStarted: Date?
     /// Modo cinema: abertura simulada e os limites que a câmera aceita.
     @Published var cinematicAperture: Float = 2.8
@@ -493,6 +497,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Cada cena ajusta a câmera para o que ela pede.
     func select(captureMode mode: CaptureMode) {
+        if mode == .scan {
+            openScanner()
+            return
+        }
         guard mode != captureMode else { return }
         if sceneTookOver {
             manualExposure = false
@@ -1336,6 +1344,27 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     // MARK: - Vídeo, cinema e câmera dupla
+
+    private func openScanner() {
+        guard SceneScanner.isSupported else {
+            message = "O scanner 3D precisa de um iPhone com LiDAR."
+            return
+        }
+        if captureMode == .dual { select(captureMode: .photo) }
+        if isRecordingVideo { stopRecording() }
+        dlog("Scanner 3D aberto")
+        sessionQueue.async {
+            if self.session.isRunning { self.session.stopRunning() }
+            DispatchQueue.main.async { self.showScanner = true }
+        }
+    }
+
+    func scannerClosed() {
+        dlog("Scanner 3D fechado")
+        sessionQueue.async {
+            if !self.session.isRunning { self.session.startRunning() }
+        }
+    }
 
     private func requestMicrophone() {
         guard AVCaptureDevice.authorizationStatus(for: .audio) == .notDetermined else { return }
