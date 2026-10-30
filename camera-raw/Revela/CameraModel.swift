@@ -326,6 +326,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 self.updateExposure()
                 self.updateWhiteBalance()
                 self.updateFocus()
+                // A câmera nova abre no formato de foto: AÇÃO e CONGELAR precisam do formato rápido de novo
+                if self.captureMode.fixesShutter { self.applySpecialFormat() }
             }
         }
     }
@@ -391,6 +393,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func setupSession(lens: Lens, mode: RawMode) {
+        specialFormatActive = false
         session.beginConfiguration()
         session.sessionPreset = .photo
         session.inputs.forEach { session.removeInput($0) }
