@@ -90,7 +90,7 @@ struct GuideView: View {
             Item(symbol: "timer", title: "Longa",
                  text: "Junta 1 a 8 segundos de vídeo numa foto. Seda deixa água e nuvens lisas; Rastros desenha as luzes dos carros e estrelas. Apoie o iPhone."),
             Item(symbol: "square.resize.up", title: "Super res",
-                 text: "4 fotos de 48 MP alinhadas no sub-pixel: até o dobro de detalhe quando você usa zoom."),
+                 text: "6 fotos de 48 MP alinhadas em fração de pixel e juntadas: foto de até 100 MP com mais detalhe real (e menos ruído) para ampliar depois. Segure firme; leva uns segundos para revelar."),
             Item(symbol: "square.stack.3d.up", title: "Média", text: "8 fotos somadas: menos ruído, ou água lisa com obturador lento."),
             Item(symbol: "pano", title: "Panorama", text: "Toque e gire o iPhone devagar para um lado, sem subir nem descer. Toque de novo para terminar (ou ele para sozinho em 240°)."),
             Item(symbol: "doc.viewfinder", title: "DOC", text: "Documentos de várias páginas: acha a folha sozinho, deixa o papel branco e junta tudo num PDF, sem marca d'água."),

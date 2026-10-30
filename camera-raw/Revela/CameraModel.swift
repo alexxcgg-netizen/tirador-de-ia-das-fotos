@@ -95,7 +95,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         switch self {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan,
              .document, .panorama: return 1
-        case .superRes: return 4
+        case .superRes: return 6
         case .night, .average: return 8
         case .moon: return 5
         case .stars: return 16
@@ -129,7 +129,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .panorama: return "Toque e gire o iPhone devagar para a direita, sem subir nem descer. Toque de novo para terminar."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
         case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Funciona na mão (o app alinha cada quadro); apoiado fica ainda mais nítido."
-        case .superRes: return "4 fotos de 48 MP juntadas no sub-pixel: o dobro de detalhe no zoom (2× a 25×). Segure firme."
+        case .superRes: return "6 fotos de 48 MP alinhadas em fração de pixel: foto de até 100 MP com mais detalhe real para ampliar depois. Segure firme; leva uns segundos."
         case .night: return "Várias fotos alinhadas e somadas, sem fantasma de quem se mexeu. Apoiado, cada foto fica mais longa e a noite mais limpa."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
         case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 5 fotos de 48 MP juntadas no sub-pixel: mais detalhe nas crateras."
@@ -1637,6 +1637,21 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
+    /// Fotos de 48 MP de uma sequência vão para um arquivo e voltam mapeadas: o iOS lê do disco quando precisa,
+    /// em vez de segurar 6 × 70 MB na memória. O arquivo some sozinho quando a foto é solta.
+    private func spilled(_ frame: CapturedFrame) -> CapturedFrame {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("sequencia", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let url = dir.appendingPathComponent(UUID().uuidString)
+        guard (try? frame.data.write(to: url)) != nil,
+              let mapped = try? Data(contentsOf: url, options: .alwaysMapped) else { return frame }
+        // Apagar já: o mapeamento continua valendo até a foto ser solta, e o espaço volta sozinho
+        try? FileManager.default.removeItem(at: url)
+        var copy = CapturedFrame(data: mapped, isRaw: frame.isRaw, hasDepth: frame.hasDepth)
+        copy.exposureBias = frame.exposureBias
+        return copy
+    }
+
     private func shootSequence(index: Int, count: Int, positions: [Float]?, frames: [CapturedFrame],
                                fullResolution: Bool = false,
                                completion: @escaping (Result<[CapturedFrame], Error>) -> Void) {
@@ -1650,7 +1665,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     DispatchQueue.main.async { self.stackProgress = "\(index + 1)/\(count)" }
                     self.sessionQueue.async {
                         self.shootSequence(index: index + 1, count: count, positions: positions,
-                                           frames: frames + [data], fullResolution: fullResolution, completion: completion)
+                                           frames: frames + [fullResolution ? self.spilled(data) : data],
+                                           fullResolution: fullResolution, completion: completion)
                     }
                 }
             }

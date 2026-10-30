@@ -1185,7 +1185,7 @@ struct ContentView: View {
         case .document: return "PDF\nDOC"
         case .panorama: return camera.panoramaProgress.map { "\(Int($0 * 180))°\nPANO" } ?? "PANO\n180°"
         case .longExposure: return "\(Int(camera.longSecondsChoice)) s\n\(camera.longStyle.rawValue.uppercased())"
-        case .superRes: return "4× 48MP\nSUPER"
+        case .superRes: return "6× 48MP\n100MP"
         case .portrait: return apertureLabel(camera.portraitAperture) + "\nRETRATO"
         case .photo:
             if camera.lens == .macro {
