@@ -6,7 +6,7 @@ spin, centro de massa e giroscópica)?
 
 **Estado em 31/10/2026:** etapas 1 a 6 concluídas. As etapas 1–5 tratam fontes gerais (cinco
 experimentos). A etapa 6 testa binárias reais de buracos negros com relatividade numérica e modelos EOB
-(exp06–exp15). Próximo passo sugerido no fim de `06_conclusoes_e_limites.md`.
+(exp06–exp15). A etapa 7 está em andamento: a revisão adversarial da etapa 6 está em `08_revisao_e_correcoes.md`, e as linhas de investigação em `09_linhas_de_investigacao.md`.
 
 ## Resultado principal
 
@@ -28,19 +28,23 @@ modos, $\int\omega\,\tilde h\tilde h^\dagger$ e $\int\omega^2\,\tilde h\tilde h^
   valor próprio da memória é outro: testa a RG não linear e mede os canais que não são ondas
   gravitacionais (neutrinos, luz, matéria ejetada).
 
-**Etapa 6: binárias reais de buracos negros** (`07_binarias_reais.md`):
-- A família infinita não contém binárias da RG: a relatividade amarra a fase à amplitude
-  ($|\tilde h|^2=a^2\Psi''/2\pi$).
-- Num observador, 4 memórias contra ≥ 6 parâmetros deixam famílias exatas. Construí binárias com massa,
-  razão de massas, spins, distância, inclinação e recuo diferentes e as mesmas quatro memórias em 1e-10
-  (substituto NRHybSur3dq8_CCE), e pares circular × excêntrica ($e_0$ até 0,3) em ~1e-5 (SEOBNRv5EHM).
-  A família sobrevive aos níveis A (ordem quadrática), B (ordem seguinte) e C (memória completa de RN).
-- As ondas completas desses pares se separam a partir de SNR 1–6. A memória tem só 1,2% da SNR (0,8 em
-  aLIGO, 39 em CE para um sistema tipo GW150914 a 400 Mpc).
+**Etapa 6: binárias reais de buracos negros** (`07_binarias_reais.md`, revista em `08_revisao_e_correcoes.md`):
+- A família infinita não contém binárias da RG. Na fase estacionária, os harmônicos $m=2,3,4$ só
+  permitem translação no tempo e fase global.
+- Num observador, 4 memórias contra ≥ 6 parâmetros deixam famílias contínuas. Há pares exatos para a
+  versão idealizada das memórias (multipolos $m=0$, deslocamento total, piso numérico $\sim10^{-6}$).
+  Também há pares circular × excêntrica no piso do modelo, com a anomalia $\ell_0$ como dimensão a
+  mais. Com o deslocamento de janela e os multipolos $m\neq0$ os pares precisam ser resolvidos de novo
+  (etapa 7).
+- Um interferômetro não mede as quatro memórias: a giroscópica é inobservável, e o CM se confunde com o
+  instante de chegada. A SNR da memória nula de um sistema tipo GW150914 a 400 Mpc é 0,47 (aLIGO), 8,6
+  (ET) e 34 (CE).
+- A onda completa separa os pares escolhidos a partir de SNR 1–6, mas a família passa pelo próprio
+  sistema: o que sobra é a incerteza usual de estimação.
+- A memória resolvida no tempo separa os pares com SNR de memória 3–14. Duas janelas deixam uma família
+  aproximada.
 - No céu inteiro, as memórias quase determinam a binária, exceto por uma direção cega de 2ª ordem em
   massas iguais.
-- A fase perdida volta resolvendo a memória no tempo: $\Omega_{\rm mem}=\dot h_{20}/(C|h_{30}|)$, ou
-  medindo as memórias em duas janelas.
 
 **Limites rigorosos da reconstrução** (`06_conclusoes_e_limites.md`): nada de dentro de horizontes;
 nada do que cai no horizonte (ilustrado numericamente com precisão de 1e-25); nenhuma dinâmica
@@ -59,6 +63,9 @@ que os dados têm.
 | `05_experimentos.md` | Etapa 5: os cinco experimentos, números e como rodar |
 | `06_conclusoes_e_limites.md` | Resposta à pergunta central, limites, previsões verificáveis, problemas em aberto |
 | `07_binarias_reais.md` | Etapa 6: binárias reais, pares degenerados, robustez A/B/C, excentricidade, observável de fase, refutações |
+| `08_revisao_e_correcoes.md` | Etapa 7, parte 1: revisão adversarial da etapa 6 (25 correções, literatura, o que muda nas conclusões) |
+| `09_linhas_de_investigacao.md` | Etapa 7: 19 linhas de investigação com hipótese, fundamentação, teste e prioridade |
+| `banco_de_hipoteses.md` | Laboratório permanente de hipóteses, com status (confirmada, refutada, inconclusiva, não testada) |
 | `referencias.md` | ~80 referências verificadas online, com correções de atribuição |
 | `codigo/` | `harmonicos.py`, `memorias.py` e `fontes.py` com os experimentos `exp01`–`exp05`; `binarias.py`, `deteccao.py` e `pn_excentrico.py` com os experimentos `exp06`–`exp15` |
 | `resultados/` | saídas de texto dos experimentos |
