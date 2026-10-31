@@ -1,0 +1,19 @@
+Revisao R2 do exp15 (SNR da memoria do sistema A). SNR da memoria = parte m = 0 de h_+; onda = modos m != 0.
+
+(a) tempo de manutencao / rampa no fim (janela 10 Hz, f_min 10 Hz):
+  hold 4 s, rampa  8 s: aLIGO 0.7586 (+0.00e+00) ; A+ 1.4436 (+0.00e+00) ; ET 10.6858 (+0.00e+00) ; CE 39.1033 (+0.00e+00)
+  hold 2 s, rampa  4 s: aLIGO 0.7586 (+7.60e-07) ; A+ 1.4436 (+2.27e-07) ; ET 10.6891 (+3.09e-04) ; CE 39.1056 (+6.03e-05)
+  hold 8 s, rampa 16 s: aLIGO 0.7586 (+8.82e-11) ; A+ 1.4436 (+1.53e-11) ; ET 10.6858 (+6.48e-08) ; CE 39.1033 (+1.29e-08)
+  hold 0 s, rampa  0 s: aLIGO 2.1451 (+1.83e+00) ; A+ 4.1331 (+1.86e+00) ; ET 27.0878 (+1.53e+00) ; CE 87.1867 (+1.23e+00)
+  (entre parenteses: variacao relativa contra o exp15, hold 4 s e rampa 8 s)
+
+(b) frequencia de inicio (hold 4 s, rampa 8 s):
+  janela 10 Hz, f_min 10 Hz: aLIGO mem 0.759 osc 66.0 razao 1.15e-02 ; A+ mem 1.444 osc 126.0 razao 1.15e-02 ; ET mem 10.686 osc 898.7 razao 1.19e-02 ; CE mem 39.103 osc 3202.6 razao 1.22e-02
+  janela 10 Hz, f_min 20 Hz: aLIGO mem 0.741 osc 64.6 razao 1.15e-02 ; A+ mem 1.414 osc 123.8 razao 1.14e-02 ; ET mem 8.367 osc 723.9 razao 1.16e-02 ; CE mem 31.399 osc 2591.0 razao 1.21e-02
+  janela 20 Hz, f_min 20 Hz: aLIGO mem 0.741 osc 64.9 razao 1.14e-02 ; A+ mem 1.414 osc 124.5 razao 1.14e-02 ; ET mem 8.368 osc 725.9 razao 1.15e-02 ; CE mem 31.406 osc 2574.2 razao 1.22e-02
+  janela 20 Hz, f_min 10 Hz: aLIGO mem 0.759 osc 64.9 razao 1.17e-02 ; A+ mem 1.444 osc 124.5 razao 1.16e-02 ; ET mem 10.689 osc 728.3 razao 1.47e-02 ; CE mem 39.105 osc 2588.4 razao 1.51e-02
+
+(c) janela de Tukey de 0.5 s no inicio da onda oscilatoria (janela 10 Hz, f_min 10 Hz):
+  Tukey 0.25 s: aLIGO osc 65.96 -> 65.89 (-1.07e-03) ; A+ osc 126.02 -> 125.88 (-1.07e-03) ; ET osc 898.72 -> 895.05 (-4.09e-03) ; CE osc 3202.59 -> 3197.38 (-1.63e-03)
+  Tukey 0.50 s: aLIGO osc 65.96 -> 65.89 (-1.11e-03) ; A+ osc 126.02 -> 125.88 (-1.09e-03) ; ET osc 898.72 -> 891.97 (-7.52e-03) ; CE osc 3202.59 -> 3194.65 (-2.48e-03)
+  Tukey 1.00 s: aLIGO osc 65.96 -> 65.88 (-1.22e-03) ; A+ osc 126.02 -> 125.88 (-1.13e-03) ; ET osc 898.72 -> 885.00 (-1.53e-02) ; CE osc 3202.59 -> 3188.27 (-4.47e-03)

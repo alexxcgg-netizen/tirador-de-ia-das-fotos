@@ -1,0 +1,34 @@
+chi_s = -0.5 (q = 1): B = (chi_s + d, chi_s - d), B' = (chi_s - d, chi_s + d), A = (chi_s, chi_s)
+  d = 0.0125: nivel A max 1.807e-05 (cm40; par 1.880e-05, impar 2.854e-06) | nivel C max 6.953e-04 (desl40; par 1.944e-05, impar 6.925e-04) | 1-match 9.556e-07 (busca x16: 9.556e-07)
+  d = 0.0250: nivel A max 7.368e-05 (cm40; par 7.520e-05, impar 5.708e-06) | nivel C max 1.396e-03 (desl40; par 7.776e-05, impar 1.385e-03) | 1-match 3.827e-06 (busca x16: 3.827e-06)
+  d = 0.0500: nivel A max 2.973e-04 (cm40; par 3.008e-04, impar 1.142e-05) | nivel C max 2.814e-03 (desl40; par 3.111e-04, impar 2.770e-03) | 1-match 1.534e-05 (busca x16: 1.534e-05)
+  d = 0.1000: nivel A max 1.193e-03 (cm40; par 1.203e-03, impar 2.286e-05) | nivel C max 5.718e-03 (desl40; par 1.244e-03, impar 5.542e-03) | 1-match 6.169e-05 (busca x16: 6.169e-05)
+  d = 0.2000: nivel A max 4.767e-03 (cm40; par 4.814e-03, impar 6.106e-05) | nivel C max 1.180e-02 (desl40; par 4.977e-03, impar 1.110e-02) | 1-match 2.497e-04 (busca x16: 2.450e-04)
+  d = 0.3000: nivel A max 1.070e-02 (cm40; par 1.084e-02, impar 1.362e-04) | nivel C max 1.826e-02 (desl40; par 1.120e-02, impar 1.668e-02) | 1-match 5.698e-04 (busca x16: 5.456e-04)
+  expoente max dif.    nivel A: todos os d 2.01 ; d do exp13 (0.025-0.2) 2.01 ; locais 2.03 2.01 2.00 2.00 1.99
+  expoente max dif.    nivel C: todos os d 1.03 ; d do exp13 (0.025-0.2) 1.03 ; locais 1.01 1.01 1.02 1.05 1.08
+  expoente parte par   nivel A: todos os d 2.00 ; d do exp13 (0.025-0.2) 2.00 ; locais 2.00 2.00 2.00 2.00 2.00
+  expoente parte par   nivel C: todos os d 2.00 ; d do exp13 (0.025-0.2) 2.00 ; locais 2.00 2.00 2.00 2.00 2.00
+  expoente parte impar nivel A: todos os d 1.18 ; d do exp13 (0.025-0.2) 1.13 ; locais 1.00 1.00 1.00 1.42 1.98
+  expoente parte impar nivel C: todos os d 1.00 ; d do exp13 (0.025-0.2) 1.00 ; locais 1.00 1.00 1.00 1.00 1.01
+  expoente 1-match (base) : todos os d 2.01 ; d do exp13 2.01 ; locais 2.00 2.00 2.01 2.02 2.03
+  expoente 1-match (x16)  : todos os d 2.00 ; d do exp13 2.00 ; locais 2.00 2.00 2.01 1.99 1.97
+
+chi_s = +0.3 (q = 1): B = (chi_s + d, chi_s - d), B' = (chi_s - d, chi_s + d), A = (chi_s, chi_s)
+  d = 0.0125: nivel A max 3.070e-05 (desl40; par 3.396e-05, impar 4.830e-05) | nivel C max 2.234e-04 (desl40; par 3.409e-05, impar 2.249e-04) | 1-match 8.435e-07 (busca x16: 8.435e-07)
+  d = 0.0250: nivel A max 6.753e-05 (desl40; par 1.358e-04, impar 9.650e-05) | nivel C max 4.439e-04 (desl40; par 1.363e-04, impar 4.498e-04) | 1-match 3.376e-06 (busca x16: 3.376e-06)
+  d = 0.0500: nivel A max 3.511e-04 (cm40; par 5.433e-04, impar 1.922e-04) | nivel C max 8.759e-04 (desl40; par 5.453e-04, impar 8.994e-04) | 1-match 1.353e-05 (busca x16: 1.353e-05)
+  d = 0.1000: nivel A max 1.795e-03 (cm40; par 2.173e-03, impar 3.785e-04) | nivel C max 2.500e-03 (cm40; par 2.181e-03, impar 1.798e-03) | 1-match 5.450e-05 (busca x16: 5.450e-05)
+  d = 0.2000: nivel A max 7.982e-03 (cm40; par 8.690e-03, impar 7.079e-04) | nivel C max 9.395e-03 (cm40; par 8.720e-03, impar 3.587e-03) | 1-match 1.204e-03 (busca x16: 2.932e-04)
+  d = 0.3000: nivel A max 1.861e-02 (cm40; par 1.954e-02, impar 9.387e-04) | nivel C max 2.071e-02 (cm40; par 1.960e-02, impar 5.358e-03) | 1-match 1.948e-03 (busca x16: 7.878e-04)
+  d = 0.4000: nivel A max 3.370e-02 (cm40; par 3.472e-02, impar 1.019e-03) | nivel C max 3.647e-02 (cm40; par 3.481e-02, impar 7.104e-03) | 1-match 1.853e-03 (busca x16: 1.626e-03)
+  d = 0.5000: nivel A max 5.332e-02 (cm40; par 5.421e-02, impar 8.927e-04) | nivel C max 5.669e-02 (cm40; par 5.431e-02, impar 8.814e-03) | 1-match 2.803e-03 (busca x16: 2.422e-03)
+  expoente max dif.    nivel A: todos os d 2.11 ; d do exp13 (0.025-0.2) 2.30 ; locais 1.14 2.38 2.35 2.15 2.09 2.07 2.06
+  expoente max dif.    nivel C: todos os d 1.54 ; d do exp13 (0.025-0.2) 1.47 ; locais 0.99 0.98 1.51 1.91 1.95 1.97 1.98
+  expoente parte par   nivel A: todos os d 2.00 ; d do exp13 (0.025-0.2) 2.00 ; locais 2.00 2.00 2.00 2.00 2.00 2.00 2.00
+  expoente parte par   nivel C: todos os d 2.00 ; d do exp13 (0.025-0.2) 2.00 ; locais 2.00 2.00 2.00 2.00 2.00 2.00 1.99
+  expoente parte impar nivel A: todos os d 0.85 ; d do exp13 (0.025-0.2) 0.96 ; locais 1.00 0.99 0.98 0.90 0.70 0.28 -0.59
+  expoente parte impar nivel C: todos os d 1.00 ; d do exp13 (0.025-0.2) 1.00 ; locais 1.00 1.00 1.00 1.00 0.99 0.98 0.97
+  expoente 1-match (base) : todos os d 2.36 ; d do exp13 2.74 ; locais 2.00 2.00 2.01 4.47 1.19 -0.17 1.85
+  expoente 1-match (x16)  : todos os d 2.19 ; d do exp13 2.13 ; locais 2.00 2.00 2.01 2.43 2.44 2.52 1.78
+

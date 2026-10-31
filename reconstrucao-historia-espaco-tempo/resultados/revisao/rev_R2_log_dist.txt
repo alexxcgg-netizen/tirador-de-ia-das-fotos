@@ -1,0 +1,85 @@
+lal.MSUN_SI != Msun
+Loaded NRHybSur3dq8_CCE model
+ITEM 2: normas diferentes. rc_igual = 1/sqrt(2(1-m)) [07]; rc_exato = 1/sqrt(1+r^2-2rm), r = rho_B/rho_A;
+        rc_ampl = 1/sqrt(1-m^2) (amplitude de B livre); dd_real = (dh|dh) na SNR real (A a 400 Mpc).
+        Mesmo produto do exp07 (deteccao.comparar, h_+, fs 4096, sem janela).
+  par (1, +0.0) aLIGO: match 0.9383 | SNR_A 66.0 SNR_B 65.6 (r = 0.994) | dd_real 5.341e+02 (sqrt 23.1) | rho_crit: igual 2.847, exato 2.855, ampl. livre 2.892
+  par (1, +0.0) ET   : match 0.7172 | SNR_A 899.1 SNR_B 895.9 (r = 0.996) | dd_real 4.557e+05 (sqrt 675.0) | rho_crit: igual 1.330, exato 1.332, ampl. livre 1.435
+  par (2, +0.0) aLIGO: match 0.9804 | SNR_A 66.0 SNR_B 62.9 (r = 0.953) | dd_real 1.726e+02 (sqrt 13.1) | rho_crit: igual 5.047, exato 5.024, ampl. livre 5.072
+  par (2, +0.0) ET   : match 0.9855 | SNR_A 899.1 SNR_B 864.5 (r = 0.961) | dd_real 2.374e+04 (sqrt 154.1) | rho_crit: igual 5.873, exato 5.836, ampl. livre 5.894
+  par (3, +0.0) aLIGO: match 0.4978 | SNR_A 66.0 SNR_B 63.5 (r = 0.963) | dd_real 4.218e+03 (sqrt 64.9) | rho_crit: igual 0.998, exato 1.016, ampl. livre 1.153
+  par (3, +0.0) ET   : match 0.3297 | SNR_A 899.1 SNR_B 859.0 (r = 0.955) | dd_real 1.037e+06 (sqrt 1018.4) | rho_crit: igual 0.864, exato 0.883, ampl. livre 1.059
+  par (4, +0.0) aLIGO: match 0.3174 | SNR_A 66.0 SNR_B 65.6 (r = 0.994) | dd_real 5.908e+03 (sqrt 76.9) | rho_crit: igual 0.856, exato 0.859, ampl. livre 1.055
+  par (4, +0.0) ET   : match 0.1985 | SNR_A 899.1 SNR_B 869.6 (r = 0.967) | dd_real 1.254e+06 (sqrt 1120.0) | rho_crit: igual 0.790, exato 0.803, ampl. livre 1.020
+  par (6, +0.0) aLIGO: match 0.3072 | SNR_A 66.0 SNR_B 62.6 (r = 0.949) | dd_real 5.738e+03 (sqrt 75.7) | rho_crit: igual 0.850, exato 0.871, ampl. livre 1.051
+  par (6, +0.0) ET   : match 0.1830 | SNR_A 899.1 SNR_B 839.4 (r = 0.934) | dd_real 1.237e+06 (sqrt 1112.1) | rho_crit: igual 0.782, exato 0.809, ampl. livre 1.017
+  par (2, +0.5) aLIGO: match 0.6699 | SNR_A 66.0 SNR_B 61.6 (r = 0.933) | dd_real 2.703e+03 (sqrt 52.0) | rho_crit: igual 1.231, exato 1.269, ampl. livre 1.347
+  par (2, +0.5) ET   : match 0.3282 | SNR_A 899.1 SNR_B 855.2 (r = 0.951) | dd_real 1.035e+06 (sqrt 1017.4) | rho_crit: igual 0.863, exato 0.884, ampl. livre 1.059
+  par (3, -0.5) aLIGO: match 0.4107 | SNR_A 66.0 SNR_B 67.5 (r = 1.023) | dd_real 5.251e+03 (sqrt 72.5) | rho_crit: igual 0.921, exato 0.911, ampl. livre 1.097
+  par (3, -0.5) ET   : match 0.2519 | SNR_A 899.1 SNR_B 896.9 (r = 0.998) | dd_real 1.207e+06 (sqrt 1098.5) | rho_crit: igual 0.818, exato 0.819, ampl. livre 1.033
+
+ITEM 3: sensibilidade do match e da SNR ao tratamento do sinal (h_+).
+  par (1, +0.0) aLIGO exp07 (base)                : 1-match 6.1670e-02 (var. +0.0e+00) | SNR_A 65.99 (+0.0e+00) SNR_B 65.60 (+0.0e+00) | rc_igual 2.85 rc_exato 2.86
+  par (1, +0.0) aLIGO busca no tempo x16          : 1-match 6.1240e-02 (var. -7.0e-03) | SNR_A 65.99 (+0.0e+00) SNR_B 65.60 (+0.0e+00) | rc_igual 2.86 rc_exato 2.87
+  par (1, +0.0) aLIGO cosseno 0.25 s no inicio    : 1-match 5.9264e-02 (var. -3.9e-02) | SNR_A 65.91 (-1.2e-03) SNR_B 65.52 (-1.3e-03) | rc_igual 2.90 rc_exato 2.91
+  par (1, +0.0) aLIGO cosseno 0.5 s no inicio     : 1-match 5.9123e-02 (var. -4.1e-02) | SNR_A 65.91 (-1.3e-03) SNR_B 65.51 (-1.3e-03) | rc_igual 2.91 rc_exato 2.92
+  par (1, +0.0) aLIGO cosseno 1 s no inicio       : 1-match 5.8726e-02 (var. -4.8e-02) | SNR_A 65.90 (-1.4e-03) SNR_B 65.51 (-1.5e-03) | rc_igual 2.92 rc_exato 2.93
+  par (1, +0.0) aLIGO memoria com rampa no fim    : 1-match 5.8076e-02 (var. -5.8e-02) | SNR_A 65.87 (-1.8e-03) SNR_B 65.48 (-1.9e-03) | rc_igual 2.93 rc_exato 2.94
+  par (1, +0.0) aLIGO fs 8192 Hz                  : 1-match 6.1399e-02 (var. -4.4e-03) | SNR_A 65.99 (-1.6e-05) SNR_B 65.60 (+7.0e-06) | rc_igual 2.85 rc_exato 2.86
+  par (1, +0.0) aLIGO cos 0.5 s + rampa + x16     : 1-match 5.7431e-02 (var. -6.9e-02) | SNR_A 65.87 (-1.8e-03) SNR_B 65.47 (-1.9e-03) | rc_igual 2.95 rc_exato 2.96
+  par (1, +0.0) aLIGO so modos oscilatorios       : 1-match 6.0335e-02 (var. -2.2e-02) | SNR_A 65.96 (-4.4e-04) SNR_B 65.54 (-8.8e-04) | rc_igual 2.88 rc_exato 2.89
+  par (1, +0.0) aLIGO so osc. + cos 0.5 s + x16   : 1-match 5.7585e-02 (var. -6.6e-02) | SNR_A 65.89 (-1.5e-03) SNR_B 65.47 (-2.1e-03) | rc_igual 2.95 rc_exato 2.96
+  par (1, +0.0) ET    exp07 (base)                : 1-match 2.8282e-01 (var. +0.0e+00) | SNR_A 899.14 (+0.0e+00) SNR_B 895.94 (+0.0e+00) | rc_igual 1.33 rc_exato 1.33
+  par (1, +0.0) ET    busca no tempo x16          : 1-match 2.8282e-01 (var. +0.0e+00) | SNR_A 899.14 (+0.0e+00) SNR_B 895.94 (+0.0e+00) | rc_igual 1.33 rc_exato 1.33
+  par (1, +0.0) ET    cosseno 0.25 s no inicio    : 1-match 2.7561e-01 (var. -2.6e-02) | SNR_A 895.30 (-4.3e-03) SNR_B 892.07 (-4.3e-03) | rc_igual 1.35 rc_exato 1.35
+  par (1, +0.0) ET    cosseno 0.5 s no inicio     : 1-match 2.6916e-01 (var. -4.8e-02) | SNR_A 892.22 (-7.7e-03) SNR_B 888.92 (-7.8e-03) | rc_igual 1.36 rc_exato 1.37
+  par (1, +0.0) ET    cosseno 1 s no inicio       : 1-match 2.5476e-01 (var. -9.9e-02) | SNR_A 885.23 (-1.5e-02) SNR_B 881.83 (-1.6e-02) | rc_igual 1.40 rc_exato 1.40
+  par (1, +0.0) ET    memoria com rampa no fim    : 1-match 2.8006e-01 (var. -9.8e-03) | SNR_A 897.00 (-2.4e-03) SNR_B 893.82 (-2.4e-03) | rc_igual 1.34 rc_exato 1.34
+  par (1, +0.0) ET    fs 8192 Hz                  : 1-match 2.8279e-01 (var. -1.3e-04) | SNR_A 899.13 (-1.3e-05) SNR_B 895.94 (+2.4e-06) | rc_igual 1.33 rc_exato 1.33
+  par (1, +0.0) ET    cos 0.5 s + rampa + x16     : 1-match 2.6852e-01 (var. -5.1e-02) | SNR_A 891.68 (-8.3e-03) SNR_B 888.45 (-8.4e-03) | rc_igual 1.36 rc_exato 1.37
+  par (1, +0.0) ET    so modos oscilatorios       : 1-match 2.8278e-01 (var. -1.6e-04) | SNR_A 898.72 (-4.6e-04) SNR_B 895.33 (-6.8e-04) | rc_igual 1.33 rc_exato 1.33
+  par (1, +0.0) ET    so osc. + cos 0.5 s + x16   : 1-match 2.6925e-01 (var. -4.8e-02) | SNR_A 891.97 (-8.0e-03) SNR_B 888.48 (-8.3e-03) | rc_igual 1.36 rc_exato 1.37
+  par (2, +0.0) aLIGO exp07 (base)                : 1-match 1.9626e-02 (var. +0.0e+00) | SNR_A 65.99 (+0.0e+00) SNR_B 62.88 (+0.0e+00) | rc_igual 5.05 rc_exato 5.02
+  par (2, +0.0) aLIGO busca no tempo x16          : 1-match 1.8688e-02 (var. -4.8e-02) | SNR_A 65.99 (+0.0e+00) SNR_B 62.88 (+0.0e+00) | rc_igual 5.17 rc_exato 5.14
+  par (2, +0.0) aLIGO cosseno 0.25 s no inicio    : 1-match 1.8182e-02 (var. -7.4e-02) | SNR_A 65.91 (-1.2e-03) SNR_B 62.80 (-1.3e-03) | rc_igual 5.24 rc_exato 5.21
+  par (2, +0.0) aLIGO cosseno 0.5 s no inicio     : 1-match 1.8181e-02 (var. -7.4e-02) | SNR_A 65.91 (-1.3e-03) SNR_B 62.80 (-1.3e-03) | rc_igual 5.24 rc_exato 5.21
+  par (2, +0.0) aLIGO cosseno 1 s no inicio       : 1-match 1.8177e-02 (var. -7.4e-02) | SNR_A 65.90 (-1.4e-03) SNR_B 62.79 (-1.4e-03) | rc_igual 5.24 rc_exato 5.21
+  par (2, +0.0) aLIGO memoria com rampa no fim    : 1-match 1.7487e-02 (var. -1.1e-01) | SNR_A 65.87 (-1.8e-03) SNR_B 62.76 (-1.9e-03) | rc_igual 5.35 rc_exato 5.30
+  par (2, +0.0) aLIGO fs 8192 Hz                  : 1-match 1.8685e-02 (var. -4.8e-02) | SNR_A 65.99 (-1.6e-05) SNR_B 62.88 (-1.2e-05) | rc_igual 5.17 rc_exato 5.14
+  par (2, +0.0) aLIGO cos 0.5 s + rampa + x16     : 1-match 1.6543e-02 (var. -1.6e-01) | SNR_A 65.87 (-1.8e-03) SNR_B 62.76 (-1.9e-03) | rc_igual 5.50 rc_exato 5.44
+  par (2, +0.0) aLIGO so modos oscilatorios       : 1-match 1.8882e-02 (var. -3.8e-02) | SNR_A 65.96 (-4.4e-04) SNR_B 62.85 (-4.2e-04) | rc_igual 5.15 rc_exato 5.12
+  par (2, +0.0) aLIGO so osc. + cos 0.5 s + x16   : 1-match 1.6656e-02 (var. -1.5e-01) | SNR_A 65.89 (-1.5e-03) SNR_B 62.78 (-1.5e-03) | rc_igual 5.48 rc_exato 5.43
+  par (2, +0.0) ET    exp07 (base)                : 1-match 1.4497e-02 (var. +0.0e+00) | SNR_A 899.14 (+0.0e+00) SNR_B 864.51 (+0.0e+00) | rc_igual 5.87 rc_exato 5.84
+  par (2, +0.0) ET    busca no tempo x16          : 1-match 1.4434e-02 (var. -4.3e-03) | SNR_A 899.14 (+0.0e+00) SNR_B 864.51 (+0.0e+00) | rc_igual 5.89 rc_exato 5.85
+  par (2, +0.0) ET    cosseno 0.25 s no inicio    : 1-match 1.3662e-02 (var. -5.8e-02) | SNR_A 895.30 (-4.3e-03) SNR_B 860.65 (-4.5e-03) | rc_igual 6.05 rc_exato 6.00
+  par (2, +0.0) ET    cosseno 0.5 s no inicio     : 1-match 1.3680e-02 (var. -5.6e-02) | SNR_A 892.22 (-7.7e-03) SNR_B 857.62 (-8.0e-03) | rc_igual 6.05 rc_exato 6.00
+  par (2, +0.0) ET    cosseno 1 s no inicio       : 1-match 1.3718e-02 (var. -5.4e-02) | SNR_A 885.23 (-1.5e-02) SNR_B 850.70 (-1.6e-02) | rc_igual 6.04 rc_exato 5.99
+  par (2, +0.0) ET    memoria com rampa no fim    : 1-match 1.3224e-02 (var. -8.8e-02) | SNR_A 897.00 (-2.4e-03) SNR_B 862.40 (-2.4e-03) | rc_igual 6.15 rc_exato 6.10
+  par (2, +0.0) ET    fs 8192 Hz                  : 1-match 1.4479e-02 (var. -1.2e-03) | SNR_A 899.13 (-1.3e-05) SNR_B 864.50 (-1.1e-05) | rc_igual 5.88 rc_exato 5.84
+  par (2, +0.0) ET    cos 0.5 s + rampa + x16     : 1-match 1.3212e-02 (var. -8.9e-02) | SNR_A 891.68 (-8.3e-03) SNR_B 857.07 (-8.6e-03) | rc_igual 6.15 rc_exato 6.10
+  par (2, +0.0) ET    so modos oscilatorios       : 1-match 1.4029e-02 (var. -3.2e-02) | SNR_A 898.72 (-4.6e-04) SNR_B 864.10 (-4.7e-04) | rc_igual 5.97 rc_exato 5.93
+  par (2, +0.0) ET    so osc. + cos 0.5 s + x16   : 1-match 1.3299e-02 (var. -8.3e-02) | SNR_A 891.97 (-8.0e-03) SNR_B 857.41 (-8.2e-03) | rc_igual 6.13 rc_exato 6.08
+  par (2, +0.5) aLIGO exp07 (base)                : 1-match 3.3009e-01 (var. +0.0e+00) | SNR_A 65.99 (+0.0e+00) SNR_B 61.60 (+0.0e+00) | rc_igual 1.23 rc_exato 1.27
+  par (2, +0.5) aLIGO busca no tempo x16          : 1-match 3.2945e-01 (var. -1.9e-03) | SNR_A 65.99 (+0.0e+00) SNR_B 61.60 (+0.0e+00) | rc_igual 1.23 rc_exato 1.27
+  par (2, +0.5) aLIGO cosseno 0.25 s no inicio    : 1-match 3.2825e-01 (var. -5.6e-03) | SNR_A 65.91 (-1.2e-03) SNR_B 61.50 (-1.5e-03) | rc_igual 1.23 rc_exato 1.27
+  par (2, +0.5) aLIGO cosseno 0.5 s no inicio     : 1-match 3.2816e-01 (var. -5.8e-03) | SNR_A 65.91 (-1.3e-03) SNR_B 61.50 (-1.6e-03) | rc_igual 1.23 rc_exato 1.27
+  par (2, +0.5) aLIGO cosseno 1 s no inicio       : 1-match 3.2777e-01 (var. -7.0e-03) | SNR_A 65.90 (-1.4e-03) SNR_B 61.49 (-1.7e-03) | rc_igual 1.24 rc_exato 1.27
+  par (2, +0.5) aLIGO memoria com rampa no fim    : 1-match 3.2737e-01 (var. -8.2e-03) | SNR_A 65.87 (-1.8e-03) SNR_B 61.47 (-2.1e-03) | rc_igual 1.24 rc_exato 1.27
+  par (2, +0.5) aLIGO fs 8192 Hz                  : 1-match 3.2938e-01 (var. -2.1e-03) | SNR_A 65.99 (-1.6e-05) SNR_B 61.60 (-1.8e-05) | rc_igual 1.23 rc_exato 1.27
+  par (2, +0.5) aLIGO cos 0.5 s + rampa + x16     : 1-match 3.2660e-01 (var. -1.1e-02) | SNR_A 65.87 (-1.8e-03) SNR_B 61.46 (-2.2e-03) | rc_igual 1.24 rc_exato 1.28
+  par (2, +0.5) aLIGO so modos oscilatorios       : 1-match 3.2747e-01 (var. -7.9e-03) | SNR_A 65.96 (-4.4e-04) SNR_B 61.56 (-5.7e-04) | rc_igual 1.24 rc_exato 1.27
+  par (2, +0.5) aLIGO so osc. + cos 0.5 s + x16   : 1-match 3.2523e-01 (var. -1.5e-02) | SNR_A 65.89 (-1.5e-03) SNR_B 61.48 (-1.9e-03) | rc_igual 1.24 rc_exato 1.28
+  par (2, +0.5) ET    exp07 (base)                : 1-match 6.7184e-01 (var. +0.0e+00) | SNR_A 899.14 (+0.0e+00) SNR_B 855.16 (+0.0e+00) | rc_igual 0.86 rc_exato 0.88
+  par (2, +0.5) ET    busca no tempo x16          : 1-match 6.7173e-01 (var. -1.6e-04) | SNR_A 899.14 (+0.0e+00) SNR_B 855.16 (+0.0e+00) | rc_igual 0.86 rc_exato 0.88
+  par (2, +0.5) ET    cosseno 0.25 s no inicio    : 1-match 6.7181e-01 (var. -5.3e-05) | SNR_A 895.30 (-4.3e-03) SNR_B 850.84 (-5.1e-03) | rc_igual 0.86 rc_exato 0.88
+  par (2, +0.5) ET    cosseno 0.5 s no inicio     : 1-match 6.6989e-01 (var. -2.9e-03) | SNR_A 892.22 (-7.7e-03) SNR_B 847.48 (-9.0e-03) | rc_igual 0.86 rc_exato 0.89
+  par (2, +0.5) ET    cosseno 1 s no inicio       : 1-match 6.5539e-01 (var. -2.4e-02) | SNR_A 885.23 (-1.5e-02) SNR_B 839.78 (-1.8e-02) | rc_igual 0.87 rc_exato 0.90
+  par (2, +0.5) ET    memoria com rampa no fim    : 1-match 6.6893e-01 (var. -4.3e-03) | SNR_A 897.00 (-2.4e-03) SNR_B 852.81 (-2.8e-03) | rc_igual 0.86 rc_exato 0.89
+  par (2, +0.5) ET    fs 8192 Hz                  : 1-match 6.7174e-01 (var. -1.5e-04) | SNR_A 899.13 (-1.3e-05) SNR_B 855.15 (-1.2e-05) | rc_igual 0.86 rc_exato 0.88
+  par (2, +0.5) ET    cos 0.5 s + rampa + x16     : 1-match 6.6908e-01 (var. -4.1e-03) | SNR_A 891.68 (-8.3e-03) SNR_B 846.87 (-9.7e-03) | rc_igual 0.86 rc_exato 0.89
+  par (2, +0.5) ET    so modos oscilatorios       : 1-match 6.6990e-01 (var. -2.9e-03) | SNR_A 898.72 (-4.6e-04) SNR_B 854.62 (-6.3e-04) | rc_igual 0.86 rc_exato 0.89
+  par (2, +0.5) ET    so osc. + cos 0.5 s + x16   : 1-match 6.6817e-01 (var. -5.5e-03) | SNR_A 891.97 (-8.0e-03) SNR_B 847.15 (-9.4e-03) | rc_igual 0.87 rc_exato 0.89
+
+real	0m10.246s
+user	0m6.749s
+sys	0m3.423s

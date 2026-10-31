@@ -1,0 +1,18 @@
+1) Repeticao: memorias de A e dos pares, 3 passagens em ordens diferentes (sem cache).
+  A            dispersao relativa entre passagens 0.0e+00 ; n amostras [66262] ; max dif. contra o alvo do json: 0.0e+00 0.0e+00 0.0e+00
+  (1.0, 0.0)   dispersao relativa entre passagens 0.0e+00 ; n amostras [65372] ; max dif. contra o alvo do json: 4.1e-11 4.1e-11 4.1e-11
+  (2.0, 0.0)   dispersao relativa entre passagens 0.0e+00 ; n amostras [62009] ; max dif. contra o alvo do json: 8.9e-11 8.9e-11 8.9e-11
+  (3.0, 0.0)   dispersao relativa entre passagens 0.0e+00 ; n amostras [65266] ; max dif. contra o alvo do json: 3.0e-06 3.0e-06 3.0e-06
+  (4.0, 0.0)   dispersao relativa entre passagens 0.0e+00 ; n amostras [74690] ; max dif. contra o alvo do json: 1.5e-02 1.5e-02 1.5e-02
+  (6.0, 0.0)   dispersao relativa entre passagens 0.0e+00 ; n amostras [74338] ; max dif. contra o alvo do json: 7.8e-02 7.8e-02 7.8e-02
+  (2.0, 0.5)   dispersao relativa entre passagens 0.0e+00 ; n amostras [54469] ; max dif. contra o alvo do json: 1.0e-10 1.0e-10 1.0e-10
+  (3.0, -0.5)  dispersao relativa entre passagens 0.0e+00 ; n amostras [75598] ; max dif. contra o alvo do json: 1.8e-02 1.8e-02 1.8e-02
+
+2) Suavidade em M: memorias de B (par (3, 0)) com M -> M (1 + e), e de 1e-12 a 1e-6.
+  e = 1e-12: n amostras 65266 (base 65266), t0 -16181.461953 (base -16181.461953) | variacao relativa: desl +1.07e-12 spin +2.00e-12 cm +2.07e-12 giro +2.00e-12
+  e = 1e-11: n amostras 65266 (base 65266), t0 -16181.461953 (base -16181.461953) | variacao relativa: desl +1.07e-11 spin +2.00e-11 cm +2.07e-11 giro +2.00e-11
+  e = 1e-10: n amostras 65265 (base 65266), t0 -16181.211953 (base -16181.461953) | variacao relativa: desl -4.09e-07 spin -2.89e-06 cm -3.93e-07 giro -3.01e-06
+  e = 1e-09: n amostras 65265 (base 65266), t0 -16181.211953 (base -16181.461953) | variacao relativa: desl -4.08e-07 spin -2.89e-06 cm -3.91e-07 giro -3.01e-06
+  e = 1e-08: n amostras 65265 (base 65266), t0 -16181.211953 (base -16181.461953) | variacao relativa: desl -3.98e-07 spin -2.87e-06 cm -3.72e-07 giro -2.99e-06
+  e = 1e-07: n amostras 65265 (base 65266), t0 -16181.211953 (base -16181.461953) | variacao relativa: desl -3.02e-07 spin -2.69e-06 cm -1.86e-07 giro -2.81e-06
+  e = 1e-06: n amostras 65265 (base 65266), t0 -16181.211953 (base -16181.461953) | variacao relativa: desl +6.60e-07 spin -8.90e-07 cm +1.67e-06 giro -1.01e-06

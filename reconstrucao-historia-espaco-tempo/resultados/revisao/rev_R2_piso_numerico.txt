@@ -1,0 +1,37 @@
+1) Saltos das memorias de A (nivel A) com M -> M (1 + e), e de 0 a 3e-5 em passos de 5e-7.
+   As escalas triviais (M/D, M^2/D, (M/D)^2) sao removidas: compara-se d, s, c, g adimensionais.
+   n amostras ao longo da varredura: [66257, 66258, 66259, 66260, 66261, 66262]
+   salto entre e = 4.5e-06 e 5.0e-06: n 66262 -> 66261 ; variacao das memorias no passo: desl -3.26e-07 spin -2.80e-06 cm -2.78e-07 giro -2.97e-06
+   salto entre e = 1.0e-05 e 1.0e-05: n 66261 -> 66260 ; variacao das memorias no passo: desl -3.26e-07 spin -2.80e-06 cm -2.78e-07 giro -2.97e-06
+   salto entre e = 1.6e-05 e 1.6e-05: n 66260 -> 66259 ; variacao das memorias no passo: desl -3.26e-07 spin -2.80e-06 cm -2.78e-07 giro -2.97e-06
+   salto entre e = 2.1e-05 e 2.1e-05: n 66259 -> 66258 ; variacao das memorias no passo: desl -3.26e-07 spin -2.80e-06 cm -2.78e-07 giro -2.97e-06
+   salto entre e = 2.7e-05 e 2.7e-05: n 66258 -> 66257 ; variacao das memorias no passo: desl -3.26e-07 spin -2.80e-06 cm -2.78e-07 giro -2.97e-06
+   maior variacao num passo SEM salto: desl 3.21e-08 spin 5.55e-16 cm 2.69e-08 giro 7.77e-16
+
+2) Pares do exp07 com dt = 0.25 M (como no exp07) e dt = 0.125 M (A e B no mesmo dt), nivel A.
+   par (1, +0.0): delta com dt 0.25 = 4.1e-11 ; com dt 0.125 = 1.6e-06
+   par (2, +0.0): delta com dt 0.25 = 8.9e-11 ; com dt 0.125 = 1.4e-06
+   par (3, +0.0): delta com dt 0.25 = 3.0e-06 ; com dt 0.125 = 1.9e-06
+   par (4, +0.0): delta com dt 0.25 = 1.5e-02 ; com dt 0.125 = 1.5e-02
+   par (6, +0.0): delta com dt 0.25 = 7.8e-02 ; com dt 0.125 = 7.8e-02
+   par (2, +0.5): delta com dt 0.25 = 1.0e-10 ; com dt 0.125 = 2.4e-06
+   par (3, -0.5): delta com dt 0.25 = 1.8e-02 ; com dt 0.125 = 1.8e-02
+   memorias de A: variacao relativa maxima entre dt 0.25 e 0.125: 6.1e-06 (desl +6.1e-06 spin +3.9e-07 cm +5.7e-06 giro +3.5e-07)
+
+3) Parte impar em chi_a por multipolo, q = 1, d = 0.1: |[v(+d) - v(-d)]/2| / |v(0)| e parte par.
+   chi_s -0.5 nivel A: impar desl20 1.1e-05 desl40 2.2e-05 spin30 1.2e-06 cm20 9.5e-06 cm40 1.0e-05 giro10 2.3e-05 giro30 1.2e-06
+                   par   desl20 1.2e-04 desl40 4.1e-04 spin30 1.7e-04 cm20 2.8e-04 cm40 1.2e-03 giro10 4.0e-05 giro30 1.6e-04
+   chi_s -0.5 nivel C: impar desl20 1.2e-05 desl40 5.5e-03 spin30 6.6e-05 cm20 9.2e-06 cm40 9.4e-04 giro10 2.3e-05 giro30 1.0e-04
+                   par   desl20 9.6e-05 desl40 1.8e-04 spin30 2.2e-05 cm20 3.0e-04 cm40 1.2e-03 giro10 4.0e-05 giro30 1.2e-04
+   chi_s +0.3 nivel A: impar desl20 1.3e-04 desl40 2.2e-04 spin30 3.6e-05 cm20 1.5e-04 cm40 3.8e-04 giro10 3.9e-05 giro30 3.6e-05
+                   par   desl20 2.7e-05 desl40 2.0e-04 spin30 8.6e-05 cm20 4.1e-04 cm40 2.2e-03 giro10 8.6e-05 giro30 8.3e-05
+   chi_s +0.3 nivel C: impar desl20 3.1e-05 desl40 1.8e-03 spin30 4.2e-05 cm20 6.0e-05 cm40 3.2e-04 giro10 3.9e-05 giro30 8.1e-05
+                   par   desl20 3.8e-05 desl40 9.4e-05 spin30 2.0e-04 cm20 4.1e-04 cm40 2.2e-03 giro10 8.6e-05 giro30 3.5e-04
+
+4) Membros da familia (mesmas 4 memorias de A no observador, nivel A) perto de A: chi2_B = -0.2.
+   q_B 1.1: M 64.890 chi1 +0.2982 D 399.91 iota 50.03 graus | residuo 4.1e-12 | aLIGO match 0.98226 SNR_B/SNR_A 1.0047 rho_crit igual 5.3 exato 5.3
+   q_B 1.1: M 64.890 chi1 +0.2982 D 399.91 iota 50.03 graus | residuo 4.1e-12 | ET    match 0.95542 SNR_B/SNR_A 1.0030 rho_crit igual 3.3 exato 3.3
+   q_B 1.3: M 65.224 chi1 +0.3042 D 399.68 iota 50.12 graus | residuo 2.9e-11 | aLIGO match 0.98304 SNR_B/SNR_A 0.9988 rho_crit igual 5.4 exato 5.4
+   q_B 1.3: M 65.224 chi1 +0.3042 D 399.68 iota 50.12 graus | residuo 2.9e-11 | ET    match 0.96074 SNR_B/SNR_A 0.9988 rho_crit igual 3.6 exato 3.6
+   q_B 1.5: M 65.907 chi1 +0.3205 D 398.32 iota 50.61 graus | residuo 1.4e-10 | aLIGO match 0.94018 SNR_B/SNR_A 0.9962 rho_crit igual 2.9 exato 2.9
+   q_B 1.5: M 65.907 chi1 +0.3205 D 398.32 iota 50.61 graus | residuo 1.4e-10 | ET    match 0.74134 SNR_B/SNR_A 0.9948 rho_crit igual 1.4 exato 1.4
