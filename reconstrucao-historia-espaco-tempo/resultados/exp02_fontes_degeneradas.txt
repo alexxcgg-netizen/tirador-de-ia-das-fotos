@@ -1,0 +1,46 @@
+A chirp            amplitude max = 3.000e-01   amplitude nas bordas = 3.3e-14
+B anti-chirp       amplitude max = 3.013e-01   amplitude nas bordas = 1.8e-09
+C duas explosoes   amplitude max = 2.121e-01   amplitude nas bordas = 3.2e-14
+D dualidade        amplitude max = 3.000e-01   amplitude nas bordas = 3.3e-14
+E dispersao        amplitude max = 3.269e-01   amplitude nas bordas = 5.2e-06
+
+Diferenca relativa das memorias em relacao a A (max sobre todos os modos l<=9):
+fonte                 deslocam.         spin           CM    giroscop. |   |dB|/|B| |dOm|/|Om|
+A chirp                0.00e+00     0.00e+00     0.00e+00     0.00e+00 |   0.00e+00   0.00e+00
+B anti-chirp           6.48e-16     1.57e-15     2.38e-15     1.02e-15 |   4.28e-16   8.09e-16
+C duas explosoes       1.30e-15     1.14e-15     2.29e-15     1.19e-15 |   1.50e-15   1.73e-15
+D dualidade            3.24e-16     1.91e-16     2.37e-16     1.70e-16 |   2.14e-16   1.16e-16
+E dispersao            1.37e-16     7.62e-16     1.60e-15     6.79e-16 |   8.56e-16   3.47e-16
+
+Valores de referencia (fonte A), unidades G=c=1, h = r x deformacao, M = 1:
+  deslocamento  (2,0): 3.425e-01+0.000e+00j  (4,0): 7.132e-03+0.000e+00j  (6,0): 2.923e-04+0.000e+00j  (8,0): 5.764e-06+0.000e+00j
+  spin          (3,0): -0.000e+00+5.826e-01j  (5,0): -0.000e+00+8.874e-03j  (7,0): -0.000e+00+3.229e-04j  (3,-2): -6.183e-10+6.193e-09j
+  cm            (2,0): -1.486e-01-0.000e+00j  (4,0): -1.117e-02-0.000e+00j  (6,0): -1.598e-04-0.000e+00j  (2,-2): 2.356e-09-1.719e-08j
+  giroscopica   (1,0): -2.617e+00+0.000e+00j  (3,0): 1.033e+00+0.000e+00j  (5,0): 3.593e-02+0.000e+00j  (7,0): 2.545e-03+0.000e+00j
+  energia irradiada = 1.69914e-01
+
+Sobreposicao da forma de onda completa com A (1 = identica), maximizada em tempo e fase:
+fonte              th= 30 th= 60 th= 90 th=120
+A chirp             1.000  1.000  1.000  1.000   | sem girar a polarizacao:  1.000  1.000  1.000  1.000
+B anti-chirp        0.222  0.220  0.219  0.220   | sem girar a polarizacao:  0.222  0.220  0.219  0.220
+C duas explosoes    0.707  0.707  0.707  0.707   | sem girar a polarizacao:  0.707  0.707  0.707  0.707
+D dualidade         1.000  1.000  1.000  1.000   | sem girar a polarizacao:  0.982  0.961  0.500  0.961
+E dispersao         0.512  0.512  0.514  0.511   | sem girar a polarizacao:  0.512  0.512  0.514  0.511
+
+Perfil temporal da potencia irradiada (a historia que a memoria nao ve):
+  A chirp            energia = 1.69914e-01  centroide u =    642.7  largura =   252.4  pico = 3.190e-04
+  B anti-chirp       energia = 1.69914e-01  centroide u =   -736.0  largura =   638.4  pico = 3.101e-04
+  C duas explosoes   energia = 1.69914e-01  centroide u =    642.7  largura =  2612.2  pico = 1.595e-04
+  D dualidade        energia = 1.69914e-01  centroide u =    642.7  largura =   252.4  pico = 3.190e-04
+  E dispersao        energia = 1.69914e-01  centroide u =    642.7  largura =   814.6  pico = 3.359e-04
+
+Divisao em duas explosoes, diferenca relativa vs meia separacao T:
+  T =   300   deslocamento 2.6e-04  spin 7.2e-04  CM 7.9e-03  giro 1.9e-04
+  T =   450   deslocamento 3.0e-03  spin 5.5e-03  CM 6.0e-02  giro 1.5e-03
+  T =   600   deslocamento 3.6e-04  spin 5.3e-04  CM 5.8e-03  giro 1.4e-04
+  T =   800   deslocamento 3.3e-14  spin 5.3e-14  CM 5.9e-13  giro 1.4e-14
+  T =  1000   deslocamento 1.2e-16  spin 8.9e-16  CM 2.0e-15  giro 3.4e-16
+  T =  1300   deslocamento 2.9e-15  spin 3.0e-15  CM 3.5e-15  giro 3.6e-15
+  T =  1700   deslocamento 1.9e-15  spin 1.7e-15  CM 5.6e-15  giro 1.5e-15
+  T =  2200   deslocamento 1.6e-15  spin 2.5e-15  CM 2.4e-15  giro 2.4e-15
+  T =  2600   deslocamento 1.3e-15  spin 1.1e-15  CM 2.3e-15  giro 1.2e-15

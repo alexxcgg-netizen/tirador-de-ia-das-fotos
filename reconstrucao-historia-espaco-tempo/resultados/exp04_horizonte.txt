@@ -1,0 +1,7 @@
+max V = 0.1513 em r = 3.285 (r* = 2.40); verificacao r(r*) para r* > -10: max|r* - (r + 2 ln(r/2-1))| = 2.3e-13
+energia ~ int (psi_t^2 + psi_r^2 + V psi^2) no dado inicial: B = 2.3787e+00, parte de dentro (r*<0) = 6.5233e-01, C = 1.7264e+00
+historia B: int Phi_out^2 dt no observador (r*=800) = 2.403e-25 ; int Phi_in^2 dt no horizonte (r*=-600) = 4.758e+00 ; max|psi| no observador = 2.20e-13
+historia C: int Phi_out^2 dt no observador (r*=800) = 4.603e-01 ; int Phi_in^2 dt no horizonte (r*=-600) = 2.993e+00 ; max|psi| no observador = 2.27e-01
+historia A (nada acontece): tudo zero por construcao.
+Conclusao: A e B sao indistinguiveis no infinito nulo (B nao emite nada para fora), mas em B
+uma onda inteira caiu no buraco negro. C mostra que, sem o ajuste, parte seria refletida.

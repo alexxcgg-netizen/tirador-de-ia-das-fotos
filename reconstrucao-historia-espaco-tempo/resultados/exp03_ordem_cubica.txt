@@ -1,0 +1,63 @@
+Conferencia: termos nao lineares, rapido x grade: max|dif|/max = 1.5e-14
+Parte 1 (A chirp x B anti-chirp)
+  ordem quadratica, diferenca relativa: deslocamento 5.5e-17, spin 3.8e-16, cm 4.7e-16, giroscopica 3.4e-16
+  efeito da ordem cubica nas memorias de A: deslocamento 2.5e-02, spin 1.2e-02, cm 1.2e-02, giroscopica 1.3e-02
+  ordem cubica, diferenca relativa (quebra): deslocamento 1.1e-07, spin 3.6e-07, cm 1.1e-04, giroscopica 1.4e-07
+Parte 2: 58 componentes reais independentes a igualar; 100 parametros de fase
+    posto do jacobiano = 56 de 58 componentes
+  s = 0.05: sem correcao 3.8e-06 | partindo da correcao anterior 3.8e-06 -> corrigido 1.3e-08   |eps|max = 0.020 rad   (15 s)
+    posto do jacobiano = 55 de 58 componentes
+  s = 0.10: sem correcao 8.5e-06 | partindo da correcao anterior 4.3e-06 -> corrigido 2.1e-08   |eps|max = 0.043 rad   (25 s)
+    posto do jacobiano = 55 de 58 componentes
+  s = 0.15: sem correcao 1.4e-05 | partindo da correcao anterior 4.7e-06 -> corrigido 5.5e-08   |eps|max = 0.056 rad   (35 s)
+    posto do jacobiano = 55 de 58 componentes
+  s = 0.20: sem correcao 2.1e-05 | partindo da correcao anterior 5.2e-06 -> corrigido 7.1e-08   |eps|max = 0.072 rad   (46 s)
+    posto do jacobiano = 55 de 58 componentes
+  s = 0.25: sem correcao 2.8e-05 | partindo da correcao anterior 5.9e-06 -> corrigido 7.1e-08   |eps|max = 0.087 rad   (56 s)
+    posto do jacobiano = 55 de 58 componentes
+  s = 0.30: sem correcao 3.7e-05 | partindo da correcao anterior 6.5e-06 -> corrigido 6.8e-08   |eps|max = 0.100 rad   (66 s)
+    posto do jacobiano = 56 de 58 componentes
+  s = 0.35: sem correcao 4.7e-05 | partindo da correcao anterior 7.1e-06 -> corrigido 6.5e-08   |eps|max = 0.111 rad   (75 s)
+    posto do jacobiano = 56 de 58 componentes
+  s = 0.40: sem correcao 5.7e-05 | partindo da correcao anterior 7.6e-06 -> corrigido 8.0e-08   |eps|max = 0.132 rad   (85 s)
+    posto do jacobiano = 57 de 58 componentes
+  s = 0.45: sem correcao 6.7e-05 | partindo da correcao anterior 8.1e-06 -> corrigido 9.4e-08   |eps|max = 0.155 rad   (95 s)
+    posto do jacobiano = 57 de 58 componentes
+  s = 0.50: sem correcao 7.6e-05 | partindo da correcao anterior 8.4e-06 -> corrigido 1.1e-07   |eps|max = 0.179 rad   (105 s)
+    posto do jacobiano = 57 de 58 componentes
+  s = 0.55: sem correcao 8.4e-05 | partindo da correcao anterior 8.5e-06 -> corrigido 1.2e-07   |eps|max = 0.202 rad   (116 s)
+    posto do jacobiano = 57 de 58 componentes
+  s = 0.60: sem correcao 9.1e-05 | partindo da correcao anterior 8.5e-06 -> corrigido 1.4e-07   |eps|max = 0.226 rad   (125 s)
+    posto do jacobiano = 57 de 58 componentes
+  s = 0.65: sem correcao 9.6e-05 | partindo da correcao anterior 8.4e-06 -> corrigido 1.5e-07   |eps|max = 0.252 rad   (135 s)
+    posto do jacobiano = 58 de 58 componentes
+  s = 0.70: sem correcao 9.9e-05 | partindo da correcao anterior 8.1e-06 -> corrigido 1.6e-07   |eps|max = 0.278 rad   (145 s)
+    posto do jacobiano = 58 de 58 componentes
+  s = 0.75: sem correcao 1.0e-04 | partindo da correcao anterior 7.8e-06 -> corrigido 1.7e-07   |eps|max = 0.306 rad   (155 s)
+    posto do jacobiano = 58 de 58 componentes
+  s = 0.80: sem correcao 9.8e-05 | partindo da correcao anterior 7.4e-06 -> corrigido 1.9e-07   |eps|max = 0.336 rad   (165 s)
+    posto do jacobiano = 58 de 58 componentes
+  s = 0.85: sem correcao 9.3e-05 | partindo da correcao anterior 6.9e-06 -> corrigido 2.0e-07   |eps|max = 0.368 rad   (175 s)
+    posto do jacobiano = 57 de 58 componentes
+  s = 0.90: sem correcao 9.3e-05 | partindo da correcao anterior 6.5e-06 -> corrigido 2.1e-07   |eps|max = 0.401 rad   (185 s)
+    posto do jacobiano = 58 de 58 componentes
+  s = 0.95: sem correcao 9.3e-05 | partindo da correcao anterior 5.9e-06 -> corrigido 2.2e-07   |eps|max = 0.435 rad   (195 s)
+    posto do jacobiano = 58 de 58 componentes
+  s = 1.00: sem correcao 9.4e-05 | partindo da correcao anterior 5.4e-06 -> corrigido 2.3e-07   |eps|max = 0.470 rad   (205 s)
+  polimento 1: max residuo 2.2e-07  (aceito=True, lambda=8.3e-12, sigma_min/sigma_max=1.3e-09)
+  polimento 2: max residuo 2.1e-07  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.5e-09)
+  polimento 3: max residuo 1.8e-07  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.5e-09)
+  polimento 4: max residuo 1.6e-07  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.4e-09)
+  polimento 5: max residuo 1.5e-07  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.4e-09)
+  polimento 6: max residuo 1.3e-07  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.6e-09)
+  polimento 7: max residuo 1.2e-07  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.7e-09)
+  polimento 8: max residuo 1.1e-07  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.6e-09)
+  polimento 9: max residuo 9.5e-08  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.8e-09)
+  polimento 10: max residuo 8.6e-08  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.4e-09)
+  polimento 11: max residuo 7.8e-08  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.7e-09)
+  polimento 12: max residuo 7.0e-08  (aceito=True, lambda=1.7e-12, sigma_min/sigma_max=1.6e-09)
+Historia final B' (s = 1):
+  ordem cubica, A x B': deslocamento 7.0e-08, spin 2.5e-08, cm 3.2e-08, giroscopica 1.4e-08
+  ordem quadratica, A x B' (exata por construcao): deslocamento 4.9e-16, spin 7.7e-16, cm 2.8e-16, giroscopica 3.4e-16
+  sem a correcao (so a dispersao, s = 1, eps = 0), ordem cubica: deslocamento 2.7e-05, spin 1.2e-04, cm 9.9e-05, giroscopica 4.5e-05
+  sobreposicao do modo 22 entre A e B' = 0.595
