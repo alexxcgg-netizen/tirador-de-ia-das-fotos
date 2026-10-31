@@ -1,0 +1,32 @@
+AVISO: a coluna OURO abaixo tem a fase orbital zerada em 5 Hz (f_ref = f_low) e nao e autoconsistente; ver rev_R2v_match3.txt (ouro com f_ref = 10 Hz). As outras colunas valem.
+Item 4: degraus dos modos m = 0 de A (h_20 adimensional no inicio da janela de 10 Hz e no fim):
+  h20: 0.0103 -> 0.1024 ; h40: 0.00010 -> 0.00162
+  SNR (aLIGO) da parte m = 0 de h_+: sem tratamento (como no comparar) 2.365 ; com valor inicial subtraido e rampa 0.759 ; razao 3.12
+  so com o valor inicial subtraido (sem rampa): 2.145
+
+Itens 3 e 4: membros da familia de A (chi2_B = -0.2, mesmas 4 memorias no nivel A), aLIGO, h_+.
+  q_B 1.15: M 64.9285 chi1 +0.29881 D 400.013 iota 49.995 graus | residuo 7.0e-11 (11 s)
+  familia q_B 1.15             1-match: base 8.867e-03 | so busca fina 7.588e-03 | so cosseno 0.5 s 5.132e-03 | so rampa m=0 3.945e-03 | os tres 3.932e-03 || OURO 8.781e-03 (rho_crit 7.5 ; SNR_A 65.8 SNR_B 66.2) ; ouro so osc. 8.473e-03
+  q_B 1.19: M 64.9833 chi1 +0.29972 D 400.011 iota 49.996 graus | residuo 2.2e-11 (17 s)
+  familia q_B 1.19             1-match: base 2.759e-03 | so busca fina 1.985e-03 | so cosseno 0.5 s 2.807e-04 | so rampa m=0 1.673e-04 | os tres 1.667e-04 || OURO 7.698e-04 (rho_crit 25.5 ; SNR_A 65.8 SNR_B 65.9) ; ouro so osc. 7.351e-04
+  q_B 1.25: M 65.0996 chi1 +0.30179 D 399.884 iota 50.043 graus | residuo 2.1e-11 (23 s)
+  familia q_B 1.25             1-match: base 7.010e-03 | so busca fina 7.010e-03 | so cosseno 0.5 s 4.561e-03 | so rampa m=0 3.796e-03 | os tres 3.783e-03 || OURO 8.716e-03 (rho_crit 7.6 ; SNR_A 65.8 SNR_B 65.9) ; ouro so osc. 8.511e-03
+  expoente em dq (q_B 1.15 e 1.19) base        : 0.73 ; coef. 0.0779 ; |dq| nao separado na SNR 66: 0.0001
+  expoente em dq (q_B 1.15 e 1.19) os tres (R2): 1.96 ; coef. 1.41 ; |dq| nao separado na SNR 66: 0.0083
+  expoente em dq (q_B 1.15 e 1.19) ouro        : 1.51 ; coef. 0.815 ; |dq| nao separado na SNR 66: 0.0028
+  (24 s)
+
+Item 5: exp13 (q = 1, M = 65, D = 400 Mpc, iota = 50 graus), B = (chi_s + d, chi_s - d) contra A = (chi_s, chi_s).
+  chi_s +0.3 d 0.1             1-match: base 5.450e-05 | so busca fina 5.449e-05 | so cosseno 0.5 s 5.459e-05 | so rampa m=0 5.465e-05 | os tres 5.466e-05 || OURO 5.191e-05 (rho_crit 98.1 ; SNR_A 70.0 SNR_B 69.9) ; ouro so osc. 5.219e-05
+  chi_s +0.3 d 0.2             1-match: base 1.204e-03 | so busca fina 2.927e-04 | so cosseno 0.5 s 2.396e-04 | so rampa m=0 2.230e-04 | os tres 2.231e-04 || OURO 2.057e-04 (rho_crit 49.3 ; SNR_A 70.0 SNR_B 69.8) ; ouro so osc. 2.072e-04
+  chi_s +0.3 d 0.3             1-match: base 1.948e-03 | so busca fina 7.845e-04 | so cosseno 0.5 s 5.393e-04 | so rampa m=0 5.138e-04 | os tres 5.138e-04 || OURO 4.603e-04 (rho_crit 33.0 ; SNR_A 70.0 SNR_B 69.7) ; ouro so osc. 4.648e-04
+  chi_s +0.3: expoente local do ouro em d: 1.99 1.99 ; rho_crit * d (ouro): 9.8 9.9 9.9
+  chi_s -0.5 d 0.2             1-match: base 2.497e-04 | so busca fina 2.417e-04 | so cosseno 0.5 s 2.420e-04 | so rampa m=0 2.420e-04 | os tres 2.420e-04 || OURO 1.684e-04 (rho_crit 54.5 ; SNR_A 58.1 SNR_B 57.8) ; ouro so osc. 1.665e-04
+  (28 s)
+
+Item 4: pares do exp07 (o artefato pesa nos numeros da tabela do 07 §3.3?).
+  par (1, +0.0)                1-match: base 6.167e-02 | so busca fina 6.124e-02 | so cosseno 0.5 s 5.868e-02 | so rampa m=0 5.763e-02 | os tres 5.743e-02 || OURO 5.695e-02 (rho_crit 3.0 ; SNR_A 65.8 SNR_B 65.5) ; ouro so osc. 5.690e-02
+     rho_crit: base 2.85 ; ouro 2.96
+  par (2, +0.0)                1-match: base 1.963e-02 | so busca fina 1.869e-02 | so cosseno 0.5 s 1.724e-02 | so rampa m=0 1.655e-02 | os tres 1.654e-02 || OURO 1.666e-02 (rho_crit 5.5 ; SNR_A 65.8 SNR_B 62.9) ; ouro so osc. 1.685e-02
+     rho_crit: base 5.05 ; ouro 5.48
+  (30 s)

@@ -1,0 +1,25 @@
+AVISO: aqui a fase orbital e zerada no inicio (f_ref = f_low); o item 1 mostra que isso nao e autoconsistente. A coluna 'ouro' dos itens 2 a 4 nao serve de referencia: ver rev_R2v_match3.txt.
+1) Autoconsistencia: A (inicio 5.0 Hz) contra A (inicio 5.3 Hz), cosseno ate 7 Hz: 1-match 2.52e-03
+2) q_B = 1.19 (residuo 2.2e-11): convergencia na frequencia de inicio (f_min = 10 Hz)
+   inicio 5.0 Hz, cosseno ate 7.0 Hz: 1-match 7.698e-04
+   inicio 7.0 Hz, cosseno ate 8.5 Hz: 1-match 3.142e-04
+   inicio 8.0 Hz, cosseno ate 9.3 Hz: 1-match 2.647e-04
+   inicio 9.5 Hz, cosseno ate 9.9 Hz: 1-match 1.832e-04
+   desde 10 Hz, cosseno de 0.5 s e rampa (R2): 1-match 1.667e-04
+3) Banda (q_B = 1.19):
+   f_min 10.0 Hz: ouro 7.698e-04 ; R2 1.667e-04
+   f_min 15.0 Hz: ouro 7.545e-04 ; R2 1.435e-04
+   f_min 25.0 Hz: ouro 7.760e-04 ; R2 1.243e-04
+   (12 s)
+4) Lei de escala do ouro e do R2 ao longo da familia (chi2_B = -0.2), f_min = 10 Hz:
+   q_B 1.150 (residuo 7.0e-11): ouro 8.781e-03 (rho_crit 7.5) ; R2 3.932e-03 (rho_crit 11.3)
+   q_B 1.180 (residuo 1.9e-11): ouro 2.791e-03 (rho_crit 13.4) ; R2 6.578e-04 (rho_crit 27.6)
+   q_B 1.190 (residuo 2.2e-11): ouro 7.698e-04 (rho_crit 25.5) ; R2 1.667e-04 (rho_crit 54.8)
+   q_B 1.195 (residuo 2.5e-11): ouro 1.956e-04 (rho_crit 50.6) ; R2 4.161e-05 (rho_crit 109.6)
+   q_B 1.205 (residuo 1.2e-10): ouro 1.915e-04 (rho_crit 51.1) ; R2 4.029e-05 (rho_crit 111.4)
+   q_B 1.210 (residuo 1.6e-10): ouro 7.541e-04 (rho_crit 25.7) ; R2 1.631e-04 (rho_crit 55.4)
+   q_B 1.220 (residuo 3.3e-11): ouro 2.735e-03 (rho_crit 13.5) ; R2 6.526e-04 (rho_crit 27.7)
+   q_B 1.250 (residuo 2.1e-11): ouro 8.716e-03 (rho_crit 7.6) ; R2 3.783e-03 (rho_crit 11.5)
+   q_B < 1.2: ouro 1-match = 1.47 dq^1.66 ; R2 1-match = 1.47 dq^1.98
+   q_B > 1.2: ouro 1-match = 1.48 dq^1.66 ; R2 1-match = 1.43 dq^1.97
+(47 s)

@@ -1,0 +1,180 @@
+=== q = 1, chi = (+0.0, +0.0); inicio da janela em t - t_pico = -8676 M
+  spin30 (Im): A = 0.225685 (binarias: 0.225685)  C = 0.226798 (binarias: 0.226798)  (A-C)/C = -0.0049
+  onde (A - C) se acumula [trecho: Im int(hB - h30), Im int h30 (C), Im int hB (A)]:
+     antes de -3500 (PN/EOB)         dif = -0.00203 (182.2% da dif. total)   C = 0.03822   A = 0.03619
+     [-3500,-2500] (hibridizacao)    dif = -0.00038 ( 34.3% da dif. total)   C = 0.01236   A = 0.01198
+     [-2500,-100] (RN)               dif = +0.00210 (-188.2% da dif. total)   C = 0.08055   A = 0.08265
+     depois de -100                  dif = -0.00080 ( 71.8% da dif. total)   C = 0.09567   A = 0.09487
+  taxas / ordem PN dominante: x, t-t_pico, |hB_A|/LO, |h30_C|/LO, fase hB/pi, fase h30/pi
+     x = 0.055  t =    -8066  A/LO = 0.9213  C/LO = 0.9742  fases +0.500 +0.500
+     x = 0.060  t =    -5592  A/LO = 0.9199  C/LO = 0.9716  fases +0.500 +0.500
+     x = 0.070  t =    -2901  A/LO = 0.9182  C/LO = 0.9521  fases +0.500 +0.500
+     x = 0.080  t =    -1626  A/LO = 0.9160  C/LO = 0.8901  fases +0.500 +0.500
+     x = 0.100  t =     -612  A/LO = 0.9191  C/LO = 0.8909  fases +0.500 +0.500
+     x = 0.120  t =     -274  A/LO = 0.9297  C/LO = 0.9082  fases +0.500 +0.500
+     x = 0.150  t =     -200  A/LO = 0.9347  C/LO = 0.9160  fases +0.500 +0.500
+  desl20: total A = 0.09718, total C = 0.09785, (A-C)/C = -0.0068
+     antes da janela: Favata 3PN(x0) = 0.011938 ; h20(u0) do substituto = 0.011941 ; dif./C total = -0.0000
+     na janela: fluxo (A) = 0.085242 ; h20(fim)-h20(u0) (C) = 0.085904 ; dif./C total = -0.0068
+     x medido no inicio = 0.05405 (x0 nominal 0.05405); h40(u0) = 1.212e-04, LRR 1PN(x0) = 1.225e-04
+     antes de -3500 (PN/EOB)         fluxo A = 0.002652   dh20 C = 0.002652   (A-C) = -4.43e-07
+     [-3500,-2500] (hibridizacao)    fluxo A = 0.001090   dh20 C = 0.001140   (A-C) = -4.99e-05
+     [-2500,-100] (RN)               fluxo A = 0.013659   dh20 C = 0.014321   (A-C) = -6.62e-04
+     depois de -100                  fluxo A = 0.067841   dh20 C = 0.067791   (A-C) = +5.03e-05
+     taxa media numa orbita (x, A, C): 0.055: 3.383e-07 / 3.384e-07 (0.9997); 0.070: 1.122e-06 / 1.113e-06 (1.0082); 0.100: 6.683e-06 / 6.830e-06 (0.9785); 0.150: 2.525e-05 / 2.624e-05 (0.9623)
+  giro30: termo de spin (A) = 0.61806 [pela formula do nivel C: 0.61806], helicidade = -0.21035, total A = 0.40772, C = 0.41078
+     (giroA-giroC)/giroC = -0.0075 ; previsto so pela dif. de spin: (dS/S)*(termo spin/total) ~ -0.0074
+  spin30 (nivel A) por pares de modos (Im), fracao do total:
+     ((2, 2), (2, 2))       +0.201708  (+0.8938)
+     ((2, 2), (3, 2))       +0.024717  (+0.1095)
+     ((4, 4), (4, 4))       -0.000886  (-0.0039)
+     ((3, 2), (3, 2))       +0.000146  (+0.0006)
+     ((5, 5), (5, 5))       -0.000000  (-0.0000)
+     ((3, 3), (3, 3))       -0.000000  (-0.0000)
+     ((3, 3), (4, 3))       +0.000000  (+0.0000)
+  (11 s)
+=== q = 2, chi = (+0.0, +0.0); inicio da janela em t - t_pico = -9658 M
+  spin30 (Im): A = 0.183741 (binarias: 0.183741)  C = 0.185717 (binarias: 0.185717)  (A-C)/C = -0.0106
+  onde (A - C) se acumula [trecho: Im int(hB - h30), Im int h30 (C), Im int hB (A)]:
+     antes de -3500 (PN/EOB)         dif = -0.00210 (106.0% da dif. total)   C = 0.03728   A = 0.03518
+     [-3500,-2500] (hibridizacao)    dif = -0.00037 ( 18.9% da dif. total)   C = 0.01063   A = 0.01026
+     [-2500,-100] (RN)               dif = +0.00113 (-57.4% da dif. total)   C = 0.06810   A = 0.06923
+     depois de -100                  dif = -0.00064 ( 32.4% da dif. total)   C = 0.06971   A = 0.06907
+  taxas / ordem PN dominante: x, t-t_pico, |hB_A|/LO, |h30_C|/LO, fase hB/pi, fase h30/pi
+     x = 0.055  t =    -8975  A/LO = 0.9218  C/LO = 0.9775  fases +0.500 +0.500
+     x = 0.060  t =    -6208  A/LO = 0.9203  C/LO = 0.9753  fases +0.500 +0.500
+     x = 0.070  t =    -3202  A/LO = 0.9190  C/LO = 0.9720  fases +0.500 +0.500
+     x = 0.080  t =    -1788  A/LO = 0.9163  C/LO = 0.8961  fases +0.500 +0.500
+     x = 0.100  t =     -656  A/LO = 0.9222  C/LO = 0.9060  fases +0.500 +0.500
+     x = 0.120  t =     -288  A/LO = 0.9327  C/LO = 0.9247  fases +0.500 +0.500
+     x = 0.150  t =     -200  A/LO = 0.9426  C/LO = 0.9349  fases +0.500 +0.500
+  desl20: total A = 0.07402, total C = 0.07454, (A-C)/C = -0.0070
+     antes da janela: Favata 3PN(x0) = 0.010587 ; h20(u0) do substituto = 0.010591 ; dif./C total = -0.0000
+     na janela: fluxo (A) = 0.063436 ; h20(fim)-h20(u0) (C) = 0.063953 ; dif./C total = -0.0069
+     x medido no inicio = 0.05405 (x0 nominal 0.05405); h40(u0) = 1.029e-04, LRR 1PN(x0) = 1.048e-04
+     antes de -3500 (PN/EOB)         fluxo A = 0.002624   dh20 C = 0.002624   (A-C) = +3.84e-07
+     [-3500,-2500] (hibridizacao)    fluxo A = 0.000966   dh20 C = 0.001014   (A-C) = -4.77e-05
+     [-2500,-100] (RN)               fluxo A = 0.011616   dh20 C = 0.012302   (A-C) = -6.86e-04
+     depois de -100                  fluxo A = 0.048230   dh20 C = 0.048013   (A-C) = +2.17e-04
+     taxa media numa orbita (x, A, C): 0.055: 2.675e-07 / 2.674e-07 (1.0002); 0.070: 8.878e-07 / 8.768e-07 (1.0126); 0.100: 5.308e-06 / 5.521e-06 (0.9614); 0.150: 2.095e-05 / 2.203e-05 (0.9510)
+  giro30: termo de spin (A) = 0.50319 [pela formula do nivel C: 0.50319], helicidade = -0.16700, total A = 0.33619, C = 0.34161
+     (giroA-giroC)/giroC = -0.0159 ; previsto so pela dif. de spin: (dS/S)*(termo spin/total) ~ -0.0159
+  (19 s)
+=== q = 4, chi = (+0.0, +0.0); inicio da janela em t - t_pico = -13087 M
+  spin30 (Im): A = 0.109885 (binarias: 0.109885)  C = 0.112859 (binarias: 0.112859)  (A-C)/C = -0.0264
+  onde (A - C) se acumula [trecho: Im int(hB - h30), Im int h30 (C), Im int hB (A)]:
+     antes de -3500 (PN/EOB)         dif = -0.00237 ( 79.8% da dif. total)   C = 0.03337   A = 0.03099
+     [-3500,-2500] (hibridizacao)    dif = -0.00037 ( 12.4% da dif. total)   C = 0.00701   A = 0.00664
+     [-2500,-100] (RN)               dif = -0.00004 (  1.4% da dif. total)   C = 0.04215   A = 0.04211
+     depois de -100                  dif = -0.00019 (  6.4% da dif. total)   C = 0.03034   A = 0.03014
+  taxas / ordem PN dominante: x, t-t_pico, |hB_A|/LO, |h30_C|/LO, fase hB/pi, fase h30/pi
+     x = 0.055  t =   -12152  A/LO = 0.9213  C/LO = 0.9917  fases +0.500 +0.500
+     x = 0.060  t =    -8363  A/LO = 0.9199  C/LO = 0.9906  fases +0.500 +0.500
+     x = 0.070  t =    -4259  A/LO = 0.9190  C/LO = 0.9888  fases +0.500 +0.500
+     x = 0.080  t =    -2334  A/LO = 0.9205  C/LO = 0.9185  fases +0.500 +0.500
+     x = 0.100  t =     -822  A/LO = 0.9270  C/LO = 0.9187  fases +0.500 +0.500
+     x = 0.120  t =     -338  A/LO = 0.9400  C/LO = 0.9399  fases +0.500 +0.500
+     x = 0.150  t =     -200  A/LO = 0.9542  C/LO = 0.9562  fases +0.500 +0.500
+  desl20: total A = 0.03820, total C = 0.03873, (A-C)/C = -0.0137
+     antes da janela: Favata 3PN(x0) = 0.007584 ; h20(u0) do substituto = 0.007599 ; dif./C total = -0.0004
+     na janela: fluxo (A) = 0.030620 ; h20(fim)-h20(u0) (C) = 0.031134 ; dif./C total = -0.0133
+     x medido no inicio = 0.05405 (x0 nominal 0.05405); h40(u0) = 6.736e-05, LRR 1PN(x0) = 6.877e-05
+     antes de -3500 (PN/EOB)         fluxo A = 0.002427   dh20 C = 0.002429   (A-C) = -2.18e-06
+     [-3500,-2500] (hibridizacao)    fluxo A = 0.000687   dh20 C = 0.000704   (A-C) = -1.73e-05
+     [-2500,-100] (RN)               fluxo A = 0.007393   dh20 C = 0.007945   (A-C) = -5.52e-04
+     depois de -100                  fluxo A = 0.020113   dh20 C = 0.020056   (A-C) = +5.73e-05
+     taxa media numa orbita (x, A, C): 0.055: 1.386e-07 / 1.390e-07 (0.9973); 0.070: 4.604e-07 / 4.601e-07 (1.0006); 0.100: 2.753e-06 / 2.854e-06 (0.9646); 0.150: 1.244e-05 / 1.292e-05 (0.9626)
+  giro30: termo de spin (A) = 0.30093 [pela formula do nivel C: 0.30093], helicidade = -0.09553, total A = 0.20540, C = 0.21355
+     (giroA-giroC)/giroC = -0.0381 ; previsto so pela dif. de spin: (dS/S)*(termo spin/total) ~ -0.0386
+  (28 s)
+=== q = 8, chi = (+0.0, +0.0); inicio da janela em t - t_pico = -20681 M
+  spin30 (Im): A = 0.057492 (binarias: 0.057492)  C = 0.061602 (binarias: 0.061602)  (A-C)/C = -0.0667
+  onde (A - C) se acumula [trecho: Im int(hB - h30), Im int h30 (C), Im int hB (A)]:
+     antes de -3500 (PN/EOB)         dif = -0.00313 ( 76.1% da dif. total)   C = 0.02688   A = 0.02376
+     [-3500,-2500] (hibridizacao)    dif = -0.00042 ( 10.2% da dif. total)   C = 0.00391   A = 0.00349
+     [-2500,-100] (RN)               dif = -0.00079 ( 19.1% da dif. total)   C = 0.02103   A = 0.02025
+     depois de -100                  dif = +0.00022 ( -5.4% da dif. total)   C = 0.00978   A = 0.01000
+  taxas / ordem PN dominante: x, t-t_pico, |hB_A|/LO, |h30_C|/LO, fase hB/pi, fase h30/pi
+     x = 0.055  t =   -19185  A/LO = 0.9205  C/LO = 1.0323  fases +0.500 +0.500
+     x = 0.060  t =   -13134  A/LO = 0.9194  C/LO = 1.0366  fases +0.500 +0.500
+     x = 0.070  t =    -6600  A/LO = 0.9192  C/LO = 1.0446  fases +0.500 +0.500
+     x = 0.080  t =    -3556  A/LO = 0.9218  C/LO = 1.0504  fases +0.500 +0.500
+     x = 0.100  t =    -1185  A/LO = 0.9274  C/LO = 0.9746  fases +0.500 +0.500
+     x = 0.120  t =     -450  A/LO = 0.9483  C/LO = 0.9824  fases +0.500 +0.500
+     x = 0.150  t =     -200  A/LO = 0.9708  C/LO = 0.9634  fases +0.500 +0.500
+  desl20: total A = 0.01732, total C = 0.01756, (A-C)/C = -0.0139
+     antes da janela: Favata 3PN(x0) = 0.004657 ; h20(u0) do substituto = 0.004649 ; dif./C total = +0.0005
+     na janela: fluxo (A) = 0.012662 ; h20(fim)-h20(u0) (C) = 0.012914 ; dif./C total = -0.0144
+     x medido no inicio = 0.05405 (x0 nominal 0.05405); h40(u0) = 3.619e-05, LRR 1PN(x0) = 3.840e-05
+     antes de -3500 (PN/EOB)         fluxo A = 0.001990   dh20 C = 0.001991   (A-C) = -1.27e-06
+     [-3500,-2500] (hibridizacao)    fluxo A = 0.000412   dh20 C = 0.000398   (A-C) = +1.41e-05
+     [-2500,-100] (RN)               fluxo A = 0.003807   dh20 C = 0.004109   (A-C) = -3.02e-04
+     depois de -100                  fluxo A = 0.006453   dh20 C = 0.006415   (A-C) = +3.73e-05
+     taxa media numa orbita (x, A, C): 0.055: 5.275e-08 / 5.271e-08 (1.0007); 0.070: 1.753e-07 / 1.754e-07 (0.9992); 0.100: 1.046e-06 / 1.066e-06 (0.9814); 0.150: 5.783e-06 / 6.524e-06 (0.8863)
+  giro30: termo de spin (A) = 0.15745 [pela formula do nivel C: 0.15745], helicidade = -0.04857, total A = 0.10887, C = 0.12013
+     (giroA-giroC)/giroC = -0.0937 ; previsto so pela dif. de spin: (dS/S)*(termo spin/total) ~ -0.0965
+  spin30 (nivel A) por pares de modos (Im), fracao do total:
+     ((2, 2), (2, 2))       +0.053915  (+0.9378)
+     ((2, 2), (3, 2))       +0.007410  (+0.1289)
+     ((3, 3), (3, 3))       -0.002434  (-0.0423)
+     ((2, 1), (2, 1))       -0.000999  (-0.0174)
+     ((4, 4), (4, 4))       -0.000914  (-0.0159)
+     ((3, 3), (4, 3))       +0.000739  (+0.0129)
+     ((5, 5), (5, 5))       -0.000288  (-0.0050)
+     ((3, 2), (3, 2))       +0.000050  (+0.0009)
+     ((4, 3), (4, 3))       +0.000013  (+0.0002)
+  (45 s)
+=== q = 1, chi = (+0.6, +0.6); inicio da janela em t - t_pico = -9738 M
+  spin30 (Im): A = 0.312330 (binarias: 0.312330)  C = 0.321000 (binarias: 0.321000)  (A-C)/C = -0.0270
+  onde (A - C) se acumula [trecho: Im int(hB - h30), Im int h30 (C), Im int hB (A)]:
+     antes de -3500 (PN/EOB)         dif = -0.00448 ( 51.7% da dif. total)   C = 0.05077   A = 0.04629
+     [-3500,-2500] (hibridizacao)    dif = -0.00090 ( 10.4% da dif. total)   C = 0.01480   A = 0.01390
+     [-2500,-100] (RN)               dif = -0.00092 ( 10.6% da dif. total)   C = 0.10890   A = 0.10798
+     depois de -100                  dif = -0.00237 ( 27.3% da dif. total)   C = 0.14653   A = 0.14416
+  taxas / ordem PN dominante: x, t-t_pico, |hB_A|/LO, |h30_C|/LO, fase hB/pi, fase h30/pi
+     x = 0.055  t =    -9084  A/LO = 0.9201  C/LO = 1.0066  fases +0.500 +0.500
+     x = 0.060  t =    -6415  A/LO = 0.9184  C/LO = 1.0071  fases +0.500 +0.500
+     x = 0.070  t =    -3461  A/LO = 0.9170  C/LO = 1.0078  fases +0.500 +0.500
+     x = 0.080  t =    -2026  A/LO = 0.9066  C/LO = 0.9160  fases +0.500 +0.500
+     x = 0.100  t =     -832  A/LO = 0.9046  C/LO = 0.9141  fases +0.500 +0.500
+     x = 0.120  t =     -404  A/LO = 0.9090  C/LO = 0.9151  fases +0.500 +0.500
+     x = 0.150  t =     -200  A/LO = 0.9149  C/LO = 0.9200  fases +0.500 +0.500
+  desl20: total A = 0.15420, total C = 0.15546, (A-C)/C = -0.0081
+     antes da janela: Favata 3PN(x0) = 0.011938 ; h20(u0) do substituto = 0.012159 ; dif./C total = -0.0014
+     na janela: fluxo (A) = 0.142258 ; h20(fim)-h20(u0) (C) = 0.143299 ; dif./C total = -0.0067
+     x medido no inicio = 0.05405 (x0 nominal 0.05405); h40(u0) = 1.262e-04, LRR 1PN(x0) = 1.225e-04
+     antes de -3500 (PN/EOB)         fluxo A = 0.003471   dh20 C = 0.003427   (A-C) = +4.34e-05
+     [-3500,-2500] (hibridizacao)    fluxo A = 0.001335   dh20 C = 0.001361   (A-C) = -2.57e-05
+     [-2500,-100] (RN)               fluxo A = 0.020429   dh20 C = 0.020929   (A-C) = -5.01e-04
+     depois de -100                  fluxo A = 0.117023   dh20 C = 0.117581   (A-C) = -5.58e-04
+     taxa media numa orbita (x, A, C): 0.055: 3.353e-07 / 3.320e-07 (1.0099); 0.070: 1.109e-06 / 1.091e-06 (1.0165); 0.100: 6.457e-06 / 6.680e-06 (0.9666); 0.150: 4.077e-05 / 4.157e-05 (0.9809)
+  giro30: termo de spin (A) = 0.85535 [pela formula do nivel C: 0.85535], helicidade = -0.29486, total A = 0.56049, C = 0.58426
+     (giroA-giroC)/giroC = -0.0407 ; previsto so pela dif. de spin: (dS/S)*(termo spin/total) ~ -0.0412
+  (53 s)
+=== q = 3, chi = (+0.6, +0.0); inicio da janela em t - t_pico = -12544 M
+  spin30 (Im): A = 0.188030 (binarias: 0.188030)  C = 0.193605 (binarias: 0.193605)  (A-C)/C = -0.0288
+  onde (A - C) se acumula [trecho: Im int(hB - h30), Im int h30 (C), Im int hB (A)]:
+     antes de -3500 (PN/EOB)         dif = -0.00348 ( 62.4% da dif. total)   C = 0.04406   A = 0.04058
+     [-3500,-2500] (hibridizacao)    dif = -0.00049 (  8.8% da dif. total)   C = 0.00993   A = 0.00944
+     [-2500,-100] (RN)               dif = -0.00020 (  3.6% da dif. total)   C = 0.06877   A = 0.06857
+     depois de -100                  dif = -0.00141 ( 25.3% da dif. total)   C = 0.07084   A = 0.06944
+  taxas / ordem PN dominante: x, t-t_pico, |hB_A|/LO, |h30_C|/LO, fase hB/pi, fase h30/pi
+     x = 0.055  t =   -11690  A/LO = 0.9158  C/LO = 0.9923  fases +0.500 +0.500
+     x = 0.060  t =    -8210  A/LO = 0.9136  C/LO = 0.9916  fases +0.500 +0.500
+     x = 0.070  t =    -4375  A/LO = 0.9113  C/LO = 0.9906  fases +0.500 +0.500
+     x = 0.080  t =    -2533  A/LO = 0.8991  C/LO = 0.8982  fases +0.500 +0.500
+     x = 0.100  t =     -998  A/LO = 0.8980  C/LO = 0.9005  fases +0.500 +0.500
+     x = 0.120  t =     -467  A/LO = 0.8991  C/LO = 0.8977  fases +0.500 +0.500
+     x = 0.150  t =     -200  A/LO = 0.9041  C/LO = 0.9144  fases +0.500 +0.500
+  desl20: total A = 0.08089, total C = 0.08225, (A-C)/C = -0.0165
+     antes da janela: Favata 3PN(x0) = 0.008907 ; h20(u0) do substituto = 0.009041 ; dif./C total = -0.0016
+     na janela: fluxo (A) = 0.071984 ; h20(fim)-h20(u0) (C) = 0.073208 ; dif./C total = -0.0149
+     x medido no inicio = 0.05405 (x0 nominal 0.05405); h40(u0) = 8.405e-05, LRR 1PN(x0) = 8.404e-05
+     antes de -3500 (PN/EOB)         fluxo A = 0.003188   dh20 C = 0.003138   (A-C) = +5.07e-05
+     [-3500,-2500] (hibridizacao)    fluxo A = 0.000990   dh20 C = 0.001017   (A-C) = -2.68e-05
+     [-2500,-100] (RN)               fluxo A = 0.013537   dh20 C = 0.014170   (A-C) = -6.33e-04
+     depois de -100                  fluxo A = 0.054269   dh20 C = 0.054883   (A-C) = -6.15e-04
+     taxa media numa orbita (x, A, C): 0.055: 1.883e-07 / 1.864e-07 (1.0106); 0.070: 6.226e-07 / 6.102e-07 (1.0203); 0.100: 3.629e-06 / 3.799e-06 (0.9553); 0.150: 2.555e-05 / 2.632e-05 (0.9706)
+  giro30: termo de spin (A) = 0.51494 [pela formula do nivel C: 0.51494], helicidade = -0.16688, total A = 0.34806, C = 0.36333
+     (giroA-giroC)/giroC = -0.0420 ; previsto so pela dif. de spin: (dS/S)*(termo spin/total) ~ -0.0426
+  (63 s)

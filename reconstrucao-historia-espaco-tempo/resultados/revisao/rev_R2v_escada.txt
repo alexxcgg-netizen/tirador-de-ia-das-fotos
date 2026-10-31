@@ -1,0 +1,39 @@
+1) Escada em M: A com M -> M (1 + e), e de 0 a 1.2e-5 em passos de 2e-7; memorias adimensionais.
+   n amostras: [66260, 66261, 66262] ; posicoes dos saltos (e): 4.8e-06 1.0e-05
+   espacamento entre saltos: 5.60e-06 (previsto 3 dt / (8 |t_i|): 5.71e-06)
+   nivel A, salto em e = 4.8e-06 (n 66262 -> 66261): desl -3.45e-07 spin -2.80e-06 cm -2.94e-07 giro -2.97e-06
+   nivel A, salto em e = 1.0e-05 (n 66261 -> 66260): desl -3.45e-07 spin -2.80e-06 cm -2.94e-07 giro -2.97e-06
+   nivel A, maior variacao num passo de 2e-7 SEM salto: desl 1.28e-08 spin 0.00e+00 cm 1.08e-08 giro 0.00e+00
+   nivel C, salto em e = 4.8e-06 (n 66262 -> 66261): desl +1.34e-12 spin -2.94e-06 cm +1.40e-08 giro -3.02e-06
+   nivel C, salto em e = 1.0e-05 (n 66261 -> 66260): desl +1.34e-12 spin -2.94e-06 cm +1.40e-08 giro -3.02e-06
+   nivel C, maior variacao num passo de 2e-7 SEM salto: desl 0.00e+00 spin 0.00e+00 cm 6.67e-10 giro 0.00e+00
+   (17 s)
+
+2) Pares 'exatos' do exp07: n amostras e delta (nivel A, dt 0.25) com M_B (1 + e).
+   par (1, +0.0): n = 65372, delta = 4.1e-11 | -1e-05: n+2 dif 6.1e-06 ; -1e-06: n+0 dif 6.6e-08 ; -1e-07: n+0 dif 6.6e-09 ; -1e-08: n+0 dif 6.6e-10 ; -1e-09: n+0 dif 6.6e-11 ; -1e-10: n+0 dif 6.6e-12 ; +1e-10: n+0 dif 6.6e-12 ; +1e-09: n+0 dif 6.6e-11 ; +1e-08: n+0 dif 6.6e-10 ; +1e-07: n+0 dif 6.6e-09 ; +1e-06: n+0 dif 6.6e-08 ; +1e-05: n-2 dif 6.1e-06
+   par (2, +0.0): n = 62009, delta = 8.9e-11 | -1e-05: n+2 dif 6.5e-06 ; -1e-06: n+0 dif 7.3e-08 ; -1e-07: n+0 dif 7.3e-09 ; -1e-08: n+0 dif 7.3e-10 ; -1e-09: n+0 dif 7.3e-11 ; -1e-10: n+0 dif 7.3e-12 ; +1e-10: n+0 dif 7.3e-12 ; +1e-09: n+0 dif 7.3e-11 ; +1e-08: n+0 dif 7.3e-10 ; +1e-07: n+0 dif 7.3e-09 ; +1e-06: n+0 dif 7.3e-08 ; +1e-05: n-2 dif 6.5e-06
+   par (3, +0.0): n = 65266, delta = 3.0e-06 | -1e-05: n+1 dif 3.0e-06 ; -1e-06: n+0 dif 6.9e-08 ; -1e-07: n+0 dif 6.9e-09 ; -1e-08: n+0 dif 6.9e-10 ; -1e-09: n+0 dif 6.9e-11 ; -1e-10: n+0 dif 6.9e-12 ; +1e-10: n-1 dif 3.0e-06 ; +1e-09: n-1 dif 3.0e-06 ; +1e-08: n-1 dif 3.0e-06 ; +1e-07: n-1 dif 3.0e-06 ; +1e-06: n-1 dif 3.0e-06 ; +1e-05: n-2 dif 6.0e-06
+   par (2, +0.5): n = 54469, delta = 1.0e-10 | -1e-05: n+2 dif 7.8e-06 ; -1e-06: n+0 dif 8.4e-08 ; -1e-07: n+0 dif 8.4e-09 ; -1e-08: n+0 dif 8.4e-10 ; -1e-09: n+0 dif 8.4e-11 ; -1e-10: n+0 dif 8.4e-12 ; +1e-10: n+0 dif 8.4e-12 ; +1e-09: n+0 dif 8.4e-11 ; +1e-08: n+0 dif 8.4e-10 ; +1e-07: n+0 dif 8.4e-09 ; +1e-06: n+0 dif 8.4e-08 ; +1e-05: n-1 dif 3.9e-06
+   (23 s)
+
+3) Convergencia em dt (A e B no mesmo dt), nivel A.
+   memorias de A, dt 0.1250 contra 0.25: desl +6.1e-06 spin +3.9e-07 cm +5.7e-06 giro +3.5e-07
+   memorias de A, dt 0.0625 contra 0.25: desl +6.4e-06 spin +1.1e-07 cm +6.0e-06 giro +4.5e-08
+   par (1, +0.0): delta dt 0.25 4.1e-11 ; dt 0.125 1.6e-06 ; dt 0.0625 2.4e-06
+   par (2, +0.0): delta dt 0.25 8.9e-11 ; dt 0.125 1.4e-06 ; dt 0.0625 1.6e-06
+   par (3, +0.0): delta dt 0.25 3.0e-06 ; dt 0.125 1.9e-06 ; dt 0.0625 2.1e-06
+   par (2, +0.5): delta dt 0.25 1.0e-10 ; dt 0.125 2.4e-06 ; dt 0.0625 2.7e-06
+   (30 s)
+
+4) Inicio suave (t_i exato por interpolacao, primeiro ponto com peso fracionario), nivel A.
+   conferencia: inicio suave contra o original (dt 0.25): desl +8.3e-08 spin +7.7e-07 cm +7.1e-08 giro +8.2e-07
+   a) varredura e de 0 a 1.2e-5 em passos de 1e-6: maior variacao por passo desl 3.7e-10 spin 5.1e-07 cm 1.1e-09 giro 5.4e-07 ; variacao total desl -4.4e-09 spin -6.1e-06 cm -1.3e-08 giro -6.4e-06
+      maior segunda diferenca (suavidade) desl 2.0e-13 spin 4.2e-12 cm 1.7e-13 giro 4.4e-12
+      e = 1e-10: variacao desl -3.7e-14 spin -5.1e-11 cm -1.1e-13 giro -5.4e-11
+      e = 1e-09: variacao desl -3.7e-13 spin -5.1e-10 cm -1.1e-12 giro -5.4e-10
+   c) memorias de A com inicio suave, dt 0.125 contra 0.25: desl +6.0e-06 spin -3.1e-07 cm +5.6e-06 giro -3.9e-07
+   b) par (1, +0.0): delta com inicio suave: dt 0.25 1.8e-06 ; dt 0.125 1.9e-06
+   b) par (2, +0.0): delta com inicio suave: dt 0.25 9.2e-07 ; dt 0.125 1.5e-06
+   b) par (3, +0.0): delta com inicio suave: dt 0.25 4.9e-07 ; dt 0.125 1.9e-06
+   b) par (2, +0.5): delta com inicio suave: dt 0.25 5.7e-07 ; dt 0.125 2.5e-06
+   (34 s)

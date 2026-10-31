@@ -1,0 +1,19 @@
+Memorias globais (A do exp12, M = 65, q = 1.2) relativas ao circular: valor com l0 = 0 (o do exp12) e faixa [min, max] sobre l0 = 0, pi/2, pi, 3pi/2
+  e0 = 0.05: desl20 +0.0020 [-0.0020, +0.0020] ; spin30 -0.0002 [-0.0029, -0.0002] ; cm20 -0.0018 [-0.0018, +0.0018] ; giro10 +0.0004 [+0.0004, +0.0030]
+  e0 = 0.10: desl20 -0.0012 [-0.0040, +0.0039] ; spin30 -0.0061 [-0.0096, -0.0029] ; cm20 +0.0016 [-0.0033, +0.0035] ; giro10 +0.0066 [+0.0035, +0.0101]
+  e0 = 0.20: desl20 -0.0070 [-0.0070, +0.0085] ; spin30 -0.0313 [-0.0313, -0.0193] ; cm20 +0.0058 [-0.0074, +0.0058] ; giro10 +0.0334 [+0.0217, +0.0334]
+  e0 = 0.30: desl20 -0.0105 [-0.0120, +0.0112] ; spin30 -0.0628 [-0.0691, -0.0498] ; cm20 +0.0101 [-0.0114, +0.0101] ; giro10 +0.0674 [+0.0546, +0.0741]
+
+Frequencia de onda do (2,2), M omega_22, em tempos fixos antes do pico, B (e0 = 0.2, q = 2, M = 72.59): l0 = 0 x pi
+  t =   -2000 M: M omega22 l0=0 0.04858, l0=pi 0.03833 (razao - 1 = -2.11e-01) ; |h22| razao - 1 = -1.91e-01
+  t =   -1000 M: M omega22 l0=0 0.05211, l0=pi 0.05737 (razao - 1 = +1.01e-01) ; |h22| razao - 1 = +9.45e-02
+  t =    -500 M: M omega22 l0=0 0.06563, l0=pi 0.07315 (razao - 1 = +1.15e-01) ; |h22| razao - 1 = +9.53e-02
+  t =    -300 M: M omega22 l0=0 0.08819, l0=pi 0.07741 (razao - 1 = -1.22e-01) ; |h22| razao - 1 = -1.14e-01
+  t =    -100 M: M omega22 l0=0 0.12659, l0=pi 0.11634 (razao - 1 = -8.10e-02) ; |h22| razao - 1 = -7.59e-02
+  t =     -50 M: M omega22 l0=0 0.16017, l0=pi 0.15333 (razao - 1 = -4.27e-02) ; |h22| razao - 1 = -5.17e-02
+  t =     -20 M: M omega22 l0=0 0.21887, l0=pi 0.21820 (razao - 1 = -3.07e-03) ; |h22| razao - 1 = -9.11e-03
+  t =      -5 M: M omega22 l0=0 0.30325, l0=pi 0.30329 (razao - 1 = +1.45e-04) ; |h22| razao - 1 = -3.10e-04
+  M omega22 (media movel de 40 M) = 0.06 atingida em t = -946.7 M (l0 = 0) e -1082.6 M (l0 = pi): diferenca -135.9 M
+  M omega22 (media movel de 40 M) = 0.08 atingida em t = -369.0 M (l0 = 0) e -287.6 M (l0 = pi): diferenca +81.4 M
+  M omega22 (media movel de 40 M) = 0.10 atingida em t = -158.1 M (l0 = 0) e -210.0 M (l0 = pi): diferenca -51.9 M
+  M omega22 (media movel de 40 M) = 0.15 atingida em t = -62.5 M (l0 = 0) e -54.3 M (l0 = pi): diferenca +8.2 M

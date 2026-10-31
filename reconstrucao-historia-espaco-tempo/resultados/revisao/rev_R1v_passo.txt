@@ -1,0 +1,8 @@
+f_i = 10 Hz, passo 1e-04: d F/d ln M / |F| (desl, spin, CM, giro) = [ 0.99978 -1.49568 -1.99905 -1.46535]
+f_i = 10 Hz, passo 3e-04: d F/d ln M / |F| (desl, spin, CM, giro) = [ 0.99978 -1.49568 -1.99905 -1.46535]
+f_i = 10 Hz, passo 1e-03: d F/d ln M / |F| (desl, spin, CM, giro) = [ 0.99954 -1.49381 -1.99885 -1.46338]
+f_i = 10 Hz, passo 3e-03: d F/d ln M / |F| (desl, spin, CM, giro) = [ 0.99966 -1.49471 -1.99896 -1.46433]
+f_i = 20 Hz, passo 1e-04: d F/d ln M / |F| (desl, spin, CM, giro) = [ 1.00604 -1.49695 -2.00127 -1.45878]
+f_i = 20 Hz, passo 3e-04: d F/d ln M / |F| (desl, spin, CM, giro) = [ 0.99423 -1.42987 -1.99087 -1.38661]
+f_i = 20 Hz, passo 1e-03: d F/d ln M / |F| (desl, spin, CM, giro) = [ 0.99916 -1.45784 -1.9952  -1.4167 ]
+f_i = 20 Hz, passo 3e-03: d F/d ln M / |F| (desl, spin, CM, giro) = [ 0.99903 -1.4571  -1.9951  -1.4159 ]

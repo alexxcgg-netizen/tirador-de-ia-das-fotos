@@ -1,0 +1,35 @@
+Tarefa 3: dominio do SEOBNRv5EHM nas configuracoes do exp12 (EccIC = 1: omega_start = frequencia orbital media; f_onda media = 10 Hz)
+  limites no codigo do pyseobnr 0.3.7: 0 <= e0 < 1; r_start < 10 M => integracao secular para tras (aviso);
+  e_fim > 0.25 no fim da inspiral => erro; r0 PN < 6 M => erro; ICs com desvio > 1% em r ou > 1.5% em pphi => erro.
+
+Configuracoes do exp12:
+  A (q=1.2, chi=(.3,-.2), M=65) e0=0 r_start = 21.51 M ; e no inicio 0.0000 (pedido 0.00) ; e em 20 Hz 0.0000 ; e no fim da inspiral 0.0000 (r = 2.45 M) ; duracao 16785 M ; avisos 0
+  A-exc. e0=0.1                      r_start = 19.38 M ; e no inicio 0.1000 (pedido 0.10) ; e em 20 Hz 0.0491 ; e no fim da inspiral 0.0007 (r = 2.49 M) ; duracao 16235 M ; avisos 0
+  A-exc. e0=0.2                      r_start = 17.28 M ; e no inicio 0.2000 (pedido 0.20) ; e em 20 Hz 0.1001 ; e no fim da inspiral 0.0011 (r = 2.40 M) ; duracao 14664 M ; avisos 0
+  A-exc. e0=0.3                      r_start = 15.21 M ; e no inicio 0.3000 (pedido 0.30) ; e em 20 Hz 0.1606 ; e no fim da inspiral 0.0023 (r = 2.48 M) ; duracao 12314 M ; avisos 0
+  B e0=0.3 qB=2 (M 73.23, chi1 .183) r_start = 14.05 M ; e no inicio 0.3000 (pedido 0.30) ; e em 20 Hz 0.1618 ; e no fim da inspiral 0.0031 (r = 2.45 M) ; duracao 9979 M ; avisos 0
+  B e0=0.3 qB=1.2 (M 67.39, chi1 .671) r_start = 14.82 M ; e no inicio 0.3000 (pedido 0.30) ; e em 20 Hz 0.1645 ; e no fim da inspiral 0.0053 (r = 2.90 M) ; duracao 11606 M ; avisos 0
+  B e0=0.2 qB=2, l0 = pi             r_start = 24.09 M ; e no inicio 0.2000 (pedido 0.20) ; e em 20 Hz 0.1009 ; e no fim da inspiral 0.0018 (r = 2.38 M) ; duracao 11937 M ; avisos 0
+  B e0=0.3 qB=2, l0 = pi             r_start = 26.09 M ; e no inicio 0.3000 (pedido 0.30) ; e em 20 Hz 0.1573 ; e no fim da inspiral 0.0026 (r = 2.48 M) ; duracao 9955 M ; avisos 0
+
+Procura do limite em e0 (configuracao A, l0 = 0 e pi):
+  A e0=0.4 l0=0 pi                   r_start = 13.15 M ; e no inicio 0.4000 (pedido 0.40) ; e em 20 Hz 0.2253 ; e no fim da inspiral 0.0026 (r = 2.40 M) ; duracao 9531 M ; avisos 0
+  A e0=0.4 l0=1 pi                   r_start = 30.69 M ; e no inicio 0.4000 (pedido 0.40) ; e em 20 Hz 0.2320 ; e no fim da inspiral 0.0028 (r = 2.40 M) ; duracao 9482 M ; avisos 0
+  A e0=0.5 l0=0 pi                   r_start = 11.11 M ; e no inicio 0.5000 (pedido 0.50) ; e em 20 Hz 0.3210 ; e no fim da inspiral 0.0036 (r = 2.44 M) ; duracao 6707 M ; avisos 0
+  A e0=0.5 l0=1 pi                   r_start = 33.34 M ; e no inicio 0.5000 (pedido 0.50) ; e em 20 Hz 0.3080 ; e no fim da inspiral 0.0051 (r = 2.48 M) ; duracao 6628 M ; avisos 0
+  A e0=0.6 l0=0 pi                   r_start = 9.09 M ; e no inicio 0.6008 (pedido 0.60) ; e em 20 Hz 0.3901 ; e no fim da inspiral 0.0048 (r = 2.45 M) ; duracao 4185 M ; avisos 4
+      log: WARNING: The predicted starting separation of the system (r_start = 9.092933591102192) is below the minimum starting separation allowed by the model (r_start_min = 10.0). Waveform parameters are q = 1.2, M = 50, chi_1 = 0.3, chi_2 = -0.2, omega_avg = 0.01005802601468134, omega_inst = 0.0419963703854
+      log: WARNING: The predicted starting separation of the system (r_start = 9.092933591102192) is below the minimum starting separation allowed by the model (r_start_min = 10.0). Waveform parameters are q = 1.2, M = 50, chi_1 = 0.3, chi_2 = -0.2, omega_avg = 0.01005802601468134, omega_inst = 0.0419963703854
+      log: WARNING: The new starting input values of the system are: eccentricity = 0.6007612796524571, rel_anomaly = 5.765576294454199, omega_avg = 0.010024431819105227.
+  A e0=0.6 l0=1 pi                   r_start = 36.37 M ; e no inicio 0.6000 (pedido 0.60) ; e em 20 Hz 0.4524 ; e no fim da inspiral 0.0058 (r = 2.43 M) ; duracao 4079 M ; avisos 0
+  A e0=0.7 l0=0 pi                   FALHOU: Internal function call failed: Input domain error. The computed value of the dimensionless starting orbit-averaged frequency (x_avg_computed = 0.03741103837682609) differs from the expected value (x_avg_expected = 0.0461
+      log: WARNING: The predicted starting separation of the system (r_start = 7.084831766747761) is below the minimum starting separation allowed by the model (r_start_min = 10.0). Waveform parameters are q = 1.2, M = 50, chi_1 = 0.3, chi_2 = -0.2, omega_avg = 0.0100580
+      log: WARNING: The predicted starting separation of the system (r_start = 7.084831766747761) is below the minimum starting separation allowed by the model (r_start_min = 10.0). Waveform parameters are q = 1.2, M = 50, chi_1 = 0.3, chi_2 = -0.2, omega_avg = 0.0100580
+  A e0=0.7 l0=1 pi                   r_start = 40.15 M ; e no inicio 0.7000 (pedido 0.70) ; e em 20 Hz 0.5615 ; e no fim da inspiral 0.0072 (r = 2.44 M) ; duracao 2157 M ; avisos 0
+  A e0=0.8 l0=0 pi                   FALHOU: Internal function call failed: Input domain error. The computed conservative initial angular momentum (pphi0 = 3.8584401019594097) differs from the predicted post-Newtonian value (pphi0_guess_PN = 3.7803306033914055) by 
+      log: WARNING: The predicted starting separation of the system (r_start = 5.085225522627089) is below the minimum starting separation allowed by the model (r_start_min = 10.0). Waveform parameters are q = 1.2, M = 50, chi_1 = 0.3, chi_2 = -0.2, omega_avg = 0.0100580
+      log: WARNING: The predicted starting separation of the system (r_start = 5.085225522627089) is below the minimum starting separation allowed by the model (r_start_min = 10.0). Waveform parameters are q = 1.2, M = 50, chi_1 = 0.3, chi_2 = -0.2, omega_avg = 0.0100580
+  A e0=0.8 l0=1 pi                   FALHOU: Internal function call failed: Input domain error. The computed conservative initial angular momentum (pphi0 = 3.6756838397108886) differs from the predicted post-Newtonian value (pphi0_guess_PN = 3.77112386343175) by 2.
+      log: ERROR: Internal function call failed: Input domain error. The computed conservative initial angular momentum (pphi0 = 3.6756838397108886) differs from the predicted post-Newtonian value (pphi0_guess_PN = 3.77112386343175) by 2.531% > 1.5%. Aborting the wavefor
+      log: ERROR: Internal function call failed: Input domain error. The computed conservative initial angular momentum (pphi0 = 3.6756838397108886) differs from the predicted post-Newtonian value (pphi0_guess_PN = 3.77112386343175) by 2.531% > 1.5%. Aborting the wavefor
+(9 s)

@@ -27,19 +27,23 @@ informação.
 | H04 | Radiação que cai no horizonte é invisível no infinito | CM (teoria linear) + ilustrada | conhecida |
 | H05 | A torre de memórias reconstrói a onda de forma estável | R | parcial |
 | H06 | A família infinita contém pares de binárias da RG | R | não encontrada |
-| H07 | Num observador há famílias exatas de binárias com as mesmas 4 memórias | CN | não encontrada |
-| H08 | Binárias excêntricas com spins imitam as memórias de uma circular | CN | não encontrada |
+| H07 | Num observador há famílias exatas de binárias com as mesmas 4 memórias | CN (versão idealizada: $m=0$, deslocamento total); I (versão observável: D1) | parcial (degenerescência qualitativa conhecida) |
+| H08 | Binárias excêntricas com spins imitam as memórias de uma circular | CN (no piso do modelo, inclusive $q_B=1$ e 1,2; família de dimensão 4 com $\ell_0$) | não encontrada |
 | H09 | Sem spins, uma excêntrica só imita a circular com $\eta>1/4$ | CN | não encontrada |
 | H10 | (versão antiga) Nenhuma excêntrica imita a circular, nem com spins | R (erro numérico) | — |
 | H11 | As memórias globais (céu inteiro) são quase injetivas | CN | não encontrada |
-| H12 | Em $q=1$ as memórias veem $\chi_a$ só em 2ª ordem | CM + CN | parcial |
-| H13 | Simetria $(\eta,D)\to(\lambda\eta,\lambda D)$ de 3 memórias na ordem PN dominante, quebrada em 1PN | CM + CN | não encontrada |
-| H14 | O recuo não é fixado pelas 4 memórias $m=0$ | CM + CN | não encontrada |
-| H15 | $\Omega_{\rm mem}=\dot h_{20}/(C\lvert h_{30}\rvert)$ recupera a frequência orbital | CN (2–13%) | não encontrada |
-| H16 | Medir as memórias em duas janelas elimina a família degenerada | I (indício) | não encontrada |
+| H12 | Em $q=1$ as memórias veem $\chi_a$ só em 2ª ordem | CM + CN (parte par $\propto d^{2}$) | corolário de simetria conhecida |
+| H13 | Simetria $(\eta,D)\to(\lambda\eta,\lambda D)$ de 3 memórias na ordem PN dominante, quebrada em 1PN | CM + CN (o CM só é invariante com $M$ na parte ordinária) | corolário das escalas conhecidas |
+| H14 | O recuo não é fixado pelas 4 memórias $m=0$ | CN (o argumento de simetria do 07 não vale; a conclusão vale pela família) | parcial |
+| H15 | $\Omega_{\rm mem}=\dot h_{20}/(C\lvert h_{30}\rvert)$ recupera a frequência orbital, $C=40\sqrt7/21$ | CN (2–13%) | corolário de uma linha (Favata 2009b, Nichols 2017) |
+| H16 | Medir as memórias em duas janelas elimina a família degenerada | R como "elimina"; CN como "deixa família aproximada" ($4\times10^{-5}$–$2\times10^{-3}$) | não encontrada |
 | H17 | As memórias de um observador medem o "orçamento de cargas" ($M_f$, $E$, $J$) | R | — |
+| H18 | Um interferômetro mede as quatro memórias | R (giroscópica não mensurável; CM confundido com $t_0$) | conhecida |
+| H19 | A memória resolvida no tempo separa os pares degenerados | CN par a par ($\rho_{\rm mem}\approx3$–14; 29–41 para $q_B=1$); I minimizando sobre a família | não encontrada |
+| H20 | O nível C (modos $m=0$ do substituto) é o padrão-ouro | R para spin e giroscópica na parte híbrida PN (erro de 5–12% na taxa) | — |
+| H21 | A memória de CM é um atraso de $M_f/2$ do degrau da deformação | NT (linha L19, agente D8) | relação conhecida; uso como observável não encontrado |
 
-As hipóteses da etapa 7 (H18 em diante) estão na seção "Etapa 7", mais abaixo.
+As hipóteses H18–H21 vêm da revisão adversarial (`08_revisao_e_correcoes.md`); as das linhas da etapa 7 (H22 em diante) estão na seção "Etapa 7", mais abaixo.
 
 ---
 
@@ -148,6 +152,41 @@ As hipóteses da etapa 7 (H18 em diante) estão na seção "Etapa 7", mais abaix
   uma degenerescência "de cargas".
 
 ---
+
+### Revisão adversarial (etapa 7, parte 1)
+
+As hipóteses H07–H17 foram reavaliadas pela revisão (`08_revisao_e_correcoes.md`, itens C1–C25).
+
+**Mudanças nas hipóteses antigas:**
+- **H07.** Os pares do exp07 são exatos para as memórias teóricas só com $m=0$ e deslocamento total.
+  Com o deslocamento de janela e os $m\neq0$ eles diferem até 3% (C7, C8). O piso numérico real é
+  $\sim3\times10^{-6}$ (C1). A família continua garantida pela contagem; a versão observável é
+  resolvida de novo na linha L01 (D1).
+- **H08.** Os casos $q_B=1$ e 1,2 eram soluções mal convergidas. Resolvidos de novo, ficam no piso do
+  modelo, $\sim10^{-5}$ (C22). A anomalia $\ell_0$ acrescenta uma dimensão à família (C24).
+- **H16.** Com as 8 equações de duas janelas sobra uma família aproximada; o jacobiano tem posto 6, mas
+  o menor valor singular é $\sim9\times10^{-4}$ (C17).
+
+**Hipóteses novas:**
+- **H18 (R).** Um interferômetro não mede a giroscópica e não separa o CM do instante de chegada (C10;
+  [SO2023; FS2025; SGN2026]).
+- **H19.**
+  - **Experimento:** `codigo/revisao/rev_R1_detector.py` e `rev_R1v_detector.py`, match normalizado
+    das séries de memória $m=0$.
+  - **Resultado:** os pares do exp07 se separam com $\rho_{\rm mem}(+)\approx3$–14, e o par
+    $q_B=1$ com 29–41.
+  - **Aberto:** ninguém minimizou sobre a família inteira, então a ambiguidade da memória órfã continua
+    em aberto.
+  - **Próximo:** linha L05 (D3).
+- **H20 (R).** O (3,0) do substituto é PN de ordem dominante na parte híbrida. Com a janela dentro da
+  parte de RN, a diferença A×C do spin em $q=8$ cai de 6,7% para 0,7% (C18).
+- **H21 (NT).**
+  - **Origem:** a parte ordinária da memória de CM vale $\mathcal K_{20}/J_{20}=-M_f/2$ ([Nichols2018]
+    eq. 4.23, com $M_f$), o que equivale a um atraso do degrau da deformação em relação ao degrau
+    previsto pelo fluxo.
+  - **Hipótese:** o transiente do h20 de RN em torno do pico (exp09) é esse atraso, e a comparação
+    memória observada × memória prevista pela onda mede $M_f$.
+  - **Próximo:** linha L19 (D8).
 
 ## Etapa 7
 

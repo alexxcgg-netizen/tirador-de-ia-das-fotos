@@ -1,0 +1,22 @@
+1) Autoconsistencia (f_ref = 10 Hz): A (inicio 5.0 Hz) contra A (inicio 5.3 Hz): 1-match 1.04e-08
+2) Familia de A (chi2_B = -0.2, mesmas 4 memorias no nivel A), aLIGO, f_min = 10 Hz:
+   q_B 1.150 (residuo 7.0e-11): ouro 3.950e-03 (rho_crit 11.3) | ouro max. em phi_B 1.842e-03 (rho_crit 16.5, phi_B 5.640 rad) | R2 3.932e-03 (rho_crit 11.3) | base exp07 8.867e-03 (rho_crit 7.5)
+   q_B 1.180 (residuo 1.9e-11): ouro 6.616e-04 (rho_crit 27.5) | ouro max. em phi_B 2.866e-04 (rho_crit 41.8, phi_B 6.028 rad) | R2 6.578e-04 (rho_crit 27.6) | base exp07 3.756e-03 (rho_crit 11.5)
+   q_B 1.190 (residuo 2.2e-11): ouro 1.580e-04 (rho_crit 56.3) | ouro max. em phi_B 7.090e-05 (rho_crit 84.0, phi_B -0.122 rad) | R2 1.667e-04 (rho_crit 54.8) | base exp07 2.759e-03 (rho_crit 13.5)
+   q_B 1.195 (residuo 2.5e-11): ouro 3.884e-05 (rho_crit 113.5) | ouro max. em phi_B 1.769e-05 (rho_crit 168.1, phi_B -0.060 rad) | R2 4.161e-05 (rho_crit 109.6) | base exp07 1.227e-03 (rho_crit 20.2)
+   q_B 1.205 (residuo 1.2e-10): ouro 4.191e-05 (rho_crit 109.2) | ouro max. em phi_B 1.747e-05 (rho_crit 169.2, phi_B 0.064 rad) | R2 4.029e-05 (rho_crit 111.4) | base exp07 1.245e-03 (rho_crit 20.0)
+   q_B 1.210 (residuo 1.6e-10): ouro 1.737e-04 (rho_crit 53.7) | ouro max. em phi_B 6.945e-05 (rho_crit 84.8, phi_B 0.133 rad) | R2 1.631e-04 (rho_crit 55.4) | base exp07 2.823e-03 (rho_crit 13.3)
+   q_B 1.250 (residuo 2.1e-11): ouro 3.812e-03 (rho_crit 11.5) | ouro max. em phi_B 1.674e-03 (rho_crit 17.3, phi_B 0.632 rad) | R2 3.783e-03 (rho_crit 11.5) | base exp07 7.010e-03 (rho_crit 8.4)
+   ouro            : 1-match = 1.49 dq^1.98 (todos) ; dq <= 0.01: 1.97 dq^2.04 -> |dq| nao separado na SNR 66: 0.0084 ; SNR 899: 0.00064
+   ouro max. phi_B : 1-match = 0.707 dq^2.00 (todos) ; dq <= 0.01: 0.691 dq^2.00 -> |dq| nao separado na SNR 66: 0.0128 ; SNR 899: 0.00094
+   R2              : 1-match = 1.44 dq^1.97 (todos) ; dq <= 0.01: 1.72 dq^2.01 -> |dq| nao separado na SNR 66: 0.0084 ; SNR 899: 0.00062
+   (76 s)
+3) exp13 e pares do exp07 com o ouro (f_ref = 10 Hz) e com o tratamento do R2:
+   chi_s +0.3 d 0.1   ouro 5.470e-05 (rho_crit 95.6) | ouro max. phi_B 5.276e-05 (rho_crit 97.4) | R2 5.466e-05 (rho_crit 95.6)
+   chi_s +0.3 d 0.2   ouro 2.238e-04 (rho_crit 47.3) | ouro max. phi_B 2.101e-04 (rho_crit 48.8) | R2 2.231e-04 (rho_crit 47.3)
+   chi_s +0.3 d 0.3   ouro 5.152e-04 (rho_crit 31.2) | ouro max. phi_B 4.711e-04 (rho_crit 32.6) | R2 5.138e-04 (rho_crit 31.2)
+   chi_s -0.5 d 0.1   ouro 6.044e-05 (rho_crit 91.0) | ouro max. phi_B 5.832e-05 (rho_crit 92.6) | R2 6.040e-05 (rho_crit 91.0)
+   chi_s -0.5 d 0.2   ouro 2.422e-04 (rho_crit 45.4) | ouro max. phi_B 2.330e-04 (rho_crit 46.3) | R2 2.420e-04 (rho_crit 45.5)
+   par (1, +0.0)      ouro 5.754e-02 (rho_crit 2.9) | ouro max. phi_B 5.604e-02 (rho_crit 3.0) | R2 5.743e-02 (rho_crit 3.0)
+   par (2, +0.0)      ouro 1.659e-02 (rho_crit 5.5) | ouro max. phi_B 1.634e-02 (rho_crit 5.5) | R2 1.654e-02 (rho_crit 5.5)
+(124 s)

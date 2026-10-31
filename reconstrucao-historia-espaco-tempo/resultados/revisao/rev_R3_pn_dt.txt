@@ -1,0 +1,12 @@
+e0 = 0.0, soma do codigo (pontas com peso inteiro):
+   v(0.25)-v(0.5):   desl20 +9.6e-04 desl40 +9.6e-04 spin30 +2.1e-04 cm20 -9.5e-04 cm40 -9.5e-04 giro10 -2.1e-04 giro30 +2.1e-04
+   v(0.125)-v(0.25): desl20 +4.8e-04 desl40 +4.8e-04 spin30 +1.0e-04 cm20 -4.7e-04 cm40 -4.7e-04 giro10 -1.0e-04 giro30 +1.0e-04
+e0 = 0.0, trapezio:
+   v(0.25)-v(0.5):   desl20 +1.0e-03 desl40 +1.0e-03 spin30 +2.7e-04 cm20 -1.0e-03 cm40 -1.0e-03 giro10 -2.7e-04 giro30 +2.7e-04
+   v(0.125)-v(0.25): desl20 +5.1e-04 desl40 +5.1e-04 spin30 +1.3e-04 cm20 -5.0e-04 cm40 -5.0e-04 giro10 -1.3e-04 giro30 +1.3e-04
+e0 = 0.3, soma do codigo (pontas com peso inteiro):
+   v(0.25)-v(0.5):   desl20 +1.1e-03 desl40 +1.1e-03 spin30 +2.5e-04 cm20 -1.1e-03 cm40 -1.1e-03 giro10 -2.5e-04 giro30 +2.5e-04
+   v(0.125)-v(0.25): desl20 +5.4e-04 desl40 +5.4e-04 spin30 +1.3e-04 cm20 -5.3e-04 cm40 -5.3e-04 giro10 -1.3e-04 giro30 +1.3e-04
+e0 = 0.3, trapezio:
+   v(0.25)-v(0.5):   desl20 +1.1e-03 desl40 +1.1e-03 spin30 +3.3e-04 cm20 -1.1e-03 cm40 -1.1e-03 giro10 -3.3e-04 giro30 +3.3e-04
+   v(0.125)-v(0.25): desl20 +5.7e-04 desl40 +5.7e-04 spin30 +1.7e-04 cm20 -5.6e-04 cm40 -5.6e-04 giro10 -1.7e-04 giro30 +1.7e-04

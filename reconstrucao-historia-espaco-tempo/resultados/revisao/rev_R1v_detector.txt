@@ -1,0 +1,46 @@
+D1. SNR da memoria do sistema A (iota = 50 graus), detector otimo para cada polarizacao
+  aLIGO +: rho_mem = 0.759 ; f_rms = 90.6 Hz ; sigma_t = 1/(2 pi rho f_rms) = 2.32e-03 s
+  aLIGO x: rho_mem = 0.085 ; f_rms = 110.0 Hz ; sigma_t = 1/(2 pi rho f_rms) = 1.70e-02 s
+  CE    +: rho_mem = 39.102 ; f_rms = 47.4 Hz ; sigma_t = 1/(2 pi rho f_rms) = 8.58e-05 s
+  CE    x: rho_mem = 3.496 ; f_rms = 65.1 Hz ; sigma_t = 1/(2 pi rho f_rms) = 7.00e-04 s
+  CM/Delta h_+ (tabela 3.3, nivel A) = -1.678e-04 s ; M = 3.202e-04 s
+
+D2. espectro e acumulacao da memoria de spin (h_x) e de deslocamento (h_+) de A
+  int h_x du (desde 10 Hz, sem suavizar) = -2.5315e-25 s ; h_x(u_i) = -9.288e-27 (pico 7.942e-24) ; Delta h_+ na janela = 1.6668e-22
+    f =   1.0 Hz: |h~_x|/|int h_x du| = 0.468 ; |2 pi f h~_+|/Delta h_+ = 0.846
+    f =   5.0 Hz: |h~_x|/|int h_x du| = 0.340 ; |2 pi f h~_+|/Delta h_+ = 0.741
+    f =  10.0 Hz: |h~_x|/|int h_x du| = 0.284 ; |2 pi f h~_+|/Delta h_+ = 0.672
+    f =  20.0 Hz: |h~_x|/|int h_x du| = 0.219 ; |2 pi f h~_+|/Delta h_+ = 0.578
+    f =  50.0 Hz: |h~_x|/|int h_x du| = 0.112 ; |2 pi f h~_+|/Delta h_+ = 0.447
+    f = 100.0 Hz: |h~_x|/|int h_x du| = 0.043 ; |2 pi f h~_+|/Delta h_+ = 0.383
+    ultimos 0.01 s antes do pico (ate o fim): fracao de int h_x du = 0.290 ; fracao de Delta h_+ = 0.687
+    ultimos 0.10 s antes do pico (ate o fim): fracao de int h_x du = 0.467 ; fracao de Delta h_+ = 0.845
+    ultimos 1.00 s antes do pico (ate o fim): fracao de int h_x du = 0.719 ; fracao de Delta h_+ = 0.950
+    ultimos 3.00 s antes do pico (ate o fim): fracao de int h_x du = 0.896 ; fracao de Delta h_+ = 0.985
+
+D3. match entre memorias resolvidas no tempo (A x B do exp07), amplitude livre
+  controle aLIGO + (A x A deslocado): 1 - match = 0.0e+00
+  controle aLIGO x (A x A deslocado): 1 - match = 0.0e+00
+  controle CE + (A x A deslocado): 1 - match = 0.0e+00
+  controle CE x (A x A deslocado): 1 - match = 0.0e+00
+  B (q = 1, chi2 = +0.0, M = 64.99, iota = 50.4):
+     aLIGO +: rhoA 0.76 rhoB 0.79 match_t 0.99941 (rho_crit 29.0) match_t,fase 0.99936 (rho_crit 27.9)
+     aLIGO x: rhoA 0.09 rhoB 0.09 match_t 0.99977 (rho_crit 46.3) match_t,fase 0.99974 (rho_crit 43.4)
+     CE +: rhoA 39.10 rhoB 39.40 match_t 0.99970 (rho_crit 41.0) match_t,fase 0.99969 (rho_crit 40.3)
+     CE x: rhoA 3.50 rhoB 3.52 match_t 0.99991 (rho_crit 73.4) match_t,fase 0.99986 (rho_crit 60.6)
+  B (q = 2, chi2 = +0.0, M = 69.45, iota = 54.2):
+     aLIGO +: rhoA 0.76 rhoB 0.72 match_t 0.99350 (rho_crit 8.8) match_t,fase 0.99542 (rho_crit 10.4)
+     aLIGO x: rhoA 0.09 rhoB 0.07 match_t 0.97479 (rho_crit 4.5) match_t,fase 0.98321 (rho_crit 5.5)
+     CE +: rhoA 39.10 rhoB 35.42 match_t 0.99750 (rho_crit 14.1) match_t,fase 0.99861 (rho_crit 19.0)
+     CE x: rhoA 3.50 rhoB 2.93 match_t 0.99139 (rho_crit 7.6) match_t,fase 0.99403 (rho_crit 9.2)
+  B (q = 3, chi2 = +0.0, M = 73.69, iota = 55.0):
+     aLIGO +: rhoA 0.76 rhoB 0.49 match_t 0.97263 (rho_crit 4.3) match_t,fase 0.98119 (rho_crit 5.2)
+     aLIGO x: rhoA 0.09 rhoB 0.05 match_t 0.93156 (rho_crit 2.7) match_t,fase 0.94114 (rho_crit 2.9)
+     CE +: rhoA 39.10 rhoB 29.89 match_t 0.98717 (rho_crit 6.2) match_t,fase 0.99090 (rho_crit 7.4)
+     CE x: rhoA 3.50 rhoB 2.34 match_t 0.97380 (rho_crit 4.4) match_t,fase 0.97740 (rho_crit 4.7)
+  B (q = 2, chi2 = +0.5, M = 72.30, iota = 57.0):
+     aLIGO +: rhoA 0.76 rhoB 0.92 match_t 0.95682 (rho_crit 3.4) match_t,fase 0.95963 (rho_crit 3.5)
+     aLIGO x: rhoA 0.09 rhoB 0.07 match_t 0.87259 (rho_crit 2.0) match_t,fase 0.94903 (rho_crit 3.1)
+     CE +: rhoA 39.10 rhoB 36.74 match_t 0.97284 (rho_crit 4.3) match_t,fase 0.97562 (rho_crit 4.5)
+     CE x: rhoA 3.50 rhoB 2.77 match_t 0.95226 (rho_crit 3.2) match_t,fase 0.97510 (rho_crit 4.5)
+(9 s)

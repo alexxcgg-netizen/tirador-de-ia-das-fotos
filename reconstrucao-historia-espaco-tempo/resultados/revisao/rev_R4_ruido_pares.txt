@@ -1,0 +1,41 @@
+Tarefa 1: pares do exp12 reavaliados em 3 processos novos (OMP_NUM_THREADS=1)
+execucoes: exec1 (ordem direta, 13 s, avisos do pyseobnr: 0), exec2 (ordem inversa, 12 s, avisos do pyseobnr: 0), exec3 (ordem direta, 12 s, avisos do pyseobnr: 0)
+
+(a) diferenca relativa de cada B ao alvo GRAVADO no json (A do exp12), por execucao; max sobre as 4 memorias e detalhe:
+  A                  exec1: max 0.00e+00 [desl +0.0e+00 spin +0.0e+00 cm +0.0e+00 giro +0.0e+00] | exec2: max 0.00e+00 [desl +0.0e+00 spin +0.0e+00 cm +0.0e+00 giro +0.0e+00] | exec3: max 0.00e+00 [desl +0.0e+00 spin +0.0e+00 cm +0.0e+00 giro +0.0e+00]
+  B e0=0.1 qB=1.2    exec1: max 5.22e-04 [desl -1.8e-05 spin +1.9e-04 cm -5.2e-04 giro -1.0e-04] | exec2: max 5.22e-04 [desl -1.8e-05 spin +1.9e-04 cm -5.2e-04 giro -1.0e-04] | exec3: max 5.22e-04 [desl -1.8e-05 spin +1.9e-04 cm -5.2e-04 giro -1.0e-04]
+  B e0=0.2 qB=1.2    exec1: max 2.60e-04 [desl +1.1e-04 spin +2.6e-04 cm -1.2e-04 giro -1.4e-04] | exec2: max 2.60e-04 [desl +1.1e-04 spin +2.6e-04 cm -1.2e-04 giro -1.4e-04] | exec3: max 2.60e-04 [desl +1.1e-04 spin +2.6e-04 cm -1.2e-04 giro -1.4e-04]
+  B e0=0.3 qB=1.2    exec1: max 1.15e-02 [desl +1.0e-05 spin +5.6e-03 cm -1.2e-02 giro -1.6e-03] | exec2: max 1.15e-02 [desl +1.0e-05 spin +5.6e-03 cm -1.2e-02 giro -1.6e-03] | exec3: max 1.15e-02 [desl +1.0e-05 spin +5.6e-03 cm -1.2e-02 giro -1.6e-03]
+  B e0=0.2 qB=2.0    exec1: max 7.13e-06 [desl +6.7e-06 spin -3.7e-06 cm -7.1e-06 giro -3.4e-06] | exec2: max 7.13e-06 [desl +6.7e-06 spin -3.7e-06 cm -7.1e-06 giro -3.4e-06] | exec3: max 7.13e-06 [desl +6.7e-06 spin -3.7e-06 cm -7.1e-06 giro -3.4e-06]
+  B e0=0.3 qB=2.0    exec1: max 7.83e-06 [desl -7.8e-06 spin +3.5e-07 cm +5.1e-06 giro -1.8e-06] | exec2: max 7.83e-06 [desl -7.8e-06 spin +3.5e-07 cm +5.1e-06 giro -1.8e-06] | exec3: max 7.83e-06 [desl -7.8e-06 spin +3.5e-07 cm +5.1e-06 giro -1.8e-06]
+  B e0=0.2 qB=1.0    exec1: max 5.65e-05 [desl -5.6e-05 spin -5.3e-05 cm +4.7e-05 giro +2.5e-05] | exec2: max 5.65e-05 [desl -5.6e-05 spin -5.3e-05 cm +4.7e-05 giro +2.5e-05] | exec3: max 5.65e-05 [desl -5.6e-05 spin -5.3e-05 cm +4.7e-05 giro +2.5e-05]
+
+(b) diferenca relativa entre execucoes (mesmo ponto, processos diferentes), max sobre as 4 memorias:
+  A                  0.0e+00 0.0e+00 0.0e+00
+  B e0=0.1 qB=1.2    0.0e+00 0.0e+00 0.0e+00
+  B e0=0.2 qB=1.2    0.0e+00 0.0e+00 0.0e+00
+  B e0=0.3 qB=1.2    0.0e+00 0.0e+00 0.0e+00
+  B e0=0.2 qB=2.0    0.0e+00 0.0e+00 0.0e+00
+  B e0=0.3 qB=2.0    0.0e+00 0.0e+00 0.0e+00
+  B e0=0.2 qB=1.0    0.0e+00 0.0e+00 0.0e+00
+
+(c) segunda avaliacao no mesmo processo (A e B e0=0.2 qB=2): diferenca relativa max
+  exec1: A 0.0e+00 ; B 0.0e+00
+  exec2: A 0.0e+00 ; B 0.0e+00
+  exec3: A 0.0e+00 ; B 0.0e+00
+
+(d) tremor: B (e0=0.2, qB=2) com M_B (1 + k eps); diferenca relativa ao ponto exato (max sobre as 4 memorias e por memoria)
+  eps*k = 1e-12*1  max 8.84e-06 [desl -8.8e-06 spin +3.3e-06 cm +6.0e-06 giro +3.4e-06]
+  eps*k = 1e-12*2  max 4.46e-06 [desl +4.5e-06 spin +2.2e-06 cm +2.0e-06 giro +2.6e-06]
+  eps*k = 1e-12*3  max 5.20e-06 [desl +5.2e-06 spin +2.8e-06 cm +1.6e-06 giro +3.4e-06]
+  eps*k = 1e-09*1  max 7.62e-06 [desl -7.6e-06 spin +3.2e-06 cm +4.3e-06 giro +3.3e-06]
+  eps*k = 1e-09*2  max 7.82e-06 [desl -7.8e-06 spin +3.2e-06 cm +6.1e-06 giro +3.3e-06]
+  eps*k = 1e-09*3  max 7.25e-06 [desl -7.2e-06 spin +1.8e-06 cm +3.8e-06 giro +1.8e-06]
+
+(e) residuo gravado no json (processo filho do exp12, so spin/cm/giro) x reavaliacao aqui (4 memorias):
+  B e0=0.1 qB=1.2    json 5.50e-04 ; aqui 5.22e-04 5.22e-04 5.22e-04
+  B e0=0.2 qB=1.2    json 2.40e-04 ; aqui 2.60e-04 2.60e-04 2.60e-04
+  B e0=0.3 qB=1.2    json 1.15e-02 ; aqui 1.15e-02 1.15e-02 1.15e-02
+  B e0=0.2 qB=2.0    json 1.26e-06 ; aqui 7.13e-06 7.13e-06 7.13e-06
+  B e0=0.3 qB=2.0    json 2.04e-06 ; aqui 7.83e-06 7.83e-06 7.83e-06
+  B e0=0.2 qB=1.0    json 5.76e-05 ; aqui 5.65e-05 5.65e-05 5.65e-05

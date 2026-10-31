@@ -1,0 +1,19 @@
+(1) memoria de CM (2,0), nivel A, janela M f0 = 0.004
+    cm20 = nula(janela) - (1/2) M_f J^E_20 [Dfrak(2) = 3]; 'pre' = parte ordinaria que vem do deslocamento antes da janela
+  q=1: cm20 (codigo) = -0.05222 ; parte nula = -0.00598 ; ordinaria pre-janela = -0.00568 (10.9% de cm20)
+        cm20 so com o deslocamento da janela = -0.04654 ; com M_f Phi_f - M_i Phi_i = -0.04629
+        janela de 50 M: desl20 = 0.01195, cm20 = -0.00594 (esperado ~0 para uma janela curta; -M_f/2 x Favata(x0) = -0.00593)
+  q=2: cm20 (codigo) = -0.03658 ; parte nula = -0.00101 ; ordinaria pre-janela = -0.00509 (13.9% de cm20)
+        cm20 so com o deslocamento da janela = -0.03149 ; com M_f Phi_f - M_i Phi_i = -0.03132
+  q=4: cm20 (codigo) = -0.01502 ; parte nula = +0.00366 ; ordinaria pre-janela = -0.00371 (24.7% de cm20)
+        cm20 so com o deslocamento da janela = -0.01131 ; com M_f Phi_f - M_i Phi_i = -0.01124
+  q=8: cm20 (codigo) = -0.00553 ; parte nula = +0.00304 ; ordinaria pre-janela = -0.00230 (41.7% de cm20)
+        cm20 so com o deslocamento da janela = -0.00323 ; com M_f Phi_f - M_i Phi_i = -0.00321
+
+(2) momento_irradiado contra integral direta numa grade (modos sinteticos)
+  P (codigo)  = [-0.01706535  0.11421571  0.37783829]
+  P (direto)  = [-0.01706535  0.11421571  0.37783829] ; max|dif|/|P| = 2.7e-15
+
+(3) M_f: termo 2PN da energia de ligacao em x0 = (pi 0.004)^(2/3) (ausente em binarias.memorias)
+  q=1: E_lig 1PN = 6.474916e-03 ; 2PN - 1PN = -5.50e-05 (em M_f)
+  q=8: E_lig 1PN = 2.559810e-03 ; 2PN - 1PN = -2.45e-05 (em M_f)

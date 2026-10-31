@@ -1,0 +1,33 @@
+P6. ordem PN dominante, quadratura em x (x_i = 0.0466, x_f = 1/6), memorias/eta
+  eta = 0.2500: J20/eta = 0.154105745878 S30/eta = 0.800985258723 G1/eta = -4.467682318775 G3/eta = 1.462392314772 |K_nula| = 5e-18 K20(M_f)/eta = -0.0754475 K20(M)/eta = -0.0770529
+  eta = 0.2479: J20/eta = 0.154105606765 S30/eta = 0.800985258723 G1/eta = -4.467682318775 G3/eta = 1.462392314772 |K_nula| = 7e-18 K20(M_f)/eta = -0.0754607 K20(M)/eta = -0.0770528
+  eta = 0.2000: J20/eta = 0.154102703435 S30/eta = 0.800985258723 G1/eta = -4.467682318775 G3/eta = 1.462392314772 |K_nula| = 2e-18 K20(M_f)/eta = -0.0757671 K20(M)/eta = -0.0770514
+  eta = 0.1875: J20/eta = 0.154102048464 S30/eta = 0.800985258723 G1/eta = -4.467682318775 G3/eta = 1.462392314772 |K_nula| = 7e-18 K20(M_f)/eta = -0.0758471 K20(M)/eta = -0.0770510
+  eta = 0.1000: J20/eta = 0.154098646844 S30/eta = 0.800985258723 G1/eta = -4.467682318775 G3/eta = 1.462392314772 |K_nula| = 1e-18 K20(M_f)/eta = -0.0764072 K20(M)/eta = -0.0770493
+  sem o termo adot^2: J20/eta em eta = 0.25 e 0.1: 0.154097294647 0.154097294647
+  par q = 1.2 x q = 3 (lambda = 0.7563, x_i = 0.0466), CM com Mf: (B - A)/|A| = desl -2.31e-05 spin +1.45e-15 CM -5.12e-03 giro -0.3223
+  par q = 1.2 x q = 3 (lambda = 0.7563, x_i = 0.0466), CM com M : (B - A)/|A| = desl -2.31e-05 spin +1.45e-15 CM +2.31e-05 giro -0.3223
+  previsao da giroscopica: -(1/lambda - 1) = -0.3223
+  (exp08 LO: desl -1.28e-04, spin +5.94e-05, cm -5.01e-03, giro -3.22e-01)
+
+P8. fase estacionaria
+  a22^2 Psi'' = 4*pi**(2/3)*M_c**(5/3)/(3*D**2*f**(7/3))
+  (eta, D) -> (lambda eta, lambda D): a_B/a_A = 1 ; Psi''_B/Psi''_A = 1/lambda ; |h~_B|^2/|h~_A|^2 = 1/lambda
+  m = 3: delta = f sin(2 pi ln f/ln(m/2)): max|delta(f) - (m/2) delta(2f/m)| / max|delta| = 2.4e-14
+  m = 4: delta = f sin(2 pi ln f/ln(m/2)): max|delta(f) - (m/2) delta(2f/m)| / max|delta| = 1.3e-14
+  ln 2 / ln 1.5 = 1.709511
+
+P9. (77 km/s / c)^2 = 6.60e-08
+
+P10. contra-exemplos a proposicao da secao 2.6
+  (a) dois surtos de suporte compacto (C^infinito), separados por h = 0 exato; segundo surto x e^{1.3 i}:
+      max|P1 - P0|/max|P0| = 3.3e-13 ; max|Q1 - Q0|/max|Q0| = 2.0e-13 ; |<h0,h1>|/(|h0||h1|) (max sobre fase constante) = 0.7961
+  (b) um modo, h = u^2 e^{-(u/120)^2} e^{-0.1 i u} contra sign(u) h (C^1, so um zero isolado duplo em u = 0):
+      max|P1 - P0|/max|P0| = 8.9e-11 ; max|Q1 - Q0|/max|Q0| = 0.0e+00 ; |<h0,h1>|/|h0|^2 = 1.0e-19
+
+P11. constantes do observavel de fase
+  <|Y22|^2+|Y2-2|^2, Y20> = 2*sqrt(5)/(7*sqrt(pi)) ; C_E = sqrt(30)/(42*sqrt(pi)) = 0.07357604
+  40 sqrt(7)/21 = 5.03952631
+  codigo (circular exato): C_E = 0.07357604 ; C = 5.03952631 ; C/(40 sqrt7/21) - 1 = -4.9e-15
+  calibracao do exp09, fase cumsum (exp09) : C = 5.0396823 ; C/(40 sqrt7/21) - 1 = +3.1e-05
+  calibracao do exp09, fase exata          : C = 5.0395473 ; C/(40 sqrt7/21) - 1 = +4.2e-06

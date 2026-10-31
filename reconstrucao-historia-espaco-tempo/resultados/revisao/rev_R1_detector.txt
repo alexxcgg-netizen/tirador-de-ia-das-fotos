@@ -1,0 +1,39 @@
+Sistema A: duracao da janela desde 10 Hz = 5.30 s ; Delta h_+ (janela, NR) = 1.6668e-22 ; int h_x du (janela, NR) = -2.5077e-25 s
+  (07 tabela 3.3, nivel A: Delta h_+ total = 1.829e-22 ; int h_x du = -2.498e-25 s ; CM = -3.069e-26 s)
+
+D1/D2 fracao acumulada nos ultimos T segundos antes do pico de (2,2) (ate o fim da serie):
+  T = 0.005 s: spin 0.247 ; deslocamento 0.630
+  T = 0.010 s: spin 0.291 ; deslocamento 0.685
+  T = 0.020 s: spin 0.342 ; deslocamento 0.744
+  T = 0.050 s: spin 0.413 ; deslocamento 0.807
+  T = 0.100 s: spin 0.471 ; deslocamento 0.845
+  T = 0.300 s: spin 0.579 ; deslocamento 0.897
+  T = 1.000 s: spin 0.726 ; deslocamento 0.950
+  T = 3.000 s: spin 0.905 ; deslocamento 0.985
+  espectro: f (Hz), |h~_x(f)|/|int h_x du|, |2 pi f h~_+(f)|/Delta h_+(janela)
+      0.05  0.935  1.739
+      0.50  0.540  0.893
+      2.00  0.415  0.805
+      5.00  0.343  0.741
+     10.00  0.287  0.672
+     20.00  0.221  0.578
+     50.00  0.113  0.447
+    100.00  0.044  0.383
+    200.00  0.026  0.315
+
+D3 CM como atraso do degrau: CM/Delta h_+ = -1.678e-04 s (= -0.52 M) ; M_f/2 = 1.520e-04 s
+  aLIGO: rho_mem(h_+) = 0.76 ; f_rms = 90.6 Hz ; sigma_t = 1/(2 pi rho f_rms) = 2.32e-03 s (13.8 x |CM/Delta h|)
+  CE   : rho_mem(h_+) = 39.10 ; f_rms = 47.4 Hz ; sigma_t = 1/(2 pi rho f_rms) = 8.58e-05 s (0.5 x |CM/Delta h|)
+
+D4 memoria orfa: match entre as memorias resolvidas no tempo (m = 0) de A e B, amplitude livre
+  controle (A x A com M*(1+1e-4), D*1.1), + aLIGO: 1 - match = 2.1e-07
+  controle (A x A com M*(1+1e-4), D*1.1), x aLIGO: 1 - match = 4.0e-07
+  B (q=1, chi2=0.0, M=64.99): + aLIGO: rho_A 0.76 rho_B 0.79 match 0.99941 (rho_crit 29.0) | + CE: rho_A 39.10 rho_B 39.40 match 0.99970 (rho_crit 41.0) | x aLIGO: rho_A 0.09 rho_B 0.09 match 0.99976 (rho_crit 46.1) | x CE: rho_A 3.50 rho_B 3.52 match 0.99990 (rho_crit 71.8)
+     Delta h_+ janela NR: A 1.6668e-22, B 1.6545e-22 ; int h_x du janela NR: A -2.5077e-25, B -2.4997e-25
+  B (q=2, chi2=0.0, M=69.45): + aLIGO: rho_A 0.76 rho_B 0.72 match 0.99350 (rho_crit 8.8) | + CE: rho_A 39.10 rho_B 35.42 match 0.99750 (rho_crit 14.1) | x aLIGO: rho_A 0.09 rho_B 0.07 match 0.97478 (rho_crit 4.5) | x CE: rho_A 3.50 rho_B 2.93 match 0.99139 (rho_crit 7.6)
+     Delta h_+ janela NR: A 1.6668e-22, B 1.6348e-22 ; int h_x du janela NR: A -2.5077e-25, B -2.5206e-25
+  B (q=3, chi2=0.0, M=73.69): + aLIGO: rho_A 0.76 rho_B 0.49 match 0.97262 (rho_crit 4.3) | + CE: rho_A 39.10 rho_B 29.89 match 0.98717 (rho_crit 6.2) | x aLIGO: rho_A 0.09 rho_B 0.05 match 0.93155 (rho_crit 2.7) | x CE: rho_A 3.50 rho_B 2.34 match 0.97380 (rho_crit 4.4)
+     Delta h_+ janela NR: A 1.6668e-22, B 1.6544e-22 ; int h_x du janela NR: A -2.5077e-25, B -2.5526e-25
+  B (q=2, chi2=0.5, M=72.30): + aLIGO: rho_A 0.76 rho_B 0.92 match 0.95681 (rho_crit 3.4) | + CE: rho_A 39.10 rho_B 36.74 match 0.97283 (rho_crit 4.3) | x aLIGO: rho_A 0.09 rho_B 0.07 match 0.87258 (rho_crit 2.0) | x CE: rho_A 3.50 rho_B 2.77 match 0.95226 (rho_crit 3.2)
+     Delta h_+ janela NR: A 1.6668e-22, B 1.5954e-22 ; int h_x du janela NR: A -2.5077e-25, B -2.5120e-25
+(13 s)

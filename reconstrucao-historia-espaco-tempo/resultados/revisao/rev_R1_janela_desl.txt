@@ -1,0 +1,8 @@
+A: deslocamento total = 1.82922e-22 ; de janela (desde 10 Hz) = 1.64497e-22 ; fracao anterior a 10 Hz = 0.101
+B (q=1, chi2=+0.0): total (B-A)/A = -4.1e-11 ; janela (B-A)/A = -2.63e-03
+B (q=2, chi2=+0.0): total (B-A)/A = +8.9e-11 ; janela (B-A)/A = -1.59e-02
+B (q=3, chi2=+0.0): total (B-A)/A = +4.1e-07 ; janela (B-A)/A = -9.50e-03
+B (q=4, chi2=+0.0): total (B-A)/A = +0.0e+00 ; janela (B-A)/A = +8.73e-03
+B (q=6, chi2=+0.0): total (B-A)/A = +0.0e+00 ; janela (B-A)/A = -1.35e-02
+B (q=2, chi2=+0.5): total (B-A)/A = +1.0e-10 ; janela (B-A)/A = -3.58e-02
+B (q=3, chi2=-0.5): total (B-A)/A = -2.2e-10 ; janela (B-A)/A = +1.39e-02

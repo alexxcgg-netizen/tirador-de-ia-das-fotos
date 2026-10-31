@@ -1,0 +1,54 @@
+(a) passo de tempo: (v(dt=0.1) - v(dt=0.25)) / |v(dt=0.25)| nos niveis A e C
+  q=1 chi=(+0.0,+0.0) A: desl20 +5.6e-06 desl40 +3.8e-06 spin30 -1.6e-06 cm20 -5.2e-06 cm40 -4.3e-06 giro10 +1.8e-06 giro30 -1.6e-06
+                      C: desl20 +2.3e-07 desl40 +4.6e-07 spin30 -2.9e-06 cm20 -4.4e-07 cm40 -3.4e-06 giro10 +1.8e-06 giro30 -3.6e-06
+                      (A-C)/C com dt=0.1: desl20 -0.0068 desl40 -0.0101 spin30 -0.0049 cm20 +0.0060 cm40 +0.0017 giro10 +0.0000 giro30 -0.0075
+  q=8 chi=(+0.0,+0.0) A: desl20 -1.5e-06 desl40 -1.0e-04 spin30 -2.3e-06 cm20 +4.7e-06 cm40 +2.3e-06 giro10 +1.2e-06 giro30 -2.0e-06
+                      C: desl20 -1.9e-07 desl40 +3.3e-05 spin30 -1.7e-06 cm20 +2.5e-06 cm40 -4.9e-06 giro10 +1.2e-06 giro30 -1.3e-06
+                      (A-C)/C com dt=0.1: desl20 -0.0139 desl40 -0.0268 spin30 -0.0667 cm20 +0.0213 cm40 +0.0013 giro10 -0.0000 giro30 -0.0937
+  q=2 chi=(+0.8,-0.8) A: desl20 +9.1e-06 desl40 -5.6e-05 spin30 -1.5e-06 cm20 -8.3e-06 cm40 +2.1e-05 giro10 +9.3e-07 giro30 -1.0e-06
+                      C: desl20 +0.0e+00 desl40 +0.0e+00 spin30 -3.2e-06 cm20 -3.0e-07 cm40 +6.1e-06 giro10 +9.3e-07 giro30 -3.5e-06
+                      (A-C)/C com dt=0.1: desl20 -0.0109 desl40 -0.0555 spin30 -0.0306 cm20 +0.0096 cm40 +0.0143 giro10 +0.0000 giro30 -0.0453
+  (8 s)
+
+(b) (A - C)/C em funcao do inicio da janela M f0 (t0 = inicio relativo ao pico)
+  q=1 chi=(+0.0,+0.0) M f0=0.004 t0=  -8676 M: spin30 -0.0049 giro30 -0.0075 desl20 -0.0068 cm20 +0.0061 (C: spin30 0.22680)
+  q=1 chi=(+0.0,+0.0) M f0=0.006 t0=  -2755 M: spin30 +0.0073 giro30 +0.0111 desl20 -0.0068 cm20 +0.0061 (C: spin30 0.17959)
+  q=1 chi=(+0.0,+0.0) M f0=0.008 t0=  -1198 M: spin30 +0.0043 giro30 +0.0065 desl20 -0.0067 cm20 +0.0060 (C: spin30 0.15328)
+  q=1 chi=(+0.0,+0.0) M f0=0.010 t0=   -624 M: spin30 +0.0009 giro30 +0.0013 desl20 -0.0065 cm20 +0.0058 (C: spin30 0.13556)
+  q=1 chi=(+0.0,+0.0) M f0=0.012 t0=   -365 M: spin30 -0.0021 giro30 -0.0033 desl20 -0.0064 cm20 +0.0058 (C: spin30 0.12260)
+  q=4 chi=(+0.0,+0.0) M f0=0.004 t0= -13087 M: spin30 -0.0264 giro30 -0.0381 desl20 -0.0137 cm20 +0.0169 (C: spin30 0.11286)
+  q=4 chi=(+0.0,+0.0) M f0=0.006 t0=  -4042 M: spin30 -0.0100 giro30 -0.0145 desl20 -0.0136 cm20 +0.0168 (C: spin30 0.08272)
+  q=4 chi=(+0.0,+0.0) M f0=0.008 t0=  -1696 M: spin30 -0.0039 giro30 -0.0057 desl20 -0.0133 cm20 +0.0163 (C: spin30 0.06547)
+  q=4 chi=(+0.0,+0.0) M f0=0.010 t0=   -837 M: spin30 -0.0052 giro30 -0.0075 desl20 -0.0131 cm20 +0.0161 (C: spin30 0.05427)
+  q=4 chi=(+0.0,+0.0) M f0=0.012 t0=   -468 M: spin30 -0.0062 giro30 -0.0089 desl20 -0.0121 cm20 +0.0148 (C: spin30 0.04644)
+  q=8 chi=(+0.0,+0.0) M f0=0.004 t0= -20681 M: spin30 -0.0667 giro30 -0.0937 desl20 -0.0139 cm20 +0.0213 (C: spin30 0.06160)
+  q=8 chi=(+0.0,+0.0) M f0=0.006 t0=  -6256 M: spin30 -0.0452 giro30 -0.0636 desl20 -0.0136 cm20 +0.0206 (C: spin30 0.04241)
+  q=8 chi=(+0.0,+0.0) M f0=0.008 t0=  -2545 M: spin30 -0.0183 giro30 -0.0258 desl20 -0.0131 cm20 +0.0197 (C: spin30 0.03099)
+  q=8 chi=(+0.0,+0.0) M f0=0.010 t0=  -1213 M: spin30 -0.0074 giro30 -0.0104 desl20 -0.0122 cm20 +0.0181 (C: spin30 0.02396)
+  q=8 chi=(+0.0,+0.0) M f0=0.012 t0=   -642 M: spin30 +0.0043 giro30 +0.0060 desl20 -0.0108 cm20 +0.0159 (C: spin30 0.01906)
+  q=1 chi=(+0.6,+0.6) M f0=0.004 t0=  -9738 M: spin30 -0.0270 giro30 -0.0407 desl20 -0.0081 cm20 +0.0077 (C: spin30 0.32100)
+  q=1 chi=(+0.6,+0.6) M f0=0.006 t0=  -3302 M: spin30 -0.0148 giro30 -0.0224 desl20 -0.0099 cm20 +0.0094 (C: spin30 0.26754)
+  q=1 chi=(+0.6,+0.6) M f0=0.008 t0=  -1532 M: spin30 -0.0132 giro30 -0.0201 desl20 -0.0120 cm20 +0.0114 (C: spin30 0.23620)
+  q=1 chi=(+0.6,+0.6) M f0=0.010 t0=   -846 M: spin30 -0.0135 giro30 -0.0207 desl20 -0.0146 cm20 +0.0138 (C: spin30 0.21444)
+  q=1 chi=(+0.6,+0.6) M f0=0.012 t0=   -522 M: spin30 -0.0139 giro30 -0.0212 desl20 -0.0176 cm20 +0.0167 (C: spin30 0.19786)
+  (10 s)
+
+(c) parte PN: |hB_30|/LO (nivel A) contra |h22|^2/|h22_LO|^2 do substituto e contra |H22_PN(2.5PN)|^2
+  q=1 x=0.0541: A/LO = 0.9216 ; (|h22|/|h22_LO|)^2 = 0.8984 ; |H22_PN|^2 = 0.8861 ; C/LO = 0.9747
+  q=1 x=0.0548: A/LO = 0.9214 ; (|h22|/|h22_LO|)^2 = 0.8979 ; |H22_PN|^2 = 0.8851 ; C/LO = 0.9743
+  q=1 x=0.0556: A/LO = 0.9211 ; (|h22|/|h22_LO|)^2 = 0.8973 ; |H22_PN|^2 = 0.8840 ; C/LO = 0.9739
+  q=8 x=0.0541: A/LO = 0.9208 ; (|h22|/|h22_LO|)^2 = 0.8803 ; |H22_PN|^2 = 0.8688 ; C/LO = 1.0315
+  q=8 x=0.0544: A/LO = 0.9207 ; (|h22|/|h22_LO|)^2 = 0.8800 ; |H22_PN|^2 = 0.8683 ; C/LO = 1.0317
+  q=8 x=0.0546: A/LO = 0.9206 ; (|h22|/|h22_LO|)^2 = 0.8797 ; |H22_PN|^2 = 0.8678 ; C/LO = 1.0320
+  (13 s)
+
+(d) modos (3,1) e (4,2): NRHybSur3dq8 (extrapolado) nivel A, com e sem esses modos; e o _CCE com a mesma lista
+  q=1: spin30 ext 0.224852 -> com (3,1),(4,2) 0.226072 (+5.42e-03 rel.) ; desl20(janela) +2.06e-03 rel. ; giro30 +3.77e-03 rel.
+        spin30 _CCE nivel A 0.225685 (ext/CCE - 1 = -0.0037) ; nivel C (int h30) 0.226798
+  q=2: spin30 ext 0.183214 -> com (3,1),(4,2) 0.184176 (+5.25e-03 rel.) ; desl20(janela) +1.59e-03 rel. ; giro30 +3.56e-03 rel.
+        spin30 _CCE nivel A 0.183741 (ext/CCE - 1 = -0.0029) ; nivel C (int h30) 0.185717
+  q=4: spin30 ext 0.109785 -> com (3,1),(4,2) 0.110506 (+6.57e-03 rel.) ; desl20(janela) +1.13e-03 rel. ; giro30 +4.32e-03 rel.
+        spin30 _CCE nivel A 0.109885 (ext/CCE - 1 = -0.0009) ; nivel C (int h30) 0.112859
+  q=8: spin30 ext 0.057347 -> com (3,1),(4,2) 0.057942 (+1.04e-02 rel.) ; desl20(janela) +1.45e-03 rel. ; giro30 +6.75e-03 rel.
+        spin30 _CCE nivel A 0.057492 (ext/CCE - 1 = -0.0025) ; nivel C (int h30) 0.061602
+  (18 s)

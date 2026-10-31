@@ -1,0 +1,7 @@
+SNR de A no ET (ouro, f_min 10 Hz): 901.1
+q_B 1.190: ET 1-match ouro 4.147e-04 (rho_crit 34.7) ; max. em phi_B 3.714e-04 (rho_crit 36.7)
+q_B 1.195: ET 1-match ouro 1.031e-04 (rho_crit 69.6) ; max. em phi_B 9.261e-05 (rho_crit 73.5)
+q_B 1.205: ET 1-match ouro 1.042e-04 (rho_crit 69.3) ; max. em phi_B 9.169e-05 (rho_crit 73.8)
+q_B 1.210: ET 1-match ouro 4.190e-04 (rho_crit 34.5) ; max. em phi_B 3.649e-04 (rho_crit 37.0)
+phi_B = 0  : 1-match = 4.32 dq^2.01 -> |dq| nao separado na SNR do ET (901): 0.00039
+max. phi_B : 1-match = 3.65 dq^2.00 -> |dq| nao separado na SNR do ET (901): 0.00041

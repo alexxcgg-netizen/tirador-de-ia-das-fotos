@@ -1,0 +1,33 @@
+M = 65, q = 1.2, 10 Hz: eta = 0.24793, x0 = 0.04660
+(11a/11b) valores de janela: energia/[eta(xf-x0)/2], desl20/[Favata LO(xf) - LO(x0)], spin30 (Im)
+  e0 = 0.0 codigo, soma         E/ref: 1.000152 1.001115 1.001597 1.001838
+        desl20/ref: 1.000152 1.001115 1.001597 1.001838 ; spin30: 0.198695 0.198736 0.198756 0.198766
+        v(dt/2)-v(dt) rel. (desl20): +9.63e-04 +4.81e-04 +2.41e-04 ; (spin30): +2.06e-04 +1.02e-04 +5.10e-05 ; Richardson 1a ordem desl20/ref = 1.002079, 2a = 1.001918
+  e0 = 0.0 codigo, trapezio     E/ref: 1.000033 1.001055 1.001566 1.001823
+        desl20/ref: 1.000033 1.001055 1.001566 1.001823 ; spin30: 0.198669 0.198723 0.198750 0.198763
+        v(dt/2)-v(dt) rel. (desl20): +1.02e-03 +5.11e-04 +2.56e-04 ; (spin30): +2.70e-04 +1.35e-04 +6.73e-05 ; Richardson 1a ordem desl20/ref = 1.002079, 2a = 1.001908
+  e0 = 0.0 analitico, trapezio  E/ref: 1.000001 1.000000 1.000000 1.000000
+        desl20/ref: 1.000001 1.000000 1.000000 1.000000 ; spin30: 0.198613 0.198613 0.198613 0.198613
+        v(dt/2)-v(dt) rel. (desl20): -6.50e-07 -1.63e-07 -4.06e-08 ; (spin30): -1.84e-07 -4.60e-08 -1.15e-08 ; Richardson 1a ordem desl20/ref = 1.000000, 2a = 1.000000
+  (4 s)
+  e0 = 0.3 codigo, soma         E/ref: 0.963356 0.964391 0.964910 0.965171
+        desl20/ref: 0.963015 0.964049 0.964569 0.964829 ; spin30: 0.176761 0.176806 0.176828 0.176839
+        v(dt/2)-v(dt) rel. (desl20): +1.07e-03 +5.39e-04 +2.70e-04 ; (spin30): +2.54e-04 +1.26e-04 +6.30e-05 ; Richardson 1a ordem desl20/ref = 0.965090, 2a = 0.964916
+  e0 = 0.3 codigo, trapezio     E/ref: 0.963229 0.964326 0.964878 0.965155
+        desl20/ref: 0.962887 0.963985 0.964536 0.964813 ; spin30: 0.176733 0.176792 0.176821 0.176836
+        v(dt/2)-v(dt) rel. (desl20): +1.14e-03 +5.72e-04 +2.87e-04 ; (spin30): +3.33e-04 +1.66e-04 +8.31e-05 ; Richardson 1a ordem desl20/ref = 0.965089, 2a = 0.964905
+  e0 = 0.3 analitico, trapezio  E/ref: 0.962940 0.962938 0.962937 0.962937
+        desl20/ref: 0.962600 0.962598 0.962598 0.962598 ; spin30: 0.176660 0.176660 0.176660 0.176660
+        v(dt/2)-v(dt) rel. (desl20): -1.66e-06 -4.16e-07 -1.04e-07 ; (spin30): -5.28e-07 -1.32e-07 -3.30e-08 ; Richardson 1a ordem desl20/ref = 0.962598, 2a = 0.962598
+  (7 s)
+  razao e0=0.3 / e0=0 (codigo, soma) em dt = 0.5..0.0625: desl20 0.962868 0.962976 0.963031 0.963059 ; spin30 0.889609 0.889653 0.889674 0.889685
+  razao e0=0.3 / e0=0 (analitico, trapezio) em dt = 0.5..0.0625: desl20 0.962599 0.962598 0.962598 0.962598 ; spin30 0.889471 0.889470 0.889470 0.889470
+
+(11c) |d^3(r^2 e^{-2i phi})/dt^3|^2 / adiabatico = 1 + 28416*eta**2/(25*a**5)
+      correcao relativa nao adiabatica da energia de janela (circular, x0 -> 1/6): 2.08e-03 ; em a = 6: 8.99e-03
+
+(8) modo (2,0) oscilatorio (analitico, dt = 0.25): valores ABSOLUTOS de janela (unidades de M)
+  e0 = 0.1: E_janela = 1.473091e-02, E(2,0) = 2.625e-07 ; desl20 = 2.723895e-02, desl20(sem) - desl20(com) = +4.854e-07 (rel. +1.78e-05)
+  e0 = 0.2: E_janela = 1.479315e-02, E(2,0) = 1.076e-06 ; desl20 = 2.735102e-02, desl20(sem) - desl20(com) = +1.990e-06 (rel. +7.28e-05)
+  e0 = 0.3: E_janela = 1.433322e-02, E(2,0) = 2.529e-06 ; desl20 = 2.649517e-02, desl20(sem) - desl20(com) = +4.676e-06 (rel. +1.76e-04)
+  (8 s)

@@ -1,9 +1,9 @@
 A no nivel A: deslocamento 1.82922e-22, spin -2.49791e-25, cm -3.06871e-26, giroscopica -3.15646e-41
 A no nivel B: deslocamento 1.82908e-22, spin -2.49780e-25, cm -3.06857e-26, giroscopica -3.15647e-41
 A no nivel C: deslocamento 1.85127e-22, spin -2.53147e-25, cm -3.10165e-26, giroscopica -3.16316e-41
-par q_B = 1.0, chi2_B = +0.0: max dif. memorias  A 4.1e-11 | B 5.7e-06 | C 4.4e-03  -> resolvido em C: residuo 5.1e-12 (exata); desloca M +0.039, chi1 +0.0135, D +0.54 Mpc, iota +0.03 graus
-par q_B = 2.0, chi2_B = +0.0: max dif. memorias  A 8.9e-11 | B 1.7e-05 | C 5.6e-03  -> resolvido em C: residuo 4.4e-11 (exata); desloca M -0.043, chi1 -0.0205, D -1.24 Mpc, iota +0.52 graus
-par q_B = 3.0, chi2_B = +0.0: max dif. memorias  A 3.0e-06 | B 4.3e-05 | C 1.7e-02  -> resolvido em C: residuo 1.3e-11 (exata); desloca M +0.343, chi1 -0.0605, D -4.77 Mpc, iota +1.54 graus
+par q_B = 1.0, chi2_B = +0.0: max dif. memorias  A 4.1e-11 | B 5.7e-06 | C 4.4e-03  -> resolvido em C: residuo 3.8e-12 (exata); desloca M +0.039, chi1 +0.0135, D +0.54 Mpc, iota +0.03 graus
+par q_B = 2.0, chi2_B = +0.0: max dif. memorias  A 8.9e-11 | B 1.7e-05 | C 5.6e-03  -> resolvido em C: residuo 1.1e-10 (exata); desloca M -0.043, chi1 -0.0205, D -1.24 Mpc, iota +0.52 graus
+par q_B = 3.0, chi2_B = +0.0: max dif. memorias  A 3.0e-06 | B 4.3e-05 | C 1.7e-02  -> resolvido em C: residuo 6.4e-12 (exata); desloca M +0.343, chi1 -0.0605, D -4.77 Mpc, iota +1.54 graus
 par q_B = 4.0, chi2_B = +0.0: max dif. memorias  A 1.5e-02 | B 1.5e-02 | C 1.9e-02  -> resolvido em C: residuo 6.3e-03 (aproximada); desloca M -0.570, chi1 +0.0000, D +0.64 Mpc, iota +0.26 graus
 par q_B = 6.0, chi2_B = +0.0: max dif. memorias  A 7.8e-02 | B 7.8e-02 | C 6.4e-02  -> resolvido em C: residuo 7.4e-02 (destruida); desloca M -0.539, chi1 +0.0000, D -0.27 Mpc, iota +0.19 graus
 par q_B = 2.0, chi2_B = +0.5: max dif. memorias  A 1.0e-10 | B 7.2e-05 | C 6.4e-03  -> resolvido em C: residuo 1.4e-07 (aproximada); desloca M -0.114, chi1 -0.0021, D -0.37 Mpc, iota +0.38 graus

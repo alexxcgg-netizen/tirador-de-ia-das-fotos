@@ -1,0 +1,11 @@
+caso e0 = 0.2, q_B = 1.2, chi2_B = -0.2 ; passos h_chi1 = 2e-03, h_M = 0.05 Msol ; partida = solucao do json (residuo json 2.40e-04)
+  it 0: max|r| 3.690e-04 r [+3.69e-04 -1.06e-05 +7.45e-05] iota 46.1708 graus chi1 +0.55650 M 65.9059 D 413.03
+  it 1: valores singulares (escalados) 3.71e-02 2.30e-03 5.07e-04 ; passo Newton dx = (-1.33e-03 rad, +5.76e-03, +2.935e-02 Msol)
+        alfa 1.000: max|r| 3.559e-04 r [-1.42e-04 -3.41e-05 -3.56e-04] iota 46.0946 graus chi1 +0.56226 M 65.9352 D 413.36
+  it 2: valores singulares (escalados) 3.73e-02 2.29e-03 4.04e-04 ; passo Newton dx = (+3.35e-04 rad, -9.03e-04, -6.808e-03 Msol)
+        alfa 1.000: max|r| 8.116e-05 r [+2.97e-05 +1.44e-05 +8.12e-05] iota 46.1138 graus chi1 +0.56135 M 65.9284 D 413.38
+  it 3: valores singulares (escalados) 3.71e-02 2.32e-03 5.38e-04 ; passo Newton dx = (-5.15e-05 rad, +1.10e-04, +1.316e-03 Msol)
+        alfa 1.000: max|r| 3.068e-05 r [-1.72e-05 -4.99e-07 -3.07e-05] iota 46.1108 graus chi1 +0.56146 M 65.9297 D 413.37
+  it 4: valores singulares (escalados) 3.73e-02 2.31e-03 3.30e-04 ; passo Newton dx = (+6.49e-05 rad, -2.27e-04, -1.179e-03 Msol)
+        nenhum alfa reduz max|r| (ultimo tentado: max|r| 2.238e-04) -> para
+(24 avaliacoes do modelo, 16 s)

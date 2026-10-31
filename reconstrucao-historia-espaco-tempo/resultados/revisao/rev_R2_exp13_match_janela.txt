@@ -1,0 +1,20 @@
+chi_s = -0.5
+  d = 0.0125: inicio de B - inicio de A = +0.0 M | 1-match: exp07 9.556e-07 ; x16 9.556e-07 ; x16 + janela + rampa 9.587e-07 (rho_crit 722.2)
+  d = 0.0250: inicio de B - inicio de A = +0.0 M | 1-match: exp07 3.827e-06 ; x16 3.827e-06 ; x16 + janela + rampa 3.839e-06 (rho_crit 360.9)
+  d = 0.0500: inicio de B - inicio de A = +0.0 M | 1-match: exp07 1.534e-05 ; x16 1.534e-05 ; x16 + janela + rampa 1.539e-05 (rho_crit 180.2)
+  d = 0.1000: inicio de B - inicio de A = +0.0 M | 1-match: exp07 6.169e-05 ; x16 6.169e-05 ; x16 + janela + rampa 6.188e-05 (rho_crit 89.9)
+  d = 0.2000: inicio de B - inicio de A = +0.0 M | 1-match: exp07 2.497e-04 ; x16 2.450e-04 ; x16 + janela + rampa 2.448e-04 (rho_crit 45.2)
+  d = 0.3000: inicio de B - inicio de A = +0.0 M | 1-match: exp07 5.698e-04 ; x16 5.456e-04 ; x16 + janela + rampa 5.460e-04 (rho_crit 30.3)
+  expoentes 1-match: exp07 2.01 ; x16 2.00 ; x16 + janela + rampa 2.00
+  coeficiente com janela: rho_crit * d = 9.0 9.0 9.0 9.0 9.0 9.1
+chi_s = +0.3
+  d = 0.0125: inicio de B - inicio de A = +0.0 M | 1-match: exp07 8.435e-07 ; x16 8.435e-07 ; x16 + janela + rampa 8.464e-07 (rho_crit 768.6)
+  d = 0.0250: inicio de B - inicio de A = +0.0 M | 1-match: exp07 3.376e-06 ; x16 3.376e-06 ; x16 + janela + rampa 3.387e-06 (rho_crit 384.2)
+  d = 0.0500: inicio de B - inicio de A = +0.0 M | 1-match: exp07 1.353e-05 ; x16 1.353e-05 ; x16 + janela + rampa 1.357e-05 (rho_crit 191.9)
+  d = 0.1000: inicio de B - inicio de A = +0.0 M | 1-match: exp07 5.450e-05 ; x16 5.450e-05 ; x16 + janela + rampa 5.467e-05 (rho_crit 95.6)
+  d = 0.2000: inicio de B - inicio de A = -0.5 M | 1-match: exp07 1.204e-03 ; x16 2.932e-04 ; x16 + janela + rampa 2.242e-04 (rho_crit 47.2)
+  d = 0.3000: inicio de B - inicio de A = -1.2 M | 1-match: exp07 1.948e-03 ; x16 7.878e-04 ; x16 + janela + rampa 5.191e-04 (rho_crit 31.0)
+  d = 0.4000: inicio de B - inicio de A = -2.5 M | 1-match: exp07 1.853e-03 ; x16 1.626e-03 ; x16 + janela + rampa 9.400e-04 (rho_crit 23.1)
+  d = 0.5000: inicio de B - inicio de A = -3.8 M | 1-match: exp07 2.803e-03 ; x16 2.422e-03 ; x16 + janela + rampa 1.515e-03 (rho_crit 18.2)
+  expoentes 1-match: exp07 2.36 ; x16 2.19 ; x16 + janela + rampa 2.03
+  coeficiente com janela: rho_crit * d = 9.6 9.6 9.6 9.6 9.4 9.3 9.2 9.1

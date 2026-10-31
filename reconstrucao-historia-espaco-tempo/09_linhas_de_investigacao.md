@@ -22,16 +22,28 @@ instalados; média = exige aproximações; baixa = depende de dados ou código i
 | L06 Informação mútua e aprendizado de máquina | teoria da informação, IA | B | alta | D3 |
 | L07 O que um detector mede de fato | óptica, interferometria | B | alta | D3 |
 | L08 Recuperação exata de fase pelos fluxos | análise harmônica, sistemas dinâmicos | A | alta | D5 |
-| L09 Memória no *ringdown* | RG, teoria de perturbações | B | alta | D5 |
+| L09 Memória no *ringdown* | RG, teoria de perturbações | C (já publicada: [EN2025b] eq. 3.29) | alta | D5 (checagem curta) |
 | L10 Precessão: multipolos $m\neq0$ e spins no plano | RG, BMS | A | média | D6 |
 | L11 Zeros da memória no céu (Poincaré–Hopf) | topologia | B | média | D6 |
-| L12 Limites para a memória pelo teorema da área | termodinâmica de buracos negros | B | alta | D4 |
-| L13 Canais não gravitacionais: núcleo e degenerescência | teoria de campos, astrofísica | B | alta | D4 |
-| L14 Janelas × momentos (memórias superiores) | matemática aplicada | B | alta | D7 |
-| L15 Generalização do Teorema 1 a outros campos | teoria de campos | C | alta | D7 |
+| L12 Limites para a memória pelo teorema da área | termodinâmica de buracos negros | B (só a memória ordinária tem limite publicado [MW2019]) | alta | D4 |
+| L13 Canais não gravitacionais: núcleo e degenerescência | teoria de campos, astrofísica | C (núcleo conhecido [MW2019]) | alta | D4 (breve) |
+| L14 Janelas × momentos (memórias superiores) | matemática aplicada | B | alta | D4 |
+| L15 Generalização do Teorema 1 a outros campos | teoria de campos | C | alta | D4 (breve) |
 | L16 Excentricidade: dimensão da família e anomalia | RG, PN, EOB | B | alta | D8 |
-| L17 Estrelas de nêutrons: marés na memória | astrofísica nuclear | B | média | D8 |
+| L17 Estrelas de nêutrons: marés na memória | astrofísica nuclear | C (já proposta: [Kennefick1994]; [LTE2024]) | média | não desenvolvida |
 | L18 Cargas suaves como informação (BMS e quântica) | BMS, mecânica quântica | C | média | D1 (parte) |
+| L19 Memória de CM como atraso: $M_f$ por memória + onda | BMS, RG numérica | A | alta | D8 |
+
+**Atualização depois da revisão adversarial** (`08_revisao_e_correcoes.md`). A literatura (R5) mostrou que:
+- L09 já está publicada [EN2025b];
+- o núcleo de L13 é conhecido [MW2019];
+- L17 foi proposta em 1994 [Kennefick1994];
+- L12 tem precedente para a memória **ordinária** [MW2019];
+- a degenerescência da memória sozinha é conhecida qualitativamente [McNeill2017; ET2020].
+
+A revisão também mostrou que um interferômetro não mede as quatro memórias integradas (C10). Por isso a
+pergunta central de L05–L07, o conteúdo de informação da **forma de onda da memória na banda**, passou a
+ser a mais importante. A linha L19 foi criada a partir de um achado da revisão (C9).
 
 ---
 
@@ -231,3 +243,19 @@ instalados; média = exige aproximações; baixa = depende de dados ou código i
 - **Hipótese.** O espectro $|J^E_{\ell0}|$ decai rapidamente com $\ell$, e o conteúdo efetivo é de
   poucos números, dominado por $\ell=2$.
 - **Teste.** Multipolos até $\ell=10$ no nível A.
+
+## L19 — Memória de CM como atraso: $M_f$ por memória + onda
+
+- **Pergunta.** A parte ordinária da memória de CM vale $\mathcal K_{20}/J_{20}=-M_f/2$ ([Nichols2018]
+  eq. 4.23, com $M_f$). Isso significa que o degrau de memória da deformação chega $M_f/2$ depois do
+  degrau previsto pelo fluxo? Dá para medir $M_f$ comparando a memória observada com a memória prevista
+  pela onda oscilatória?
+- **Hipótese.** O transiente do $h_{20}$ de RN em torno do pico (exp09: até ~18% do total, 4–9 M depois
+  do pico) é esse atraso: $h_{\rm RN}(t)-h_{\rm fluxo}(t)\approx-\delta\,\dot h_{\rm fluxo}(t)$, com
+  $\delta=M_f/2$ para $\ell=2$.
+- **Fundamentação.** $\Delta\mathcal K=\int(\Phi-\Phi^{(n)})du-[u(\Phi-\Phi^{(n)})]$ [Nichols2018]
+  e o balanço do aspecto de massa de Bondi.
+- **Teste.** Alinhar no tempo os modos $m=0$ do substituto com a memória nula acumulada pelo fluxo, para
+  $q$ de 1 a 8, e comparar o atraso com $M_f/2$. Estimar a precisão em ET e CE.
+- **Contribuição possível.** Um observável combinado (memória + onda) para a massa final, a resposta
+  direta ao pedido de "uma combinação de memória e forma de onda".

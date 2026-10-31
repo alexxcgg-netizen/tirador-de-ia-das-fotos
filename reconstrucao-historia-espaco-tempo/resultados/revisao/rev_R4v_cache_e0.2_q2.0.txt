@@ -1,0 +1,13 @@
+caso e0 = 0.2, q_B = 2.0, chi2_B = +0.0 ; json: residuo 1.2555626206539882e-06, M 72.58751856580029, c1 0.05960457850002948, D 383.2300201455616, iota 0.9828521562129396
+  partida 0: residuo do otimizador 1.2556e-06 ; M 72.5875185658003 c1 +0.0596045785 iota 0.9828521562 D 383.23002015 ; colisoes nesta partida 97 ; ponto final colidido: True
+      ponto que o cache devolveu no fim: dM +2.411e-10 Msol, dc1 +1.879e-10
+      reavaliado sem cache (4 memorias): max 7.1325e-06 [desl +6.65e-06 spin -3.74e-06 cm -7.13e-06 giro -3.40e-06]
+  partida 1: residuo do otimizador 3.7662e-03 ; M 72.4714180035258 c1 +0.0966781626 iota 0.9799890367 D 384.42453236 ; colisoes nesta partida 49 ; ponto final colidido: True
+      ponto que o cache devolveu no fim: dM +1.579e-10 Msol, dc1 +4.456e-10
+      reavaliado sem cache (4 memorias): max 3.7621e-03 [desl +1.33e-05 spin -2.05e-03 cm +3.76e-03 giro +1.05e-03]
+  partida 2: residuo do otimizador 6.1142e-06 ; M 72.5876739585002 c1 +0.0596090487 iota 0.9828486308 D 383.23186142 ; colisoes nesta partida 97 ; ponto final colidido: True
+      ponto que o cache devolveu no fim: dM +2.560e-10 Msol, dc1 +2.784e-10
+      reavaliado sem cache (4 memorias): max 4.2544e-06 [desl -3.73e-06 spin +1.06e-07 cm -1.02e-06 giro +4.25e-06]
+melhor: residuo 1.2555626206539882e-06 (json 1.2555626206539882e-06) ; M 72.58751856580029 (json 72.58751856580029) ; bit a bit igual ao json: residuo True, M True, D True
+avaliacoes novas do modelo 254 ; colisoes no total 243 ; (108 s)
+  colisoes: |dM| ate 2.6e-10 Msol, |dc1| ate 4.5e-10

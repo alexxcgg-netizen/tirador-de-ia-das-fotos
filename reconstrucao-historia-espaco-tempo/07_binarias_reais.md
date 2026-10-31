@@ -1,5 +1,20 @@
 # Etapa 6 — A degenerescência sobrevive em binárias reais de buracos negros?
 
+> **Errata (etapa 7).** Este documento foi revisto por cinco revisores independentes, com contraprova
+> (`08_revisao_e_correcoes.md`). Correções principais:
+> - os pares "exatos" valem para as memórias teóricas só com multipolos $m=0$ e deslocamento total
+>   desde $x=0$; com o deslocamento de janela e os $m\neq0$ eles diferem até 3% (C7, C8);
+> - o piso numérico do nível A é $\sim3\times10^{-6}$, não $10^{-10}$ (C1);
+> - um interferômetro não mede a giroscópica e confunde o CM com o instante de chegada (C10);
+> - a memória resolvida no tempo separa os pares com SNR de memória 3–14, não 20–300 (C11);
+> - duas janelas deixam uma família aproximada (C17);
+> - o nível C não é padrão-ouro para spin e giroscópica (C18);
+> - a SNR da memória nula de A é 0,47 / 0,89 / 8,6 / 34 (C6);
+> - novos pares excêntricos (C22) e a anomalia $\ell_0$ como dimensão a mais (C24);
+> - várias afirmações [D] são conhecidas ou corolários (seção 2 do 08).
+>
+> As notas **[Corrigido: Cn]** no texto remetem a esses itens.
+
 **Pergunta.** As etapas 3 a 5 mostraram que histórias diferentes podem deixar as mesmas quatro
 memórias (deslocamento, spin, centro de massa e giroscópica) com formas de onda diferentes. Mas as
 fontes eram artificiais, com dinâmica prescrita. Aqui a fonte é uma binária de buracos negros da
@@ -17,7 +32,7 @@ uma propriedade matemática de fontes artificiais ou uma limitação real da rec
    exata** (analítico §2.2 + numérico §3.3). Um observador mede 4 números, e a binária tem pelo
    menos 6 parâmetros. Construí binárias com massa, razão de massas, spins, distância, inclinação e
    recuo diferentes cujas quatro memórias coincidem em $10^{-10}$ (substituto de relatividade
-   numérica, RN). Também construí pares circular × excêntrica ($e_0=0{,}2$ e $0{,}3$ em 10 Hz) que
+   numérica, RN). **[Corrigido: C1, C7, C8 — piso real $\sim10^{-6}$; vale para a projeção $m=0$ com deslocamento total.]** Também construí pares circular × excêntrica ($e_0=0{,}2$ e $0{,}3$ em 10 Hz) que
    coincidem em $\sim10^{-5}$ (modelo SEOBNRv5EHM, com inspiral, fusão e *ringdown*).
 3. **A degenerescência resiste às três camadas de correção** (§3.4):
    - nível A (ordem quadrática, a das etapas 3–5);
@@ -30,7 +45,7 @@ uma propriedade matemática de fontes artificiais ou uma limitação real da rec
    a simetria pós-newtoniana que existia na ordem dominante é destruída na ordem seguinte.
 4. **As formas de onda completas desses pares são diferentes.** O *match* em aLIGO fica entre 0,50
    e 0,985, e os pares são distinguíveis a partir de SNR de 1 a 6. O sistema de referência tem
-   SNR 66.
+   SNR 66. **[Corrigido: C3 — vale para os pares escolhidos; a família passa por A, e a onda a reduz à incerteza usual de estimação.]**
 5. **No céu inteiro (todos os multipolos), as memórias de binárias genéricas são quase injetivas**
    (numérico, §3.2). Não há par exato, e o mais próximo difere em 0,5%, menos que o erro do próprio
    modelo. Há uma exceção estrutural: com massas iguais, as memórias só veem a assimetria dos spins
@@ -43,7 +58,7 @@ uma propriedade matemática de fontes artificiais ou uma limitação real da rec
    - 2–3% de erro com as leis de balanço;
    - até 13% com os modos $m=0$ do substituto.
 
-   A forma mais simples e robusta do mesmo princípio é medir as memórias em duas janelas. Pares
+   A forma mais simples e robusta do mesmo princípio é medir as memórias em duas janelas. **[Corrigido: C17 — duas janelas deixam uma família aproximada, com resíduo de $4\times10^{-5}$ a $2\times10^{-3}$.]** Pares
    idênticos com a janela começando em 10 Hz diferem de $2\times10^{-3}$ a $5\times10^{-2}$ com
    início em 5 ou 20 Hz.
 7. **Conclusão** (§6). A família infinita é propriedade do mapa "radiação → memória" para fontes
@@ -51,7 +66,7 @@ uma propriedade matemática de fontes artificiais ou uma limitação real da rec
    quatro memórias integradas. Ela importa na prática quando só a memória é observada (memória
    "órfã" de fontes fora da banda [McNeill2017]). Quando a onda oscilatória é observada, ela resolve
    a ambiguidade com folga. A precisão necessária para separar os pares só pela memória exige SNR
-   de memória de 20 a 300. O sistema de referência dá 0,8 (aLIGO), 1,4 (A+), 11 (ET) e 39 (CE).
+   de memória de 20 a 300. **[Corrigido: C11 — a memória resolvida no tempo separa os pares com $\rho_{\rm mem}\approx3$–14 (29–41 para $q_B=1$); duas janelas exigiriam $10^2$–$10^3$.]** O sistema de referência dá 0,8 (aLIGO), 1,4 (A+), 11 (ET) e 39 (CE).
 
 Rótulos: **[E]** estabelecido (com referência), **[D]** derivado ou verificado aqui, **[H]** hipótese,
 **[S]** especulação. Além disso, cada resultado diz se é **analítico** (vale para qualquer sistema da
@@ -91,7 +106,7 @@ giroscópica foi conferida contra o resultado pós-newtoniano de [FS2025] (exp01
 
 Para spins alinhados, depois da integração no tempo só sobrevivem os multipolos $m=0$ das memórias.
 Os de $m\neq0$ vêm de produtos de modos com $m$ diferentes, que oscilam como $e^{-i(m-m')\psi}$; a
-integral deles é só um termo de borda da janela **[D]**. O vetor global (céu inteiro, referencial da fonte) é
+integral deles é só um termo de borda da janela **[D]**. **[Corrigido: C7 — a borda final é física e muda o spin no observador em ±1,4% conforme o azimute.]** O vetor global (céu inteiro, referencial da fonte) é
 
 $$\mu(\lambda)=\big(J^E_{20},\,J^E_{40},\,S_{30},\,\mathcal K_{20},\,\mathcal K_{40},\,\Phi_{10},\,\Phi_{30}\big),$$
 
@@ -100,7 +115,7 @@ e no observador as quatro memórias valem, com escala exata por análise dimensi
 $$\Delta h_+=\frac MD\,d(\iota),\qquad \int\! h_\times du=\frac{M^2}{D}\,s(\iota),\qquad
 \int\! h_+du\Big|_{\rm CM}=\frac{M^2}{D}\,c(\iota),\qquad \Phi=\Big(\frac MD\Big)^2 g(\iota),$$
 
-onde $d=\sum_\ell{\rm Re}\,J^E_{\ell0}\,{}_{-2}Y_{\ell0}(\iota)$ e analogamente para $s$, $c$ e $g$ (este com
+**[Corrigido: C9 — a memória de CM é o $\Delta\mathcal K$ de Nichols 2018, eq. 3.11, não $\int h_+du$, que diverge.]** Aqui $d=\sum_\ell{\rm Re}\,J^E_{\ell0}\,{}_{-2}Y_{\ell0}(\iota)$ e analogamente para $s$, $c$ e $g$ (este com
 ${}_0Y_{\ell0}$). Os coeficientes dependem de $\lambda$ e da janela.
 
 ### 1.3 Janela
@@ -221,7 +236,7 @@ massa de *chirp* $\mathcal M$. Mas então $\Psi_{\lambda'}=\Psi_\lambda$ nessa o
 formas diferentes; a fusão e o *ringdown* dependem de $(M,\eta,\chi)$. Igualar $|\tilde h|$ na banda
 inteira força, genericamente, $\lambda'=\lambda$.
 
-**Conclusão:** a família infinita de histórias da etapa 3 não contém pares de binárias da RG.
+**Conclusão:** a família infinita de histórias da etapa 3 não contém pares de binárias da RG. **[Corrigido: C14 — o argumento era heurístico; a prova com os harmônicos $m=2,3,4$ deixa só translação no tempo e fase global.]**
 Ressalva: o argumento usa fase estacionária e vale para a inspiral; a fusão é tratada numericamente
 (§3.2).
 
@@ -270,7 +285,7 @@ Com spins alinhados, o recuo $\vec v$ fica no plano orbital. Uma rotação de $\
 orbital leva $\vec v\to-\vec v$ e não muda os multipolos $m=0$. Então estes só dependem de $\vec v$ em
 ordem par: $O(v^2)\sim10^{-7}$, como a parte $\ell=2$ do aspecto de massa de um buraco negro em
 movimento. A parte linear em $v$ fica nos multipolos $m=\pm1$. Logo, as quatro memórias $m=0$ de um
-observador não fixam o recuo. Os pares exatos da §3.3 têm recuos de 18 a 227 km/s, contra 77 km/s de A.
+observador não fixam o recuo. Os pares exatos da §3.3 têm recuos de 18 a 227 km/s, contra 77 km/s de A. **[Corrigido: C15 — o argumento de simetria não vale ($\lvert v\rvert$ depende de $\lambda$ em 1ª ordem); a conclusão vale pela família.]**
 
 ### 2.5 Massas iguais: as memórias só veem a assimetria dos spins em 2ª ordem [D, analítico]
 
@@ -310,6 +325,8 @@ $|\dot h_{\ell m}|^2=m^2\Omega^2|h_{\ell m}|^2$, o que dá a relação de órbit
 $$\dot h_{20}=C_E\,|\dot h_{22}|^2,\qquad C_E=\frac1{\sqrt{24}}\Big\langle|{}_{-2}Y_{22}|^2+|{}_{-2}Y_{2,-2}|^2,\,Y_{20}\Big\rangle=0{,}073576,$$
 
 $$\boxed{\ \Omega_{\rm mem}(u)=\frac{\dot h_{20}(u)}{C\,|h_{30}(u)|}\ },\qquad C=5{,}0397 .$$
+
+**[Corrigido: C16 — analiticamente $C=2C_E/C_J=40\sqrt7/21=5{,}03953$; a proposição exige suporte conexo.]**
 
 Integrando, $\psi_{\rm mem}=\int\Omega_{\rm mem}du$. A amplitude sai de
 $|h_{22}|=\sqrt{\dot h_{20}/C_E}\,/(2\Omega_{\rm mem})$. **Os dois modos de memória, resolvidos no tempo,
@@ -386,7 +403,7 @@ $(1,\ \chi_s,\ \chi_s)$, para $M=65$, $D=400$ Mpc e $\iota=50°$:
 | −0,5 | 0,1 | $1{,}2\times10^{-3}$ | $6{,}2\times10^{-5}$ | 90 | 0,016 |
 | −0,5 | 0,2 | $4{,}8\times10^{-3}$ | $2{,}5\times10^{-4}$ | 45 | 0,032 |
 | +0,3 | 0,1 | $1{,}8\times10^{-3}$ | $5{,}5\times10^{-5}$ | 96 | 0,016 |
-| +0,3 | 0,2 | $8{,}0\times10^{-3}$ | $1{,}2\times10^{-3}$ | 20 | 0,032 |
+| +0,3 | 0,2 | $8{,}0\times10^{-3}$ | ~~$1{,}2\times10^{-3}$~~ $2{,}2\times10^{-4}$ | ~~20~~ 47 **[C4]** | 0,032 |
 
 - Expoentes medidos: memórias $\propto d^{2,0}$, 1 − match $\propto d^{2,0}$ e $|h_{21}|/|h_{22}|\propto d^{1,0}$.
 - A onda separa os dois sistemas a partir de $\rho\approx9/d$. As memórias só os separariam com SNR de
@@ -437,7 +454,8 @@ com a onda oscilatória:
 
 | Detector | aLIGO | A+ | ET | CE |
 |---|---|---|---|---|
-| SNR da memória | 0,76 | 1,44 | 10,7 | 39,1 |
+| SNR da memória (modos $m=0$ completos) | 0,76 | 1,44 | 10,7 | 39,1 |
+| SNR da memória **nula** (pelo fluxo) **[C6]** | 0,47 | 0,89 | 8,6 | 34 |
 | SNR da onda oscilatória | 66 | 126 | 899 | 3203 |
 
 A razão é $1{,}2\times10^{-2}$ em todos. Isso é da mesma ordem das estimativas da literatura, segundo
@@ -521,7 +539,7 @@ $e_0=0$, calculado pelo mesmo modelo, com deslocamento de janela. B é excêntri
 | 0,2 | 1; 0 | 65,61 | +0,668 | 421,6 | 44,0° | $5{,}6\times10^{-5}$ | 0,635 (1,2) | 0,466 | 119 |
 | 0,3 | 1,2; −0,2 | 67,39 | +0,671 | 416,6 | 44,4° | $1{,}2\times10^{-2}$ | 0,841 | 0,607 | 127 |
 
-Recuo de A: 72 km/s.
+Recuo de A: 72 km/s. **[Corrigido: C22 — os casos $q_B=1{,}2$ e 1 eram soluções mal convergidas; resolvidos de novo ficam em $6{,}8\times10^{-6}$, $1{,}8\times10^{-5}$ e $7{,}8\times10^{-6}$. C24 — com outro $\ell_0$ os pares deixam de coincidir (até $1{,}9\times10^{-2}$), mas a família persiste: dimensão 4.]**
 - O piso numérico do SEOBNRv5EHM é $\sim10^{-5}$: variação de $10^{-5}$–$10^{-4}$ sob passos de
   $10^{-6}$ em $M$, e diferenças da mesma ordem entre execuções repetidas.
 - **Binárias excêntricas podem ter exatamente as memórias de uma circular** (no piso numérico do
@@ -588,7 +606,7 @@ frequência:
 | (2, +0,5) | 20 Hz | $+5{,}0\times10^{-2}$ | $+4{,}0\times10^{-2}$ | $\lesssim2\times10^{-4}$ | $\lesssim8\times10^{-4}$ |
 
 A coincidência de $10^{-10}$ vale só para a janela em que foi construída. Mas separar os pares assim
-exige SNR de memória de 20 a 300 (§3.3), fora do alcance de qualquer detector previsto para este
+exige SNR de memória de 20 a 300 **[Corrigido: C11 — com duas janelas $10^2$–$10^3$; com a memória resolvida no tempo, 3–14 nos pares do exp07]** (§3.3), fora do alcance de qualquer detector previsto para este
 sistema; CE chega perto só do par (2, +0,5).
 
 ---
@@ -616,7 +634,7 @@ sistema; CE chega perto só do par (2, +0,5).
 - memória de binárias excêntricas [Favata2011; EBF2019] e memória giroscópica PN [FS2025];
 - modelos para o modo (2,0) e o efeito da memória na estimativa de parâmetros [RS2025; RH2025];
 - a memória quebra a degenerescência distância–inclinação a partir de SNR ~90 [Xu2024]. No LISA, por
-  análise de Fisher, ela ajuda pouco a estimar parâmetros de binárias massivas [GVB2023]. Aqui aparece
+  análise de Fisher, ela ajuda pouco a estimar parâmetros de binárias massivas [Gasparotto2023]. Aqui aparece
   um mecanismo parecido: a giroscópica ($\propto D^{-2}$) quebra a simetria PN que deixa as outras três
   ($\propto D^{-1}$) invariantes. Esses trabalhos usam a memória **junto com** a onda oscilatória;
   aqui a pergunta é o que as memórias determinam **sozinhas**;
@@ -657,7 +675,7 @@ reconstrução histórica de fusões de buracos negros?**
    par se desloca só $\sim10^{-5}$; só a simetria PN particular da ordem dominante é destruída.
 3. **A limitação é das memórias integradas, não da informação disponível.** A onda oscilatória separa
    esses pares a partir de SNR 1–6. As memórias resolvidas no tempo, ou medidas em duas janelas,
-   também os separam em princípio, mas exigem SNR de memória de 20 a 300. Um sistema tipo GW150914 a
+   também os separam em princípio, mas exigem SNR de memória de 20 a 300 **[Corrigido: C11 — com duas janelas $10^2$–$10^3$; com a memória resolvida no tempo, 3–14 nos pares do exp07]**. Um sistema tipo GW150914 a
    400 Mpc dá 0,8 em aLIGO e 39 em CE.
 4. **Consequência prática.** Para uma fusão observada com a onda completa, a ambiguidade das
    memórias não limita a reconstrução. Para uma fonte vista só pela memória (onda oscilatória fora da

@@ -1,0 +1,13 @@
+a) par (2, 0) original do exp07: max 2.03e-02 | 10 Hz: +8.9e-11 -1.2e-11 -8.4e-11 -1.8e-11 | 20 Hz: -6.8e-04 +2.0e-02 -1.2e-04 +1.4e-02
+   (0.1 s por par de avaliacoes)
+   ponto q_B = 2 do R4 (rev_R4_janelas3, 4 algarismos): max 9.13e-04 | 10 Hz: +5.7e-04 -8.5e-04 -1.5e-04 +9.1e-04 | 20 Hz: -6.3e-04 +8.7e-04 +1.9e-04 -8.9e-04
+   refinado a partir dele (28 aval.): max 9.18e-04 | 10 Hz: +5.8e-04 -8.5e-04 -1.8e-04 +9.2e-04 | 20 Hz: -6.2e-04 +8.4e-04 +1.6e-04 -9.2e-04 -> q 2.0000 chi1 +0.4188 chi2 -0.2025 M 68.172 iota 51.99 graus D 395.3 ; norma 1.97e-03
+
+b) partida independente (par (2, 0) com chi2 = -0.2): (58 aval.) max 7.59e-03 | 10 Hz: +1.1e-03 -7.6e-03 +7.1e-04 -3.2e-03 | 20 Hz: -2.1e-06 +4.8e-03 +9.6e-04 +4.3e-03 -> q 2.0000 chi1 +0.2877 chi2 -0.0189 M 69.219 iota 53.16 graus D 393.1 ; norma 1.06e-02
+
+c) valores singulares do jacobiano em A (colunas escaladas por 0.1, 0.1, 0.1, 1 Msol, 0.01 rad, 0.01 D)
+   passos x 0.5: 10 Hz 9.44e-02 1.86e-02 1.22e-02 4.33e-03 ; 10 + 20 Hz 1.36e-01 2.45e-02 1.92e-02 6.83e-03 1.35e-03 1.25e-04
+            so a diferenca 20 Hz - 10 Hz (4 x 6): 1.14e-02 8.51e-04 2.01e-04 3.21e-05
+   passos x 2.0: 10 Hz 9.44e-02 1.87e-02 1.22e-02 4.33e-03 ; 10 + 20 Hz 1.38e-01 2.46e-02 1.90e-02 7.09e-03 1.98e-03 9.22e-05
+            so a diferenca 20 Hz - 10 Hz (4 x 6): 1.32e-02 3.76e-04 1.11e-04 2.50e-05
+(42 s)

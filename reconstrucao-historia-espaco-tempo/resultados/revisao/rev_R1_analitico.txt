@@ -1,0 +1,56 @@
+== A1. Constantes do observavel de fase (secao 2.6)
+  <|Y22|^2+|Y2-2|^2, Y20> = 0.285714285714286*sqrt(5)/sqrt(pi) ; C_E = 0.0238095238095238*sqrt(30)/sqrt(pi) = 0.07357604
+  {-2}Y30 = sqrt(210)/(8*sqrt(pi)) sin^2 cos ; C_J = sqrt(210)/(280*sqrt(pi)) = 0.02919959
+  C = 2 C_E / C_J = 40*sqrt(7)/21 = 5.03952631   (07 secao 2.6: 5,0397 ; secao 3.6: 5,039682 numerico, 'analitico 5,0396')
+  calibracao numerica, fase por cumsum (exp09)   : C_E = 0.0735760  C = 5.0396823  (C/C_analitico - 1 = +3.1e-05, dispersao 1.6e-05)
+  calibracao numerica, fase integrada exatamente : C_E = 0.0735760  C = 5.0395473  (C/C_analitico - 1 = +4.2e-06, dispersao 8.6e-06)
+
+== A2. Coeficientes 1PN (secao 2.3)
+  xdot = (64/5) nu x^5 [1 + (-11*nu/4 - 743/336) x + ...]   (07: -743/336 - 11 nu/4)
+  H22 = 1 + ((55*nu - 107)/42) x + ...   (07: -107/42 + 55 nu/42)
+
+== A3. Momento angular newtoniano e divergencia (secao 1.3)
+  L(x) = M**2*nu/sqrt(x)  => Delta J = L(x_i) - L(x_f) = nu M^2 (x_i^-1/2 - x_f^-1/2)  [confirma]
+  deslocamento (|hdot|^2 ~ x^5)                   : int_xi^(1/6) x^(5-5) dx = 1/6 - x_i
+  spin e giroscopica (Im(hbar hdot) ~ x^(7/2))    : int_xi^(1/6) x^(7/2-5) dx = -2*sqrt(6) + 2/sqrt(x_i)
+  int h_+^mem du (h_mem ~ x)                      : int_xi^(1/6) x^(1-5) dx = -72 + 1/(3*x_i**3)
+
+== A4. Fase estacionaria (secao 2.1)
+  a^2 Psi'' = 5*Mc**(5/3)/(96*pi**(4/3)*D**2*f**(7/3))
+  chirp numerico: mediana |h~|^2 / (a^2 Psi''/2pi) = 1.0001 (desvio padrao 0.008)
+  (eta, D) -> (lambda eta, lambda D), M fixo: a_B^2/a_A^2 = 1 ; Psi''_B/Psi''_A = 1/lambda ; |h~_B|^2/|h~_A|^2 = 1/lambda
+  => a simetria NAO e filtro de fase (muda |h~| por lambda^(-1/2) e D por lambda); D int|hdot_obs|^2 fica fixo.
+
+== A5. Filtro comum e harmonicos m = 2, 3 (secao 2.1)
+  m = 3: coeficiente de a_k f^k em delta(f) - (m/2) delta(2f/m): {'-5/3': -9*2**(1/3)*3**(2/3)/8 + 1, '-1': -5/4, '-2/3': -3*2**(1/3)*3**(2/3)/4 + 1, '-1/3': -3*2**(2/3)*3**(1/3)/4 + 1, '0': -1/2, '1/3': -2**(1/3)*3**(2/3)/2 + 1, '1': 0, '2': 1/3}
+  m = 4: coeficiente de a_k f^k em delta(f) - (m/2) delta(2f/m): {'-5/3': 1 - 4*2**(2/3), '-1': -3, '-2/3': 1 - 2*2**(2/3), '-1/3': 1 - 2*2**(1/3), '0': -1, '1/3': 1 - 2**(2/3), '1': 0, '2': 1/2}
+  (k = 0 exige uma constante de fase dependente do modo, c_m = (1 - m/2) a_0, que nao e rotacao orbital)
+  => na base de potencias so f^1 (translacao no tempo) sobrevive. Mas a solucao geral de
+     delta(f) = (m/2) delta(2f/m) e delta = f p(ln f) com p periodica de periodo ln(m/2):
+     m = 3: delta = f sin(2 pi ln f / ln(3/2)): delta(f) - (m/2) delta(2f/m) = max |.| em f = 10..300 = 4.1e-12
+     m = 4: delta = f sin(2 pi ln f / ln 2): delta(f) - (m/2) delta(2f/m) = max |.| em f = 10..300 = 1.9e-12
+     com m = 2, 3 e 4 juntos os periodos ln 1.5 e ln 2 sao incomensuraveis (ln2/ln1.5 = 1.709511, irracional); p continua => p constante => so translacao no tempo.
+
+== A6. Paridade e zeros dos harmonicos m = 0 (secao 2.2)
+  {-2}Y_20: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = 0 ; Y(pi/2) = sqrt(30)/(8*sqrt(pi)) ; Y/sin^2 = sqrt(30)/(8*sqrt(pi))
+  {-2}Y_30: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = 0 ; Y(pi/2) = 0 ; Y/sin^2 = sqrt(210)*c/(8*sqrt(pi))
+  {-2}Y_40: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = 0 ; Y(pi/2) = -3*sqrt(10)/(16*sqrt(pi)) ; Y/sin^2 = 3*sqrt(10)*(7*c**2 - 1)/(16*sqrt(pi))
+  {-2}Y_50: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = 0 ; Y(pi/2) = 0 ; Y/sin^2 = sqrt(2310)*c*(3*c**2 - 1)/(16*sqrt(pi))
+  {0}Y_10: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = sqrt(3)/(2*sqrt(pi)) ; Y(pi/2) = 0
+  {0}Y_20: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = sqrt(5)/(2*sqrt(pi)) ; Y(pi/2) = -sqrt(5)/(4*sqrt(pi))
+  {0}Y_30: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = sqrt(7)/(2*sqrt(pi)) ; Y(pi/2) = 0
+  {0}Y_40: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = 3/(2*sqrt(pi)) ; Y(pi/2) = 9/(16*sqrt(pi))
+  {0}Y_50: Y(pi-th) - (-1)^l Y(th) = 0 ; Y(0) = sqrt(11)/(2*sqrt(pi)) ; Y(pi/2) = 0
+  => sob iota -> pi - iota: deslocamento e CM (l par) pares; spin (l impar, {-2}Y) e giroscopica (l impar, {0}Y) impares.
+     iota = 0: deslocamento, spin e CM se anulam (fator sin^2); giroscopica nao. iota = pi/2: spin e giro se anulam.
+
+== A7. Contra-exemplo a proposicao da secao 2.6 (suporte desconexo)
+  max|P1 - P0| / max|P0| = 2.2e-14 ; max|Q1 - Q0| / max|Q0| = 1.3e-14 ; |<h0, h1>| (sem maximizar fase) = 0.796
+  maximo de |h(u)| entre os surtos = 6.6e-08 (suporte praticamente desconexo)
+  => a proposicao precisa da hipotese 'h(u) != 0 em todo o intervalo' (suporte conexo); C^1 nao basta.
+
+== A8. Parte ordinaria do CM do codigo contra Nichols 2018, eqs. (4.25a,b) (por eta M^2 Delta x)
+  l = 2: codigo -(3/2) Dfrak^-1 Delta Phi = -1.8872987131e-01 ; Nichols = -1.8872987131e-01 ; razao = 1.000000000000
+  l = 4: codigo -(3/2) Dfrak^-1 Delta Phi = -3.1260209011e-05 ; Nichols = -3.1260209011e-05 ; razao = 1.000000000000
+  (Nichols usa a massa M do sistema; o codigo usa M_f = M - E_rad, diferenca de 5% que e de ordem h^4)
+  no nivel de deformacao, so l = 2: CM_20 / J_20 = -(3/2) M / Dfrak(2) = -0.5000 M  (um atraso do degrau de M/2)

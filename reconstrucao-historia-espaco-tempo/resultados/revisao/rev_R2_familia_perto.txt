@@ -1,0 +1,11 @@
+q_B 1.15: M 64.9285 chi1 +0.29881 D 400.013 iota 49.995 graus | residuo 7.0e-11 | aLIGO 1-match 7.593e-03, SNR_B/SNR_A 1.0025, rho_crit igual 8.1 exato 8.1 | com janela e rampa: 1-match 3.936e-03, rho_crit exato 11.3
+q_B 1.18: M 64.9678 chi1 +0.29945 D 400.018 iota 49.993 graus | residuo 1.9e-11 | aLIGO 1-match 3.083e-03, SNR_B/SNR_A 1.0009, rho_crit igual 12.7 exato 12.7 | com janela e rampa: 1-match 6.612e-04, rho_crit exato 27.5
+q_B 1.19: M 64.9833 chi1 +0.29972 D 400.011 iota 49.996 graus | residuo 2.2e-11 | aLIGO 1-match 1.986e-03, SNR_B/SNR_A 1.0004, rho_crit igual 15.9 exato 15.9 | com janela e rampa: 1-match 1.702e-04, rho_crit exato 54.2
+q_B 1.21: M 65.0178 chi1 +0.30030 D 399.984 iota 50.006 graus | residuo 1.6e-10 | aLIGO 1-match 1.894e-03, SNR_B/SNR_A 0.9996, rho_crit igual 16.2 exato 16.2 | com janela e rampa: 1-match 1.650e-04, rho_crit exato 55.0
+q_B 1.22: M 65.0366 chi1 +0.30063 D 399.964 iota 50.013 graus | residuo 3.3e-11 | aLIGO 1-match 3.050e-03, SNR_B/SNR_A 0.9994, rho_crit igual 12.8 exato 12.8 | com janela e rampa: 1-match 6.529e-04, rho_crit exato 27.7
+q_B 1.25: M 65.0996 chi1 +0.30179 D 399.884 iota 50.043 graus | residuo 2.1e-11 | aLIGO 1-match 7.010e-03, SNR_B/SNR_A 0.9989, rho_crit igual 8.4 exato 8.4 | com janela e rampa: 1-match 3.784e-03, rho_crit exato 11.5
+ajuste sem janela: 1 - match = 0.0848 dq^0.83
+ajuste com janela e rampa: 1 - match = 1.33 dq^1.95 (usado abaixo)
+  SNR   10: membros com |q_B - 1.2| < 0.0570 nao sao separados pela onda (criterio do 07, extrapolacao do ajuste)
+  SNR   66: membros com |q_B - 1.2| < 0.0082 nao sao separados pela onda (criterio do 07, extrapolacao do ajuste)
+  SNR  899: membros com |q_B - 1.2| < 0.0006 nao sao separados pela onda (criterio do 07, extrapolacao do ajuste)

@@ -1,0 +1,24 @@
+a) item 4: M = 65, q = 1.2, chi = (+0.3, -0.2); memorias globais relativas ao circular (desl20, spin30, giro10)
+   e0 = 0.1 l0 = 0.00 pi: desl20 -0.0012 spin30 -0.0061 giro10 +0.0066
+   e0 = 0.1 l0 = 0.50 pi: desl20 -0.0040 spin30 -0.0096 giro10 +0.0101
+   e0 = 0.1 l0 = 1.00 pi: desl20 +0.0013 spin30 -0.0067 giro10 +0.0073
+   e0 = 0.1 l0 = 1.50 pi: desl20 +0.0039 spin30 -0.0029 giro10 +0.0035
+   e0 = 0.2 l0 = 0.00 pi: desl20 -0.0070 spin30 -0.0313 giro10 +0.0334
+   e0 = 0.2 l0 = 0.50 pi: desl20 +0.0009 spin30 -0.0286 giro10 +0.0311
+   e0 = 0.2 l0 = 1.00 pi: desl20 +0.0085 spin30 -0.0193 giro10 +0.0217
+   e0 = 0.2 l0 = 1.50 pi: desl20 -0.0050 spin30 -0.0261 giro10 +0.0281
+
+b) item 5: B (e0 = 0.2, q_B = 2, chi1 = 0.0596, M = 72.59): l0 = pi x l0 = 0 (duracao 11937.5 x 11944.8 M)
+   diferenca (l0 = pi) - (l0 = 0) da memoria acumulada na subjanela, em unidades do valor da janela cheia com l0 = 0
+   janela cheia               desl20 -1.87e-02 spin30 -1.23e-02 giro10 +1.19e-02
+   [t_pico - 8000 M, fim]     desl20 -1.95e-02 spin30 -1.54e-02 giro10 +1.51e-02
+   [t_pico - 4000 M, fim]     desl20 -1.75e-02 spin30 -8.79e-03 giro10 +8.30e-03
+   [t_pico - 2000 M, fim]     desl20 -1.99e-02 spin30 -1.51e-02 giro10 +1.48e-02
+   [t_pico - 1000 M, fim]     desl20 -2.11e-02 spin30 -1.68e-02 giro10 +1.65e-02
+   [t_pico -  500 M, fim]     desl20 -1.61e-02 spin30 -8.34e-03 giro10 +7.92e-03
+   [t_pico -  200 M, fim]     desl20 -2.00e-02 spin30 -1.35e-02 giro10 +1.31e-02
+   [t_pico -  100 M, fim]     desl20 -2.31e-02 spin30 -1.75e-02 giro10 +1.72e-02
+   [t_pico -   50 M, fim]     desl20 -7.49e-03 spin30 -4.94e-03 giro10 +4.91e-03
+   inicio [t0, t0 + 2 T_orb]  desl20 +7.33e-04 spin30 +3.00e-03 giro10 -3.12e-03
+   fracao da janela cheia acumulada em [t_pico - 500 M, fim] (l0 = 0): desl20 0.854 spin30 0.519 giro10 0.500
+(10 s)

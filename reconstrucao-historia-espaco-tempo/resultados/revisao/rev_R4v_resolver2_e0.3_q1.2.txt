@@ -1,0 +1,6 @@
+caso e0 = 0.3, q_B = 1.2, chi2_B = -0.2 ; least_squares trf com jacobiano central (h_chi1 2e-03, h_M 0.05) ; residuo json 1.15e-02
+  partida 0 (+44.375, +0.6706, 67.390): max|r| 8.585e-03 r [+1.92e-03 -8.58e-03 -1.07e-03] -> iota 42.7094 graus chi1 +0.79980 M 68.1617 D 425.66 (24 aval. de f, `xtol` termination condition is satisfie)
+  partida 1 (+44.375, +0.6906, 67.390): max|r| 1.025e-02 r [+3.39e-03 -1.02e-02 -1.15e-03] -> iota 43.4174 graus chi1 +0.74675 M 67.8283 D 421.79 (25 aval. de f, The maximum number of function evaluatio)
+  partida 2 (+44.375, +0.6506, 67.390): max|r| 1.179e-02 r [+5.79e-03 -1.18e-02 -1.87e-03] -> iota 44.5752 graus chi1 +0.65204 M 67.3088 D 415.64 (21 aval. de f, `xtol` termination condition is satisfie)
+  partida 3 (+44.948, +0.6706, 67.690): max|r| 1.156e-02 r [+4.94e-03 -1.16e-02 -1.45e-03] -> iota 44.2439 graus chi1 +0.67955 M 67.4604 D 417.52 (25 aval. de f, The maximum number of function evaluatio)
+melhor max|r| = 8.585e-03 ; (251 avaliacoes do modelo, 102 s)

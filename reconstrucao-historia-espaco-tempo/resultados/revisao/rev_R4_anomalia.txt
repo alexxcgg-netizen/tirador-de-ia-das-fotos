@@ -1,0 +1,30 @@
+Tarefa 2: anomalia relativistica inicial l0 (rel_anomaly) no par A circular x B (e0 = 0.2, q_B = 2) do exp12
+  B (l0 = 0): M = 72.5875, chi1 = +0.0596, D = 383.23 Mpc, iota = 56.31 graus
+
+a) memorias de B com l0 variando (resto fixo)
+  l0 = 0.00 pi: variacao em relacao a l0 = 0: max 0.00e+00 [desl +0.00e+00 spin +0.00e+00 cm +0.00e+00 giro +0.00e+00] | B - A: max 7.13e-06 [desl +6.65e-06 spin -3.74e-06 cm -7.13e-06 giro -3.40e-06]
+  l0 = 0.50 pi: variacao em relacao a l0 = 0: max 8.49e-03 [desl -8.21e-03 spin +4.12e-03 cm +8.49e-03 giro +3.92e-03] | B - A: max 8.48e-03 [desl -8.21e-03 spin +4.12e-03 cm +8.48e-03 giro +3.91e-03]
+  l0 = 1.00 pi: variacao em relacao a l0 = 0: max 1.87e-02 [desl -1.87e-02 spin +1.23e-02 cm +1.79e-02 giro +1.20e-02] | B - A: max 1.87e-02 [desl -1.87e-02 spin +1.23e-02 cm +1.79e-02 giro +1.20e-02]
+  l0 = 1.50 pi: variacao em relacao a l0 = 0: max 5.48e-03 [desl -5.48e-03 spin +5.12e-03 cm +4.88e-03 giro +5.14e-03] | B - A: max 5.47e-03 [desl -5.47e-03 spin +5.11e-03 cm +4.87e-03 giro +5.14e-03]
+
+b) varredura fina em l0 (16 pontos): variacao relativa em relacao a l0 = 0
+  deslocamento amplitude pico a pico 1.89e-02 ; harmonico 1: 9.23e-03 ; harmonico 2: 1.25e-03 ; resto (rms) 1.7e-04
+  spin         amplitude pico a pico 1.23e-02 ; harmonico 1: 6.02e-03 ; harmonico 2: 8.45e-04 ; resto (rms) 1.2e-04
+  cm           amplitude pico a pico 1.82e-02 ; harmonico 1: 8.96e-03 ; harmonico 2: 1.13e-03 ; resto (rms) 1.4e-04
+  giroscopica  amplitude pico a pico 1.20e-02 ; harmonico 1: 5.90e-03 ; harmonico 2: 8.32e-04 ; resto (rms) 1.2e-04
+
+c) resolve de novo (iota_B, chi1_B, M_B; D_B pelo deslocamento) para cada l0, partindo da solucao de l0 = 0
+  l0 = 0.50 pi: M_B = 72.6306 (+5.94e-04), chi1_B = +0.06887 (+9.3e-03), iota_B = 56.430 graus (+1.2e-01), D_B = 382.81 Mpc (-1.1e-03) | residuo do otimizador 7.3e-07 (21 aval.), reavaliado 7.32e-07 [desl -1.43e-16 spin +3.85e-07 cm +7.32e-07 giro +4.90e-07]
+  l0 = 1.00 pi: M_B = 72.6253 (+5.20e-04), chi1_B = +0.08774 (+2.8e-02), iota_B = 56.185 graus (-1.3e-01), D_B = 383.17 Mpc (-1.5e-04) | residuo do otimizador 3.9e-06 (37 aval.), reavaliado 3.92e-06 [desl -1.43e-16 spin -3.92e-06 cm -1.22e-06 giro -9.45e-07]
+  l0 = 1.50 pi: M_B = 72.5827 (-6.69e-05), chi1_B = +0.06785 (+8.2e-03), iota_B = 56.229 graus (-8.4e-02), D_B = 383.33 Mpc (+2.5e-04) | residuo do otimizador 1.1e-06 (23 aval.), reavaliado 1.07e-06 [desl +0.00e+00 spin -8.34e-07 cm -1.07e-06 giro +4.65e-07]
+
+d) jacobiano d log|m_k| / d p_j no ponto B (diferencas centrais), valores singulares
+  deslocamento M +2.008e-02 q -4.353e-01 c1 +5.360e-01 c2 +1.498e-01 e +1.072e-01 l0 -1.710e-03 iota +1.280e+00 D -2.609e-03
+  spin         M +1.269e-02 q -2.322e-01 c1 +4.360e-01 c2 +1.659e-01 e -4.665e-01 l0 -7.938e-05 iota -1.666e-01 D -2.609e-03
+  cm           M +3.596e-02 q -6.046e-01 c1 +4.742e-01 c2 +1.401e-01 e +1.466e-01 l0 -2.042e-03 iota +1.325e+00 D -2.609e-03
+  giroscopica  M +1.166e-02 q -2.047e-01 c1 +3.983e-01 c2 +1.533e-01 e -4.959e-01 l0 +1.715e-05 iota -6.099e-01 D -5.219e-03
+  valores singulares (colunas escaladas por M/100, 0.1, 0.1, 0.1, 0.1, 1 rad, 0.1 rad, D/100): com l0 [0.218 0.113 0.016 0.009] ; sem l0 [0.218 0.113 0.016 0.009]
+  coluna l0 com passo 0.02 (10x menor): -1.607e-03 -1.117e-04 -1.934e-03 -2.833e-05
+
+avisos do pyseobnr: 0 
+(78 s)

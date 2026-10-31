@@ -1,0 +1,5 @@
+caso e0 = 0.1, q_B = 1.2, chi2_B = -0.2 ; passos h_chi1 = 5e-03, h_M = 0.10 Msol ; partida = solucao do json (residuo json 5.50e-04)
+  it 0: max|r| 5.396e-04 r [+1.67e-04 -5.40e-04 -1.36e-04] iota 49.3764 graus chi1 +0.34915 M 65.1578 D 401.70
+  it 1: valores singulares (escalados) 3.57e-02 1.88e-03 1.44e-04 ; passo Newton dx = (+6.79e-03 rad, -3.73e-02, +2.323e-02 Msol)
+        nenhum alfa reduz max|r| (ultimo tentado: max|r| 5.560e-04) -> para
+(11 avaliacoes do modelo, 10 s)

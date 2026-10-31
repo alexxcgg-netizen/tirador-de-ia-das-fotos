@@ -1,0 +1,9 @@
+par (1, +0.0): resolvido em C, residuo do otimizador 5.12e-12 ; recalculado sem cache 1.81e-11 (desl +9.2e-12 spin -4.4e-13 cm +4.0e-12 giro +1.8e-11) ; M (1 -1e-10): n+0 residuo 2.0e-10 ; M (1 +1e-10): n+0 residuo 2.2e-10 (12 s)
+par (2, +0.0): resolvido em C, residuo do otimizador 4.40e-11 ; recalculado sem cache 9.55e-11 (desl -8.8e-11 spin -9.4e-12 cm -9.6e-11 giro -6.8e-11) ; M (1 -1e-10): n+0 residuo 3.0e-10 ; M (1 +1e-10): n+0 residuo 1.9e-10 (19 s)
+par (3, +0.0): resolvido em C, residuo do otimizador 1.26e-11 ; recalculado sem cache 1.61e-11 (desl -6.8e-12 spin +2.4e-12 cm -1.5e-11 giro +1.6e-11) ; M (1 -1e-10): n+0 residuo 2.1e-10 ; M (1 +1e-10): n+0 residuo 2.2e-10 (25 s)
+par (2, +0.5): resolvido em C, residuo do otimizador 1.38e-07 ; recalculado sem cache 1.38e-07 (desl -1.8e-10 spin +1.4e-07 cm -4.1e-08 giro -6.6e-08) ; M (1 -1e-10): n+0 residuo 1.4e-07 ; M (1 +1e-10): n-1 residuo 4.0e-06 (34 s)
+   (2, +0.5) resolvido uma 2a vez partindo da 1a solucao: residuo do otimizador 1.38e-07 ; sem cache 1.38e-07 ; mudanca M -3.5e-10 chi1 -3.9e-10
+Escada no nivel C perto da solucao (2, +0.5): M_B (1 + e), e de 0 a 1.2e-5 em passos de 4e-7.
+   salto n 54690 -> 54689: desl -5.63e-12 spin -3.94e-06 cm +2.27e-08 giro -3.96e-06
+   salto n 54689 -> 54688: desl -5.63e-12 spin -3.94e-06 cm +2.27e-08 giro -3.96e-06
+(40 s)

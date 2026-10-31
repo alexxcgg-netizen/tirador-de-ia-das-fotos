@@ -1,0 +1,4 @@
+e0=0.0 ate a separatriz                     desl20: +9.6e-04 +4.8e-04  spin30: +2.1e-04 +1.0e-04  (t_fim: 16609.844 16609.844 16609.844)
+e0=0.0 ate separatriz - 5 M (pontas fora)   desl20: -4.1e-04 -2.0e-04  spin30: -1.6e-04 -8.2e-05  (t_fim: 16604.844 16604.844 16604.844)
+e0=0.3 ate a separatriz                     desl20: +1.1e-03 +5.4e-04  spin30: +2.5e-04 +1.3e-04  (t_fim: 11767.166 11767.166 11767.166)
+e0=0.3 ate separatriz - 5 M (pontas fora)   desl20: -4.1e-04 -2.0e-04  spin30: -1.7e-04 -8.7e-05  (t_fim: 11762.166 11762.166 11762.166)

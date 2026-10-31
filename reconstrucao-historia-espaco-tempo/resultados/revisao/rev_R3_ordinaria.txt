@@ -1,0 +1,10 @@
+q = 1: escala da parte nula |Dfrak D^2 int Psi|_30 = 7.417e+00 ; |A - C|/C (spin30) = 0.0049
+   ordinaria linear, inicio: |d2 S30/dt2| ~ 2.57e-07 (razao 3.5e-08) ; fim (recuo 6.62e-06 c, J_f = 0.622): 2 v^2 J ~ 5.45e-11 (razao 7.4e-12)
+   ordinaria quadratica em C no inicio: |h22(u0)|^2 = 6.60e-03 (razao 8.9e-04)
+   energia irradiada por modo (fracao do total, janela inteira): (2, 2) 9.89e-01, (4, 4) 8.51e-03, (3, 2) 2.90e-03, (3, 3) 8.70e-09, (5, 5) 5.43e-09, (4, 3) 4.98e-10, (2, 1) 4.51e-10
+   fluxo de energia por modo em x = 0.1 (t - t_pico = -612 M): (2, 2) 9.99e-01, (4, 4) 1.29e-03, (3, 2) 6.17e-05, (3, 3) 4.33e-09, (5, 5) 1.37e-09, (4, 3) 3.06e-11, (2, 1) 1.63e-11
+q = 8: escala da parte nula |Dfrak D^2 int Psi|_30 = 1.889e+00 ; |A - C|/C (spin30) = 0.0667
+   ordinaria linear, inicio: |d2 S30/dt2| ~ 4.47e-08 (razao 2.4e-08) ; fim (recuo 2.76e-04 c, J_f = 0.300): 2 v^2 J ~ 4.57e-08 (razao 2.4e-08)
+   ordinaria quadratica em C no inicio: |h22(u0)|^2 = 1.01e-03 (razao 5.3e-04)
+   energia irradiada por modo (fracao do total, janela inteira): (2, 2) 8.17e-01, (3, 3) 1.21e-01, (4, 4) 3.10e-02, (2, 1) 1.61e-02, (5, 5) 9.99e-03, (3, 2) 3.61e-03, (4, 3) 1.07e-03
+   fluxo de energia por modo em x = 0.1 (t - t_pico = -1184 M): (2, 2) 9.21e-01, (3, 3) 6.74e-02, (4, 4) 8.30e-03, (2, 1) 1.97e-03, (5, 5) 1.04e-03, (3, 2) 4.07e-04, (4, 3) 5.97e-05

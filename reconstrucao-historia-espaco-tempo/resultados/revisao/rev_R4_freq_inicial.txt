@@ -1,0 +1,6 @@
+B e0=0.2 qB=2    l0 = 0 pi: omega_inst/omega_avg = 1.486 ; f22 instantanea na 1a orbita: 7.6 a 14.1 Hz (media pedida 10 Hz)
+B e0=0.2 qB=2    l0 = 1 pi: omega_inst/omega_avg = 0.691 ; f22 instantanea na 1a orbita: 7.5 a 14.0 Hz (media pedida 10 Hz)
+B e0=0.3 qB=2    l0 = 0 pi: omega_inst/omega_avg = 1.847 ; f22 instantanea na 1a orbita: 6.7 a 17.1 Hz (media pedida 10 Hz)
+B e0=0.3 qB=2    l0 = 1 pi: omega_inst/omega_avg = 0.575 ; f22 instantanea na 1a orbita: 6.6 a 16.9 Hz (media pedida 10 Hz)
+B e0=0.3 qB=1.2  l0 = 0 pi: omega_inst/omega_avg = 1.856 ; f22 instantanea na 1a orbita: 6.7 a 17.1 Hz (media pedida 10 Hz)
+B e0=0.3 qB=1.2  l0 = 1 pi: omega_inst/omega_avg = 0.575 ; f22 instantanea na 1a orbita: 6.6 a 16.9 Hz (media pedida 10 Hz)

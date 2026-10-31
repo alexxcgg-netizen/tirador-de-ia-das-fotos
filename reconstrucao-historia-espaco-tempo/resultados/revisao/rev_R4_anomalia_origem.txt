@@ -1,0 +1,19 @@
+Diagnostico da dependencia em l0: B (e0 = 0.2, q = 2, chi1 = 0.0596, M = 72.59), SEOBNRv5EHM, janela desde f_onda media 10 Hz
+  e0 = 0.00 l0 = 0.00 pi: duracao 13323.8 M ; E_jan 3.446458e-02 ; J_jan 5.086350e-01 ; |h22| pico 0.344449 ; E depois de -100 M 2.576339e-02 ; J antes de -2000 M 1.724263e-01
+  e0 = 0.05 l0 = 0.00 pi: duracao 13211.0 M ; E_jan 3.453264e-02 ; J_jan 5.084531e-01 ; |h22| pico 0.344449 ; E depois de -100 M 2.582660e-02 ; J antes de -2000 M 1.713546e-01
+  e0 = 0.05 l0 = 1.00 pi: duracao 13209.2 M ; E_jan 3.440085e-02 ; J_jan 5.069782e-01 ; |h22| pico 0.344449 ; E depois de -100 M 2.570436e-02 ; J antes de -2000 M 1.716034e-01
+  e0 = 0.20 l0 = 0.00 pi: duracao 11595.8 M ; E_jan 3.482037e-02 ; J_jan 4.967883e-01 ; |h22| pico 0.344449 ; E depois de -100 M 2.618969e-02 ; J antes de -2000 M 1.564702e-01
+  e0 = 0.20 l0 = 0.50 pi: duracao 11600.0 M ; E_jan 3.453618e-02 ; J_jan 4.948873e-01 ; |h22| pico 0.344449 ; E depois de -100 M 2.564917e-02 ; J antes de -2000 M 1.571724e-01
+  e0 = 0.20 l0 = 1.00 pi: duracao 11588.5 M ; E_jan 3.416063e-02 ; J_jan 4.908602e-01 ; |h22| pico 0.344449 ; E depois de -100 M 2.537225e-02 ; J antes de -2000 M 1.579006e-01
+  e0 = 0.20 l0 = 1.50 pi: duracao 11583.7 M ; E_jan 3.462079e-02 ; J_jan 4.942218e-01 ; |h22| pico 0.344449 ; E depois de -100 M 2.611245e-02 ; J antes de -2000 M 1.570979e-01
+
+Diferenca relativa (l0 - [l0 = 0]) / [l0 = 0], e0 = 0.2, por trecho (tempo antes do pico):
+  l0 = 0.50 pi: duracao -4.2 M ; E_jan -8.16e-03 (fusao t > -100 M: -2.06e-02 ; inspiral t < -500 M: -1.28e-02) ; J_jan -3.83e-03 (t < -2000 M: +4.49e-03) ; |h22| pico -2.1e-06
+       mesma janela alinhada no pico (ultimos 11595 M): E -8.17e-03 ; J -3.87e-03
+  l0 = 1.00 pi: duracao +7.3 M ; E_jan -1.89e-02 (fusao t > -100 M: -3.12e-02 ; inspiral t < -500 M: -1.78e-02) ; J_jan -1.19e-02 (t < -2000 M: +9.14e-03) ; |h22| pico +1.3e-07
+       mesma janela alinhada no pico (ultimos 11587 M): E -1.89e-02 ; J -1.16e-02
+  l0 = 1.50 pi: duracao +12.1 M ; E_jan -5.73e-03 (fusao t > -100 M: -2.95e-03 ; inspiral t < -500 M: +2.98e-03) ; J_jan -5.17e-03 (t < -2000 M: +4.01e-03) ; |h22| pico -2.0e-07
+       mesma janela alinhada no pico (ultimos 11583 M): E -5.62e-03 ; J -4.65e-03
+
+Referencia e0 = 0.05: l0 = pi x 0: duracao +1.8 M ; E_jan -3.82e-03 ; J_jan -2.90e-03 ; |h22| pico +1.4e-07
+Referencia e0 = 0.2 x 0 (l0 = 0): duracao +1728.0 M ; E_jan +1.03e-02 ; J_jan -2.33e-02 ; |h22| pico +9.4e-07

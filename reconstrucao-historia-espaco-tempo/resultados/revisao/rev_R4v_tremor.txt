@@ -1,0 +1,48 @@
+a) determinismo, B (e0 = 0.2, q_B = 2): 2a avaliacao neste processo: max 0.00e+00 [desl +0.0e+00 spin +0.0e+00 cm +0.0e+00 giro +0.0e+00]
+   contra o valor gravado pelo R4 em outro processo: max 0.00e+00 [desl +0.0e+00 spin +0.0e+00 cm +0.0e+00 giro +0.0e+00] ; bit a bit igual: True
+   A recalculado contra o alvo do exp12_pares.json: max 0.00e+00 [desl +0.0e+00 spin +0.0e+00 cm +0.0e+00 giro +0.0e+00] ; bit a bit igual: True
+   B (0.2, 2) contra o alvo (delta do par, reavaliado): max 7.13e-06 [desl +6.7e-06 spin -3.7e-06 cm -7.1e-06 giro -3.4e-06]
+
+b) tremor em M (B 0.2, 2): diferenca relativa a M exato, M -> M (1 + eps)
+   eps +1e-15 (M muda +7.26e-14 Msol): max 4.64e-06 [desl +4.6e-06 spin +3.6e-06 cm +3.9e-07 giro +4.3e-06]
+   eps +1e-14 (M muda +7.26e-13 Msol): max 6.69e-06 [desl +6.7e-06 spin +1.2e-06 cm -1.8e-06 giro +1.6e-06]
+   eps -1e-14 (M muda -7.26e-13 Msol): max 6.87e-06 [desl -6.9e-06 spin +3.4e-06 cm +3.1e-06 giro +3.6e-06]
+   eps +1e-13 (M muda +7.26e-12 Msol): max 5.36e-06 [desl -5.7e-07 spin +4.7e-06 cm +3.0e-06 giro +5.4e-06]
+   eps +1e-12 (M muda +7.26e-11 Msol): max 8.84e-06 [desl -8.8e-06 spin +3.3e-06 cm +6.0e-06 giro +3.4e-06]
+   eps -1e-12 (M muda -7.26e-11 Msol): max 8.00e-06 [desl -8.0e-06 spin +4.5e-06 cm +7.0e-06 giro +4.7e-06]
+   eps +1e-11 (M muda +7.26e-10 Msol): max 4.80e-06 [desl +4.8e-06 spin +3.1e-07 cm -1.2e-07 giro +5.4e-07]
+   eps +1e-10 (M muda +7.26e-09 Msol): max 7.70e-06 [desl +7.7e-06 spin +9.0e-07 cm -1.9e-06 giro +1.4e-06]
+   eps +1e-09 (M muda +7.26e-08 Msol): max 7.62e-06 [desl -7.6e-06 spin +3.2e-06 cm +4.3e-06 giro +3.3e-06]
+   eps +1e-08 (M muda +7.26e-07 Msol): max 4.09e-06 [desl +4.1e-06 spin -1.6e-06 cm -2.4e-06 giro -1.6e-06]
+   eps +1e-07 (M muda +7.26e-06 Msol): max 2.32e-06 [desl +1.9e-06 spin -9.6e-07 cm -2.3e-06 giro -9.5e-07]
+   eps +1e-06 (M muda +7.26e-05 Msol): max 3.79e-06 [desl -1.6e-06 spin +3.3e-06 cm +9.9e-07 giro +3.8e-06]
+
+c) tremor em outros parametros (passo absoluto 1e-12) e no circular A
+   B (0.2, 2), c1 + 1e-12: max 5.26e-06 [desl +5.3e-06 spin -1.8e-06 cm -2.8e-06 giro -1.8e-06]
+   B (0.2, 2), q + 1e-12: max 8.11e-06 [desl -8.1e-06 spin +3.2e-06 cm +5.1e-06 giro +3.3e-06]
+   B (0.2, 2), e + 1e-12: max 5.59e-06 [desl +5.6e-06 spin -1.4e-06 cm -4.4e-06 giro -1.3e-06]
+   A (e0 = 0), M (1 + 1e-12): max 1.05e-05 [desl -1.0e-05 spin +4.2e-07 cm +9.8e-06 giro +1.1e-07]
+   A (e0 = 0), M (1 + 1e-09): max 1.40e-05 [desl +1.4e-05 spin -7.9e-06 cm +1.2e-05 giro -6.1e-06]
+   A (e0 = 0), M (1 + 1e-06): max 1.99e-05 [desl -9.3e-06 spin -4.9e-06 cm +2.0e-05 giro -4.6e-06]
+   A (e0 = 0), c1 + 1e-12: max 1.84e-05 [desl +5.7e-06 spin -4.8e-06 cm +1.8e-05 giro -3.3e-06]
+
+d) onde a onda muda: B (0.2, 2) com M e M (1 + 1e-12); h22 em funcao de t - t_pico (unidades de M)
+   comprimento 119449 x 119449 amostras ; dt 0.100000 x 0.100000 ; t0 -11596.132000 x -11596.133000 ; t_pico - t0 11595.800000 x 11595.800000 ; t_fim - t_pico 349.0000 x 349.0000
+   t_pico interpolado - t0: 11595.798715629 x 11595.799148125 (diferenca +4.325e-04 M)
+   t - t_pico em [ -11596,  -11396): max |d|h22||/|h22| 6.4e-06 ; max |d fase| (alinhada no pico) 1.7e-04 rad
+   t - t_pico em [ -11396,   -5000): max |d|h22||/|h22| 7.4e-06 ; max |d fase| (alinhada no pico) 1.8e-04 rad
+   t - t_pico em [  -5000,   -1000): max |d|h22||/|h22| 1.2e-06 ; max |d fase| (alinhada no pico) 1.8e-04 rad
+   t - t_pico em [  -1000,    -300): max |d|h22||/|h22| 1.0e-06 ; max |d fase| (alinhada no pico) 1.8e-04 rad
+   t - t_pico em [   -300,    -100): max |d|h22||/|h22| 2.6e-06 ; max |d fase| (alinhada no pico) 1.7e-04 rad
+   t - t_pico em [   -100,     -20): max |d|h22||/|h22| 4.9e-06 ; max |d fase| (alinhada no pico) 1.6e-04 rad
+   t - t_pico em [    -20,       0): max |d|h22||/|h22| 8.3e-06 ; max |d fase| (alinhada no pico) 7.6e-05 rad
+   t - t_pico em [      0,     349): max |d|h22||/|h22| nan ; max |d fase| (alinhada no pico) 2.3e-04 rad
+
+e) item 6: frequencia instantanea do (2,2) no inicio (l0 = 0), em Hz no detector
+   e0 = 0.2, q_B = 2, M = 72.59: 1 orbita(s) medias: f22 de 7.63 a 13.87 Hz ; f22 no 1o ponto 13.87 Hz ; media no intervalo 9.56 Hz
+   e0 = 0.2, q_B = 2, M = 72.59: 2 orbita(s) medias: f22 de 7.63 a 14.09 Hz ; f22 no 1o ponto 13.87 Hz ; media no intervalo 9.94 Hz
+       fracao do 1o periodo com f22 < 10 Hz: 0.66
+   e0 = 0.3, q_B = 2, M = 73.23: 1 orbita(s) medias: f22 de 6.69 a 16.79 Hz ; f22 no 1o ponto 16.79 Hz ; media no intervalo 9.27 Hz
+   e0 = 0.3, q_B = 2, M = 73.23: 2 orbita(s) medias: f22 de 6.69 a 17.07 Hz ; f22 no 1o ponto 16.79 Hz ; media no intervalo 9.89 Hz
+       fracao do 1o periodo com f22 < 10 Hz: 0.70
+(16 s)

@@ -1,0 +1,7 @@
+A (M = 65.0, q = 1.20): M_f = 61.7332 M_sol, E irradiada = 3.2668 M_sol; multipolos globais desl20 0.10115 spin30 0.25999 giro10 -1.32419
+Pares exatos do exp07: variacao relativa B/A - 1
+  q_B = 1, chi2_B = +0.0 (M_B = 64.99, D_B = 398.6 Mpc, iota_B = 50.4 graus): Mf +0.0006 E -0.0157 desl20 -0.0149 spin30 -0.0063 giro10 -0.0051
+  q_B = 2, chi2_B = +0.0 (M_B = 69.45, D_B = 389.2 Mpc, iota_B = 54.2 graus): Mf +0.0766 E -0.0840 desl20 -0.1757 spin30 -0.1636 giro10 -0.1521
+  q_B = 3, chi2_B = +0.0 (M_B = 73.69, D_B = 387.0 Mpc, iota_B = 55.0 graus): Mf +0.1445 E -0.0716 desl20 -0.2373 spin30 -0.2614 giro10 -0.2530
+  q_B = 2, chi2_B = +0.5 (M_B = 72.30, D_B = 384.0 Mpc, iota_B = 57.0 graus): Mf +0.1256 E -0.1387 desl20 -0.2680 spin30 -0.2351 giro10 -0.2144
+Conclusao: M_f e E variam ate ~14% ao longo da familia; a inclinacao e a distancia compensam. Hipotese refutada.

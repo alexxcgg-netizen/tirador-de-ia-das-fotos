@@ -1,0 +1,17 @@
+a) jacobiano em A (colunas escaladas por 0.1, 0.1, 0.1, 1 M_sol, 0.01 rad, 0.01 D)
+   uma janela (4 x 6): valores singulares [0.094 0.019 0.012 0.004]
+   duas janelas (8 x 6): valores singulares [0.137 0.025 0.019 0.007 0.002 0.   ]
+   direcao mais fraca (em unidades da escala) (q, chi1, chi2, M, iota, D): [ 0.673 -0.445  0.406  0.175  0.359 -0.157]
+   segunda mais fraca: [-0.698 -0.494  0.496 -0.038  0.135 -0.047]
+   previsao linear: andar ate |dq| = 0.2 na direcao mais fraca da residuo de norma 5.53e-04
+
+b) perfil em q_B (8 equacoes, 5 livres, 4 partidas)
+  q_B = 1.1: melhor max|res| = 1.22e-03 (todas: 3.5e-03 2.3e-03 3.5e-03 1.2e-03) -> q 1.1000 chi1 +0.2494 chi2 -0.1493 M 64.988 iota 50.07 graus D 400.0 Mpc
+      residuos 10 Hz: -1.9e-04 -1.2e-03 +7.8e-05 -4.8e-04 | 20 Hz: -7.9e-05 +3.2e-04 +3.7e-05 +1.1e-03
+  q_B = 1.3: melhor max|res| = 6.52e-05 (todas: 6.5e-05 1.9e-03 4.4e-04 6.0e-03) -> q 1.3000 chi1 +0.2947 chi2 -0.1912 M 65.240 iota 50.16 graus D 399.6 Mpc
+      residuos 10 Hz: +4.3e-05 -5.1e-05 -1.2e-05 +6.3e-05 | 20 Hz: -4.3e-05 +5.3e-05 +9.6e-06 -6.5e-05
+  q_B = 2.0: melhor max|res| = 9.42e-04 (todas: 9.7e-03 1.5e-02 9.4e-04 1.5e-02) -> q 2.0000 chi1 +0.4194 chi2 -0.2032 M 68.167 iota 51.98 graus D 395.3 Mpc
+      residuos 10 Hz: +5.9e-04 -8.2e-04 -1.8e-04 +9.4e-04 | 20 Hz: -6.2e-04 +8.2e-04 +1.6e-04 -9.4e-04
+  q_B = 3.0: melhor max|res| = 2.29e-03 (todas: 2.3e-03 1.9e-02 3.4e-02 3.7e-02) -> q 3.0000 chi1 +0.5492 chi2 +0.0336 M 73.794 iota 54.95 graus D 388.5 Mpc
+      residuos 10 Hz: +1.7e-03 -2.0e-03 -5.3e-04 +2.3e-03 | 20 Hz: -1.8e-03 +2.0e-03 +4.8e-04 -2.3e-03
+(285 s)

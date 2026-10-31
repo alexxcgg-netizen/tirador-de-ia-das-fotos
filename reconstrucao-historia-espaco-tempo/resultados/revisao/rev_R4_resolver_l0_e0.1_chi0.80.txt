@@ -1,0 +1,6 @@
+caso e0 = 0.1, q_B = 1.2, chi2_B = -0.2, chi1 <= 0.80 (residuo gravado no exp12 5.50e-04)
+  i)  l0 = 0, partindo da solucao gravada: residuo do otimizador 5.40e-04, reavaliado 5.40e-04 (18 aval.) [desl +1.4e-16 spin +1.7e-04 cm -5.4e-04 giro -1.4e-04] M 65.158 chi1 +0.3491 iota 49.38 D 401.7
+  ii) l0 livre, partida l0 = 0.50 pi: residuo 1.91e-03, reavaliado 1.91e-03 (34 aval.) [desl -1.4e-16 spin +7.3e-04 cm -1.9e-03 giro -2.5e-04] -> l0 = 0.500 pi, M 65.211 chi1 +0.3489 iota 49.35 D 401.5
+  ii) l0 livre, partida l0 = 1.00 pi: residuo 4.95e-04, reavaliado 4.95e-04 (30 aval.) [desl +1.4e-16 spin +5.0e-04 cm -4.2e-04 giro -2.1e-04] -> l0 = 1.000 pi, M 65.161 chi1 +0.3488 iota 49.20 D 402.2
+  ii) l0 livre, partida l0 = 1.50 pi: residuo 7.40e-04, reavaliado 7.40e-04 (18 aval.) [desl +1.4e-16 spin -7.4e-04 cm +2.1e-04 giro +2.5e-04] -> l0 = 1.500 pi, M 65.157 chi1 +0.3492 iota 49.27 D 402.7
+  melhor reavaliado com l0 livre: 4.95e-04 ; avisos do pyseobnr 0 ; (84 s)

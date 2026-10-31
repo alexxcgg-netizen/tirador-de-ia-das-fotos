@@ -1,0 +1,26 @@
+a) valores singulares (colunas escaladas por 0.1, 0.1, 0.1, 1 M_sol, 0.01 rad, 0.01 D):
+   10 Hz (4 x 6): 9.44e-02 1.87e-02 1.22e-02 4.32e-03
+   20 Hz (4 x 6): 9.98e-02 1.69e-02 1.33e-02 5.39e-03
+   10 + 20 Hz (8 x 6): 1.37e-01 2.46e-02 1.93e-02 7.13e-03 1.70e-03 1.86e-04
+   direcao mais fraca (q, chi1, chi2, M, iota, D) em unidades da escala: +0.673 -0.445 +0.406 +0.175 +0.359 -0.157
+   nessa direcao, por unidade: dq +0.067, d chi_eff +0.0011, d eta -0.0013, dM +0.175 M_sol
+
+b) perfil por continuacao em q_B (8 equacoes, 5 livres)
+  q_B = 1.30: max|res| = 1.14e-04 (1 partidas) -> q 1.3000 chi1 +0.2982 chi2 -0.1949 M 65.233 iota 50.15 graus D 399.6 Mpc ; chi_eff +0.0838
+      residuos 10 Hz: +2.7e-05 +1.9e-05 -3.6e-05 +9.5e-05 | 20 Hz: -6.4e-05 +3.0e-05 -1.1e-05 -1.1e-04
+  q_B = 1.50: max|res| = 2.77e-04 (1 partidas) -> q 1.5000 chi1 +0.3222 chi2 -0.1985 M 65.913 iota 50.59 graus D 398.5 Mpc ; chi_eff +0.1139
+      residuos 10 Hz: +1.6e-04 -2.0e-04 -3.7e-05 +2.7e-04 | 20 Hz: -1.6e-04 +2.2e-04 +3.9e-05 -2.8e-04
+  q_B = 1.75: max|res| = 5.72e-04 (2 partidas) -> q 1.7500 chi1 +0.3702 chi2 -0.2060 M 66.984 iota 51.26 graus D 397.0 Mpc ; chi_eff +0.1607
+      residuos 10 Hz: +3.5e-04 -5.2e-04 -8.6e-05 +5.7e-04 | 20 Hz: -3.6e-04 +5.2e-04 +8.6e-05 -5.7e-04
+  q_B = 2.00: max|res| = 9.19e-04 (3 partidas) -> q 2.0000 chi1 +0.4185 chi2 -0.2021 M 68.173 iota 51.99 graus D 395.3 Mpc ; chi_eff +0.2117
+      residuos 10 Hz: +5.9e-04 -8.6e-04 -1.7e-04 +9.2e-04 | 20 Hz: -6.1e-04 +8.4e-04 +1.7e-04 -9.1e-04
+  q_B = 2.50: max|res| = 2.12e-03 (1 partidas) -> q 2.5000 chi1 +0.4890 chi2 -0.1188 M 70.931 iota 53.57 graus D 391.7 Mpc ; chi_eff +0.3154
+      residuos 10 Hz: +1.1e-03 -2.1e-03 -3.9e-04 +1.4e-03 | 20 Hz: -1.2e-03 +1.7e-03 +3.2e-04 -1.1e-03
+  q_B = 3.00: max|res| = 2.29e-03 (2 partidas) -> q 3.0000 chi1 +0.5492 chi2 +0.0336 M 73.794 iota 54.95 graus D 388.5 Mpc ; chi_eff +0.4203
+      residuos 10 Hz: +1.7e-03 -2.0e-03 -5.3e-04 +2.3e-03 | 20 Hz: -1.8e-03 +2.0e-03 +4.8e-04 -2.3e-03
+  q_B = 1.10: max|res| = 4.43e-05 (2 partidas) -> q 1.1000 chi1 +0.3452 chi2 -0.2390 M 64.856 iota 49.91 graus D 400.4 Mpc ; chi_eff +0.0670
+      residuos 10 Hz: -2.6e-05 -4.4e-05 +2.0e-05 -1.7e-05 | 20 Hz: +3.1e-05 +2.9e-06 +2.4e-06 +4.3e-05
+  q_B = 1.00: max|res| = 1.40e-03 (3 partidas) -> q 1.0000 chi1 +0.3999 chi2 -0.2732 M 64.962 iota 50.05 graus D 400.5 Mpc ; chi_eff +0.0634
+      residuos 10 Hz: -1.9e-04 -1.4e-03 +5.3e-05 -4.5e-04 | 20 Hz: -9.5e-05 +2.6e-04 +2.2e-05 +8.5e-04
+  (A: chi_eff +0.0727)
+(218 s)

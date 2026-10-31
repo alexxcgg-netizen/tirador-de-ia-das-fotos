@@ -1,0 +1,45 @@
+pontos do jacobiano calculados (6 s)
+
+J1 jacobiano 4 x 6 (linhas / |F(50 graus)|), colunas (ln M, q, chi1, chi2, ln D, iota)
+  iota =  50.0 graus: F/|F(50)| = [ 1. -1. -1. -1.] | sv = [4.395 1.665 0.608 0.115] | sv (linhas unitarias) = [1.86  0.681 0.271 0.052]
+     direcao de menor sv no espaco (desl, spin, CM, giro): [ 0.264 -0.773  0.507  0.275]
+     so intrinsecos (ln M, q, chi1, chi2): sv = [3.147e+00 2.641e-01 4.070e-02 6.590e-04] ; direcao quase nula = [-0.023 -0.979 -0.162  0.118]
+     cos do angulo entre as linhas desl e CM (relativas) = 0.949774
+  iota =  70.0 graus: F/|F(50)| = [ 1.463 -0.797 -1.496 -0.7  ] | sv = [4.555 2.698 0.754 0.207] | sv (linhas unitarias) = [1.648 1.093 0.284 0.086]
+  iota =  85.0 graus: F/|F(50)| = [ 1.627 -0.228 -1.677 -0.194] | sv = [4.506 3.398 0.713 0.076] | sv (linhas unitarias) = [1.466 1.337 0.247 0.031]
+  iota =  89.0 graus: F/|F(50)| = [ 1.638 -0.046 -1.689 -0.039] | sv = [4.496 3.455 0.709 0.016] | sv (linhas unitarias) = [1.42  1.387 0.244 0.006]
+  iota =  89.9 graus: F/|F(50)| = [ 1.638 -0.005 -1.689 -0.004] | sv = [4.495e+00 3.458e+00 7.089e-01 1.553e-03] | sv (linhas unitarias) = [1.414e+00 1.393e+00 2.437e-01 6.438e-04]
+  iota =  90.0 graus: F/|F(50)| = [ 1.638e+00  6.182e-16 -1.689e+00  1.558e-15] | sv = [4.495e+00 3.458e+00 7.089e-01 2.353e-13] | sv (linhas unitarias) = [1.414e+00 1.393e+00 2.437e-01 9.751e-14]
+  iota =  30.0 graus: F/|F(50)| = [ 0.44  -0.577 -0.429 -0.856] | sv = [3.601 1.32  0.263 0.022] | sv (linhas unitarias) = [1.894 0.624 0.155 0.012]
+  iota =  10.0 graus: F/|F(50)| = [ 0.054 -0.079 -0.052 -0.604] | sv = [1.72  1.013 0.032 0.006] | sv (linhas unitarias) = [1.804 0.861 0.052 0.008]
+  iota =   2.0 graus: F/|F(50)| = [ 0.002 -0.003 -0.002 -0.563] | sv = [1.388e+00 2.537e-01 1.266e-03 2.457e-04] | sv (linhas unitarias) = [1.736e+00 9.922e-01 1.028e-02 1.580e-03]
+  iota =   0.5 graus: F/|F(50)| = [ 1.372e-04 -2.036e-04 -1.313e-04 -5.613e-01] | sv = [1.380e+00 6.380e-02 7.914e-05 1.539e-05] | sv (linhas unitarias) = [1.732e+00 9.995e-01 2.569e-03 3.954e-04]
+  iota =   0.0 graus: F/|F(50)| = [ 0.    -0.     0.    -0.561] | sv = [1.379e+00 2.002e-16 0.000e+00 0.000e+00] | sv (linhas unitarias) = [1. 0. 0. 0.]
+
+J4 duas janelas (10 Hz e 20 Hz): jacobiano relativo 8 x 6 em iota = 50 graus
+  F(20 Hz)/F(10 Hz) = [0.99949 0.69469 0.99864 0.67774]
+  10 Hz (4 x 6)                    sv = [4.395 1.665 0.608 0.115]
+  10 + 20 Hz (8 x 6)               sv = [6.228e+00 2.343e+00 8.585e-01 2.174e-01 1.764e-02 2.527e-03]
+  10 Hz + diferencas 20-10 (8 x 6) sv = [4.395e+00 1.666e+00 6.091e-01 1.695e-01 2.189e-02 3.643e-03]
+  linhas da diferenca (desl, spin, CM, giro) x colunas (ln M, q, chi1, chi2, ln D, iota):
+    deslocamento  [ 0.0063  0.0008 -0.0052 -0.003   0.     -0.0003]
+    spin          [-0.0013 -0.0139 -0.0742 -0.0614  0.      0.0047]
+    cm            [-2.2127e-03 -1.2538e-03  4.1676e-03  2.4421e-03  0.0000e+00 -6.2607e-05]
+    giroscopica   [ 0.0066 -0.0158 -0.0673 -0.0558  0.     -0.0198]
+
+J2 paridade das memorias do codigo: F(pi - iota) / F(iota)
+  iota = 20.0: [ 1. -1.  1. -1.]
+  iota = 50.0: [ 1. -1.  1. -1.]
+  iota = 75.0: [ 1. -1.  1. -1.]
+
+J3 memoria de CM no observador: parte ordinaria x parte nula (nivel A, deformacao, unidades de M)
+  A (q=1.2, 0.3/-0.2)          M_f/M = 0.9497 | CM/(M d) = -0.5239 | ordinaria l=2: -0.4628, l=4: -0.0008 | nula: -0.0603 | -M_f/2 = -0.4749
+  B (q=1, 0.079/0.0, M=64.99)  M_f/M = 0.9505 | CM/(M d) = -0.5240 | ordinaria l=2: -0.4633, l=4: -0.0008 | nula: -0.0599 | -M_f/2 = -0.4753
+     M (CM/d) em M_sol: A -34.056, B -34.055 ; M_f em M_sol: A 61.73, B 61.77
+  B (q=2, 0.217/0.0, M=69.45)  M_f/M = 0.9569 | CM/(M d) = -0.4904 | ordinaria l=2: -0.4726, l=4: -0.0004 | nula: -0.0174 | -M_f/2 = -0.4785
+     M (CM/d) em M_sol: A -34.056, B -34.062 ; M_f em M_sol: A 61.73, B 66.46
+  B (q=3, 0.549/0.0, M=73.69)  M_f/M = 0.9588 | CM/(M d) = -0.4623 | ordinaria l=2: -0.4772, l=4: -0.0001 | nula: +0.0150 | -M_f/2 = -0.4794
+     M (CM/d) em M_sol: A -34.056, B -34.067 ; M_f em M_sol: A 61.73, B 70.66
+  B (q=2, -0.143/0.5, M=72.30) M_f/M = 0.9611 | CM/(M d) = -0.4711 | ordinaria l=2: -0.4763, l=4: -0.0003 | nula: +0.0055 | -M_f/2 = -0.4805
+     M (CM/d) em M_sol: A -34.056, B -34.063 ; M_f em M_sol: A 61.73, B 69.48
+(7 s)

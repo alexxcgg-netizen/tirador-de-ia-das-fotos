@@ -1,0 +1,29 @@
+Sistema A, janela abrupta (como no 07), iota = 50 graus:
+  deslocamento  (todos os m)/(so m = 0) - 1 ao longo de phi: min -1.14e-03 max +1.79e-03
+  spin          (todos os m)/(so m = 0) - 1 ao longo de phi: min -1.34e-02 max +1.34e-02
+  cm            (todos os m)/(so m = 0) - 1 ao longo de phi: min -4.86e-03 max +4.58e-03
+  giroscopica   (todos os m)/(so m = 0) - 1 ao longo de phi: min -5.29e-03 max +5.12e-03
+    deslocamento  maior multipolo m != 0: (3, -1) com |.| = 1.66e-04 ; maior m = 0: 1.01e-01
+    spin          maior multipolo m != 0: (2, -1) com |.| = 4.44e-03 ; maior m = 0: 2.60e-01
+    cm            maior multipolo m != 0: (2, -2) com |.| = 1.16e-04 ; maior m = 0: 5.41e-02
+    giroscopica   maior multipolo m != 0: (2, -1) com |.| = 3.58e-03 ; maior m = 0: 1.32e+00
+Sistema A, inicio suavizado em 1 s, iota = 50 graus:
+  deslocamento  (todos os m)/(so m = 0) - 1 ao longo de phi: min -1.15e-03 max +1.79e-03
+  spin          (todos os m)/(so m = 0) - 1 ao longo de phi: min -1.38e-02 max +1.38e-02
+  cm            (todos os m)/(so m = 0) - 1 ao longo de phi: min -5.35e-03 max +5.08e-03
+  giroscopica   (todos os m)/(so m = 0) - 1 ao longo de phi: min -5.46e-03 max +5.27e-03
+    deslocamento  maior multipolo m != 0: (3, -1) com |.| = 1.66e-04 ; maior m = 0: 1.01e-01
+    spin          maior multipolo m != 0: (2, -1) com |.| = 4.47e-03 ; maior m = 0: 2.54e-01
+    cm            maior multipolo m != 0: (2, -2) com |.| = 1.29e-04 ; maior m = 0: 5.39e-02
+    giroscopica   maior multipolo m != 0: (2, -1) com |.| = 3.60e-03 ; maior m = 0: 1.29e+00
+
+Par (q_B = 2, chi2 = 0), janela abrupta como no 07: (B - A)/|A| no observador (unidades fisicas)
+  phi =   0.0 graus, so m = 0  : deslocamento +8.9e-11, spin -1.2e-11, cm -8.4e-11, giroscopica -1.8e-11
+  phi =   0.0 graus, todos os m: deslocamento -1.6e-03, spin -5.1e-03, cm +4.3e-03, giroscopica -1.7e-03
+  phi =  90.0 graus, so m = 0  : deslocamento +8.9e-11, spin -1.2e-11, cm -8.4e-11, giroscopica -1.8e-11
+  phi =  90.0 graus, todos os m: deslocamento +7.6e-04, spin -3.1e-02, cm -3.5e-03, giroscopica -1.3e-02
+  phi = 180.0 graus, so m = 0  : deslocamento +8.9e-11, spin -1.2e-11, cm -8.4e-11, giroscopica -1.8e-11
+  phi = 180.0 graus, todos os m: deslocamento -6.0e-05, spin +5.2e-03, cm +4.2e-03, giroscopica +1.6e-03
+  phi = 270.0 graus, so m = 0  : deslocamento +8.9e-11, spin -1.2e-11, cm -8.4e-11, giroscopica -1.8e-11
+  phi = 270.0 graus, todos os m: deslocamento +9.5e-04, spin +3.0e-02, cm -5.0e-03, giroscopica +1.3e-02
+(o par foi construido no 07 com o deslocamento total e a fase orbital do substituto; phi e o azimute do observador em relacao a essa fase, desconhecido e igual para A e B so por convencao)

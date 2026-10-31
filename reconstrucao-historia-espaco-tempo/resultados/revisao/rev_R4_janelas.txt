@@ -1,0 +1,19 @@
+a) Par (2, 0) do exp07 (q_B = 2, chi2_B = 0): diferenca relativa B - A com a janela comecando em f_ini (nivel A)
+     5 Hz: desl +1.87e-04 spin -1.33e-02 cm +1.69e-04 giro -9.01e-03
+    10 Hz: desl +8.88e-11 spin -1.25e-11 cm -8.38e-11 giro -1.79e-11
+    20 Hz: desl -6.76e-04 spin +2.03e-02 cm -1.24e-04 giro +1.43e-02
+  (exp14: 5 Hz desl +1.9e-04 spin -1.3e-02 cm +1.7e-04 giro -9.0e-03 ; 20 Hz desl -6.8e-04 spin +2.0e-02 cm -1.2e-04 giro +1.4e-02)
+
+b) Duas janelas (10 e 20 Hz): 8 equacoes
+  b3 controle, so 10 Hz, q_B = 2 fixo, 5 livres: max|res| = 5.02e-11 (9 aval.) -> q 2.0000 chi1 +0.2174 chi2 -0.0000 M 69.455 iota 54.15 graus D 389.2 Mpc
+  b1 6 livres a partir do par (2, 0): max|res| = 1.15e-02, norma 1.49e-02 (30 aval.) -> q 2.1104 chi1 +0.2693 chi2 +0.0514 M 70.470 iota 53.85 graus D 392.7 Mpc ; distancia a A (max rel. em q, M, D) 7.6e-01
+      residuos: -3.7e-04 -1.1e-02 -3.1e-04 -4.0e-03 -1.6e-03 +5.2e-03 -8.9e-05 +6.6e-03
+  b2 q_B = 1.0 fixo, 5 livres (melhor de 2 partidas): max|res| = 1.53e-03, norma 1.97e-03 (55 aval.) -> q 1.0000 chi1 -0.2488 chi2 +0.3723 M 64.976 iota 50.06 graus D 400.5 Mpc
+      residuos 10 Hz: -1.9e-04 -1.5e-03 +9.0e-05 -4.7e-04 | 20 Hz: -9.6e-05 +3.0e-04 +7.0e-05 +1.1e-03
+  b2 q_B = 1.5 fixo, 5 livres (melhor de 2 partidas): max|res| = 2.62e-03, norma 3.27e-03 (39 aval.) -> q 1.5000 chi1 +0.2566 chi2 -0.1235 M 66.200 iota 50.93 graus D 398.0 Mpc
+      residuos 10 Hz: -4.6e-05 -2.6e-03 -2.6e-05 -7.4e-04 | 20 Hz: -3.2e-04 +9.6e-04 +3.4e-05 +1.5e-03
+  b2 q_B = 2.0 fixo, 5 livres (melhor de 2 partidas): max|res| = 7.82e-03, norma 1.08e-02 (34 aval.) -> q 2.0000 chi1 +0.2883 chi2 -0.0267 M 69.294 iota 53.14 graus D 393.3 Mpc
+      residuos 10 Hz: +2.4e-04 -7.8e-03 -1.8e-04 -3.2e-03 | 20 Hz: -8.2e-04 +4.8e-03 +5.0e-05 +4.5e-03
+  b2 q_B = 3.0 fixo, 5 livres (melhor de 2 partidas): max|res| = 2.29e-03, norma 4.97e-03 (35 aval.) -> q 3.0000 chi1 +0.5492 chi2 +0.0336 M 73.794 iota 54.95 graus D 388.5 Mpc
+      residuos 10 Hz: +1.7e-03 -2.0e-03 -5.3e-04 +2.3e-03 | 20 Hz: -1.8e-03 +2.0e-03 +4.8e-04 -2.3e-03
+(149 s)

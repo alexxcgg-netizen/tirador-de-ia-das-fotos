@@ -1,0 +1,28 @@
+(a) modelo newtoniano + Peters (M = 65, q = 1.2, 10 Hz): memorias de janela sem o modo (2,0) oscilatorio, relativas ao caso com ele
+  e0 = 0.0: desl20 +5.5e-10 desl40 -3.3e-09 spin30 -8.4e-16 cm20 -5.6e-10 cm40 +3.3e-09 giro10 +1.0e-15 giro30 -1.7e-15 ; E_janela -5.5e-10
+  e0 = 0.1: desl20 +1.8e-05 desl40 -1.1e-04 spin30 -7.1e-16 cm20 -1.8e-05 cm40 +1.1e-04 giro10 -6.1e-16 giro30 +0.0e+00 ; E_janela -1.8e-05
+  e0 = 0.2: desl20 +7.3e-05 desl40 -4.4e-04 spin30 +0.0e+00 cm20 -7.4e-05 cm40 +4.4e-04 giro10 -6.3e-16 giro30 +6.4e-16 ; E_janela -7.3e-05
+  e0 = 0.3: desl20 +1.8e-04 desl40 -1.1e-03 spin30 +9.4e-16 cm20 -1.8e-04 cm40 +1.1e-03 giro10 +2.3e-16 giro30 +6.9e-16 ; E_janela -1.8e-04
+  (1 s)
+
+(b) pn_excentrico: dt = 0.5 -> 0.25 (e0 = 0.3, com o (2,0))
+  desl20 +1.1e-03 desl40 +1.1e-03 spin30 +2.5e-04 cm20 -1.1e-03 cm40 -1.1e-03 giro10 -2.5e-04 giro30 +2.5e-04
+  (1 s)
+
+(c) energia de ligacao 1PN, frequencia orbital media fixa: E = (eta x/2)[1 - (3/4 + eta/12) x - 2 x e^2/(1-e^2)]
+    (de n = eps^(3/2)[1 + (eta-15) eps/8] e K = 1 + 3x/(1-e^2), Damour-Deruelle); o exp12 usa a circular
+  e0 = 0.1: M_f(exp12) - M_f(1PN excentrica) = -5.44e-06 (relativo a parte ordinaria de CM: ~5.4e-06)
+  e0 = 0.2: M_f(exp12) - M_f(1PN excentrica) = -2.24e-05 (relativo a parte ordinaria de CM: ~2.2e-05)
+  e0 = 0.3: M_f(exp12) - M_f(1PN excentrica) = -5.32e-05 (relativo a parte ordinaria de CM: ~5.3e-05)
+
+(d) SEOBNRv5EHM (M = 65, q = 1.2, chi = (0.3, -0.2), 10 Hz)
+  e0 = 0.0: 167849 pontos, dt = 0.100000, max|dt_i - dt|/dt = 3.6e-11, t0 - t_pico = -16429 M
+    variacao relativa sob dM/M = 1e-6 (onda inteira), max sobre 3 passos: desl20 5.4e-05 desl40 5.1e-05 spin30 8.0e-06 cm20 4.5e-05 cm40 1.0e-04 giro10 5.1e-06 giro30 7.7e-06
+    so ate t_pico - 500 M:                                         desl20 4.4e-05 desl40 4.5e-05 spin30 2.6e-05 cm20 4.5e-05 cm40 9.4e-05 giro10 2.5e-05 giro30 2.6e-05
+    (t0, t_fim, t_pico) dos 4 casos: (-16428.81, 355.99, -0.11); (-16428.77, 355.93, -0.07); (-16428.72, 355.98, -0.12); (-16428.68, 355.92, -0.08)
+  (9 s)
+  e0 = 0.2: 146637 pontos, dt = 0.100000, max|dt_i - dt|/dt = 1.8e-11, t0 - t_pico = -14308 M
+    variacao relativa sob dM/M = 1e-6 (onda inteira), max sobre 3 passos: desl20 2.0e-05 desl40 1.9e-05 spin30 2.2e-06 cm20 3.0e-05 cm40 7.7e-05 giro10 2.3e-06 giro30 2.2e-06
+    so ate t_pico - 500 M:                                         desl20 5.7e-05 desl40 6.0e-05 spin30 3.2e-05 cm20 5.9e-05 cm40 9.5e-05 giro10 3.1e-05 giro30 3.2e-05
+    (t0, t_fim, t_pico) dos 4 casos: (-14307.69, 355.91, -0.09); (-14307.65, 355.95, -0.15); (-14307.61, 355.89, -0.11); (-14307.57, 355.93, -0.07)
+  (11 s)
