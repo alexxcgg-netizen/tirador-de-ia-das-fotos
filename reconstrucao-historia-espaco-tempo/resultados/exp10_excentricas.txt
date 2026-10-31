@@ -1,0 +1,14 @@
+Parte 1: TEOBResumS 4.4.1 (circular) x NRHybSur3dq8_CCE, ambos no nivel A, janela M f0 = 0.004
+  q=1.2 chi=(+0.3,-0.2): desl20 -0.013 desl40 -0.013 spin30 -0.010 cm20 -0.045 cm40 -0.247 giro10 +0.011 giro30 -0.010
+  q=1.0 chi=(+0.0,+0.0): desl20 -0.006 desl40 +0.043 spin30 -0.003 cm20 -0.016 cm40 +0.313 giro10 +0.010 giro30 -0.005
+  q=3.0 chi=(+0.6,+0.0): desl20 -0.054 desl40 +0.041 spin30 -0.035 cm20 +0.002 cm40 -4.632 giro10 +0.013 giro30 -0.036
+Parte 2 (PN newtoniano, inspiral de 10 Hz a separatriz; M = 65, q = 1.2): memorias relativas ao caso circular
+  e0 = 0.05: desl20 -0.005 spin30 -0.005 cm20 +0.005 giro10 +0.005 giro30 -0.005 | sem o modo (2,0): desl20 +4.4e-06 spin30 -9.8e-16 giro30 -2.3e-15
+  e0 = 0.10: desl20 -0.010 spin30 -0.014 cm20 +0.010 giro10 +0.014 giro30 -0.014 | sem o modo (2,0): desl20 +1.8e-05 spin30 -9.9e-16 giro30 -4.7e-16
+  e0 = 0.20: desl20 -0.006 spin30 -0.046 cm20 +0.006 giro10 +0.046 giro30 -0.046 | sem o modo (2,0): desl20 +7.3e-05 spin30 +1.5e-16 giro30 +9.6e-16
+  e0 = 0.30: desl20 -0.037 spin30 -0.110 cm20 +0.037 giro10 +0.110 giro30 -0.110 | sem o modo (2,0): desl20 +1.8e-04 spin30 +6.3e-16 giro30 +3.4e-16
+  e0 = 0.40: desl20 -0.022 spin30 -0.185 cm20 +0.021 giro10 +0.185 giro30 -0.185 | sem o modo (2,0): desl20 +3.3e-04 spin30 +1.0e-15 giro30 +2.8e-15
+Parte 3: A circular (M = 65, q = 1.2, D = 400 Mpc, iota = 50 graus): deslocamento 4.9290e-23, spin -1.9070e-25, cm -7.6602e-27, giroscopica -2.5964e-41
+  B e0 = 0.1: M_B = 65.11, q_B = 1.00, D_B = 399.6 Mpc, iota_B = 49.8 graus | max dif. memorias = 3.0e-03 | onda: match aLIGO 0.929 (SNR_A 54, rho_crit 2.66)
+  B e0 = 0.2: M_B = 65.96, q_B = 1.00, D_B = 395.1 Mpc, iota_B = 49.3 graus | max dif. memorias = 1.5e-02 | onda: match aLIGO 0.793 (SNR_A 54, rho_crit 1.56)
+  B e0 = 0.3: M_B = 66.10, q_B = 1.00, D_B = 380.6 Mpc, iota_B = 48.9 graus | max dif. memorias = 4.7e-02 | onda: match aLIGO 0.691 (SNR_A 54, rho_crit 1.27)

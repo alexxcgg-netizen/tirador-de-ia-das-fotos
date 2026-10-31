@@ -1,0 +1,6 @@
+Par: A (q = 1.2, eta = 0.2479, D = 400 Mpc) e B (q = 3.0, eta = 0.1875, D = 302.5 Mpc = lambda D_A, lambda = 0.7563); M = 65, iota = 50 graus
+LO : diferenca relativa B - A: deslocamento -1.28e-04, spin +5.94e-05, cm -5.01e-03, giroscopica -3.22e-01
+NLO: diferenca relativa B - A: deslocamento -1.39e-02, spin +1.21e-02, cm +5.45e-03, giroscopica -3.17e-01
+NLO, so deslocamento + spin + CM: ajuste de B com q = 3 fixo -> M_B = 65.003, D_B = 302.50 Mpc, iota_B = 50.002 graus, residuo max = 1.3e-02
+     giroscopica nesse ponto: diferenca relativa = -0.318
+NLO, as quatro memorias com q = 3 fixo e (M, D, iota) livres: residuo max = 1.08e-01 (3 incognitas, 4 equacoes)

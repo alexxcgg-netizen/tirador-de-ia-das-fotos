@@ -14,5 +14,6 @@ T8 DeltaK33: codigo = (-0.001988429-0.0037371121j)  Nichols = (-0.001988429-0.00
 T8 DeltaK31: codigo = (0.0055628711-0.0127382915j)  Nichols = (0.0055628711-0.0127382915j)  razao = (1-0j)
 T8 DeltaK55: codigo = (7.88041e-05-0.0002246594j)  Nichols = (7.88041e-05-0.0002246594j)  razao = (1-0j)
 T9 max|N_ab Ctil^ab - (-2 Im(hbar hdot))| = 8.88e-16  (convencao eps_th_ph = +sin th)
+T10 giroscopica x Faye & Seraj 2025: max|codigo - formula| / max|formula| = 4.0e-05
 Giroscopica (r^2 Phi) modos m=0: (0,0): 3.0358e-18+0.0000e+00j, (1,0): -1.1442e+00+0.0000e+00j, (2,0): -1.2110e-15+0.0000e+00j, (3,0): 3.7451e-01+0.0000e+00j, (4,0): 9.4472e-17+0.0000e+00j
 Helicidade integrada, parte l=0 = 1.21e-17 (zero: a helicidade dos hemisferios norte e sul se cancela)

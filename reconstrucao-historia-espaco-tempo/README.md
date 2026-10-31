@@ -4,8 +4,9 @@ Projeto de pesquisa: quanto da história de um sistema físico pode ser reconstr
 que ele deixa nas ondas gravitacionais, em especial nas memórias gravitacionais (deslocamento,
 spin, centro de massa e giroscópica)?
 
-**Estado em 31/10/2026:** etapas 1 a 5 concluídas, com código verificado e cinco experimentos
-numéricos reproduzíveis. Próximo passo sugerido no fim de `06_conclusoes_e_limites.md`.
+**Estado em 31/10/2026:** etapas 1 a 6 concluídas. As etapas 1–5 tratam fontes gerais (cinco
+experimentos). A etapa 6 testa binárias reais de buracos negros com relatividade numérica e modelos EOB
+(exp06–exp15). Próximo passo sugerido no fim de `06_conclusoes_e_limites.md`.
 
 ## Resultado principal
 
@@ -27,6 +28,20 @@ modos, $\int\omega\,\tilde h\tilde h^\dagger$ e $\int\omega^2\,\tilde h\tilde h^
   valor próprio da memória é outro: testa a RG não linear e mede os canais que não são ondas
   gravitacionais (neutrinos, luz, matéria ejetada).
 
+**Etapa 6: binárias reais de buracos negros** (`07_binarias_reais.md`):
+- A família infinita não contém binárias da RG: a relatividade amarra a fase à amplitude
+  ($|\tilde h|^2=a^2\Psi''/2\pi$).
+- Num observador, 4 memórias contra ≥ 6 parâmetros deixam famílias exatas. Construí binárias com massa,
+  razão de massas, spins, distância, inclinação e recuo diferentes e as mesmas quatro memórias em 1e-10
+  (substituto NRHybSur3dq8_CCE), e pares circular × excêntrica ($e_0$ até 0,3) em ~1e-5 (SEOBNRv5EHM).
+  A família sobrevive aos níveis A (ordem quadrática), B (ordem seguinte) e C (memória completa de RN).
+- As ondas completas desses pares se separam a partir de SNR 1–6. A memória tem só 1,2% da SNR (0,8 em
+  aLIGO, 39 em CE para um sistema tipo GW150914 a 400 Mpc).
+- No céu inteiro, as memórias quase determinam a binária, exceto por uma direção cega de 2ª ordem em
+  massas iguais.
+- A fase perdida volta resolvendo a memória no tempo: $\Omega_{\rm mem}=\dot h_{20}/(C|h_{30}|)$, ou
+  medindo as memórias em duas janelas.
+
 **Limites rigorosos da reconstrução** (`06_conclusoes_e_limites.md`): nada de dentro de horizontes;
 nada do que cai no horizonte (ilustrado numericamente com precisão de 1e-25); nenhuma dinâmica
 esférica (Birkhoff); nenhum multipolo estático; reconstrução pela torre de memórias com ruído
@@ -43,8 +58,9 @@ que os dados têm.
 | `04_brechas.md` | Etapa 4: fase, observáveis novos, multimensageiros, informação, simetrias, polarização |
 | `05_experimentos.md` | Etapa 5: os cinco experimentos, números e como rodar |
 | `06_conclusoes_e_limites.md` | Resposta à pergunta central, limites, previsões verificáveis, problemas em aberto |
+| `07_binarias_reais.md` | Etapa 6: binárias reais, pares degenerados, robustez A/B/C, excentricidade, observável de fase, refutações |
 | `referencias.md` | ~80 referências verificadas online, com correções de atribuição |
-| `codigo/` | `harmonicos.py`, `memorias.py`, `fontes.py` e os experimentos `exp01`–`exp05` |
+| `codigo/` | `harmonicos.py`, `memorias.py` e `fontes.py` com os experimentos `exp01`–`exp05`; `binarias.py`, `deteccao.py` e `pn_excentrico.py` com os experimentos `exp06`–`exp15` |
 | `resultados/` | saídas de texto dos experimentos |
 | `figuras/` | gráficos gerados pelos experimentos |
 
@@ -70,4 +86,9 @@ python3 exp04_horizonte.py            # limite: radiação que só cai no buraco
 python3 exp05_torre_momentos.py       # limite: reconstruir a onda pela torre de memórias
 ```
 
+A etapa 6 precisa de `gwsurrogate`, `surfinBH`, `lalsuite`, `teobresums` e `pyseobnr`. A lista de
+comandos e a nota sobre a compilação do `pygsl_lite` estão no fim de `07_binarias_reais.md`.
+
 ![Cinco histórias, mesma memória](figuras/e3_formas_de_onda.png)
+
+![Mesmas quatro memórias, ondas diferentes: binárias reais](figuras/e7_pares_observador.png)

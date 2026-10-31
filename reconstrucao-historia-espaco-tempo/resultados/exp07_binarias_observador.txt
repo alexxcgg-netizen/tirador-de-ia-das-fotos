@@ -1,0 +1,18 @@
+Sistema A: M = 65.0, q = 1.20, chi = (+0.30, -0.20), D = 400 Mpc, iota = 50.0 graus
+  memorias no observador: desl Delta h_+ = 1.8292e-22 ; spin int h_x du = -2.4979e-25 s ; CM int h_+ du = -3.0687e-26 s ; giro = -3.1565e-41 rad
+  recuo |v| = 77.3 km/s ; M_f/M = 0.9497
+q_B = 1.0, chi2_B = +0.0 -> M_B = 64.99, chi1_B = +0.079, D_B = 398.6 Mpc, iota_B = 50.4 graus | max dif. memorias = 4.1e-11
+     onda (h_+): match aLIGO = 0.938 (SNR_A 66.0, rho_crit 2.85) ; match ET = 0.717 (SNR_A 899, rho_crit 1.33) ; recuo B = 18 km/s
+q_B = 2.0, chi2_B = +0.0 -> M_B = 69.45, chi1_B = +0.217, D_B = 389.2 Mpc, iota_B = 54.2 graus | max dif. memorias = 8.9e-11
+     onda (h_+): match aLIGO = 0.980 (SNR_A 66.0, rho_crit 5.05) ; match ET = 0.986 (SNR_A 899, rho_crit 5.87) ; recuo B = 104 km/s
+q_B = 3.0, chi2_B = +0.0 -> M_B = 73.69, chi1_B = +0.549, D_B = 387.0 Mpc, iota_B = 55.0 graus | max dif. memorias = 3.0e-06
+     onda (h_+): match aLIGO = 0.498 (SNR_A 66.0, rho_crit 1.00) ; match ET = 0.330 (SNR_A 899, rho_crit 0.86) ; recuo B = 65 km/s
+q_B = 4.0, chi2_B = +0.0 -> M_B = 75.40, chi1_B = +0.800, D_B = 384.3 Mpc, iota_B = 53.1 graus | max dif. memorias = 1.5e-02
+     onda (h_+): match aLIGO = 0.317 (SNR_A 66.0, rho_crit 0.86) ; match ET = 0.198 (SNR_A 899, rho_crit 0.79) ; recuo B = 23 km/s
+q_B = 6.0, chi2_B = +0.0 -> M_B = 83.57, chi1_B = +0.800, D_B = 336.5 Mpc, iota_B = 60.6 graus | max dif. memorias = 7.8e-02
+     onda (h_+): match aLIGO = 0.307 (SNR_A 66.0, rho_crit 0.85) ; match ET = 0.183 (SNR_A 899, rho_crit 0.78) ; recuo B = 13 km/s
+q_B = 2.0, chi2_B = +0.5 -> M_B = 72.30, chi1_B = -0.143, D_B = 384.0 Mpc, iota_B = 57.0 graus | max dif. memorias = 1.0e-10
+     onda (h_+): match aLIGO = 0.670 (SNR_A 66.0, rho_crit 1.23) ; match ET = 0.328 (SNR_A 899, rho_crit 0.86) ; recuo B = 227 km/s
+q_B = 3.0, chi2_B = -0.5 -> M_B = 70.23, chi1_B = +0.800, D_B = 391.4 Mpc, iota_B = 50.1 graus | max dif. memorias = 1.8e-02
+     onda (h_+): match aLIGO = 0.411 (SNR_A 66.0, rho_crit 0.92) ; match ET = 0.252 (SNR_A 899, rho_crit 0.82) ; recuo B = 55 km/s
+(118 s)

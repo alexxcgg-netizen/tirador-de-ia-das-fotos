@@ -1,0 +1,14 @@
+Calibracao (modo 22 puro): d h20/du = C_E |dH22/du|^2 com C_E = 0.073576 ; Omega = (d h20/du)/(C |h30|) com C = 5.039682
+  (previsao analitica: C = 5.0396 ; dispersao relativa de C ao longo do sinal: 1.6e-05)
+q=1 chi=(0.0,0.0): erro mediano em Omega: inspiral 6.66e-02, fusao 4.09e-02 | fase acumulada 128.1 rad em 20 ciclos de (2,2), erro de fase 9.52 rad | sobreposicao do (2,2) reconstruido (inspiral) 0.5074 | max|h30|/max|h22| = 6.7e-03
+      com as taxas das leis de balanco: erro em Omega inspiral 2.14e-02, fusao 4.33e-02 | h20 de RN - memoria acumulada pelo fluxo: no fim 6.7e-04 (0.8% do total), maximo 1.5e-02 em t - t_pico = 5 M
+q=2 chi=(0.0,0.0): erro mediano em Omega: inspiral 6.65e-02, fusao 5.10e-02 | fase acumulada 142.8 rad em 22 ciclos de (2,2), erro de fase 9.83 rad | sobreposicao do (2,2) reconstruido (inspiral) 0.6042 | max|h30|/max|h22| = 5.0e-03
+      com as taxas das leis de balanco: erro em Omega inspiral 2.12e-02, fusao 4.34e-02 | h20 de RN - memoria acumulada pelo fluxo: no fim 5.2e-04 (0.9% do total), maximo 1.4e-02 em t - t_pico = 6 M
+q=4 chi=(0.0,0.0): erro mediano em Omega: inspiral 8.75e-02, fusao 6.52e-02 | fase acumulada 194.2 rad em 30 ciclos de (2,2), erro de fase 8.30 rad | sobreposicao do (2,2) reconstruido (inspiral) 0.3394 | max|h30|/max|h22| = 4.3e-03
+      com as taxas das leis de balanco: erro em Omega inspiral 2.06e-02, fusao 4.26e-02 | h20 de RN - memoria acumulada pelo fluxo: no fim 5.1e-04 (1.8% do total), maximo 1.5e-02 em t - t_pico = 9 M
+q=1 chi=(0.6,0.6): erro mediano em Omega: inspiral 5.03e-02, fusao 6.85e-02 | fase acumulada 162.8 rad em 25 ciclos de (2,2), erro de fase 4.02 rad | sobreposicao do (2,2) reconstruido (inspiral) 0.9396 | max|h30|/max|h22| = 8.4e-03
+      com as taxas das leis de balanco: erro em Omega inspiral 3.34e-02, fusao 8.02e-02 | h20 de RN - memoria acumulada pelo fluxo: no fim 1.1e-03 (0.8% do total), maximo 6.2e-03 em t - t_pico = 4 M
+q=3 chi=(0.6,0.0): erro mediano em Omega: inspiral 7.54e-02, fusao 4.90e-02 | fase acumulada 209.0 rad em 33 ciclos de (2,2), erro de fase 0.11 rad | sobreposicao do (2,2) reconstruido (inspiral) 0.5173 | max|h30|/max|h22| = 5.3e-03
+      com as taxas das leis de balanco: erro em Omega inspiral 2.79e-02, fusao 6.55e-02 | h20 de RN - memoria acumulada pelo fluxo: no fim 1.3e-03 (1.8% do total), maximo 4.9e-03 em t - t_pico = 6 M
+A chirp: Omega_mem no inicio da emissao = 0.0666, no fim = 0.1483
+B anti-chirp: Omega_mem no inicio da emissao = 0.1464, no fim = 0.0660

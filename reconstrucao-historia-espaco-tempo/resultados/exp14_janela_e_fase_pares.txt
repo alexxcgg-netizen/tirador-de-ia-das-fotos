@@ -1,0 +1,42 @@
+1. Dependencia da janela (nivel A): diferenca relativa B - A de cada memoria quando a janela comeca em f_ini
+  par q_B = 1.0, chi2_B = +0.0:
+      5 Hz: desl -8.8e-05 spin -3.6e-03 cm +3.7e-05 giro -3.4e-03
+      7 Hz: desl -5.7e-05 spin -2.0e-03 cm +2.5e-05 giro -1.9e-03
+     10 Hz: desl -4.1e-11 spin +2.8e-11 cm +3.2e-11 giro -1.3e-11
+     15 Hz: desl +1.2e-04 spin +2.6e-03 cm -6.2e-05 giro +2.5e-03
+     20 Hz: desl +2.6e-04 spin +4.5e-03 cm -1.4e-04 giro +4.4e-03
+  par q_B = 2.0, chi2_B = +0.0:
+      5 Hz: desl +1.9e-04 spin -1.3e-02 cm +1.7e-04 giro -9.0e-03
+      7 Hz: desl +1.3e-04 spin -7.5e-03 cm +9.2e-05 giro -5.1e-03
+     10 Hz: desl +8.9e-11 spin -1.2e-11 cm -8.4e-11 giro -1.8e-11
+     15 Hz: desl -3.2e-04 spin +1.1e-02 cm -6.9e-05 giro +7.7e-03
+     20 Hz: desl -6.8e-04 spin +2.0e-02 cm -1.2e-04 giro +1.4e-02
+  par q_B = 2.0, chi2_B = +0.5:
+      5 Hz: desl +5.6e-05 spin -3.5e-02 cm +2.8e-04 giro -2.8e-02
+      7 Hz: desl +3.6e-05 spin -2.0e-02 cm +1.7e-04 giro -1.5e-02
+     10 Hz: desl +1.0e-10 spin -6.5e-11 cm -1.0e-10 giro -8.1e-11
+     15 Hz: desl -6.9e-05 spin +2.7e-02 cm -2.9e-04 giro +2.1e-02
+     20 Hz: desl -1.8e-04 spin +5.0e-02 cm -8.2e-04 giro +4.0e-02
+
+2. Omega_mem(t) = (d h20/dt)/(C |h30|) com os modos m = 0 de RN (NRHybSur3dq8_CCE, nivel C), tempo antes do pico
+  par q_B = 1.0, chi2_B = +0.0 (M_B = 64.99):
+     t = -2.00 s: Omega_mem A 41.2, B 41.2 rad/s (B/A - 1 = +0.000) | verdadeira B/A - 1 = -0.006 | erro do estimador A -0.076, B -0.070
+     t = -1.00 s: Omega_mem A 49.8, B 51.6 rad/s (B/A - 1 = +0.035) | verdadeira B/A - 1 = -0.007 | erro do estimador A -0.126, B -0.089
+     t = -0.50 s: Omega_mem A 79.1, B 72.8 rad/s (B/A - 1 = -0.080) | verdadeira B/A - 1 = -0.008 | erro do estimador A +0.088, B +0.009
+     t = -0.20 s: Omega_mem A 102.5, B 100.5 rad/s (B/A - 1 = -0.020) | verdadeira B/A - 1 = -0.010 | erro do estimador A +0.027, B +0.017
+     t = -0.10 s: Omega_mem A 127.9, B 127.2 rad/s (B/A - 1 = -0.005) | verdadeira B/A - 1 = -0.011 | erro do estimador A +0.008, B +0.014
+     t = -0.05 s: Omega_mem A 164.4, B 164.2 rad/s (B/A - 1 = -0.001) | verdadeira B/A - 1 = -0.013 | erro do estimador A +0.015, B +0.027
+  par q_B = 2.0, chi2_B = +0.0 (M_B = 69.45):
+     t = -2.00 s: Omega_mem A 41.2, B 40.9 rad/s (B/A - 1 = -0.007) | verdadeira B/A - 1 = -0.001 | erro do estimador A -0.076, B -0.082
+     t = -1.00 s: Omega_mem A 49.8, B 50.9 rad/s (B/A - 1 = +0.020) | verdadeira B/A - 1 = -0.001 | erro do estimador A -0.126, B -0.107
+     t = -0.50 s: Omega_mem A 79.1, B 79.5 rad/s (B/A - 1 = +0.005) | verdadeira B/A - 1 = -0.002 | erro do estimador A +0.088, B +0.095
+     t = -0.20 s: Omega_mem A 102.5, B 99.2 rad/s (B/A - 1 = -0.033) | verdadeira B/A - 1 = -0.004 | erro do estimador A +0.027, B -0.002
+     t = -0.10 s: Omega_mem A 127.9, B 126.0 rad/s (B/A - 1 = -0.015) | verdadeira B/A - 1 = -0.006 | erro do estimador A +0.008, B -0.000
+     t = -0.05 s: Omega_mem A 164.4, B 162.8 rad/s (B/A - 1 = -0.009) | verdadeira B/A - 1 = -0.008 | erro do estimador A +0.015, B +0.013
+  par q_B = 2.0, chi2_B = +0.5 (M_B = 72.30):
+     t = -2.00 s: Omega_mem A 41.2, B 39.5 rad/s (B/A - 1 = -0.040) | verdadeira B/A - 1 = -0.036 | erro do estimador A -0.076, B -0.079
+     t = -1.00 s: Omega_mem A 49.8, B 53.8 rad/s (B/A - 1 = +0.080) | verdadeira B/A - 1 = -0.041 | erro do estimador A -0.126, B -0.016
+     t = -0.50 s: Omega_mem A 79.1, B 77.3 rad/s (B/A - 1 = -0.022) | verdadeira B/A - 1 = -0.046 | erro do estimador A +0.088, B +0.114
+     t = -0.20 s: Omega_mem A 102.5, B 92.9 rad/s (B/A - 1 = -0.094) | verdadeira B/A - 1 = -0.055 | erro do estimador A +0.027, B -0.015
+     t = -0.10 s: Omega_mem A 127.9, B 117.5 rad/s (B/A - 1 = -0.081) | verdadeira B/A - 1 = -0.064 | erro do estimador A +0.008, B -0.011
+     t = -0.05 s: Omega_mem A 164.4, B 152.9 rad/s (B/A - 1 = -0.070) | verdadeira B/A - 1 = -0.069 | erro do estimador A +0.015, B +0.014

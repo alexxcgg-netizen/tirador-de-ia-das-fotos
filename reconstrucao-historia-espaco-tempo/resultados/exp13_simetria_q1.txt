@@ -1,0 +1,14 @@
+chi_s = -0.5 (q = 1): sistema B = (chi_s + d, chi_s - d) contra A = (chi_s, chi_s)
+  d = 0.025: max dif. relativa das 7 memorias globais: nivel A 7.37e-05, nivel C 1.40e-03 | onda: 1 - match aLIGO = 3.83e-06 (rho_crit 361.5, SNR_A 58) | |h21|/|h22| no pico = 4.01e-03
+  d = 0.050: max dif. relativa das 7 memorias globais: nivel A 2.97e-04, nivel C 2.81e-03 | onda: 1 - match aLIGO = 1.53e-05 (rho_crit 180.5, SNR_A 58) | |h21|/|h22| no pico = 7.99e-03
+  d = 0.100: max dif. relativa das 7 memorias globais: nivel A 1.19e-03, nivel C 5.72e-03 | onda: 1 - match aLIGO = 6.17e-05 (rho_crit 90.0, SNR_A 58) | |h21|/|h22| no pico = 1.59e-02
+  d = 0.200: max dif. relativa das 7 memorias globais: nivel A 4.77e-03, nivel C 1.18e-02 | onda: 1 - match aLIGO = 2.50e-04 (rho_crit 44.7, SNR_A 58) | |h21|/|h22| no pico = 3.18e-02
+  expoentes (ajuste log-log): memorias (nivel C) ~ d^1.03 ; 1 - match ~ d^2.01 ; |h21|/|h22| ~ d^1.00
+
+chi_s = +0.3 (q = 1): sistema B = (chi_s + d, chi_s - d) contra A = (chi_s, chi_s)
+  d = 0.025: max dif. relativa das 7 memorias globais: nivel A 6.75e-05, nivel C 4.44e-04 | onda: 1 - match aLIGO = 3.38e-06 (rho_crit 384.9, SNR_A 70) | |h21|/|h22| no pico = 3.95e-03
+  d = 0.050: max dif. relativa das 7 memorias globais: nivel A 3.51e-04, nivel C 8.76e-04 | onda: 1 - match aLIGO = 1.35e-05 (rho_crit 192.2, SNR_A 70) | |h21|/|h22| no pico = 7.92e-03
+  d = 0.100: max dif. relativa das 7 memorias globais: nivel A 1.79e-03, nivel C 2.50e-03 | onda: 1 - match aLIGO = 5.45e-05 (rho_crit 95.8, SNR_A 70) | |h21|/|h22| no pico = 1.59e-02
+  d = 0.200: max dif. relativa das 7 memorias globais: nivel A 7.98e-03, nivel C 9.40e-03 | onda: 1 - match aLIGO = 1.20e-03 (rho_crit 20.4, SNR_A 70) | |h21|/|h22| no pico = 3.18e-02
+  expoentes (ajuste log-log): memorias (nivel C) ~ d^1.47 ; 1 - match ~ d^2.74 ; |h21|/|h22| ~ d^1.00
+

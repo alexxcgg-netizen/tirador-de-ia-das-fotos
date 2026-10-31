@@ -110,8 +110,9 @@ Figura: `figuras/e5_torre_momentos.png`.
 
 - Ordem cúbica completa com os termos elétricos instantâneos de uma fonte de verdade (formalismo
   pós-Minkowskiano) e as caudas.
-- Fontes autogravitantes: memórias globais de binárias com modelos de forma de onda (substitutos de
-  relatividade numérica com memória [Yoo2023]) para testar a hipótese de quase injetividade
+- ~~Fontes autogravitantes: memórias globais de binárias com modelos de forma de onda (substitutos de
+  relatividade numérica com memória [Yoo2023]) para testar a hipótese de quase injetividade~~ —
+  feito na etapa 6 (exp06–exp15, descritos em `07_binarias_reais.md`)
   (`03_problema_concreto.md` §6).
 - Fisher completo da memória para LIGO, ET, CE e LISA com curvas de ruído reais.
 - Simulação do teste de birrefringência com a memória como referência (`04_brechas.md` §8).

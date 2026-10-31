@@ -202,6 +202,12 @@ os termos $h_{\rm mem}\dot h_{\rm osc}$ não são invariantes pelo filtro.
   parâmetros. Para um observador numa direção, ~4–7 números de memória contra ~15 parâmetros deixam
   famílias degeneradas de dimensão ≥8 (contagem de dimensões, **[D]**). No céu inteiro é **pergunta
   aberta [H]** se as memórias quase determinam os parâmetros intrínsecos (massas e spins).
+  **Atualização (etapa 6, `07_binarias_reais.md`):**
+  - a família de um observador foi construída explicitamente com relatividade numérica: pares
+    idênticos em 1e-10, robustos aos níveis A, B e C;
+  - no céu inteiro, as memórias de binárias genéricas com spins alinhados são quase injetivas (o par
+    mais próximo difere 0,5%), exceto por uma direção cega de 2ª ordem em massas iguais
+    (assimetria dos spins).
 - **Exemplo conhecido do mesmo tipo [E].** [THA2009] mostram que uma binária e um sistema triplo na
   solução de Lagrange têm formas de onda de quadrupolo indistinguíveis. Fontes diferentes, mesma onda
   (na ordem de quadrupolo).

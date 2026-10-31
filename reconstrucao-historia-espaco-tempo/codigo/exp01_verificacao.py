@@ -167,6 +167,17 @@ for _ in range(20):
     assert abs(Ctil[0, 1] - Ctil[1, 0]) < 1e-12        # dual de um STF e STF
 log("T9 max|N_ab Ctil^ab - (-2 Im(hbar hdot))| = %.2e  (convencao eps_th_ph = +sin th)" % err9)
 
+# T10 memoria giroscopica contra Faye & Seraj 2025 (CQG 42, 035005), eq. memory-axisymmetric:
+# Delta Psi = Psi0 (1/sqrt(x) - 1/sqrt(x0)) [ (cos3th + 7 costh) - (3/5)(5 cos3th + 3 costh) ], Psi0 = 5 M^2 nu / 32
+psi0 = 5 * M ** 2 * eta / 32
+acum = xf ** -0.5 - x0 ** -0.5
+padrao_FS = lambda th: (np.cos(3 * th) + 7 * np.cos(th)) - 0.6 * (5 * np.cos(3 * th) + 3 * np.cos(th))
+gi = mem["giroscopica"]
+gyro_cod = lambda th: np.real(sum(c * sYlm(0, l, mm, th, 0.0) for (l, mm), c in gi.items()))
+erro10 = max(abs(gyro_cod(th_) - psi0 * acum * padrao_FS(th_)) for th_ in np.linspace(0.2, 3.0, 9))
+log("T10 giroscopica x Faye & Seraj 2025: max|codigo - formula| / max|formula| = %.1e"
+    % (erro10 / max(abs(psi0 * acum * padrao_FS(th_)) for th_ in np.linspace(0.2, 3.0, 9))))
+
 # giroscopica: termos separados (so informativo)
 gi = mem["giroscopica"]
 log("Giroscopica (r^2 Phi) modos m=0: " + ", ".join("(%d,0): %.4e%+.4ej" % (l, gi[(l, 0)].real, gi[(l, 0)].imag)

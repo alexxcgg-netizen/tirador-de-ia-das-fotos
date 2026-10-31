@@ -132,3 +132,32 @@ referência de revista veio só da busca do agente e não aparece no arXiv, est�
 
 - **[Hofstetter1964]** E. M. Hofstetter, "Construction of time-limited functions with specified autocorrelation functions", IEEE Trans. Inf. Theory 10, 119 (1964); doi:10.1109/TIT.1964.1053648. Não unicidade da recuperação de fase em uma dimensão.
 - **[Fienup1982]** J. R. Fienup, "Phase retrieval algorithms: a comparison", Applied Optics 21, 2758 (1982); doi:10.1364/AO.21.002758.
+
+## Etapa 6: binárias reais, modelos de onda, detecção e recuperação de fase
+
+Conferidas em 31/10/2026 na API do arXiv (título, autores, referência de revista) e, quando o arXiv
+não traz a revista, no Crossref. Onde nenhuma das duas confirma a revista, está marcado.
+
+- **[Blanchet2024]** L. Blanchet, "Post-Newtonian theory for gravitational waves", Living Rev. Relativ. 27, 4 (2024); arXiv:1310.1528 (v6). Modos PN (eq. modedef), memória de $h_{40}$ (eq. Hmem). Versão atualizada de [Blanchet2014].
+- **[Peters1964]** P. C. Peters, "Gravitational radiation and the motion of two point masses", Phys. Rev. 136, B1224 (1964). Evolução de $a$ e $e$ (exp10).
+- **[Favata2011]** M. Favata, "The gravitational-wave memory from eccentric binaries", PRD 84, 124013 (2011); arXiv:1108.3121. A memória acumula sobretudo perto da fusão, depois da circularização.
+- **[EBF2019]** M. Ebersold, Y. Boetzel, G. Faye, C. K. Mishra, B. R. Iyer, P. Jetzer, "Gravitational-wave amplitudes for compact binaries in eccentric orbits at the third post-Newtonian order: Memory contributions", PRD 100, 084043 (2019); arXiv:1906.06263.
+- **[FS2025]** G. Faye, A. Seraj, "Gyroscopic gravitational memory from quasi-circular binary systems", CQG 42, 035005 (2025); arXiv:2409.02624. Referência do teste T10 (exp01).
+- **[GPA2024]** E. Grilli, A. Placidi, S. Albanesi, G. Grignani et al., "Direct current memory effects in effective-one-body waveform models", PRD 111, 044045 (2025); arXiv:2410.05386. Memória no TEOBResumS (inclusive o excêntrico Dalí).
+- **[GBE2025]** A. Gamboa, A. Buonanno, R. Enficiaud, M. Khalil, A. Ramos-Buades, L. Pompili et al., "Accurate waveforms for eccentric, aligned-spin binary black holes: The multipolar effective-one-body model SEOBNRv5EHM", PRD 112, 044038 (2025); arXiv:2412.12823. Modelo do exp12 (pyseobnr 0.3.7).
+- **[Nagar2018]** A. Nagar, S. Bernuzzi, W. Del Pozzo, G. Riemenschneider et al., "Time-domain effective-one-body gravitational waveforms for coalescing compact binaries with nonprecessing spins, tides and self-spin effects", PRD 98, 104052 (2018); arXiv:1806.01772. TEOBResumS (pacote `teobresums` 4.4.1, quase circular).
+- **[VGSHZ2019]** V. Varma, D. Gerosa, L. C. Stein, F. Hébert, H. Zhang, "High-accuracy mass, spin, and recoil predictions of generic black-hole merger remnants", PRL 122, 011101 (2019); arXiv:1809.09125. Ajuste NRSur3dq8Remnant (pacote `surfinBH`).
+- **[LOB2008]** L. Lindblom, B. J. Owen, D. A. Brown, "Model waveform accuracy standards for gravitational wave data analysis", PRD 78, 124020 (2008); arXiv:0809.3844. Critério de distinguibilidade $(\delta h|\delta h)>1$.
+- **[ET-CE2017]** B. P. Abbott et al. (LIGO Scientific Collaboration), "Exploring the sensitivity of next generation gravitational wave detectors", CQG 34, 044001 (2017); arXiv:1607.08697. Curvas ET-D e CE do lalsimulation (P1600143). As curvas aLIGO e A+ são os documentos LIGO-T1800044 e LIGO-T1800042, como implementados no lalsimulation (não conferi os documentos).
+- **[GVB2023]** S. Gasparotto, R. Vicente, D. Blas, A. C. Jenkins, E. Barausse, "Can gravitational-wave memory help constrain binary black-hole parameters? A LISA case study", PRD 107, 124033 (2023); arXiv:2301.13228. Fisher: a memória reduz a degenerescência distância–inclinação só para sinais curtos; impacto limitado na estimativa de parâmetros.
+- **[McNeill2017]** L. O. McNeill, E. Thrane, P. D. Lasky, "Gravitational waves from orphan memory", PRL 118, 181103 (2017); arXiv:1702.01759. Memória de fontes cuja onda oscilatória está fora da banda.
+- **[ET2020]** M. Ebersold, S. Tiwari, "Search for nonlinear memory from subsolar mass compact binary mergers", PRD 101, 104041 (2020); arXiv:2005.03306.
+- **[GM2024]** A. M. Grant, K. Mitman, "Higher memory effects in numerical simulations of binary black hole mergers", CQG 41, 175003 (2024); arXiv:2312.02295.
+- **[EN2025]** A. Elhashash, D. A. Nichols, "Waveform models for the gravitational-wave memory effect: Extreme mass-ratio limit and final memory offset", PRD 111, 044052 (2025); arXiv:2407.19017. Parte II: arXiv:2504.18635 (revista não conferida).
+- **[RH2025]** M. Rosselló-Sastre, S. Husa, "Waveform model for the (ℓ=2, m=0) spherical harmonic and the displacement memory contribution from precessing binaries", PRD 112, 124059 (2025); arXiv:2506.08888.
+- **[ZMG2026]** J. Zosso, L. Magaña Zertuche, S. Gasparotto, A. Cogez, H. Inchauspé, M. Jacobs et al., "Toward claiming a detection of gravitational memory", arXiv:2601.23019 (sem revista).
+- **[AW2020]** R. Alaifari, M. Wellershoff, "Uniqueness of STFT phase retrieval for bandlimited functions", Appl. Comput. Harmon. Anal. 50, 34 (2021); arXiv:2006.10579.
+- **[BEE2020]** T. Bendory, D. Edidin, Y. C. Eldar, "On signal reconstruction from FROG measurements", Appl. Comput. Harmon. Anal. 48, 1030 (2020); arXiv:1706.08494.
+
+Software (versões usadas): `gwsurrogate` 1.2.0 (NRHybSur3dq8_CCE), `surfinBH` 1.2.7, `lalsuite` 7.26.16,
+`teobresums` 4.4.1, `pyseobnr` 0.3.7 (com `pygsl_lite` 0.1.8 compilado localmente).

@@ -1,0 +1,5 @@
+aLIGO: SNR da memoria (h_+, parte m = 0) = 0.76 ; SNR da onda oscilatoria = 66 ; razao = 1.2e-02
+A+   : SNR da memoria (h_+, parte m = 0) = 1.44 ; SNR da onda oscilatoria = 126 ; razao = 1.1e-02
+ET   : SNR da memoria (h_+, parte m = 0) = 10.69 ; SNR da onda oscilatoria = 899 ; razao = 1.2e-02
+CE   : SNR da memoria (h_+, parte m = 0) = 39.10 ; SNR da onda oscilatoria = 3203 ; razao = 1.2e-02
+Precisao relativa minima de cada memoria ~ 1/SNR_memoria (Cramer-Rao, um parametro de amplitude): diferencas de 1e-3 a 5e-2 entre memorias exigem SNR de memoria de 20 a 1000.

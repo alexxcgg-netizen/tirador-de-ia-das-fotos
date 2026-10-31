@@ -100,18 +100,29 @@ combinação da §3, e ela tem previsões testáveis (§4).
 
 1. **Degenerescência em todas as ordens.** Provar com o teorema da função implícita em espaços de
    Sobolev, usando as leis de balanço exatas. O exp03 dá posto completo e resíduo de 1e-8.
-2. **Caso autogravitante.** O mapa (parâmetros intrínsecos de binárias) → (memórias globais) é
-   injetivo? Dá para testar com substitutos de relatividade numérica com memória [Yoo2023].
+2. **Caso autogravitante — respondido em parte na etapa 6** (`07_binarias_reais.md`). Para spins
+   alinhados, o mapa é quase injetivo no céu inteiro, com uma direção cega de 2ª ordem em massas
+   iguais. Num observador há famílias exatas de binárias com as mesmas quatro memórias. Ficam em
+   aberto: precessão (12 parâmetros), excentricidade no nível de RN e o caso da memória órfã.
 3. **Informação nas grandezas com peso $u$ e nas memórias superiores** com ruído realista.
 4. **Teste de birrefringência:** previsão quantitativa para ET, CE e LISA.
 5. **Teste de excesso de memória** para estrelas de nêutrons e supernovas, com simulações tipo [Bamber2026].
 6. **Lentes perto da fonte** com óptica ondulatória para a parte de baixa frequência da memória.
 
-## 7. Onde paramos (31/10/2026)
+## 7. Onde paramos (31/10/2026, depois da etapa 6)
 
 - Revisão crítica concluída; nove tópicos anteriores reavaliados (`01_revisao_critica.md`).
 - Teorema 1 (redução de Gram) enunciado, demonstrado e verificado; cinco fontes degeneradas construídas.
 - Código validado contra Favata 2009, Nichols 2017 e Nichols 2018; cinco experimentos reproduzíveis.
 - Bibliografia verificada (≈80 referências) e checagem de originalidade feita (`02_caminhos.md` §9).
-- **Próximo passo sugerido:** o problema 2 (caso autogravitante), porque decide se a degenerescência
-  das memórias sobrevive quando a história é a de uma binária real, e não uma fonte com dinâmica prescrita.
+- **Etapa 6 concluída** (`07_binarias_reais.md`, exp06–exp15). A família infinita das etapas 3–5 não
+  contém binárias da RG (analítico). Num observador, a degenerescência sobrevive como família exata de
+  dimensão ≥ 2, testada nos níveis A, B e C, também entre binárias circulares e excêntricas
+  (SEOBNRv5EHM). As ondas completas separam os pares a partir de SNR 1–6. O observável
+  $\Omega_{\rm mem}=\dot h_{20}/(C|h_{30}|)$ recupera a fase só com modos de memória, com erro de 2–13%.
+- **Correção registrada:** a primeira versão da análise excêntrica PN tinha um objetivo não suave (grade
+  de tempo truncada antes da separatriz). A conclusão "nenhuma excêntrica imita a circular" foi retirada
+  e substituída pela correta: sem spins, só com $\eta>1/4$ (`07_binarias_reais.md` §4, item 4).
+- **Próximo passo sugerido:** a memória órfã. Quando só a memória de uma fonte está na banda (fontes
+  subsolares, [McNeill2017; ET2020]), a família degenerada da etapa 6 é a ambiguidade real da
+  reconstrução. Medir o tamanho dessa família com ruído realista, e estender para spins precessantes.

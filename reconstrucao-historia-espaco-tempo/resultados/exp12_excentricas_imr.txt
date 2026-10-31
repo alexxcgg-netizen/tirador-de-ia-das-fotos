@@ -1,0 +1,30 @@
+Parte 1: SEOBNRv5EHM (e0 = 0) x NRHybSur3dq8_CCE, mesmos modos, nivel A, janela M f0 = 0.004 (deslocamento de janela)
+  q=1.2 chi=(+0.3,-0.2): desl20 -0.000 desl40 -0.023 spin30 -0.004 cm20 -0.043 cm40 -0.282 giro10 -0.001 giro30 -0.003
+  q=1.0 chi=(+0.0,+0.0): desl20 -0.002 desl40 -0.022 spin30 -0.006 cm20 -0.052 cm40 -0.310 giro10 -0.000 giro30 -0.005
+  q=3.0 chi=(+0.6,+0.0): desl20 -0.008 desl40 -0.288 spin30 -0.003 cm20 +0.078 cm40 +7.529 giro10 -0.003 giro30 -0.002
+
+Parte 2: memorias globais (referencial da fonte) relativas ao caso circular; M = 65, q = 1.2, chi = (+0.3, -0.2), janela desde 10 Hz
+  e0 = 0.00: desl20 +9.0852e-02 desl40 +1.4703e-03 spin30 +2.5908e-01 cm20 -5.1305e-02 cm40 -2.3394e-04 giro10 -1.3251e+00 giro30 +4.6885e-01  (valores absolutos)
+  e0 = 0.05: desl20 +0.0020 desl40 +0.0017 spin30 -0.0002 cm20 -0.0018 cm40 -0.0011 giro10 +0.0004 giro30 -0.0002
+  e0 = 0.10: desl20 -0.0012 desl40 -0.0011 spin30 -0.0061 cm20 +0.0016 cm40 +0.0033 giro10 +0.0066 giro30 -0.0061
+  e0 = 0.20: desl20 -0.0070 desl40 -0.0050 spin30 -0.0313 cm20 +0.0058 cm40 +0.0019 giro10 +0.0334 giro30 -0.0315
+  e0 = 0.30: desl20 -0.0105 desl40 -0.0078 spin30 -0.0628 cm20 +0.0101 cm40 +0.0105 giro10 +0.0674 giro30 -0.0632
+  ruido numerico (e0 = 0.2): maior variacao relativa sob passos de 1e-6 em M: [9.42e-06 1.81e-05 7.67e-05]
+
+Parte 3: A circular (M = 65, q = 1.2, chi = (+0.3, -0.2), D = 400 Mpc, iota = 50 graus), SEOBNRv5EHM e0 = 0:
+  deslocamento 1.64372e-22, spin -2.48904e-25, cm -2.91697e-26, giroscopica -3.15602e-41 ; recuo 72 km/s
+  B e0 = 0.1, q_B = 1.2, chi2_B = -0.2 -> M_B = 65.16, chi1_B = +0.349, D_B = 401.7 Mpc, iota_B = 49.4 graus | max dif. memorias = 5.2e-04
+       onda (h_+): match aLIGO = 0.985 (SNR_A 66.0, rho_crit 5.69) ; match ET = 0.890 (SNR_A 899, rho_crit 2.13) ; recuo B = 79 km/s
+  B e0 = 0.2, q_B = 1.2, chi2_B = -0.2 -> M_B = 65.91, chi1_B = +0.556, D_B = 413.0 Mpc, iota_B = 46.2 graus | max dif. memorias = 2.6e-04
+       onda (h_+): match aLIGO = 0.892 (SNR_A 66.0, rho_crit 2.15) ; match ET = 0.700 (SNR_A 899, rho_crit 1.29) ; recuo B = 114 km/s
+  B e0 = 0.3, q_B = 1.2, chi2_B = -0.2 -> M_B = 67.39, chi1_B = +0.671, D_B = 416.6 Mpc, iota_B = 44.4 graus | max dif. memorias = 1.2e-02
+       onda (h_+): match aLIGO = 0.841 (SNR_A 66.0, rho_crit 1.77) ; match ET = 0.607 (SNR_A 899, rho_crit 1.13) ; recuo B = 127 km/s
+  B e0 = 0.2, q_B = 2.0, chi2_B = +0.0 -> M_B = 72.59, chi1_B = +0.060, D_B = 383.2 Mpc, iota_B = 56.3 graus | max dif. memorias = 7.1e-06
+       onda (h_+): match aLIGO = 0.682 (SNR_A 66.0, rho_crit 1.25) ; match ET = 0.379 (SNR_A 899, rho_crit 0.90) ; recuo B = 134 km/s
+  B e0 = 0.3, q_B = 2.0, chi2_B = +0.0 -> M_B = 73.23, chi1_B = +0.183, D_B = 387.7 Mpc, iota_B = 54.0 graus | max dif. memorias = 7.8e-06
+       onda (h_+): match aLIGO = 0.672 (SNR_A 66.0, rho_crit 1.24) ; match ET = 0.369 (SNR_A 899, rho_crit 0.89) ; recuo B = 109 km/s
+  B e0 = 0.2, q_B = 1.0, chi2_B = +0.0 -> M_B = 65.61, chi1_B = +0.668, D_B = 421.6 Mpc, iota_B = 44.0 graus | max dif. memorias = 5.6e-05
+       onda (h_+): match aLIGO = 0.635 (SNR_A 66.0, rho_crit 1.17) ; match ET = 0.466 (SNR_A 899, rho_crit 0.97) ; recuo B = 119 km/s
+
+Parte 4 (refutacao): e0 = 0.3, q_B = 1.2, 8 partidas aleatorias -> residuos: 5.4e-02, 7.0e-02, 6.7e-02, 1.8e-02, 1.1e-01, 1.0e-01, 1.0e-01, 2.4e-02
+(579 s)
