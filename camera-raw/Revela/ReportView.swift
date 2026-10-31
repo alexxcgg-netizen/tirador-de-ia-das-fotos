@@ -9,6 +9,8 @@ struct ReportView: View {
     @State private var report = ""
     @State private var fileURL: URL?
     @State private var copied = false
+    @ObservedObject private var sync = ClaudeSync.shared
+    @State private var sent = false
 
     var body: some View {
         NavigationStack {
@@ -22,6 +24,17 @@ struct ReportView: View {
                         .padding(12)
                         .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.08)))
 
+                    if sync.connected {
+                        Button {
+                            Task { sent = await sync.sendReport(report) }
+                        } label: {
+                            Label(sent ? "Enviado ao Claude" : (sync.sending ? "Enviando…" : "Enviar ao Claude"),
+                                  systemImage: sent ? "checkmark" : "paperplane.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(report.isEmpty || sync.sending || sent)
+                    }
                     HStack(spacing: 10) {
                         if let fileURL {
                             ShareLink(item: fileURL) {
@@ -68,6 +81,7 @@ struct ReportView: View {
 
     private func build() {
         copied = false
+        sent = false
         let describe: (@escaping (String) -> Void) -> Void = { done in
             if let camera { camera.describeCapabilities(completion: done) } else { done("(modo seguro: câmera não ligada)\n") }
         }

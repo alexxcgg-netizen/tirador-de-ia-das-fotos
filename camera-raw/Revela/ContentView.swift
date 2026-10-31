@@ -22,6 +22,8 @@ struct ContentView: View {
     @State private var lockFired = false
     @State private var lockWork: DispatchWorkItem?
     @State private var locationOn = Locator.shared.enabled
+    @ObservedObject private var sync = ClaudeSync.shared
+    @State private var githubToken = ""
     @State private var originalsSize = "…"
     @State private var showReport = false
     @State private var showGuide = false
@@ -66,6 +68,8 @@ struct ContentView: View {
             // O app abriu agora: o scenePhase ainda não "mudou", então liga a localização aqui
             Locator.shared.start()
             Expiration.scheduleReminders()
+            ClaudeSync.shared.camera = camera
+            ClaudeSync.shared.start()
             // Ficou de pé por 6 s: a abertura deu certo
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                 LaunchGuard.markStable()
@@ -927,6 +931,30 @@ struct ContentView: View {
                             Text("10 s").tag(10)
                         }
                         .pickerStyle(.segmented)
+                    }
+
+                    settingsSection("Conectar ao Claude") {
+                        if sync.connected {
+                            Label("Conectado", systemImage: "checkmark.circle.fill").foregroundStyle(accent)
+                            Text("O Claude manda filmes, ajustes e recados; o app manda relatórios. Confere ao abrir e a cada 15 s.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                            Button("Conferir agora") { Task { await sync.pull() } }
+                            Button("Desconectar", role: .destructive) { sync.disconnect() }
+                        } else {
+                            SecureField("Cole aqui a chave do GitHub (github_pat_…)", text: $githubToken)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                            Button("Conectar") {
+                                let token = githubToken
+                                Task {
+                                    if await sync.connect(token: token) { githubToken = "" }
+                                }
+                            }
+                            .disabled(githubToken.trimmingCharacters(in: .whitespaces).isEmpty)
+                            Text("Chave \"fine-grained\" só do repositório tirador-de-ia-das-fotos, com Contents: Read and write. Fica guardada no Keychain do iPhone.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                        if !sync.status.isEmpty { Text(sync.status).font(.footnote).foregroundStyle(.secondary) }
                     }
 
                     settingsSection("Instalação") {

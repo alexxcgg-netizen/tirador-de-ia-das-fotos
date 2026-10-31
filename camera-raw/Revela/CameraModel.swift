@@ -636,6 +636,121 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         CustomLookStore.save(customLooks)
         customLook = custom
         dlog("Filme próprio salvo: \(custom.name) (base \(custom.base))")
+        syncLooksUp()
+    }
+
+    /// Filmes próprios mudaram aqui: manda para o Claude (se conectado) e lembra quais ele já tem.
+    private func syncLooksUp() {
+        let looks = customLooks
+        Task { @MainActor in
+            // Só marca como "o Claude já tem" depois que subiu de verdade (senão um filme novo pareceria apagado lá)
+            if await ClaudeSync.shared.pushLooks(looks) {
+                self.defaults.set(looks.map(\.id.uuidString), forKey: "syncedLookIDs")
+            }
+        }
+    }
+
+    /// Filmes vindos do Claude: atualiza os que existem, cria os novos e apaga os que ele apagou.
+    /// Os criados aqui que o Claude ainda não tem sobem para ele.
+    func applyRemoteLooks(_ remote: [CustomLook]) {
+        let synced = Set(defaults.stringArray(forKey: "syncedLookIDs") ?? [])
+        let remoteIDs = Set(remote.map(\.id))
+        var merged: [CustomLook] = []
+        var localOnly = false
+        for look in customLooks where !remoteIDs.contains(look.id) {
+            // Já tinha subido e sumiu de lá: o Claude apagou. Nunca subiu: é novo daqui
+            if !synced.contains(look.id.uuidString) {
+                merged.append(look)
+                localOnly = true
+            }
+        }
+        // Filmes de lá: mantém a LUT que só existe neste iPhone
+        for var look in remote {
+            if let local = customLooks.first(where: { $0.id == look.id }), look.lutFile == nil { look.lutFile = local.lutFile }
+            merged.append(look)
+        }
+        let changed = merged != customLooks
+        if changed {
+            customLooks = merged
+            CustomLookStore.save(merged)
+            if let current = customLook { customLook = merged.first { $0.id == current.id } }
+            dlog("Claude: filmes próprios atualizados (\(merged.count))")
+            show("Filmes atualizados pelo Claude")
+        }
+        if localOnly { syncLooksUp() } else { defaults.set(merged.map(\.id.uuidString), forKey: "syncedLookIDs") }
+    }
+
+    /// Acha um filme pelo nome (pronto ou próprio) e devolve o id do jeito dos looks extras.
+    private func lookID(named name: String) -> String? {
+        if let custom = customLooks.first(where: { $0.name.caseInsensitiveCompare(name) == .orderedSame }) {
+            return "c:" + custom.id.uuidString
+        }
+        if let look = Look.allCases.first(where: { $0.rawValue.caseInsensitiveCompare(name) == .orderedSame }) {
+            return "b:" + look.rawValue
+        }
+        return nil
+    }
+
+    /// Ajustes vindos do Claude (`ajustes.json`): só as chaves presentes.
+    func applyRemoteSettings(_ d: [String: Any]) {
+        var applied: [String] = []
+        if let name = d["look"] as? String, let id = lookID(named: name) {
+            if id.hasPrefix("c:") { customLook = customLooks.first { "c:" + $0.id.uuidString == id } }
+            else if let look = Look(rawValue: String(id.dropFirst(2))) { choose(look: look) }
+            applied.append("look")
+        }
+        if let v = d["intensidade"] as? Double { lookAmount = Float(min(max(v, 0), 1)); applied.append("intensidade") }
+        if let v = d["grao"] as? Double { grainAmount = Float(min(max(v, 0), 2)); applied.append("grão") }
+        if let v = d["ettr"] as? Bool { ettr = v; applied.append("ETTR") }
+        if let v = d["protegerPele"] as? Bool { skinProtection = v; applied.append("pele") }
+        if let v = d["macroAutomatico"] as? Bool { autoMacro = v; applied.append("macro automático") }
+        if let v = d["visor60"] as? Bool { preview60 = v; applied.append("visor 60") }
+        if let v = d["tresLooks"] as? Bool { multiLook = v; applied.append("três looks") }
+        if let names = d["looksExtras"] as? [String] {
+            let ids = names.compactMap(lookID(named:))
+            if !ids.isEmpty { extraLookIDs = Array(ids.prefix(2)); applied.append("looks extras") }
+        }
+        if let v = d["estabilizacao"] as? String, let s = Stabilization(rawValue: v) { stabilization = s; applied.append("estabilização") }
+        if let v = d["nivel"] as? Bool { showLevel = v; applied.append("nível") }
+        if let v = d["grade"] as? Bool { showGrid = v; applied.append("grade") }
+        if let names = d["modosEscondidos"] as? [String] {
+            hiddenModes = Set(names.compactMap(CaptureMode.init(rawValue:))).subtracting([.photo])
+            applied.append("modos escondidos")
+        }
+        if let names = d["ordemDosModos"] as? [String] {
+            let first = names.compactMap(CaptureMode.init(rawValue:))
+            modeOrder = first + modeOrder.filter { !first.contains($0) }
+            applied.append("ordem dos modos")
+        }
+        if applied.contains(where: { $0.hasPrefix("modos") || $0.hasPrefix("ordem") }) { saveModes() }
+        guard !applied.isEmpty else { return }
+        dlog("Claude: ajustes aplicados (\(applied.joined(separator: ", ")))")
+        show("Ajustes atualizados pelo Claude")
+    }
+
+    /// Os ajustes de agora, para o `estado.json` que o Claude lê.
+    var settingsSnapshot: [String: Any] {
+        [
+            "look": lookName,
+            "intensidade": Double(lookAmount),
+            "grao": Double(grainAmount),
+            "ettr": ettr,
+            "protegerPele": skinProtection,
+            "macroAutomatico": autoMacro,
+            "visor60": preview60,
+            "tresLooks": multiLook,
+            "looksExtras": extraLookIDs.map { id in
+                id.hasPrefix("c:") ? (customLooks.first { "c:" + $0.id.uuidString == id }?.name ?? id) : String(id.dropFirst(2))
+            },
+            "estabilizacao": stabilization.rawValue,
+            "nivel": showLevel,
+            "grade": showGrid,
+            "modosEscondidos": hiddenModes.map(\.rawValue).sorted(),
+            "ordemDosModos": modeOrder.map(\.rawValue),
+            "modo": captureMode.rawValue,
+            "lente": lens.rawValue,
+            "filmesProprios": customLooks.map(\.name),
+        ]
     }
 
     func deleteCustomLook(_ custom: CustomLook) {
@@ -645,6 +760,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         customLooks.removeAll { $0.id == custom.id }
         CustomLookStore.save(customLooks)
         if customLook?.id == custom.id { customLook = nil }
+        syncLooksUp()
     }
 
     func show(_ text: String) {

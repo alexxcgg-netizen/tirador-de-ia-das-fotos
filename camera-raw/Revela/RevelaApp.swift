@@ -18,8 +18,12 @@ struct RevelaApp: App {
             if phase == .background {
                 LaunchGuard.markStable()
                 Locator.shared.stop()
+                ClaudeSync.shared.stop()
             }
-            if phase == .active, !safeMode { Locator.shared.start() }
+            if phase == .active, !safeMode {
+                Locator.shared.start()
+                ClaudeSync.shared.start()
+            }
         }
     }
 }
@@ -28,6 +32,7 @@ struct RevelaApp: App {
 struct SafeModeView: View {
     let openCamera: () -> Void
     @State private var showReport = false
+    @State private var sentAutomatically = false
 
     var body: some View {
         VStack(spacing: 18) {
@@ -36,7 +41,9 @@ struct SafeModeView: View {
                 .foregroundStyle(Color(red: 0.96, green: 0.64, blue: 0.24))
             Text("O Revela fechou da última vez")
                 .font(.title3.weight(.bold))
-            Text("Abri sem ligar a câmera. Mande o relatório para o Claude: ele mostra onde o app parou.")
+            Text(sentAutomatically
+                 ? "Abri sem ligar a câmera. O relatório já foi para o Claude sozinho."
+                 : "Abri sem ligar a câmera. Mande o relatório para o Claude: ele mostra onde o app parou.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
             Button {
@@ -58,5 +65,15 @@ struct SafeModeView: View {
         .tint(Color(red: 0.96, green: 0.64, blue: 0.24))
         .preferredColorScheme(.dark)
         .sheet(isPresented: $showReport) { ReportView(camera: nil) }
+        .task {
+            // Conectado ao Claude: o relatório do fechamento vai sozinho
+            guard ClaudeSync.shared.connected else { return }
+            Diagnostics.shared.report(note: "(enviado sozinho: o app fechou na abertura anterior)",
+                                      camera: "(modo seguro: câmera não ligada)\n") { text in
+                Task { @MainActor in
+                    if await ClaudeSync.shared.sendReport(text) { sentAutomatically = true }
+                }
+            }
+        }
     }
 }

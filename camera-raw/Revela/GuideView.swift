@@ -101,6 +101,8 @@ struct GuideView: View {
         ]),
         ("Dentro de Ajustes", [
             Item(symbol: "arrow.left.and.right", title: "Espelhar", text: "Salva a foto invertida, como você se vê no espelho."),
+            Item(symbol: "link", title: "Conectar ao Claude",
+                 text: "Em Ajustes, cole a chave do GitHub uma vez. O Claude passa a mandar filmes, ajustes e recados direto para o app, e o relatório vai com um toque em \"Enviar ao Claude\" (ou sozinho depois de um fechamento)."),
             Item(symbol: "location", title: "Localização", text: "Guarda onde cada foto foi tirada, para ela aparecer no mapa da galeria."),
             Item(symbol: "doc.badge.plus", title: "Guardar DNG",
                  text: "Guarda também o arquivo RAW original (uns 50 MB) para revelar depois no Lightroom."),
