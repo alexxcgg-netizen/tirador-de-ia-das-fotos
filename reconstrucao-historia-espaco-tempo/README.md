@@ -6,7 +6,7 @@ spin, centro de massa e giroscópica)?
 
 **Estado em 31/10/2026:** etapas 1 a 6 concluídas. As etapas 1–5 tratam fontes gerais (cinco
 experimentos). A etapa 6 testa binárias reais de buracos negros com relatividade numérica e modelos EOB
-(exp06–exp15). A etapa 7 está em andamento: a revisão adversarial da etapa 6 está em `08_revisao_e_correcoes.md`, e as linhas de investigação em `09_linhas_de_investigacao.md`.
+(exp06–exp15). A etapa 7 (identificabilidade e informação) está concluída: revisão adversarial em `08_revisao_e_correcoes.md`, linhas em `09_linhas_de_investigacao.md`, síntese em `10_identificabilidade_e_informacao.md` e relatórios verificados em `linhas/`.
 
 ## Resultado principal
 
@@ -46,6 +46,22 @@ modos, $\int\omega\,\tilde h\tilde h^\dagger$ e $\int\omega^2\,\tilde h\tilde h^
 - No céu inteiro, as memórias quase determinam a binária, exceto por uma direção cega de 2ª ordem em
   massas iguais.
 
+**Etapa 7: identificabilidade e informação** (`10_identificabilidade_e_informacao.md`):
+- **As quatro memórias integradas não são observáveis:** a giroscópica não é mensurável e o CM se
+  confunde com o instante de chegada. O observável é a forma de onda da memória na banda, e tratar as
+  memórias como medidas superestima em 2,5× a informação intrínseca.
+- **A memória sozinha determina ~3 combinações** (instante, amplitude $\cos\iota$–$D$, escala de
+  massa) e só 1–3 bits intrínsecos, mesmo em CE. Com detector único, 72% de um cubo de razões de massa
+  e spins é indistinguível da binária de referência.
+- **Teorema de posto** (4 no observador; loci exatos em $\iota=0,\pi/2$). No limite (2,2), spin e
+  giroscópica são proporcionais, e o posto intrínseco cai exatamente para 3.
+- **Desigualdade memória–energia** $|D\Delta h|\le4E_{\rm rad}$, com constantes ótimas
+  $c_2=\sqrt{30}/6$ e $4-c_L\approx8{,}9/L$. A lei da área não é testável pela memória.
+- **EDO exata** que recupera o modo dominante a partir dos fluxos, sem ruído. Com ruído, a fase não se
+  recupera.
+- **Zeros da memória no céu** são eixos ópticos de índice +1/2 e seguem o eixo coprecessante.
+- **A memória de CM é um atraso** ($M_f/2$ em $\ell=2$), mas não serve para medir $M_f$.
+
 **Limites rigorosos da reconstrução** (`06_conclusoes_e_limites.md`): nada de dentro de horizontes;
 nada do que cai no horizonte (ilustrado numericamente com precisão de 1e-25); nenhuma dinâmica
 esférica (Birkhoff); nenhum multipolo estático; reconstrução pela torre de memórias com ruído
@@ -65,9 +81,11 @@ que os dados têm.
 | `07_binarias_reais.md` | Etapa 6: binárias reais, pares degenerados, robustez A/B/C, excentricidade, observável de fase, refutações |
 | `08_revisao_e_correcoes.md` | Etapa 7, parte 1: revisão adversarial da etapa 6 (25 correções, literatura, o que muda nas conclusões) |
 | `09_linhas_de_investigacao.md` | Etapa 7: 19 linhas de investigação com hipótese, fundamentação, teste e prioridade |
+| `10_identificabilidade_e_informacao.md` | Etapa 7: síntese verificada (identificabilidade, janelas, informação, fase, precessão, limites, CM como atraso) |
+| `linhas/` | Relatório de cada linha da etapa 7 e sua verificação adversarial independente |
 | `banco_de_hipoteses.md` | Laboratório permanente de hipóteses, com status (confirmada, refutada, inconclusiva, não testada) |
 | `referencias.md` | ~80 referências verificadas online, com correções de atribuição |
-| `codigo/` | `harmonicos.py`, `memorias.py` e `fontes.py` com os experimentos `exp01`–`exp05`; `binarias.py`, `deteccao.py` e `pn_excentrico.py` com os experimentos `exp06`–`exp15` |
+| `codigo/` | `harmonicos.py`, `memorias.py` e `fontes.py` com os experimentos `exp01`–`exp05`; `binarias.py`, `deteccao.py` e `pn_excentrico.py` com os experimentos `exp06`–`exp16`; `observaveis.py` (infraestrutura corrigida) com `exp17`–`exp40`; `revisao/` com os scripts da revisão e das verificações |
 | `resultados/` | saídas de texto dos experimentos |
 | `figuras/` | gráficos gerados pelos experimentos |
 

@@ -41,9 +41,36 @@ informação.
 | H18 | Um interferômetro mede as quatro memórias | R (giroscópica não mensurável; CM confundido com $t_0$) | conhecida |
 | H19 | A memória resolvida no tempo separa os pares degenerados | CN par a par ($\rho_{\rm mem}\approx3$–14; 29–41 para $q_B=1$); I minimizando sobre a família | não encontrada |
 | H20 | O nível C (modos $m=0$ do substituto) é o padrão-ouro | R para spin e giroscópica na parte híbrida PN (erro de 5–12% na taxa) | — |
-| H21 | A memória de CM é um atraso de $M_f/2$ do degrau da deformação | NT (linha L19, agente D8) | relação conhecida; uso como observável não encontrado |
+| H21 | A memória de CM é um atraso de $M_f/2$ do degrau da deformação | ver H44 (identidade CM) e H45 (R como medida) | relação conhecida; uso como atraso não encontrado |
+| H22 | Posto genérico do mapa → memórias num observador: 4 (T0, T) e 2 (O) | CN (grade 135×6, limiar de Weyl) | não encontrada |
+| H23 | Queda exata de posto em ι=π/2 (para 3) e ι=0 (para 1 em T0) | CM + CN | corolário de simetrias [E] |
+| H24 | Com todos os $m$, o polo também é locus de queda | R no modelo (não certificado fisicamente) | — |
+| H25 | Limite (2,2): spin e giroscópica ∝ H, CM nula = 0, posto intrínseco exatamente 3 | CM + CN (estrutura confirmada em 2 modelos; σ4 depende do modelo) | quase imediata de [FS2025] |
+| H26 | A direção quase nula da memória é a degenerescência $q$–$\chi_{\rm eff}$ da onda | R | — |
+| H27 | Fibra global T0 conexa, uma solução por ponto, borda só na parede de spin | R parcial: conexa, mas com dobra interior (duas soluções) | não encontrada |
+| H28 | $M_f(1+\nu)$ é quase invariante da fibra | R (tautologia: é a razão CM/desl. observada) | — |
+| H29 | Memória de banda = mudança de variável da energia de ligação | CM | [E] Favata 2009b eqs. 3.15–3.16 |
+| H30 | Cada ordem PN acrescenta um número às bandas | R (acrescenta dois: posto 2, 4, 6) | não encontrada |
+| H31 | Mais janelas acrescentam informação além da forma de onda | R (a série de uma janela já contém) | — |
+| H32 | A memória nula sozinha determina ~3 combinações (t0, amplitude, escala de massa) | CN ($d_{\rm ef}$ 3,03 em CE, 2,56 em ET) | não encontrada (qualitativa: [McNeill2017; ET2020]) |
+| H33 | Região órfã: 72% do cubo indistinguível em CE (detector único) | CN só para detector único; numa rede +/× encolhe | não encontrada |
+| H34 | As 4 memórias integradas idealizadas representam a informação mensurável | R (superestimam 2,5×) | — |
+| H35 | EDO exata $\dot u^2=4(uP-H^2)$, $\dot\psi=H/u$ reconstrói o modo dominante | CM (única entre soluções $C^1$; falha para $C^0$) | não encontrada |
+| H36 | O erro de $\Omega_{\rm mem}$ na fusão é não adiabaticidade | R (é contaminação angular (2,2)×(3,2), $b=-3{,}6154$) | — |
+| H37 | Com ruído realista a memória recupera a fase orbital | R (56 rad em CE desde 10 Hz) | — |
+| H38 | Posto 7 (módulo rotações) das memórias globais com precessão | CN (5–6 direções acima do erro de modelo) | não encontrada |
+| H39 | Zeros da memória no céu = eixos ópticos do tensor, índice +1/2; seguem $e_Q$ | CM (ℓ=2 puro) + CN (68 sistemas) | não encontrada (matemática clássica) |
+| H40 | $\lvert D\Delta h\rvert\le4E_{\rm rad}$, $c_L$ ótimo ($c_2=\sqrt{30}/6$), $c(e_2)$ por SDP | CM + CN (verificação independente) | não encontrada |
+| H41 | A lei da área é testável pela memória | R (só excluiria memórias 4,5–78× as da RG) | — |
+| H42 | Forma fechada $c_\ell=2^{\ell-1}\ell!(\ell+2)!/(2\ell+1)!$ do limite de velocidade do núcleo | CM (demonstrada pelo verificador) | não encontrada |
+| H43 | Janelas retêm mais informação que momentos | R (o que conta é a variável adaptada ao fluxo) | condicionamento: [E] clássico |
+| H44 | $\mathcal K_\ell=-\Delta J_\ell\delta_\ell$; $\delta^{\rm ord}_\ell=12M_f/((\ell-1)\ell(\ell+1)(\ell+2))$ | CM | reformulação de [Nichols2018]; uso como atraso não encontrado |
+| H45 | O atraso de CM mede $M_f$ de forma útil | R ($\sigma(M_f)/M_f\ge0{,}43$ mesmo com M=200 em CE) | — |
+| H46 | O transiente do $h_{20}$ de RN (exp09) é o atraso pontual de CM | R (é o toque QNM (2,0,0) para $u\ge16M$) | — |
+| H47 | Excêntrica imita a circular em duas janelas | I (orçamento do otimizador) | — |
+| H48 | Dependência das memórias em $\ell_0$ é física (dos últimos ~100 M) | CN no modelo, qualitativamente apoiada por [Nee2025]; magnitude não validada | parcial |
 
-As hipóteses H18–H21 vêm da revisão adversarial (`08_revisao_e_correcoes.md`); as das linhas da etapa 7 (H22 em diante) estão na seção "Etapa 7", mais abaixo.
+As hipóteses H18–H21 vêm da revisão adversarial (`08_revisao_e_correcoes.md`); as das linhas da etapa 7 (H22–H48) estão no índice e na seção "Etapa 7", mais abaixo.
 
 ---
 
@@ -190,4 +217,26 @@ As hipóteses H07–H17 foram reavaliadas pela revisão (`08_revisao_e_correcoes
 
 ## Etapa 7
 
-(preenchido com os resultados dos agentes D1–D8; ver `09_linhas_de_investigacao.md` e `linhas/`)
+Detalhes, equações, scripts e números de cada hipótese estão nos relatórios `linhas/Lxx_*.md`, nas suas
+verificações `linhas/Lxx_*_verificacao.md` e na síntese `10_identificabilidade_e_informacao.md` (seções
+indicadas). Quando o verificador mudou o status declarado pelo desenvolvedor, vale o do verificador.
+
+| ID | Linha / seção do 10 | Experimentos | Contraexemplos e limitações | Próximo experimento |
+|---|---|---|---|---|
+| H22–H24 | L01 / §1.1 | exp17 | posto no polo com todos os $m$ abaixo do erro de modelo | certificar com 2º modelo |
+| H25–H26 | L01 / §1.2 | exp18 | $\sigma_4$ muda fator 5 entre substitutos | SEOBNRv5HM, IMRPhenomTHM |
+| H27–H28 | L02 / §1.4 | exp17, exp18 | dobra interior; invariante tautológico | fibra com 2º modelo |
+| H29–H31 | L03, L04 / §2 | exp20–exp23 | concordância PN circular (parte híbrida) | bandas na parte de RN |
+| H32–H34 | L05–L07 / §3 | exp24–exp27 | Fisher falha fora de 3 eixos; detector único | rede real; posterior bayesiano |
+| H35–H37 | L08 / §4 | exp30, exp31 | soluções $C^0$ com quina; $K(\iota)$ | — (linha esgotada na prática) |
+| H38–H39 | L10, L11 / §5 | exp33–exp35 | $m$ ímpar divide zeros em $O(\epsilon)$ e cria −1/2 | mais configurações precessantes |
+| H40–H43 | L12–L14 / §6 | exp28, exp29, exp36, exp37 | cotas dependem de $D$ | — |
+| H44–H48 | L19, L16 / §7 | exp38–exp40 | substituto não testa o centroide; tremor do SEOBNRv5EHM | SXS CCE; 2º modelo excêntrico |
+
+**Linhas esgotadas, com mais de cinco abordagens registradas:**
+- **L08, recuperação de fase.** Funciona sem ruído e falha com ruído.
+- **Invariantes da fibra.** Nove abordagens, nenhum invariante simples.
+- **Teste da lei da área.** Seis formulações, nenhuma útil.
+
+**Linhas abertas:** rede real (H33), certificação entre modelos (H22–H27), RN CCE (H44), estrelas de
+nêutrons (L17), excentricidade com segundo modelo (H47, H48).

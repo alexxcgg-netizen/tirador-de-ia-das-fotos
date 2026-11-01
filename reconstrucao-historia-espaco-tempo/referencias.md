@@ -208,3 +208,13 @@ diz o que o trabalho implica para esta pesquisa.
 - **[HM2003]** R. W. Hellings, T. A. Moore, 'The information content of gravitational wave harmonics in compact binary inspiral', CQG 20, S181 (2003); arXiv:gr-qc/0207102. Conferência: API do arXiv. Harmônicos superiores quebram degenerescências: análogo do papel dos multipolos de memória. Não trata de memória.
 - **[Wang2026]** Y.-F. Wang, 'Testing source dependence in gravitational-wave tests of general relativity with mutual information', arXiv:2609.10220 (sem revista). Conferência: API do arXiv. Informação mútua não paramétrica em ondas gravitacionais, mas não aplicada à memória. L06 não tem precedente direto.
 - **[Liu2021]** X. Liu, X. He, Z. Cao, 'Accurate calculation of gravitational wave memory', PRD 103, 043005 (2021); arXiv:2302.02642. Conferência: API do arXiv + Crossref (o arXiv foi postado em 2023, depois da revista). Dependência da amplitude da memória na razão de massas e nos spins alinhados, via BMS e RN. Só o mapa direto parâmetros → memória, sem inversão.
+
+## Etapa 7: referências das linhas de pesquisa
+
+Conferidas na API do arXiv em 01/11/2026.
+
+- **[LTBW2012]** A. Le Tiec, L. Blanchet, B. F. Whiting, "The first law of binary black hole mechanics in general relativity and post-Newtonian theory", PRD 85, 064039 (2012); arXiv:1111.5378. Primeira lei $dE=\Omega\,dJ$ usada em L03.
+- **[Baird2013]** E. Baird, S. Fairhurst, M. Hannam, P. Murphy, "Degeneracy between mass and spin in black-hole-binary waveforms", arXiv:1211.0546 (PRD 87, 024035 (2013); revista não conferida). Degenerescência $q$–$\chi_{\rm eff}$ da onda, comparada em L01.
+- **[Nee2025]** P. J. Nee, A. Gamboa, H. P. Pfeiffer, L. Pompili et al., "Impact of eccentricity and mean anomaly in numerical relativity mergers", CQG 42, 135011 (2025); arXiv:2503.05422. A massa final oscila com a anomalia média: apoio qualitativo a L16.
+- **[RSH2026]** M. Rosselló-Sastre, S. Husa, Y. Xu, J. Valencia et al., "A stepping stone toward detecting gravitational wave memory: a cumulative analysis with the full (ℓ=2, m=0) spherical harmonic using events from GWTC-4.0 and GWTC-5.0", arXiv:2607.04909 (sem revista). Busca cumulativa de memória em eventos reais.
+- **[Cunningham2025]**, **[EN2025b]**, **[Favata2009b]**, **[HJL2000]**, **[Vallisneri2008]**, **[CBV2024]**, **[GPA2024]**: já listadas acima. Os trechos usados nesta etapa foram: eqs. 3.15–3.16 de [Favata2009b] (fatoração das bandas) e eqs. 56–57 de [EN2025b] (transformada analítica da memória PN).

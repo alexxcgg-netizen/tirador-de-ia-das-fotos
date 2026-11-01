@@ -126,3 +126,18 @@ combinação da §3, e ela tem previsões testáveis (§4).
 - **Próximo passo sugerido:** a memória órfã. Quando só a memória de uma fonte está na banda (fontes
   subsolares, [McNeill2017; ET2020]), a família degenerada da etapa 6 é a ambiguidade real da
   reconstrução. Medir o tamanho dessa família com ruído realista, e estender para spins precessantes.
+- **Etapa 7 concluída.** Detalhes em `08_revisao_e_correcoes.md` e `10_identificabilidade_e_informacao.md`.
+  - **Revisão adversarial.** A etapa 6 recebeu 25 correções.
+  - **Mudança de pergunta.** O observável é a forma de onda da memória na banda, e não as quatro
+    memórias integradas.
+  - **Teoremas de posto.**
+  - **Conteúdo de informação.** A memória sozinha dá ~3 combinações e 1–3 bits intrínsecos em CE.
+  - **Desigualdades memória–energia.**
+  - **Recuperação de fase pelos fluxos.** Funciona em princípio; na prática, não.
+  - **Topologia da memória no céu.**
+  - **CM como atraso.**
+- **Próximo passo sugerido:** a memória órfã numa **rede real** de detectores (ET em triângulo,
+  CE+CE+ET). Com detector único, 72% de um cubo de razões de massa e spins é indistinguível da
+  referência; com as duas polarizações, a degenerescência encolhe. É a correção de maior impacto na
+  conclusão central. Em seguida vêm a certificação entre modelos das estruturas finas e as estrelas de
+  nêutrons.
