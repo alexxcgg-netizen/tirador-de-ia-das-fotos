@@ -1,0 +1,6 @@
+A e0 0.05: desl20 media 9.08237e-02 a1 2.01e-03 (a1/e0 0.040) a2/a1 0.04 [8 pontos: a1 2.01e-03] ; E_rad a1 2.09e-03 ; M_f a1 9.85e-05 ; var desde -3000 M / total 0.955 ; ultimos 100 M / total 1.371 (corr 0.943)
+A e0 0.10: desl20 media 9.08113e-02 a1 4.17e-03 (a1/e0 0.042) a2/a1 0.09 [8 pontos: a1 4.18e-03] ; E_rad a1 4.33e-03 ; M_f a1 2.00e-04 ; var desde -3000 M / total 0.937 ; ultimos 100 M / total 1.338 (corr 0.930)
+A e0 0.20: desl20 media 9.07483e-02 a1 8.09e-03 (a1/e0 0.040) a2/a1 0.19 [8 pontos: a1 8.09e-03] ; E_rad a1 8.39e-03 ; M_f a1 4.01e-04 ; var desde -3000 M / total 0.991 ; ultimos 100 M / total 1.393 (corr 0.919)
+B e0 0.20: desl20 media 6.65904e-02 a1 9.29e-03 (a1/e0 0.046) a2/a1 0.14 [8 pontos: a1 9.29e-03] ; E_rad a1 9.40e-03 ; M_f a1 3.36e-04 ; var desde -3000 M / total 0.970 ; ultimos 100 M / total 1.434 (corr 0.921)
+expoente de a1(desl20) em e0 (A, 0.05-0.2): 1.003
+(19 s)

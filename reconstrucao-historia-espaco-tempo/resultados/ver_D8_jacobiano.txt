@@ -1,0 +1,16 @@
+sigma(B 7x5) = 1.215e-01 3.146e-02 1.071e-02 3.444e-03 5.392e-05
+sigma(J7)    = 1.217e-01 3.146e-02 1.085e-02 3.517e-03 1.604e-04 8.317e-05 1.552e-05
+normas das colunas X, Y (escaladas): [0.00248641 0.00596231]
+gaussianas, mesmas normas: sigma_min mediana 2.666e-05, quantis 10% 5.355e-06 90% 4.852e-05 ; fracao <= 1.55e-5: 0.293
+uma coluna aleatoria (7x6): sigma_min mediana 4.672e-05
+so a coluna X real (7x6): sigma_min 4.070e-05
+so a coluna Y real (7x6): sigma_min 5.101e-05
+escala (X,Y) x 0.1: sigma_min 2.746e-06
+escala (X,Y) x 0.3: sigma_min 7.651e-06
+escala (X,Y) x 1.0: sigma_min 1.552e-05
+escala (X,Y) x 3.0: sigma_min 1.795e-05
+escala (X,Y) x 10.0: sigma_min 1.829e-05
+B com erro de passo nas colunas circulares: sigma_min mediana 7.00e-04, 10%-90% 3.52e-04-1.05e-03
+J7 com erro de passo nas colunas circulares: sigma_min mediana 5.46e-05, 10%-90% 9.98e-06-1.26e-04
+vetor fraco real: peso em (X,Y) = 0.540
+colunas aleatorias: peso mediano em (X,Y) do vetor fraco = 0.025 (10%-90% 0.011-0.067)

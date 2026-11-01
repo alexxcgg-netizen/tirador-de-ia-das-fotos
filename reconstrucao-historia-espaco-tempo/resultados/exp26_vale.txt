@@ -1,0 +1,18 @@
+SISTEMA A (174 pontos): desvio padrao de ln M* (CE, iota fixo) = 0.0656 ; ln M*(CE) - ln M*(ET): media -0.0010, desvio 0.0289
+  ln M* linear em (q, chi1, chi2)          R^2 = 0.630 ; desvio do resto 0.0399 ; coef +4.170 -0.013 -0.087 -0.043
+  ln M* linear em (eta, chi_eff, chi_a)    R^2 = 0.653 ; desvio do resto 0.0387 ; coef +4.029 +0.520 -0.129 +0.020
+  ln M* quadratico em (q, chi1, chi2)      R^2 = 0.717 ; desvio do resto 0.0349 ; coef +4.237 -0.052 -0.075 -0.096
+  ln M* so chi_eff                         R^2 = 0.543 ; desvio do resto 0.0444 ; coef +4.123 -0.123
+  ln M* so eta                             R^2 = 0.104 ; desvio do resto 0.0621 ; coef +4.027 +0.525
+  ln M* + k chi_eff: k otimo +0.12, desvio 0.0444 ; ln(M* E_rad): 0.4566 ; ln(M* m_f): 0.0710
+  centro geometrico da SNR^2 da memoria (CE): f_c = 22.1 Hz
+  indice local n = d ln|F h+^| / d ln F em f_c: ao longo do vale (M = M*) media -0.4260 desvio 0.0357 ; com M = M_A fixo: media -0.4527 desvio 0.0611
+SISTEMA baixa (71 pontos): desvio padrao de ln M* (CE, iota fixo) = 0.3430 ; ln M*(CE) - ln M*(ET): media 0.0572, desvio 0.1970
+  ln M* linear em (q, chi1, chi2)          R^2 = 0.604 ; desvio do resto 0.2159 ; coef +1.669 +0.097 -0.419 -0.090
+  ln M* linear em (eta, chi_eff, chi_a)    R^2 = 0.620 ; desvio do resto 0.2113 ; coef +2.642 -3.522 -0.515 -0.083
+  ln M* quadratico em (q, chi1, chi2)      R^2 = 0.767 ; desvio do resto 0.1657 ; coef +1.847 +0.045 -0.003 -0.036
+  ln M* so chi_eff                         R^2 = 0.435 ; desvio do resto 0.2577 ; coef +2.005 -0.536
+  ln M* so eta                             R^2 = 0.179 ; desvio do resto 0.3108 ; coef +2.637 -3.509
+  ln M* + k chi_eff: k otimo +0.54, desvio 0.2577 ; ln(M* E_rad): 0.3008 ; ln(M* m_f): 0.3541
+  centro geometrico da SNR^2 da memoria (CE): f_c = 32.8 Hz
+  indice local n = d ln|F h+^| / d ln F em f_c: ao longo do vale (M = M*) media -0.1262 desvio 0.0329 ; com M = M_A fixo: media -0.1168 desvio 0.0226

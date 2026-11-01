@@ -1,0 +1,9 @@
+q 1.0 chi (+0.0, +0.0): t_i -1767.5 ; razao (todos - sem)/sem: l=2 +3.65e-03, l=4 +1.12e-01 ; (l=3 4.1e-05 de l=2) ; |h20(t_fim)| 4.86e-05, max|h20| 1.56e-02
+q 1.2 chi (+0.3, -0.2): t_i -1836.0 ; razao (todos - sem)/sem: l=2 +3.93e-03, l=4 +1.20e-01 ; (l=3 9.2e-05 de l=2) ; |h20(t_fim)| 4.79e-05, max|h20| 1.41e-02
+q 2.0 chi (-0.5, +0.5): t_i -1769.0 ; razao (todos - sem)/sem: l=2 +1.29e-03, l=4 +2.41e-02 ; (l=3 7.2e-05 de l=2) ; |h20(t_fim)| 5.94e-05, max|h20| 2.40e-02
+q 3.0 chi (+0.5, +0.3): t_i -2704.2 ; razao (todos - sem)/sem: l=2 +2.62e-03, l=4 +4.59e-01 ; (l=3 4.1e-04 de l=2) ; |h20(t_fim)| 1.88e-05, max|h20| 6.65e-03
+q 3.9 chi (+0.0, +0.0): t_i -2516.5 ; razao (todos - sem)/sem: l=2 +1.22e-03, l=4 -1.31e-01 ; (l=3 2.7e-04 de l=2) ; |h20(t_fim)| 1.13e-05, max|h20| 1.57e-02
+
+real	0m15.732s
+user	0m10.325s
+sys	0m5.255s

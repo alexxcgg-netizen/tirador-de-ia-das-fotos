@@ -1,0 +1,160 @@
+exp33_validacao: NRSur7dq4 (nivel A, modos coorbitais m = 0 zerados), f0 = 0.0070
+(a) gerador
+  P1, zerar_m0=False contra chamada publica: max |dh| = 0.0e+00
+  alinhado (1.2; 0.3, -0.2), zerar_m0=True: max |h_l0| = 1.0e-05 ; max |q_copr - 1| = 2.5e-02 ; modos l <= 4, N = 17600, t de -4299.75 a 100.00 M
+  P1: t_i = -2082.770 M ; chiA(t_i) = [5.0001e-01 1.3000e-04 1.9998e-01] ; chiB(t_i) = [ 1.8000e-04 -3.0001e-01  9.9970e-02] ; eixo coprecessante em t_i = [ 2.e-05 -7.e-05  1.e+00]
+
+(b) spins alinhados: NRSur7dq4 contra NRHybSur3dq8_CCE, nivel A, janela f_22 >= 0.0070, ate o fim de cada onda
+  conjuntos: S7 = NRSur7dq4 m != 0 (l <= 4, 18 modos) ; S7c = NRSur7dq4 so com os modos do CCE l <= 4 ; Cc4 = CCE l <= 4 ; C5 = CCE com (5,5)
+  diferencas relativas (X - CCE_mesmos_modos)/CCE
+  q 1.0 chi (+0.0, +0.0): t_i S7 -1767.66, CCE -1769.16 M ; E_janela S7 0.039326 S7c 0.039326 Cc4 0.039310 C5 0.039310 ; M_f S7 0.951629 C5 0.951645
+      desl20: S7c-Cc4 -1.67e-03, S7-C5 +1.98e-03 (modos S7-S7c +3.7e-03, C5-Cc4 -4.2e-09)
+      desl40: S7c-Cc4 -1.25e-02, S7-C5 +9.78e-02 (modos S7-S7c +1.1e-01, C5-Cc4 -9.4e-09)
+      spin30: S7c-Cc4 -1.31e-03, S7-C5 +7.94e-03 (modos S7-S7c +9.3e-03, C5-Cc4 -3.3e-09)
+      cm20: S7c-Cc4 -1.04e-02, S7-C5 -6.82e-03 (modos S7-S7c +3.7e-03, C5-Cc4 -3.8e-09)
+      cm40: S7c-Cc4 -5.37e-02, S7-C5 -2.02e-03 (modos S7-S7c +5.5e-02, C5-Cc4 -2.3e-09)
+      giro10: S7c-Cc4 -6.28e-04, S7-C5 -5.30e-04 (modos S7-S7c +9.8e-05, C5-Cc4 +5.5e-10)
+      giro30: S7c-Cc4 -1.18e-03, S7-C5 +5.27e-03 (modos S7-S7c +6.5e-03, C5-Cc4 -3.2e-09)
+      |spin21| (borda m != 0): S7 1.327e-04, C5 2.782e-06 (razao 47.715)
+      |giro21| (borda m != 0): S7 9.709e-05, C5 2.690e-06 (razao 36.096)
+      |desl31| (borda m != 0): S7 6.912e-06, C5 1.897e-07 (razao 36.432)
+      |cm22| (borda m != 0): S7 7.511e-05, C5 1.337e-04 (razao 0.562)
+      |desl22| (borda m != 0): S7 4.932e-05, C5 5.897e-05 (razao 0.836)
+      recuo |P|/M_f: S7 6.694e-06, C5 1.792e-07
+  q 1.2 chi (+0.3, -0.2): t_i S7 -1836.13, CCE -1835.57 M ; E_janela S7 0.041323 S7c 0.041322 Cc4 0.041203 C5 0.041215 ; M_f S7 0.949662 C5 0.949769
+      desl20: S7c-Cc4 +9.20e-04, S7-C5 +5.07e-03 (modos S7-S7c +3.9e-03, C5-Cc4 -2.2e-04)
+      desl40: S7c-Cc4 -1.13e-02, S7-C5 +1.08e-01 (modos S7-S7c +1.2e-01, C5-Cc4 -4.9e-04)
+      spin30: S7c-Cc4 +1.68e-04, S7-C5 +1.01e-02 (modos S7-S7c +9.8e-03, C5-Cc4 -1.7e-04)
+      cm20: S7c-Cc4 -7.57e-03, S7-C5 -2.95e-03 (modos S7-S7c +4.5e-03, C5-Cc4 -2.0e-04)
+      cm40: S7c-Cc4 -5.04e-02, S7-C5 +2.74e-02 (modos S7-S7c +8.2e-02, C5-Cc4 -1.3e-04)
+      giro10: S7c-Cc4 +9.16e-04, S7-C5 +1.00e-03 (modos S7-S7c +1.2e-04, C5-Cc4 +2.9e-05)
+      giro30: S7c-Cc4 +3.86e-04, S7-C5 +7.37e-03 (modos S7-S7c +6.8e-03, C5-Cc4 -1.7e-04)
+      |spin21| (borda m != 0): S7 4.713e-03, C5 4.357e-03 (razao 1.082)
+      |giro21| (borda m != 0): S7 3.672e-03, C5 3.524e-03 (razao 1.042)
+      |desl31| (borda m != 0): S7 2.263e-04, C5 1.662e-04 (razao 1.361)
+      |cm22| (borda m != 0): S7 5.277e-05, C5 6.960e-05 (razao 0.758)
+      |desl22| (borda m != 0): S7 3.810e-05, C5 4.768e-05 (razao 0.799)
+      recuo |P|/M_f: S7 2.658e-04, C5 2.573e-04
+  q 2.0 chi (-0.5, +0.5): t_i S7 -1769.25, CCE -1768.44 M ; E_janela S7 0.025432 S7c 0.025431 Cc4 0.025628 C5 0.025668 ; M_f S7 0.966641 C5 0.966404
+      desl20: S7c-Cc4 -8.24e-03, S7-C5 -5.69e-03 (modos S7-S7c +1.3e-03, C5-Cc4 -1.3e-03)
+      desl40: S7c-Cc4 -1.84e-02, S7-C5 +1.15e-02 (modos S7-S7c +2.4e-02, C5-Cc4 -6.2e-03)
+      spin30: S7c-Cc4 -5.02e-03, S7-C5 -2.54e-03 (modos S7-S7c +1.4e-03, C5-Cc4 -1.1e-03)
+      cm20: S7c-Cc4 -9.81e-04, S7-C5 -1.30e-02 (modos S7-S7c -1.3e-02, C5-Cc4 -1.3e-03)
+      cm40: S7c-Cc4 +2.71e-01, S7-C5 -6.28e+00 (modos S7-S7c -5.1e+00, C5-Cc4 -9.1e-03)
+      giro10: S7c-Cc4 -3.97e-03, S7-C5 -3.85e-03 (modos S7-S7c +2.9e-04, C5-Cc4 +1.7e-04)
+      giro30: S7c-Cc4 -4.82e-03, S7-C5 -2.93e-03 (modos S7-S7c +8.4e-04, C5-Cc4 -1.1e-03)
+      |spin21| (borda m != 0): S7 2.637e-02, C5 2.748e-02 (razao 0.959)
+      |giro21| (borda m != 0): S7 2.200e-02, C5 2.281e-02 (razao 0.964)
+      |desl31| (borda m != 0): S7 6.668e-04, C5 7.253e-04 (razao 0.919)
+      |cm22| (borda m != 0): S7 1.825e-04, C5 2.672e-04 (razao 0.683)
+      |desl22| (borda m != 0): S7 5.765e-05, C5 7.953e-05 (razao 0.725)
+      recuo |P|/M_f: S7 1.003e-03, C5 1.052e-03
+  q 3.0 chi (+0.5, +0.3): t_i S7 -2704.31, CCE -2697.62 M ; E_janela S7 0.034402 S7c 0.034401 Cc4 0.033740 C5 0.033890 ; M_f S7 0.958611 C5 0.959122
+      desl20: S7c-Cc4 +1.40e-02, S7-C5 +2.02e-02 (modos S7-S7c +2.6e-03, C5-Cc4 -3.5e-03)
+      desl40: S7c-Cc4 -2.12e-01, S7-C5 +1.97e-01 (modos S7-S7c +4.6e-01, C5-Cc4 -3.9e-02)
+      spin30: S7c-Cc4 +4.29e-04, S7-C5 +9.27e-03 (modos S7-S7c +5.8e-03, C5-Cc4 -3.0e-03)
+      cm20: S7c-Cc4 +4.40e-02, S7-C5 +4.36e-02 (modos S7-S7c -4.3e-03, C5-Cc4 -3.9e-03)
+      cm40: S7c-Cc4 -4.26e-01, S7-C5 +3.87e-01 (modos S7-S7c +1.4e+00, C5-Cc4 +8.2e-03)
+      giro10: S7c-Cc4 +5.58e-03, S7-C5 +5.24e-03 (modos S7-S7c +1.6e-04, C5-Cc4 +5.0e-04)
+      giro30: S7c-Cc4 +2.02e-03, S7-C5 +8.80e-03 (modos S7-S7c +3.9e-03, C5-Cc4 -2.8e-03)
+      |spin21| (borda m != 0): S7 4.569e-03, C5 4.559e-03 (razao 1.002)
+      |giro21| (borda m != 0): S7 3.928e-03, C5 3.774e-03 (razao 1.041)
+      |desl31| (borda m != 0): S7 2.006e-04, C5 2.248e-04 (razao 0.892)
+      |cm22| (borda m != 0): S7 3.538e-05, C5 6.529e-05 (razao 0.542)
+      |desl22| (borda m != 0): S7 2.937e-05, C5 6.507e-06 (razao 4.514)
+      recuo |P|/M_f: S7 2.450e-04, C5 2.492e-04
+  q 4.0 chi (+0.0, +0.0): t_i S7 -2548.12, CCE -2548.29 M ; E_janela S7 0.016005 S7c 0.016003 Cc4 0.016130 C5 0.016229 ; M_f S7 0.978221 C5 0.977997
+      desl20: S7c-Cc4 -1.06e-02, S7-C5 -4.00e-03 (modos S7-S7c +1.3e-03, C5-Cc4 -5.3e-03)
+      desl40: S7c-Cc4 +5.02e-02, S7-C5 -1.38e-01 (modos S7-S7c -1.3e-01, C5-Cc4 +5.8e-02)
+      spin30: S7c-Cc4 -7.95e-03, S7-C5 -1.15e-03 (modos S7-S7c +2.5e-03, C5-Cc4 -4.3e-03)
+      cm20: S7c-Cc4 +4.76e-02, S7-C5 +2.20e-02 (modos S7-S7c -3.2e-02, C5-Cc4 -7.4e-03)
+      cm40: S7c-Cc4 -1.57e-01, S7-C5 +5.49e-01 (modos S7-S7c +8.4e-01, C5-Cc4 +2.9e-03)
+      giro10: S7c-Cc4 -5.01e-03, S7-C5 -5.40e-03 (modos S7-S7c +2.7e-04, C5-Cc4 +6.7e-04)
+      giro30: S7c-Cc4 -7.81e-03, S7-C5 -2.20e-03 (modos S7-S7c +1.5e-03, C5-Cc4 -4.1e-03)
+      |spin21| (borda m != 0): S7 1.226e-02, C5 1.266e-02 (razao 0.968)
+      |giro21| (borda m != 0): S7 1.055e-02, C5 1.082e-02 (razao 0.975)
+      |desl31| (borda m != 0): S7 3.307e-04, C5 3.198e-04 (razao 1.034)
+      |cm22| (borda m != 0): S7 9.098e-05, C5 6.172e-05 (razao 1.474)
+      |desl22| (borda m != 0): S7 7.606e-05, C5 4.609e-05 (razao 1.650)
+      recuo |P|/M_f: S7 5.032e-04, C5 5.248e-04
+  (8 s)
+
+(c) momento linear e angular irradiados contra NRSur7dq4Remnant (omega0 = pi f0, evolucao pelo substituto)
+  alinhado q 1.2 chiA (0, 0, 0.3) chiB (0, 0, -0.2)
+      M_f: memorias 0.94966 ; ajuste 0.94973 +- 5.9e-05
+      recuo -P/M_f = [1.02245e-04 2.46133e-04 1.00137e-05] ; ajuste v_f = [ 1.06001e-04  2.52610e-04 -1.50990e-06] (+- [3.5e-06 3.6e-06 1.1e-06])
+      J_rad (janela) = [-1.44133e-05 -3.77933e-05  4.07384e-01] ; J_i(PN) - M_f^2 chi_f = [2.15687e-05 6.86017e-05 4.10956e-01] ; |dif| = 3.57e-03
+      chi_f (ajuste) = [-2.6481e-05 -7.6295e-05  7.1420e-01] ; eixo coprecessante no pico = [-1.3903e-04 -1.6499e-04  1.0000e+00] ; angulo(chi_f, eixo pico) = 0.01 graus ; angulo(J_rad, chi_f) = 0.00 graus
+  alinhado q 3.0 chiA (0, 0, 0.5) chiB (0, 0, 0.3)
+      M_f: memorias 0.95861 ; ajuste 0.95916 +- 6.6e-05
+      recuo -P/M_f = [-1.59074e-04  1.85260e-04  3.61687e-05] ; ajuste v_f = [-1.12885e-04  1.99339e-04  2.73150e-06] (+- [6.4e-06 6.3e-06 7.2e-06])
+      J_rad (janela) = [-5.60253e-05  7.28200e-06  3.39836e-01] ; J_i(PN) - M_f^2 chi_f = [6.56303e-05 5.59861e-05 3.59521e-01] ; |dif| = 1.97e-02
+      chi_f (ajuste) = [-7.1284e-05 -6.0437e-05  7.6333e-01] ; eixo coprecessante no pico = [1.9438e-04 6.0444e-04 1.0000e+00] ; angulo(chi_f, eixo pico) = 0.04 graus ; angulo(J_rad, chi_f) = 0.01 graus
+  P1 q 2.0 chiA (0.5, 0.0, 0.2) chiB (0.0, -0.3, 0.1)
+      M_f: memorias 0.95469 ; ajuste 0.95475 +- 8.9e-05
+      recuo -P/M_f = [ 0.00066 -0.00074  0.00347] ; ajuste v_f = [ 0.00066 -0.00073  0.00333] (+- [2.0e-05 2.0e-05 4.2e-05])
+      J_rad (janela) = [ 0.06153 -0.00955  0.35481] ; J_i(PN) - M_f^2 chi_f = [ 0.07344 -0.01285  0.36539] ; |dif| = 1.63e-02
+      chi_f (ajuste) = [ 0.1633 -0.0225  0.6992] ; eixo coprecessante no pico = [ 0.0193 -0.0872  0.996 ] ; angulo(chi_f, eixo pico) = 12.43 graus ; angulo(J_rad, chi_f) = 3.31 graus
+  P2 q 1.2 chiA (0.6, 0.2, 0.0) chiB (-0.3, 0.4, 0.2)
+      M_f: memorias 0.94751 ; ajuste 0.94764 +- 1.1e-04
+      recuo -P/M_f = [-0.00083 -0.00028 -0.00681] ; ajuste v_f = [-0.00089 -0.00032 -0.00643] (+- [2.4e-05 2.7e-05 5.8e-05])
+      J_rad (janela) = [0.04013 0.0457  0.41126] ; J_i(PN) - M_f^2 chi_f = [0.04414 0.05119 0.41393] ; |dif| = 7.31e-03
+      chi_f (ajuste) = [0.0806 0.1013 0.7067] ; eixo coprecessante no pico = [0.0831 0.0507 0.9953] ; angulo(chi_f, eixo pico) = 5.48 graus ; angulo(J_rad, chi_f) = 2.02 graus
+  P3 q 3.0 chiA (0.7, 0.0, 0.0) chiB (0.0, 0.0, 0.0)
+      M_f: memorias 0.96922 ; ajuste 0.96881 +- 6.7e-05
+      recuo -P/M_f = [-0.00097 -0.00018 -0.00234] ; ajuste v_f = [-0.00099 -0.00015 -0.00236] (+- [1.7e-05 1.2e-05 1.7e-05])
+      J_rad (janela) = [0.10734 0.02536 0.20772] ; J_i(PN) - M_f^2 chi_f = [0.12113 0.0211  0.20718] ; |dif| = 1.44e-02
+      chi_f (ajuste) = [ 0.2906 -0.0224  0.5909] ; eixo coprecessante no pico = [0.1862 0.3585 0.9148] ; angulo(chi_f, eixo pico) = 27.09 graus ; angulo(J_rad, chi_f) = 8.22 graus
+  P4 q 1.0 chiA (0.5, 0.0, 0.0) chiB (-0.5, 0.0, 0.0)
+      M_f: memorias 0.95064 ; ajuste 0.95042 +- 1.0e-04
+      recuo -P/M_f = [-1.84557e-05  1.64590e-05  6.30355e-03] ; ajuste v_f = [1.67485e-05 7.41723e-05 5.97285e-03] (+- [2.0e-05 3.3e-05 7.8e-05])
+      J_rad (janela) = [-2.07479e-04  4.63533e-04  3.99661e-01] ; J_i(PN) - M_f^2 chi_f = [5.40704e-05 2.46763e-04 3.98940e-01] ; |dif| = 7.97e-04
+      chi_f (ajuste) = [-6.0900e-05 -2.7224e-04  6.8269e-01] ; eixo coprecessante no pico = [-0.0017  0.0022  1.    ] ; angulo(chi_f, eixo pico) = 0.18 graus ; angulo(J_rad, chi_f) = 0.09 graus
+  (10 s)
+
+(d) convergencia em dt e (e) efeito de zerar os modos coorbitais m = 0
+  P1: |v(dt .25) - v(dt .125)|/|v| = 4.38e-08 ; |v(m0 coorbitais zerados) - v(padrao)|/|v| = 7.20e-04
+      deslocamento |dv|/|v_tipo| dt: 7.4e-08 ; m0: 9.0e-04 ; so m != 0: dt 2.0e-07, m0 3.5e-03 (|v_m!=0|/|v_tipo| = 0.251)
+      spin         |dv|/|v_tipo| dt: 1.1e-07 ; m0: 2.7e-03 ; so m != 0: dt 2.3e-07, m0 6.4e-03 (|v_m!=0|/|v_tipo| = 0.419)
+      cm           |dv|/|v_tipo| dt: 3.2e-07 ; m0: 8.9e-04 ; so m != 0: dt 1.2e-06, m0 3.2e-03 (|v_m!=0|/|v_tipo| = 0.270)
+      giroscopica  |dv|/|v_tipo| dt: 3.6e-08 ; m0: 5.3e-04 ; so m != 0: dt 7.8e-08, m0 2.5e-03 (|v_m!=0|/|v_tipo| = 0.210)
+  P4: |v(dt .25) - v(dt .125)|/|v| = 3.07e-08 ; |v(m0 coorbitais zerados) - v(padrao)|/|v| = 1.61e-03
+      deslocamento |dv|/|v_tipo| dt: 8.4e-08 ; m0: 1.5e-03 ; so m != 0: dt 2.1e-05, m0 4.1e-01 (|v_m!=0|/|v_tipo| = 0.004)
+      spin         |dv|/|v_tipo| dt: 6.3e-08 ; m0: 5.3e-03 ; so m != 0: dt 3.4e-06, m0 7.3e-01 (|v_m!=0|/|v_tipo| = 0.007)
+      cm           |dv|/|v_tipo| dt: 3.3e-07 ; m0: 1.1e-03 ; so m != 0: dt 3.1e-05, m0 1.1e-01 (|v_m!=0|/|v_tipo| = 0.011)
+      giroscopica  |dv|/|v_tipo| dt: 2.1e-08 ; m0: 1.1e-03 ; so m != 0: dt 3.6e-06, m0 5.4e-01 (|v_m!=0|/|v_tipo| = 0.002)
+  (10 s)
+
+(f) suavidade: derivadas centrais do vetor real (l <= 4) com passos 1e-3 e 1e-4 em cada parametro, P1
+  q      |dv| = 7.9639e-01 ; dif. relativa entre passos = 3.4e-05
+  chiAx  |dv| = 3.8037e-01 ; dif. relativa entre passos = 6.4e-07
+  chiAy  |dv| = 3.8713e-01 ; dif. relativa entre passos = 9.6e-07
+  chiAz  |dv| = 1.7180e+00 ; dif. relativa entre passos = 4.5e-05
+  chiBx  |dv| = 1.3829e-01 ; dif. relativa entre passos = 3.7e-07
+  chiBy  |dv| = 1.5119e-01 ; dif. relativa entre passos = 5.5e-08
+  chiBz  |dv| = 7.4446e-01 ; dif. relativa entre passos = 3.8e-05
+  (12 s)
+
+(g) modos coorbitais m = 0 do NRSur7dq4 (rede esparsa do substituto): ha memoria neles?
+  alinhado: max|h22 coorb| 0.390 ; (2,0): max|Re| 1.4e-02, max|Im| 7.0e-05, valor final 4.7e-05 ; (3,0): max|Re| 4.3e-06, max|Im| 2.6e-03, valor final 1.5e-07 ; (4,0): max|Re| 1.0e-06, max|Im| 4.7e-08, valor final 7.5e-10
+      deslocamento (2,0) de memoria nula (nivel A) na janela: 0.0848  (o (2,0) coorbital termina em 4.7e-05: sem memoria)
+  P1: max|h22 coorb| 0.345 ; (2,0): max|Re| 1.1e-02, max|Im| 9.1e-03, valor final 5.9e-05 ; (3,0): max|Re| 1.0e-04, max|Im| 2.1e-03, valor final 1.5e-07 ; (4,0): max|Re| 3.7e-05, max|Im| 3.1e-05, valor final 3.7e-08
+      deslocamento (2,0) de memoria nula (nivel A) na janela: 0.0685  (o (2,0) coorbital termina em 5.9e-05: sem memoria)
+  P2: max|h22 coorb| 0.456 ; (2,0): max|Re| 1.3e-02, max|Im| 1.7e-02, valor final 7.3e-05 ; (3,0): max|Re| 7.7e-04, max|Im| 2.6e-03, valor final 3.6e-07 ; (4,0): max|Re| 8.0e-06, max|Im| 6.3e-05, valor final 5.2e-08
+      deslocamento (2,0) de memoria nula (nivel A) na janela: 0.0862  (o (2,0) coorbital termina em 7.3e-05: sem memoria)
+  P3: max|h22 coorb| 0.344 ; (2,0): max|Re| 1.5e-02, max|Im| 9.8e-03, valor final 4.0e-05 ; (3,0): max|Re| 9.7e-04, max|Im| 1.1e-03, valor final 1.4e-06 ; (4,0): max|Re| 4.9e-06, max|Im| 4.2e-05, valor final 3.5e-08
+      deslocamento (2,0) de memoria nula (nivel A) na janela: 0.0277  (o (2,0) coorbital termina em 4.0e-05: sem memoria)
+  P4: max|h22 coorb| 0.352 ; (2,0): max|Re| 1.4e-02, max|Im| 1.6e-02, valor final 7.0e-05 ; (3,0): max|Re| 8.3e-04, max|Im| 2.6e-03, valor final 5.6e-07 ; (4,0): max|Re| 1.2e-05, max|Im| 5.7e-05, valor final 4.8e-08
+      deslocamento (2,0) de memoria nula (nivel A) na janela: 0.0823  (o (2,0) coorbital termina em 7.0e-05: sem memoria)
+  (13 s)
+
+(h) diferenciabilidade em spin nulo: q = 3, chiA = (0.7, 0, 0), chiB = (0,0,0) contra chiB = (0,0,0.1); variacao de chiBx em +-h
+  chiB0 (0.0, 0.0, 0.0) h 1e-06: |v(+h)-v0|/h 5.939e-02 ; |v(-h)-v0|/h 6.079e-02 ; |v(+h)-v(-h)|/2h 1.244e-03 ; |v(+h)+v(-h)-2v0|/h^2 1.20e+05
+  chiB0 (0.0, 0.0, 0.0) h 1e-05: |v(+h)-v0|/h 6.192e-02 ; |v(-h)-v0|/h 6.422e-02 ; |v(+h)-v(-h)|/2h 1.312e-03 ; |v(+h)+v(-h)-2v0|/h^2 1.26e+04
+  chiB0 (0.0, 0.0, 0.0) h 1e-04: |v(+h)-v0|/h 1.084e-01 ; |v(-h)-v0|/h 1.202e-01 ; |v(+h)-v(-h)|/2h 1.037e-02 ; |v(+h)+v(-h)-2v0|/h^2 2.28e+03
+  chiB0 (0.0, 0.0, 0.0) h 1e-03: |v(+h)-v0|/h 1.145e-01 ; |v(-h)-v0|/h 1.356e-01 ; |v(+h)-v(-h)|/2h 3.528e-02 ; |v(+h)+v(-h)-2v0|/h^2 2.41e+02
+  chiB0 (0.0, 0.0, 0.1) h 1e-06: |v(+h)-v0|/h 3.147e-02 ; |v(-h)-v0|/h 3.147e-02 ; |v(+h)-v(-h)|/2h 3.147e-02 ; |v(+h)+v(-h)-2v0|/h^2 9.58e-02
+  chiB0 (0.0, 0.0, 0.1) h 1e-05: |v(+h)-v0|/h 3.147e-02 ; |v(-h)-v0|/h 3.147e-02 ; |v(+h)-v(-h)|/2h 3.147e-02 ; |v(+h)+v(-h)-2v0|/h^2 9.70e-02
+  chiB0 (0.0, 0.0, 0.1) h 1e-04: |v(+h)-v0|/h 3.147e-02 ; |v(-h)-v0|/h 3.148e-02 ; |v(+h)-v(-h)|/2h 3.147e-02 ; |v(+h)+v(-h)-2v0|/h^2 9.71e-02
+  chiB0 (0.0, 0.0, 0.1) h 1e-03: |v(+h)-v0|/h 3.144e-02 ; |v(-h)-v0|/h 3.151e-02 ; |v(+h)-v(-h)|/2h 3.147e-02 ; |v(+h)+v(-h)-2v0|/h^2 9.70e-02
+  (14 s)

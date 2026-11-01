@@ -1,0 +1,47 @@
+== 1. 3j
+  (l l 2; 2 -2 0) l=2: sqrt(70)/35 ; (l l 2; m -m 0) m=3: -
+  (l l 2; 2 -2 0) l=3: 0 ; (l l 2; m -m 0) m=3: sqrt(105)/42
+  (l l 2; 2 -2 0) l=4: -4*sqrt(385)/1155 ; (l l 2; m -m 0) m=3: -sqrt(385)/330
+  (l l 2; 2 -2 0) l=5: sqrt(4290)/715 ; (l l 2; m -m 0) m=3: -sqrt(4290)/4290
+
+== 2. Pesos angulares com sxs.waveforms.memory (J_E, J_J), sinais circulares, Omega = 0.05
+  so (2,2): taxa h20 / P = 0.073576 (C_E = 0.073576) ; Im h30 / H = 0.029200 (C_J = 0.029200) ; taxa h40/P = 0.000708
+  pesos normalizados pelo (2,2) do proprio sxs e b_p = m^2 gE/(4 gE22) - m gJ/(2 gJ22):
+   21               gE2/gE22 = -0.500000  gJ3/gJ22 = -2.000000  -> gE2 = -0.036788 gJ3 = -0.058399 (escala do relatorio)  b = +0.8750
+   33               gE2/gE22 = +0.000000  gJ3/gJ22 = -0.777778  -> gE2 = +0.000000 gJ3 = -0.022711 (escala do relatorio)  b = +1.1667
+   32               gE2/gE22 = +0.000000  gJ3/gJ22 = +0.777778  -> gE2 = +0.000000 gJ3 = +0.022711 (escala do relatorio)  b = -0.7778
+   44               gE2/gE22 = -0.509091  gJ3/gJ22 = -2.121212  -> gE2 = -0.037457 gJ3 = -0.061939 (escala do relatorio)  b = +2.2061
+   43               gE2/gE22 = -0.127273  gJ3/gJ22 = +1.060606  -> gE2 = -0.009364 gJ3 = +0.030969 (escala do relatorio)  b = -1.8773
+   22x32 (fase 0.0) gE2/gE22 = +2.958040  gJ3/gJ22 = +6.573422  -> gE2 = +0.217641 gJ3 = +0.191941 (escala do relatorio)  b = -3.6154
+   22x32 (fase 0.7) gE2/gE22 = +2.958040  gJ3/gJ22 = +6.573422  -> gE2 = +0.217641 gJ3 = +0.191941 (escala do relatorio)  b = -3.6154
+
+== 3. K(iota) = -C_J Y30 / (C_E Y20 + g4 Y40), (-2)Y_L0(iota)
+  g4 (sxs) = 0.000708 (relatorio 0.000708)
+  K(40)/K(50) - 1 = +0.1800
+  K(45)/K(50) - 1 = +0.0946
+  K(55)/K(50) - 1 = -0.1033
+  K(60)/K(50) - 1 = -0.2148
+  K(50) = -0.66445 ; K(90) = -9.404e-17 ; K(10) = -0.9865
+
+== 4. Frequencias de pares de QNM (m' iguais), sistema A: M_f = 0.94971, chi_f = 0.71404 (exp32)
+  omega220 = 0.5675 -0.0845i
+  omega221 = 0.5559 -0.2553i
+  omega320 = 0.8056 -0.0881i
+  omega321 = 0.7973 -0.2654i
+  omega330 = 0.8983 -0.0866i
+  omega430 = 1.1181 -0.0891i
+  omega440 = 1.2165 -0.0880i
+  omega540 = 1.4262 -0.0896i
+  omega210 = 0.4825 -0.0860i
+  omega310 = 0.7267 -0.0902i
+  omega420 = 1.0310 -0.0906i
+  omega200 = 0.4160 -0.0886i
+  par (2, 2, 0) x (3, 2, 0): Re(dw) = 0.2380 ; Gamma_a + Gamma_b = 0.1725
+  par (2, 2, 1) x (3, 2, 0): Re(dw) = 0.2496 ; Gamma_a + Gamma_b = 0.3434
+  par (2, 2, 0) x (3, 2, 1): Re(dw) = 0.2297 ; Gamma_a + Gamma_b = 0.3499
+  par (3, 3, 0) x (4, 3, 0): Re(dw) = 0.2198 ; Gamma_a + Gamma_b = 0.1756
+  par (4, 4, 0) x (5, 4, 0): Re(dw) = 0.2097 ; Gamma_a + Gamma_b = 0.1776
+  par (2, 1, 0) x (3, 1, 0): Re(dw) = 0.2442 ; Gamma_a + Gamma_b = 0.1762
+  par (2, 2, 0) x (4, 2, 0): Re(dw) = 0.4635 ; Gamma_a + Gamma_b = 0.1751
+  par (2, 2, 0) x (2, 2, 1): Re(dw) = 0.0116 ; Gamma_a + Gamma_b = 0.3398
+  polo medido no exp32 (todos os modos, A): 0.2175 (oscilacao) / 0.2227 (amortecimento)

@@ -1,0 +1,120 @@
+Experimento 25: Fisher da onda oscilatoria, da completa e da memoria nula (sistema A, phi = 0).
+espectros centrais: 6.5 s
+espectros para diferencas finitas: 36 s
+  janela da onda (0.65 f0, 6250 M) contra (0.62 f0, 12500 M): |ds|/|s| = 2.7e-04 (aLIGO, rho_osc = 65.9)
+  janela da onda (0.65 f0, 6250 M) contra (0.62 f0, 12500 M): |ds|/|s| = 2.2e-04 (A+, rho_osc = 125.9)
+  janela da onda (0.65 f0, 6250 M) contra (0.62 f0, 12500 M): |ds|/|s| = 1.2e-03 (ET, rho_osc = 901.1)
+  janela da onda (0.65 f0, 6250 M) contra (0.62 f0, 12500 M): |ds|/|s| = 9.5e-04 (CE, rho_osc = 3201.4)
+  convergencia (osc, CE): max|G(2e-3) - G(1e-3)|/sqrt(GiiGjj) = 2.9e-03 ; Richardson contra 1e-3: 9.6e-04
+  autovalores branqueados (osc, CE), h=1e-3 / Richardson - 1: -1.1e-03 -3.0e-03 +4.7e-04 -3.2e-03 -3.6e-03 +6.0e-04 -7.6e-05 -2.2e-04 -5.0e-04
+
+CASO memoria (parametros: lnM, q, c1, c2, lnD, cosi, t0, psi)
+  aLIGO unico psi=0.000 rho=   0.47 d_ef=1.25 I=3.0 bits I_intr=0.01 bits | lam: 42 0.37 0.0063 4.7e-05 4.9e-06 3.9e-07 1.4e-07 5.4e-10
+        post: lnM 0.316 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.0077 psi 0.906 | CR: lnM 78.7 q 2.5e+03 c1 4.65e+03 c2 6.02e+03 lnD 1.72e+04 cosi 8.27e+03 t0 1.16 psi 664
+  aLIGO rede  psi=0.000 rho=   0.47 d_ef=1.66 I=3.4 bits I_intr=0.01 bits | lam: 44 0.69 0.37 0.0065 0.00046 1.2e-05 2.7e-06 3.9e-07
+        post: lnM 0.316 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.00763 psi 0.698 | CR: lnM 20.5 q 1.13e+03 c1 414 c2 233 lnD 249 cosi 34 t0 0.0587 psi 1.2
+  A+    unico psi=0.000 rho=   0.89 d_ef=1.58 I=4.3 bits I_intr=0.03 bits | lam: 1.5e+02 1.3 0.022 0.00017 1.7e-05 1.4e-06 4.9e-07 2e-09
+        post: lnM 0.314 q 0.865 c1 0.459 c2 0.461 lnD 0.447 cosi 0.419 t0 0.00425 psi 0.906 | CR: lnM 41.5 q 1.3e+03 c1 2.4e+03 c2 3.12e+03 lnD 8.92e+03 cosi 4.28e+03 t0 0.61 psi 350
+  A+    rede  psi=0.000 rho=   0.89 d_ef=2.30 I=5.2 bits I_intr=0.03 bits | lam: 1.6e+02 2.5 1.3 0.023 0.0017 4.2e-05 9.8e-06 1.4e-06
+        post: lnM 0.313 q 0.865 c1 0.459 c2 0.461 lnD 0.446 cosi 0.419 t0 0.00418 psi 0.486 | CR: lnM 10.9 q 600 c1 217 c2 123 lnD 132 cosi 17.9 t0 0.0308 psi 0.635
+  ET    unico psi=0.000 rho=   8.64 d_ef=2.56 I=10.3 bits I_intr=0.61 bits | lam: 5.8e+03 1.3e+02 1.2 0.012 0.00067 0.00012 2.5e-05 1.1e-07
+        post: lnM 0.219 q 0.86 c1 0.454 c2 0.458 lnD 0.434 cosi 0.244 t0 0.00137 psi 0.896 | CR: lnM 5.95 q 167 c1 337 c2 413 lnD 1.18e+03 cosi 562 t0 0.0808 psi 52
+  ET    rede  psi=0.000 rho=   8.64 d_ef=3.62 I=14.4 bits I_intr=0.64 bits | lam: 6e+03 2.4e+02 1.3e+02 1.3 0.069 0.0026 0.0004 0.00012
+        post: lnM 0.214 q 0.858 c1 0.454 c2 0.458 lnD 0.422 cosi 0.236 t0 0.000922 psi 0.0586 | CR: lnM 1.65 q 54.3 c1 31.1 c2 19.3 lnD 12.8 cosi 2.8 t0 0.00451 psi 0.0613
+  CE    unico psi=0.000 rho=  34.09 d_ef=3.03 I=15.6 bits I_intr=1.70 bits | lam: 8.7e+04 2e+03 12 0.11 0.005 0.00089 0.00017 8.3e-07
+        post: lnM 0.121 q 0.854 c1 0.452 c2 0.456 lnD 0.433 cosi 0.235 t0 0.00109 psi 0.857 | CR: lnM 2.41 q 57.5 c1 132 c2 156 lnD 435 cosi 206 t0 0.0268 psi 19.6
+  CE    rede  psi=0.000 rho=  34.09 d_ef=4.46 I=22.0 bits I_intr=1.97 bits | lam: 8.9e+04 3.7e+03 2e+03 12 1 0.024 0.0028 0.00093
+        post: lnM 0.109 q 0.829 c1 0.451 c2 0.455 lnD 0.326 cosi 0.173 t0 0.000314 psi 0.015 | CR: lnM 0.628 q 18.8 c1 11.7 c2 7.55 lnD 4.43 cosi 1.04 t0 0.0016 psi 0.016
+  aLIGO unico psi=0.393 rho=   0.35 d_ef=1.30 I=2.6 bits I_intr=0.01 bits | lam: 24 0.51 0.0033 3.4e-05 6.7e-06 4.4e-07 7.2e-08 3.1e-09
+        post: lnM 0.317 q 0.866 c1 0.461 c2 0.462 lnD 0.461 cosi 0.547 t0 0.0102 psi 0.803 | CR: lnM 104 q 3.63e+03 c1 2.78e+03 c2 2.22e+03 lnD 6.55e+03 cosi 4.52e+03 t0 0.83 psi 1.74e+03
+  A+    unico psi=0.393 rho=   0.65 d_ef=1.65 I=4.0 bits I_intr=0.01 bits | lam: 86 1.8 0.012 0.00012 2.4e-05 1.6e-06 2.5e-07 1.2e-08
+        post: lnM 0.315 q 0.865 c1 0.461 c2 0.461 lnD 0.457 cosi 0.518 t0 0.00561 psi 0.695 | CR: lnM 53.7 q 1.91e+03 c1 1.42e+03 c2 1.15e+03 lnD 3.37e+03 cosi 2.32e+03 t0 0.44 psi 897
+  ET    unico psi=0.393 rho=   6.24 d_ef=2.39 I=9.9 bits I_intr=0.34 bits | lam: 3.2e+03 1.8e+02 0.62 0.007 0.0011 9.5e-05 2.1e-05 4.7e-07
+        post: lnM 0.255 q 0.862 c1 0.459 c2 0.46 lnD 0.451 cosi 0.482 t0 0.00155 psi 0.542 | CR: lnM 8.34 q 233 c1 234 c2 183 lnD 523 cosi 366 t0 0.0572 psi 145
+  CE    unico psi=0.393 rho=  24.65 d_ef=2.92 I=14.9 bits I_intr=1.21 bits | lam: 4.7e+04 2.8e+03 5.7 0.067 0.0085 0.00071 0.00015 3e-06
+        post: lnM 0.152 q 0.853 c1 0.457 c2 0.458 lnD 0.446 cosi 0.468 t0 0.00107 psi 0.525 | CR: lnM 3.29 q 85.6 c1 98.3 c2 77.1 lnD 203 cosi 145 t0 0.0186 psi 58.9
+
+CASO osc (parametros: lnM, q, c1, c2, lnD, cosi, t0, psi, phi)
+  aLIGO unico psi=0.000 rho=  65.91 d_ef=8.28 I=48.3 bits I_intr=19.66 bits | lam: 1.8e+07 1.7e+06 3.4e+05 2.5e+03 6.6e+02 35 16 4.3 1.2
+        post: lnM 0.00288 q 0.0602 c1 0.122 c2 0.164 lnD 0.0971 cosi 0.0949 t0 6.37e-05 psi 0.151 phi 1.18 | CR: lnM 0.00372 q 0.0783 c1 0.138 c2 0.187 lnD 0.104 cosi 0.102 t0 6.46e-05 psi 0.154 phi 1.58
+  aLIGO rede  psi=0.000 rho=  65.91 d_ef=8.58 I=54.0 bits I_intr=21.15 bits | lam: 3.3e+07 3.1e+06 6.2e+05 6.4e+03 1.2e+03 2.6e+02 79 6.9 2.6
+        post: lnM 0.00229 q 0.0469 c1 0.1 c2 0.133 lnD 0.0453 cosi 0.0342 t0 4.71e-05 psi 0.056 phi 0.939 | CR: lnM 0.00264 q 0.0542 c1 0.107 c2 0.143 lnD 0.0457 cosi 0.0346 t0 4.77e-05 psi 0.0562 phi 1.1
+  A+    unico psi=0.000 rho= 125.92 d_ef=8.74 I=56.1 bits I_intr=22.77 bits | lam: 6.6e+07 6.1e+06 1e+06 9.2e+03 2.1e+03 1.3e+02 60 16 4.7
+        post: lnM 0.00181 q 0.0369 c1 0.0687 c2 0.0927 lnD 0.0521 cosi 0.0508 t0 3.35e-05 psi 0.0784 phi 0.738 | CR: lnM 0.00197 q 0.0402 c1 0.0714 c2 0.0964 lnD 0.0533 cosi 0.052 t0 3.37e-05 psi 0.0788 phi 0.811
+  A+    rede  psi=0.000 rho= 125.92 d_ef=8.87 I=61.9 bits I_intr=24.42 bits | lam: 1.2e+08 1.1e+07 1.8e+06 2.4e+04 3.8e+03 9.6e+02 2.9e+02 26 10
+        post: lnM 0.00134 q 0.0267 c1 0.0545 c2 0.0725 lnD 0.0238 cosi 0.018 t0 2.48e-05 psi 0.0292 phi 0.542 | CR: lnM 0.0014 q 0.0279 c1 0.0556 c2 0.074 lnD 0.0239 cosi 0.018 t0 2.49e-05 psi 0.0293 phi 0.568
+  ET    unico psi=0.000 rho= 901.14 d_ef=8.99 I=82.4 bits I_intr=35.71 bits | lam: 2.9e+09 1e+09 1.4e+08 4.5e+05 3.2e+05 4e+03 2e+03 5.2e+02 1.6e+02
+        post: lnM 0.000306 q 0.0069 c1 0.0127 c2 0.017 lnD 0.00899 cosi 0.00913 t0 5.57e-06 psi 0.0144 phi 0.139 | CR: lnM 0.000307 q 0.00692 c1 0.0127 c2 0.0171 lnD 0.009 cosi 0.00913 t0 5.57e-06 psi 0.0144 phi 0.14
+  ET    rede  psi=0.000 rho= 901.14 d_ef=9.00 I=89.0 bits I_intr=37.44 bits | lam: 5.4e+09 1.9e+09 2.7e+08 1.2e+06 6.1e+05 4.6e+04 1.5e+04 8.1e+02 3.4e+02
+        post: lnM 0.000213 q 0.00475 c1 0.00995 c2 0.0132 lnD 0.00329 cosi 0.00254 t0 4.14e-06 psi 0.00422 phi 0.0964 | CR: lnM 0.000214 q 0.00475 c1 0.00996 c2 0.0132 lnD 0.00329 cosi 0.00254 t0 4.14e-06 psi 0.00422 phi 0.0965
+  CE    unico psi=0.000 rho=3201.41 d_ef=9.00 I=95.7 bits I_intr=41.59 bits | lam: 3.3e+10 6.4e+09 9.6e+08 5.4e+06 2.9e+06 2.7e+04 1.1e+04 3.6e+03 1.2e+03
+        post: lnM 0.00011 q 0.00247 c1 0.00489 c2 0.00654 lnD 0.00386 cosi 0.00404 t0 2.25e-06 psi 0.00559 phi 0.0502 | CR: lnM 0.00011 q 0.00247 c1 0.00489 c2 0.00654 lnD 0.00386 cosi 0.00404 t0 2.25e-06 psi 0.00559 phi 0.0502
+  CE    rede  psi=0.000 rho=3201.41 d_ef=9.00 I=103.3 bits I_intr=43.35 bits | lam: 6.1e+10 1.2e+10 1.8e+09 1.4e+07 5.4e+06 5.6e+05 1.8e+05 5.3e+03 2.8e+03
+        post: lnM 7.44e-05 q 0.00164 c1 0.00389 c2 0.00514 lnD 0.000927 cosi 0.000726 t0 1.68e-06 psi 0.00121 phi 0.0335 | CR: lnM 7.44e-05 q 0.00164 c1 0.00389 c2 0.00514 lnD 0.000927 cosi 0.000726 t0 1.68e-06 psi 0.00121 phi 0.0335
+  aLIGO unico psi=0.393 rho=  63.27 d_ef=8.14 I=47.7 bits I_intr=19.31 bits | lam: 1.7e+07 1.6e+06 3.1e+05 3.2e+03 6.1e+02 41 8.2 3.1 1.1
+        post: lnM 0.00299 q 0.0621 c1 0.138 c2 0.184 lnD 0.143 cosi 0.105 t0 6.5e-05 psi 0.147 phi 1.22 | CR: lnM 0.00398 q 0.0833 c1 0.16 c2 0.216 lnD 0.161 cosi 0.118 t0 6.62e-05 psi 0.151 phi 1.69
+  A+    unico psi=0.393 rho= 120.88 d_ef=8.68 I=55.4 bits I_intr=22.37 bits | lam: 6.1e+07 5.7e+06 9.2e+05 1.2e+04 1.9e+03 1.6e+02 31 12 4.1
+        post: lnM 0.00191 q 0.0387 c1 0.0791 c2 0.106 lnD 0.079 cosi 0.0579 t0 3.43e-05 psi 0.0766 phi 0.78 | CR: lnM 0.0021 q 0.0427 c1 0.0828 c2 0.111 lnD 0.0821 cosi 0.0601 t0 3.45e-05 psi 0.0773 phi 0.87
+  ET    unico psi=0.393 rho= 863.84 d_ef=8.99 I=81.7 bits I_intr=35.26 bits | lam: 2.7e+09 9.5e+08 1.3e+08 5.8e+05 3e+05 4.8e+03 1e+03 3.8e+02 1.3e+02
+        post: lnM 0.000328 q 0.00736 c1 0.0148 c2 0.0197 lnD 0.0143 cosi 0.0107 t0 5.75e-06 psi 0.0141 phi 0.15 | CR: lnM 0.00033 q 0.00738 c1 0.0148 c2 0.0197 lnD 0.0144 cosi 0.0107 t0 5.75e-06 psi 0.0141 phi 0.15
+  CE    unico psi=0.393 rho=3065.93 d_ef=9.00 I=95.0 bits I_intr=41.14 bits | lam: 3e+10 5.9e+09 8.9e+08 7.2e+06 2.7e+06 3.1e+04 6.1e+03 2.6e+03 1e+03
+        post: lnM 0.000118 q 0.00263 c1 0.00567 c2 0.00754 lnD 0.00604 cosi 0.00463 t0 2.35e-06 psi 0.00548 phi 0.054 | CR: lnM 0.000118 q 0.00263 c1 0.00567 c2 0.00754 lnD 0.00604 cosi 0.00463 t0 2.35e-06 psi 0.00548 phi 0.054
+
+CASO completa (parametros: lnM, q, c1, c2, lnD, cosi, t0, psi, phi)
+  aLIGO unico psi=0.000 rho=  65.92 d_ef=8.28 I=48.3 bits I_intr=19.66 bits | lam: 1.8e+07 1.7e+06 3.4e+05 2.5e+03 6.6e+02 35 16 4.3 1.2
+        post: lnM 0.00287 q 0.0601 c1 0.122 c2 0.164 lnD 0.0963 cosi 0.0941 t0 6.36e-05 psi 0.151 phi 1.18 | CR: lnM 0.00371 q 0.0782 c1 0.138 c2 0.187 lnD 0.103 cosi 0.101 t0 6.46e-05 psi 0.154 phi 1.58
+  aLIGO rede  psi=0.000 rho=  65.92 d_ef=8.58 I=54.0 bits I_intr=21.15 bits | lam: 3.3e+07 3.1e+06 6.2e+05 6.4e+03 1.2e+03 2.6e+02 80 6.9 2.6
+        post: lnM 0.00229 q 0.0469 c1 0.1 c2 0.133 lnD 0.0452 cosi 0.0341 t0 4.71e-05 psi 0.0559 phi 0.939 | CR: lnM 0.00264 q 0.0542 c1 0.107 c2 0.143 lnD 0.0457 cosi 0.0345 t0 4.77e-05 psi 0.0561 phi 1.1
+  A+    unico psi=0.000 rho= 125.93 d_ef=8.74 I=56.2 bits I_intr=22.78 bits | lam: 6.6e+07 6.1e+06 1e+06 9.2e+03 2.1e+03 1.3e+02 61 16 4.7
+        post: lnM 0.00181 q 0.0368 c1 0.0688 c2 0.0928 lnD 0.0516 cosi 0.0504 t0 3.35e-05 psi 0.0784 phi 0.737 | CR: lnM 0.00196 q 0.0401 c1 0.0715 c2 0.0966 lnD 0.0528 cosi 0.0515 t0 3.37e-05 psi 0.0788 phi 0.81
+  A+    rede  psi=0.000 rho= 125.93 d_ef=8.87 I=61.9 bits I_intr=24.42 bits | lam: 1.2e+08 1.1e+07 1.8e+06 2.4e+04 3.8e+03 9.6e+02 2.9e+02 26 10
+        post: lnM 0.00134 q 0.0267 c1 0.0545 c2 0.0725 lnD 0.0238 cosi 0.0179 t0 2.48e-05 psi 0.0292 phi 0.542 | CR: lnM 0.0014 q 0.0279 c1 0.0556 c2 0.0741 lnD 0.0239 cosi 0.018 t0 2.49e-05 psi 0.0292 phi 0.568
+  ET    unico psi=0.000 rho= 901.15 d_ef=8.99 I=82.5 bits I_intr=35.71 bits | lam: 2.9e+09 1e+09 1.4e+08 4.5e+05 3.2e+05 4e+03 2.1e+03 5.2e+02 1.6e+02
+        post: lnM 0.000305 q 0.00687 c1 0.0127 c2 0.0171 lnD 0.00877 cosi 0.00889 t0 5.56e-06 psi 0.0144 phi 0.139 | CR: lnM 0.000306 q 0.00689 c1 0.0128 c2 0.0171 lnD 0.00877 cosi 0.0089 t0 5.56e-06 psi 0.0144 phi 0.139
+  ET    rede  psi=0.000 rho= 901.15 d_ef=9.00 I=89.0 bits I_intr=37.44 bits | lam: 5.4e+09 1.9e+09 2.7e+08 1.2e+06 6.1e+05 4.6e+04 1.5e+04 8.1e+02 3.4e+02
+        post: lnM 0.000213 q 0.00475 c1 0.00996 c2 0.0132 lnD 0.00329 cosi 0.00253 t0 4.14e-06 psi 0.00421 phi 0.0963 | CR: lnM 0.000214 q 0.00475 c1 0.00996 c2 0.0132 lnD 0.00329 cosi 0.00253 t0 4.14e-06 psi 0.00421 phi 0.0965
+  CE    unico psi=0.000 rho=3201.61 d_ef=9.00 I=95.8 bits I_intr=41.61 bits | lam: 3.3e+10 6.4e+09 9.6e+08 5.4e+06 2.9e+06 2.7e+04 1.3e+04 3.6e+03 1.2e+03
+        post: lnM 0.000109 q 0.00243 c1 0.00486 c2 0.0065 lnD 0.00357 cosi 0.00373 t0 2.25e-06 psi 0.00559 phi 0.0495 | CR: lnM 0.000109 q 0.00243 c1 0.00486 c2 0.0065 lnD 0.00357 cosi 0.00373 t0 2.25e-06 psi 0.00559 phi 0.0495
+  CE    rede  psi=0.000 rho=3201.61 d_ef=9.00 I=103.3 bits I_intr=43.35 bits | lam: 6.1e+10 1.2e+10 1.8e+09 1.4e+07 5.4e+06 5.6e+05 1.9e+05 5.3e+03 2.8e+03
+        post: lnM 7.44e-05 q 0.00164 c1 0.00389 c2 0.00513 lnD 0.000924 cosi 0.000723 t0 1.68e-06 psi 0.00121 phi 0.0335 | CR: lnM 7.44e-05 q 0.00164 c1 0.00389 c2 0.00513 lnD 0.000924 cosi 0.000723 t0 1.68e-06 psi 0.00121 phi 0.0335
+  aLIGO unico psi=0.393 rho=  63.27 d_ef=8.14 I=47.7 bits I_intr=19.31 bits | lam: 1.7e+07 1.6e+06 3.1e+05 3.2e+03 6.1e+02 42 8.2 3.1 1.1
+        post: lnM 0.00299 q 0.062 c1 0.138 c2 0.184 lnD 0.142 cosi 0.105 t0 6.5e-05 psi 0.147 phi 1.22 | CR: lnM 0.00398 q 0.0832 c1 0.16 c2 0.216 lnD 0.16 cosi 0.117 t0 6.62e-05 psi 0.151 phi 1.69
+  A+    unico psi=0.393 rho= 120.88 d_ef=8.69 I=55.5 bits I_intr=22.37 bits | lam: 6.1e+07 5.7e+06 9.2e+05 1.2e+04 1.9e+03 1.6e+02 31 12 4.1
+        post: lnM 0.00191 q 0.0387 c1 0.0791 c2 0.106 lnD 0.0787 cosi 0.0576 t0 3.42e-05 psi 0.0765 phi 0.78 | CR: lnM 0.0021 q 0.0427 c1 0.0828 c2 0.111 lnD 0.0818 cosi 0.0598 t0 3.45e-05 psi 0.0772 phi 0.869
+  ET    unico psi=0.393 rho= 863.87 d_ef=8.99 I=81.7 bits I_intr=35.26 bits | lam: 2.7e+09 9.5e+08 1.3e+08 5.8e+05 3e+05 5e+03 1e+03 3.8e+02 1.3e+02
+        post: lnM 0.000327 q 0.00733 c1 0.0148 c2 0.0197 lnD 0.0142 cosi 0.0105 t0 5.75e-06 psi 0.014 phi 0.149 | CR: lnM 0.000329 q 0.00736 c1 0.0148 c2 0.0197 lnD 0.0142 cosi 0.0105 t0 5.75e-06 psi 0.014 phi 0.15
+  CE    unico psi=0.393 rho=3066.05 d_ef=9.00 I=95.1 bits I_intr=41.16 bits | lam: 3e+10 5.9e+09 8.9e+08 7.2e+06 2.7e+06 3.3e+04 6.4e+03 2.6e+03 1e+03
+        post: lnM 0.000117 q 0.0026 c1 0.00565 c2 0.00751 lnD 0.00584 cosi 0.00442 t0 2.35e-06 psi 0.00542 phi 0.0536 | CR: lnM 0.000117 q 0.00261 c1 0.00565 c2 0.00751 lnD 0.00584 cosi 0.00442 t0 2.35e-06 psi 0.00542 phi 0.0536
+
+CASO osc+rn (parametros: lnM, q, c1, c2, lnD, cosi, t0, psi, phi)
+  aLIGO unico psi=0.000 rho=  65.89 d_ef=8.28 I=48.3 bits I_intr=19.65 bits | lam: 1.8e+07 1.7e+06 3.4e+05 2.5e+03 6.6e+02 35 17 4.2 1.3
+        post: lnM 0.00286 q 0.06 c1 0.123 c2 0.165 lnD 0.0947 cosi 0.0924 t0 6.4e-05 psi 0.151 phi 1.18 | CR: lnM 0.00369 q 0.0778 c1 0.14 c2 0.189 lnD 0.101 cosi 0.0991 t0 6.5e-05 psi 0.154 phi 1.57
+  aLIGO rede  psi=0.000 rho=  65.89 d_ef=8.58 I=54.0 bits I_intr=21.14 bits | lam: 3.3e+07 3.1e+06 6.2e+05 6.4e+03 1.2e+03 2.6e+02 80 6.8 2.7
+        post: lnM 0.00228 q 0.0469 c1 0.101 c2 0.134 lnD 0.0452 cosi 0.0341 t0 4.73e-05 psi 0.0559 phi 0.938 | CR: lnM 0.00263 q 0.0541 c1 0.108 c2 0.144 lnD 0.0456 cosi 0.0345 t0 4.79e-05 psi 0.056 phi 1.1
+  A+    unico psi=0.000 rho= 125.88 d_ef=8.74 I=56.2 bits I_intr=22.77 bits | lam: 6.6e+07 6.1e+06 1e+06 9.2e+03 2.1e+03 1.3e+02 64 16 4.8
+        post: lnM 0.0018 q 0.0367 c1 0.0696 c2 0.0937 lnD 0.0507 cosi 0.0494 t0 3.37e-05 psi 0.0784 phi 0.733 | CR: lnM 0.00195 q 0.04 c1 0.0723 c2 0.0976 lnD 0.0519 cosi 0.0505 t0 3.39e-05 psi 0.0788 phi 0.805
+  A+    rede  psi=0.000 rho= 125.88 d_ef=8.87 I=61.9 bits I_intr=24.41 bits | lam: 1.2e+08 1.1e+07 1.8e+06 2.4e+04 3.8e+03 9.7e+02 2.9e+02 25 10
+        post: lnM 0.00134 q 0.0267 c1 0.0548 c2 0.0729 lnD 0.0238 cosi 0.0179 t0 2.49e-05 psi 0.0292 phi 0.541 | CR: lnM 0.0014 q 0.0279 c1 0.0559 c2 0.0745 lnD 0.0238 cosi 0.018 t0 2.5e-05 psi 0.0292 phi 0.568
+  ET    unico psi=0.000 rho= 900.96 d_ef=8.99 I=82.5 bits I_intr=35.70 bits | lam: 2.9e+09 1e+09 1.4e+08 4.5e+05 3.2e+05 4e+03 2.2e+03 5.1e+02 1.6e+02
+        post: lnM 0.000303 q 0.00683 c1 0.0129 c2 0.0172 lnD 0.0086 cosi 0.00872 t0 5.6e-06 psi 0.0144 phi 0.138 | CR: lnM 0.000304 q 0.00685 c1 0.0129 c2 0.0173 lnD 0.00861 cosi 0.00873 t0 5.6e-06 psi 0.0144 phi 0.138
+  ET    rede  psi=0.000 rho= 900.96 d_ef=9.00 I=89.0 bits I_intr=37.44 bits | lam: 5.4e+09 1.9e+09 2.7e+08 1.2e+06 6.1e+05 4.6e+04 1.5e+04 8e+02 3.4e+02
+        post: lnM 0.000213 q 0.00475 c1 0.01 c2 0.0132 lnD 0.00329 cosi 0.00253 t0 4.16e-06 psi 0.00421 phi 0.0963 | CR: lnM 0.000213 q 0.00475 c1 0.01 c2 0.0132 lnD 0.00329 cosi 0.00253 t0 4.16e-06 psi 0.00421 phi 0.0964
+  CE    unico psi=0.000 rho=3201.48 d_ef=9.00 I=95.9 bits I_intr=41.61 bits | lam: 3.3e+10 6.4e+09 9.6e+08 5.4e+06 2.9e+06 2.7e+04 1.3e+04 3.5e+03 1.3e+03
+        post: lnM 0.000108 q 0.00241 c1 0.00491 c2 0.00655 lnD 0.00347 cosi 0.00362 t0 2.26e-06 psi 0.00559 phi 0.0491 | CR: lnM 0.000108 q 0.00241 c1 0.00491 c2 0.00656 lnD 0.00347 cosi 0.00362 t0 2.26e-06 psi 0.00559 phi 0.0491
+  CE    rede  psi=0.000 rho=3201.48 d_ef=9.00 I=103.3 bits I_intr=43.34 bits | lam: 6.1e+10 1.2e+10 1.8e+09 1.4e+07 5.4e+06 5.6e+05 1.9e+05 5.3e+03 2.8e+03
+        post: lnM 7.44e-05 q 0.00164 c1 0.0039 c2 0.00515 lnD 0.000923 cosi 0.000723 t0 1.68e-06 psi 0.00121 phi 0.0334 | CR: lnM 7.44e-05 q 0.00164 c1 0.0039 c2 0.00515 lnD 0.000923 cosi 0.000723 t0 1.68e-06 psi 0.00121 phi 0.0335
+  aLIGO unico psi=0.393 rho=  63.26 d_ef=8.14 I=47.7 bits I_intr=19.30 bits | lam: 1.7e+07 1.6e+06 3.1e+05 3.2e+03 6.1e+02 43 8.4 3 1.1
+        post: lnM 0.00297 q 0.0619 c1 0.139 c2 0.186 lnD 0.141 cosi 0.103 t0 6.52e-05 psi 0.146 phi 1.22 | CR: lnM 0.00395 q 0.0828 c1 0.163 c2 0.219 lnD 0.159 cosi 0.116 t0 6.65e-05 psi 0.151 phi 1.68
+  A+    unico psi=0.393 rho= 120.86 d_ef=8.68 I=55.5 bits I_intr=22.35 bits | lam: 6.1e+07 5.7e+06 9.2e+05 1.2e+04 1.9e+03 1.6e+02 32 11 4.1
+        post: lnM 0.0019 q 0.0385 c1 0.0803 c2 0.108 lnD 0.0781 cosi 0.057 t0 3.44e-05 psi 0.0764 phi 0.776 | CR: lnM 0.00209 q 0.0425 c1 0.0843 c2 0.113 lnD 0.0811 cosi 0.0591 t0 3.46e-05 psi 0.0771 phi 0.864
+  ET    unico psi=0.393 rho= 863.78 d_ef=8.99 I=81.7 bits I_intr=35.25 bits | lam: 2.7e+09 9.5e+08 1.3e+08 5.8e+05 3e+05 5.1e+03 1e+03 3.7e+02 1.4e+02
+        post: lnM 0.000325 q 0.0073 c1 0.015 c2 0.02 lnD 0.0141 cosi 0.0104 t0 5.77e-06 psi 0.014 phi 0.149 | CR: lnM 0.000326 q 0.00732 c1 0.015 c2 0.02 lnD 0.0141 cosi 0.0104 t0 5.78e-06 psi 0.014 phi 0.149
+  CE    unico psi=0.393 rho=3066.02 d_ef=9.00 I=95.1 bits I_intr=41.15 bits | lam: 3e+10 5.9e+09 8.9e+08 7.2e+06 2.7e+06 3.4e+04 6.5e+03 2.6e+03 1e+03
+        post: lnM 0.000117 q 0.00259 c1 0.00571 c2 0.00759 lnD 0.00576 cosi 0.00434 t0 2.35e-06 psi 0.00542 phi 0.0533 | CR: lnM 0.000117 q 0.00259 c1 0.00571 c2 0.00759 lnD 0.00576 cosi 0.00434 t0 2.35e-06 psi 0.00542 phi 0.0533
+
+Ganho da memoria (completa contra osc), detector unico psi = 0, sigma sem prior (CR) de ln D e cos iota:
+  aLIGO: CR(lnD) osc 0.1045 -> completa 0.1034 -> osc+RN 0.1014 ; CR(cos i) 0.1022 -> 0.1012 -> 0.09909 ; I osc 48.32, completa 48.33 bits
+  A+   : CR(lnD) osc 0.05332 -> completa 0.05282 -> osc+RN 0.05186 ; CR(cos i) 0.05202 -> 0.05153 -> 0.05054 ; I osc 56.14, completa 56.15 bits
+  ET   : CR(lnD) osc 0.009002 -> completa 0.008775 -> osc+RN 0.008609 ; CR(cos i) 0.009134 -> 0.008901 -> 0.008726 ; I osc 82.45, completa 82.49 bits
+  CE   : CR(lnD) osc 0.003862 -> completa 0.003569 -> osc+RN 0.003468 ; CR(cos i) 0.004037 -> 0.00373 -> 0.003624 ; I osc 95.71, completa 95.82 bits
+tempo total 43 s

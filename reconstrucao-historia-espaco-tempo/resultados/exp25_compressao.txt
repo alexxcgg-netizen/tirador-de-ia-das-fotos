@@ -1,0 +1,63 @@
+Experimento 25b (L07): o que um detector mede da memoria e compressoes. Sistema A, psi = 0.
+Memorias integradas de A no observador (janela desde 10 Hz, m = 0, nivel A): desl 1.6450e-22 ; spin -2.4979e-25 s ; CM -2.7929e-26 s ; giro -3.1565e-41 rad ; M_f = 0.9498 M
+Degrau de janela da serie nula (h+ final): 1.6450e-22 (= desl., dif. rel. -2.1e-15)
+Fracao em banda: |2 pi f h~+(f)| / Delta h+ e |h~x(f)| / |int hx du| (memoria de spin):
+  int hx du (espectro em f -> 0): 2.4348e-25 s (memoria de spin no observador: 2.4979e-25 s)
+  f =     1 Hz: degrau 0.851 ; spin 0.486
+  f =     5 Hz: degrau 0.748 ; spin 0.350
+  f =    10 Hz: degrau 0.679 ; spin 0.292
+  f =    20 Hz: degrau 0.570 ; spin 0.225
+  f =    50 Hz: degrau 0.317 ; spin 0.111
+  f =   100 Hz: degrau 0.097 ; spin 0.031
+  f =   200 Hz: degrau 0.004 ; spin 0.001
+  f =   400 Hz: degrau 0.000 ; spin 0.000
+  aLIGO: rho_+ = 0.470 ; rho_x = 0.067 (razao 7.0) ; f_rms = 44.1 Hz ; sigma(atraso da memoria) = 7.67e-03 s (7.67e-03 s com amplitude livre) ; |CM/desl| = 1.70e-04 s ; razao 0.02
+  A+   : rho_+ = 0.892 ; rho_x = 0.127 (razao 7.0) ; f_rms = 44.2 Hz ; sigma(atraso da memoria) = 4.04e-03 s (4.04e-03 s com amplitude livre) ; |CM/desl| = 1.70e-04 s ; razao 0.04
+  ET   : rho_+ = 8.636 ; rho_x = 0.813 (razao 10.6) ; f_rms = 28.1 Hz ; sigma(atraso da memoria) = 6.56e-04 s (6.56e-04 s com amplitude livre) ; |CM/desl| = 1.70e-04 s ; razao 0.26
+  CE   : rho_+ = 34.087 ; rho_x = 3.211 (razao 10.6) ; f_rms = 27.5 Hz ; sigma(atraso da memoria) = 1.70e-04 s (1.70e-04 s com amplitude livre) ; |CM/desl| = 1.70e-04 s ; razao 1.00
+
+Compressoes: informacao mutua gaussiana com os priors (bits) e desvio a posteriori. 'retida' = I_y / I_serie.
+aLIGO:
+  serie (det. unico)                               I =   2.95 bits (retida 100.0%) ; I_intr =  0.01 bits (100.0%) ; d_ef = 1.25 ; post: lnM 0.316 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.0077 psi 0.906
+  serie (rede)                                     I =   3.36 bits (retida 100.0%) ; I_intr =  0.01 bits (100.0%) ; d_ef = 1.66 ; post: lnM 0.316 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.00763 psi 0.698
+  (a-ideal) 4 memorias, erro 1/rho+                I =   0.66 bits (retida  22.4%) ; I_intr =  0.10 bits (871.2%) ; d_ef = 0.70 ; post: lnM 0.299 q 0.865 c1 0.459 c2 0.461 lnD 0.415 cosi 0.459 t0 0.05 psi 0.907
+  (a-real) amplitudes + e x (rede)                 I =   0.25 bits (retida   7.3%) ; I_intr =  0.01 bits ( 57.6%) ; d_ef = 0.30 ; post: lnM 0.317 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.05 psi 0.894
+  (b1) degrau: amplitude do molde + (det. unico)   I =   0.22 bits (retida   7.6%) ; I_intr =  0.01 bits ( 57.9%) ; d_ef = 0.27 ; post: lnM 0.317 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.05 psi 0.907
+  (b2) degrau: Delta h+ com erro Delta h/rho+      I =   0.24 bits (retida   8.1%) ; I_intr =  0.02 bits (154.6%) ; d_ef = 0.28 ; post: lnM 0.315 q 0.866 c1 0.46 c2 0.461 lnD 0.457 cosi 0.508 t0 0.05 psi 0.907
+  (d) amplitude + instante (det. unico)            I =   2.95 bits (retida  99.8%) ; I_intr =  0.01 bits ( 60.6%) ; d_ef = 1.24 ; post: lnM 0.317 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.0077 psi 0.907
+  (c) MOPED 8 numeros (det. unico)                 I =   2.95 bits (retida 100.0%) ; I_intr =  0.01 bits (100.0%) ; d_ef = 1.25 ; post: lnM 0.316 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.0077 psi 0.906
+A+:
+  serie (det. unico)                               I =   4.26 bits (retida 100.0%) ; I_intr =  0.03 bits (100.0%) ; d_ef = 1.58 ; post: lnM 0.314 q 0.865 c1 0.459 c2 0.461 lnD 0.447 cosi 0.419 t0 0.00425 psi 0.906
+  serie (rede)                                     I =   5.19 bits (retida 100.0%) ; I_intr =  0.03 bits (100.0%) ; d_ef = 2.30 ; post: lnM 0.313 q 0.865 c1 0.459 c2 0.461 lnD 0.446 cosi 0.419 t0 0.00418 psi 0.486
+  (a-ideal) 4 memorias, erro 1/rho+                I =   1.57 bits (retida  36.8%) ; I_intr =  0.19 bits (640.4%) ; d_ef = 1.27 ; post: lnM 0.283 q 0.865 c1 0.458 c2 0.46 lnD 0.358 cosi 0.35 t0 0.05 psi 0.907
+  (a-real) amplitudes + e x (rede)                 I =   0.68 bits (retida  13.1%) ; I_intr =  0.01 bits ( 46.5%) ; d_ef = 0.67 ; post: lnM 0.317 q 0.865 c1 0.459 c2 0.461 lnD 0.447 cosi 0.419 t0 0.05 psi 0.862
+  (b1) degrau: amplitude do molde + (det. unico)   I =   0.60 bits (retida  14.2%) ; I_intr =  0.01 bits ( 46.7%) ; d_ef = 0.57 ; post: lnM 0.317 q 0.865 c1 0.459 c2 0.461 lnD 0.447 cosi 0.419 t0 0.05 psi 0.906
+  (b2) degrau: Delta h+ com erro Delta h/rho+      I =   0.64 bits (retida  15.0%) ; I_intr =  0.04 bits (123.1%) ; d_ef = 0.59 ; post: lnM 0.313 q 0.866 c1 0.459 c2 0.46 lnD 0.448 cosi 0.422 t0 0.05 psi 0.907
+  (d) amplitude + instante (det. unico)            I =   4.24 bits (retida  99.6%) ; I_intr =  0.01 bits ( 47.7%) ; d_ef = 1.56 ; post: lnM 0.317 q 0.865 c1 0.459 c2 0.461 lnD 0.447 cosi 0.419 t0 0.00425 psi 0.906
+  (c) MOPED 8 numeros (det. unico)                 I =   4.26 bits (retida 100.0%) ; I_intr =  0.03 bits (100.0%) ; d_ef = 1.58 ; post: lnM 0.314 q 0.865 c1 0.459 c2 0.461 lnD 0.447 cosi 0.419 t0 0.00425 psi 0.906
+ET:
+  serie (det. unico)                               I =  10.34 bits (retida 100.0%) ; I_intr =  0.61 bits (100.0%) ; d_ef = 2.56 ; post: lnM 0.219 q 0.86 c1 0.454 c2 0.458 lnD 0.434 cosi 0.244 t0 0.00137 psi 0.896
+  serie (rede)                                     I =  14.37 bits (retida 100.0%) ; I_intr =  0.64 bits (100.0%) ; d_ef = 3.62 ; post: lnM 0.214 q 0.858 c1 0.454 c2 0.458 lnD 0.422 cosi 0.236 t0 0.000922 psi 0.0586
+  (a-ideal) 4 memorias, erro 1/rho+                I =   8.64 bits (retida  83.5%) ; I_intr =  1.56 bits (256.5%) ; d_ef = 2.95 ; post: lnM 0.124 q 0.864 c1 0.44 c2 0.433 lnD 0.135 cosi 0.0902 t0 0.05 psi 0.907
+  (a-real) amplitudes + e x (rede)                 I =   5.12 bits (retida  35.6%) ; I_intr =  0.04 bits (  6.7%) ; d_ef = 1.89 ; post: lnM 0.314 q 0.864 c1 0.457 c2 0.459 lnD 0.433 cosi 0.251 t0 0.05 psi 0.308
+  (b1) degrau: amplitude do molde + (det. unico)   I =   3.50 bits (retida  33.8%) ; I_intr =  0.04 bits (  6.6%) ; d_ef = 0.99 ; post: lnM 0.314 q 0.865 c1 0.457 c2 0.46 lnD 0.434 cosi 0.251 t0 0.05 psi 0.907
+  (b2) degrau: Delta h+ com erro Delta h/rho+      I =   3.53 bits (retida  34.2%) ; I_intr =  0.06 bits ( 10.4%) ; d_ef = 0.99 ; post: lnM 0.309 q 0.866 c1 0.457 c2 0.459 lnD 0.436 cosi 0.265 t0 0.05 psi 0.907
+  (d) amplitude + instante (det. unico)            I =   9.75 bits (retida  94.3%) ; I_intr =  0.04 bits (  6.7%) ; d_ef = 1.99 ; post: lnM 0.314 q 0.865 c1 0.457 c2 0.46 lnD 0.434 cosi 0.251 t0 0.0015 psi 0.906
+  (c) MOPED 8 numeros (det. unico)                 I =  10.34 bits (retida 100.0%) ; I_intr =  0.61 bits (100.0%) ; d_ef = 2.56 ; post: lnM 0.219 q 0.86 c1 0.454 c2 0.458 lnD 0.434 cosi 0.244 t0 0.00137 psi 0.896
+CE:
+  serie (det. unico)                               I =  15.59 bits (retida 100.0%) ; I_intr =  1.70 bits (100.0%) ; d_ef = 3.03 ; post: lnM 0.121 q 0.854 c1 0.452 c2 0.456 lnD 0.433 cosi 0.235 t0 0.00109 psi 0.857
+  serie (rede)                                     I =  22.03 bits (retida 100.0%) ; I_intr =  1.97 bits (100.0%) ; d_ef = 4.46 ; post: lnM 0.109 q 0.829 c1 0.451 c2 0.455 lnD 0.326 cosi 0.173 t0 0.000314 psi 0.015
+  (a-ideal) 4 memorias, erro 1/rho+                I =  15.32 bits (retida  98.2%) ; I_intr =  4.28 bits (251.2%) ; d_ef = 3.74 ; post: lnM 0.0429 q 0.863 c1 0.385 c2 0.337 lnD 0.0553 cosi 0.0458 t0 0.05 psi 0.907
+  (a-real) amplitudes + e x (rede)                 I =   9.10 bits (retida  41.3%) ; I_intr =  0.04 bits (  2.2%) ; d_ef = 1.99 ; post: lnM 0.314 q 0.864 c1 0.457 c2 0.46 lnD 0.432 cosi 0.246 t0 0.05 psi 0.124
+  (b1) degrau: amplitude do molde + (det. unico)   I =   5.47 bits (retida  35.1%) ; I_intr =  0.04 bits (  2.3%) ; d_ef = 1.00 ; post: lnM 0.314 q 0.865 c1 0.457 c2 0.46 lnD 0.434 cosi 0.246 t0 0.05 psi 0.907
+  (b2) degrau: Delta h+ com erro Delta h/rho+      I =   5.51 bits (retida  35.3%) ; I_intr =  0.06 bits (  3.7%) ; d_ef = 1.00 ; post: lnM 0.309 q 0.866 c1 0.456 c2 0.459 lnD 0.436 cosi 0.262 t0 0.05 psi 0.907
+  (d) amplitude + instante (det. unico)            I =  13.68 bits (retida  87.7%) ; I_intr =  0.04 bits (  2.3%) ; d_ef = 2.00 ; post: lnM 0.314 q 0.865 c1 0.457 c2 0.46 lnD 0.434 cosi 0.246 t0 0.00135 psi 0.906
+  (c) MOPED 8 numeros (det. unico)                 I =  15.59 bits (retida 100.0%) ; I_intr =  1.70 bits (100.0%) ; d_ef = 3.03 ; post: lnM 0.121 q 0.854 c1 0.452 c2 0.456 lnD 0.433 cosi 0.235 t0 0.00109 psi 0.857
+
+MOPED com vetores do fiducial A aplicado a outras binarias B (detector unico, psi = 0; mesmo t0):
+  B: M 70 q 1.2 chi (0.3, -0.2) iota 50: ET I_B 10.43, MOPED 10.43 (100.0%), I_intr 0.64 -> 0.64 ; CE I_B 15.76, MOPED 15.76 (100.0%), I_intr 1.78 -> 1.78 ;
+  B: M 65 q 2.0 chi (0.0, 0.0) iota 50: ET I_B 8.96, MOPED 8.96 (100.0%), I_intr 0.42 -> 0.42 ; CE I_B 13.96, MOPED 13.95 (100.0%), I_intr 1.33 -> 1.33 ;
+  B: M 100 q 3.0 chi (0.5, 0.5) iota 50: ET I_B 9.13, MOPED 9.06 (99.2%), I_intr 0.58 -> 0.53 ; CE I_B 14.60, MOPED 14.50 (99.3%), I_intr 1.80 -> 1.71 ;
+  B: M 45 q 1.0 chi (-0.5, -0.5) iota 50: ET I_B 8.83, MOPED 8.82 (99.9%), I_intr 0.24 -> 0.23 ; CE I_B 13.29, MOPED 13.26 (99.8%), I_intr 0.91 -> 0.88 ;
+  B: M 65 q 1.2 chi (0.3, -0.2) iota 80: ET I_B 10.87, MOPED 10.87 (100.0%), I_intr 1.17 -> 1.17 ; CE I_B 16.26, MOPED 16.26 (100.0%), I_intr 2.59 -> 2.59 ;
+tempo total 49 s

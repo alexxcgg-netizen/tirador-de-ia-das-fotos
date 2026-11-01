@@ -1,0 +1,19 @@
+== A: troca de sinal de det(J intrinseco 4x4), escala abs, iota de 20 a 85 graus (passo 0.25)
+  passos [0.001, 0.01, 0.01, 0.01]: trocas entre ['37.25-37.50'] graus
+     sigma_min em 37.25 e 37.50: 2.16e-06, 1.25e-05 ; |J(h1)-J(h2)| relativo nesses pontos: dif. de sigma_min 1.6e-06
+  passos [0.0002, 0.002, 0.002, 0.002]: trocas entre ['37.25-37.50'] graus
+     sigma_min em 37.25 e 37.50: 5.83e-07, 1.41e-05 ; |J(h1)-J(h2)| relativo nesses pontos: dif. de sigma_min 1.6e-06
+  sigma_min em 50 graus: 9.484e-04 (passo 1), 9.500e-04 (passo 2); min sobre iota: 5.83e-07 em 37.25 graus
+
+== q2.5 (-0.3,+0.5) M45: troca de sinal de det(J intrinseco 4x4), escala abs, iota de 20 a 85 graus (passo 0.25)
+  passos [0.001, 0.01, 0.01, 0.01]: trocas entre [] graus
+  passos [0.0002, 0.002, 0.002, 0.002]: trocas entre [] graus
+  sigma_min em 50 graus: 4.918e-03 (passo 1), 4.918e-03 (passo 2); min sobre iota: 3.39e-04 em 85.00 graus
+
+== q4 (+0.5,+0.5) M80: troca de sinal de det(J intrinseco 4x4), escala abs, iota de 20 a 85 graus (passo 0.25)
+  passos [0.001, 0.01, 0.01, 0.01]: trocas entre ['67.75-68.00'] graus
+     sigma_min em 67.75 e 68.00: 1.34e-06, 1.59e-05 ; |J(h1)-J(h2)| relativo nesses pontos: dif. de sigma_min 1.2e-07
+  passos [0.0002, 0.002, 0.002, 0.002]: trocas entre ['67.75-68.00'] graus
+     sigma_min em 67.75 e 68.00: 1.22e-06, 1.60e-05 ; |J(h1)-J(h2)| relativo nesses pontos: dif. de sigma_min 1.2e-07
+  sigma_min em 50 graus: 1.918e-03 (passo 1), 1.917e-03 (passo 2); min sobre iota: 1.22e-06 em 67.75 graus
+

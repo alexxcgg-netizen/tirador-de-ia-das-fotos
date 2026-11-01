@@ -1,0 +1,38 @@
+exp40_duas_janelas: A circular x B (e0, l0 livres), memorias m = 0 no observador em duas janelas (10 e 20 Hz)
+A (com correcoes): janela 10 Hz deslocamento 1.64372e-22, spin -2.48904e-25, cm -2.91704e-26, giroscopica -3.15601e-41
+                   janela 20 Hz deslocamento 1.54308e-22, spin -1.72765e-25, cm -2.76262e-26, giroscopica -2.14050e-41
+
+exp12 e0=0.1 qB=1.2 l0=0: max|res| = 3.60e-03 (107 s) -> iota 49.57 graus chi1 +0.3412 M 65.012 q 1.199 chi2 -0.2037 e0 0.0984 l0 0.000 rad D 400.86
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: +3.6e-03 +6.1e-04 +2.9e-03 +5.2e-04 -3.0e-03 +1.4e-04 -3.6e-03
+
+exp12 e0=0.2 qB=1.2 l0=0: max|res| = 2.15e-02 (88 s) -> iota 48.65 graus chi1 +0.4575 M 66.455 q 1.331 chi2 -0.2897 e0 0.2223 l0 0.000 rad D 405.80
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: +1.2e-02 +3.8e-03 +1.7e-02 +1.8e-03 -2.1e-02 +3.3e-03 -1.6e-02
+
+exp12 e0=0.2 qB=2.0 l0=0: max|res| = 2.40e-02 (76 s) -> iota 56.31 graus chi1 +0.0596 M 72.588 q 2.000 chi2 -0.0000 e0 0.2000 l0 6.283 rad D 383.23
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: -6.3e-06 -4.4e-05 -1.6e-05 -1.9e-02 +1.9e-02 +2.4e-02 +1.1e-02
+
+exp12 e0=0.3 qB=2.0 l0=0: max|res| = 1.98e-02 (40 s) -> iota 54.32 graus chi1 +0.1843 M 73.370 q 1.998 chi2 -0.0000 e0 0.2993 l0 6.283 rad D 391.23
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: +5.4e-03 -2.4e-03 +1.7e-02 -1.7e-02 -7.2e-03 +2.0e-02 -2.4e-03
+
+exp12 e0=0.2 qB=1.0 l0=0: max|res| = 5.18e-02 (70 s) -> iota 44.38 graus chi1 +0.6623 M 65.770 q 1.031 chi2 -0.0011 e0 0.1976 l0 6.272 rad D 430.74
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: +7.3e-03 -7.4e-05 +3.5e-02 +1.1e-02 -5.2e-02 -9.1e-03 -1.9e-02
+
+exp12 e0=0.2 qB=2.0 l0=pi: max|res| = 1.86e-02 (90 s) -> iota 56.25 graus chi1 +0.0615 M 73.048 q 1.994 chi2 +0.0004 e0 0.2013 l0 3.134 rad D 384.69
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: -6.7e-03 -7.0e-03 -3.2e-03 -1.9e-02 +9.2e-03 +1.7e-02 +4.4e-03
+
+familia circular R4 q=1.1, e0=0.05, l0=0: max|res| = 4.37e-03 (96 s) -> iota 49.91 graus chi1 +0.3420 M 64.605 q 1.131 chi2 -0.2394 e0 0.0499 l0 6.283 rad D 399.21
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: +4.4e-03 -2.7e-03 +1.1e-03 +3.9e-04 +2.4e-03 -3.4e-03 -1.2e-03
+
+familia circular R4 q=1.3, e0=0.05, l0=0: max|res| = 5.18e-03 (119 s) -> iota 50.10 graus chi1 +0.2967 M 65.677 q 1.299 chi2 -0.1959 e0 0.0502 l0 6.283 rad D 401.14
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: -3.6e-03 +3.9e-03 +6.2e-04 -3.2e-04 -5.2e-03 +4.9e-03 -1.1e-03
+
+familia circular R4 q=2.0, e0=0.05, l0=0: max|res| = 2.15e-02 (90 s) -> iota 53.37 graus chi1 +0.2761 M 70.518 q 1.775 chi2 -0.3017 e0 0.0559 l0 0.002 rad D 401.68
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: -2.1e-02 +6.3e-03 +8.6e-03 -9.2e-03 -4.2e-03 +2.0e-02 +2.2e-02
+
+controle circular q=1.3: max|res| = 2.36e-05 (81 s) -> iota 50.02 graus chi1 +0.2737 M 64.959 q 1.196 chi2 -0.1647 (e0 = 0) D 399.87
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: +6.5e-08 +8.7e-06 -2.1e-07 -2.4e-05 -5.6e-06 +5.1e-06 -3.1e-06
+
+controle circular q=2.0: max|res| = 1.04e-04 (117 s) -> iota 49.90 graus chi1 +0.4234 M 65.279 q 1.233 chi2 -0.3744 (e0 = 0) D 400.79
+    residuos [spin1 cm1 giro1 | desl2 spin2 cm2 giro2]: -3.4e-05 -4.9e-05 +3.7e-05 +1.0e-04 +5.1e-05 +2.6e-05 -8.6e-06
+
+(535 s)

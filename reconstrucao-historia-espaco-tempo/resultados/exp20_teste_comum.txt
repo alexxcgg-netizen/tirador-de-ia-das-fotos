@@ -1,0 +1,30 @@
+  todos_m=False nivel A f= 10.0 Hz: t_i -16430.204376 vs -16430.204376 ; M_f 0.9497657291 vs 0.9497657291 ; obs rel 0.0e+00 0.0e+00 0.0e+00 0.0e+00
+  todos_m=False nivel A f= 14.0 Hz: t_i -6476.717677 vs -6476.717677 ; M_f 0.9497672588 vs 0.9497672588 ; obs rel 2.2e-13 1.3e-12 1.8e-13 1.3e-12
+  todos_m=False nivel A f= 20.0 Hz: t_i -2367.022504 vs -2367.022504 ; M_f 0.9497708963 vs 0.9497708963 ; obs rel 1.2e-13 5.9e-13 1.1e-13 6.4e-13
+  todos_m=False nivel A f= 31.0 Hz: t_i -668.743724 vs -668.743724 ; M_f 0.9497674054 vs 0.9497674054 ; obs rel 2.4e-13 9.1e-13 2.1e-13 9.9e-13
+  -> pior diferenca relativa por multipolo: 1.37e-12 ; tempo das 4 janelas numa chamada 5.09 s
+  todos_m=False nivel C f= 10.0 Hz: t_i -16430.204376 vs -16430.204376 ; M_f 0.9497611889 vs 0.9497611889 ; obs rel 0.0e+00 0.0e+00 0.0e+00 0.0e+00
+  todos_m=False nivel C f= 14.0 Hz: t_i -6476.717677 vs -6476.717677 ; M_f 0.9497627187 vs 0.9497627187 ; obs rel 2.1e-13 1.3e-12 1.8e-13 1.4e-12
+  todos_m=False nivel C f= 20.0 Hz: t_i -2367.022504 vs -2367.022504 ; M_f 0.9497663562 vs 0.9497663562 ; obs rel 1.4e-13 5.8e-13 1.3e-13 6.4e-13
+  todos_m=False nivel C f= 31.0 Hz: t_i -668.743724 vs -668.743724 ; M_f 0.9497628657 vs 0.9497628657 ; obs rel 2.6e-13 9.0e-13 2.3e-13 9.9e-13
+  -> pior diferenca relativa por multipolo: 1.37e-12 ; tempo das 4 janelas numa chamada 0.55 s
+  todos_m=True nivel A f= 10.0 Hz: t_i -16430.204376 vs -16430.204376 ; M_f 0.9497657291 vs 0.9497657291 ; obs rel 0.0e+00 0.0e+00 0.0e+00 0.0e+00
+  todos_m=True nivel A f= 14.0 Hz: t_i -6476.717677 vs -6476.717677 ; M_f 0.9497672588 vs 0.9497672588 ; obs rel 1.0e-03 1.6e-03 1.8e-04 1.0e-04
+  todos_m=True nivel A f= 20.0 Hz: t_i -2367.022504 vs -2367.022504 ; M_f 0.9497708963 vs 0.9497708963 ; obs rel 9.3e-05 1.8e-02 3.1e-03 7.2e-03
+  todos_m=True nivel A f= 31.0 Hz: t_i -668.743724 vs -668.743724 ; M_f 0.9497674054 vs 0.9497674054 ; obs rel 2.1e-03 2.5e-02 3.4e-03 1.0e-02
+  -> pior diferenca relativa por multipolo: 4.68e-02 ; tempo das 4 janelas numa chamada 0.32 s
+  todos_m=True nivel C f= 10.0 Hz: t_i -16430.204376 vs -16430.204376 ; M_f 0.9497611889 vs 0.9497611889 ; obs rel 0.0e+00 0.0e+00 0.0e+00 0.0e+00
+  todos_m=True nivel C f= 14.0 Hz: t_i -6476.717677 vs -6476.717677 ; M_f 0.9497627187 vs 0.9497627187 ; obs rel 1.3e-03 1.5e-03 9.0e-04 5.6e-05
+  todos_m=True nivel C f= 20.0 Hz: t_i -2367.022504 vs -2367.022504 ; M_f 0.9497663562 vs 0.9497663562 ; obs rel 3.1e-03 1.8e-02 9.7e-05 8.8e-03
+  todos_m=True nivel C f= 31.0 Hz: t_i -668.743724 vs -668.743724 ; M_f 0.9497628657 vs 0.9497628657 ; obs rel 5.3e-03 2.6e-02 8.5e-04 7.8e-03
+  -> pior diferenca relativa por multipolo: 4.69e-02 ; tempo das 4 janelas numa chamada 0.37 s
+
+todos_m: comparacao depois da rotacao azimutal (Delta = -fase22(t_i)/2 + k pi, k que minimiza)
+  f= 10.0 Hz: Delta = +56.548668 rad (k=1) ; pior diferenca relativa por multipolo depois da rotacao 1.78e-11
+  f= 14.0 Hz: Delta = +172.574630 rad (k=1) ; pior diferenca relativa por multipolo depois da rotacao 6.92e-11
+  f= 20.0 Hz: Delta = +240.133291 rad (k=1) ; pior diferenca relativa por multipolo depois da rotacao 1.82e-10
+  f= 31.0 Hz: Delta = +281.147216 rad (k=1) ; pior diferenca relativa por multipolo depois da rotacao 3.82e-10
+
+jacobiano 8x6 (10, 14 Hz): 4.4 s ; |J(h) - J(h/2)| / |J| por coluna: 2.0e-06 8.2e-08 4.9e-07 1.0e-07 8.0e-11 6.3e-12
+  valores singulares (escalas R4) h  : 1.4174e-01 2.7880e-02 1.7629e-02 6.2277e-03 9.6724e-04 1.0944e-04
+  valores singulares (escalas R4) h/2: 1.4174e-01 2.7880e-02 1.7629e-02 6.2277e-03 9.6724e-04 1.0944e-04

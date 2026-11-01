@@ -1,0 +1,20 @@
+(a) q = 1.2 + k 2e-6, k = 0..40 (M = 65, 10 Hz): residuo relativo do ajuste cubico
+  t_i 9.1e-11 (|t_i| = 16430 M, residuo absoluto 1.5e-06 M) ; |h22|(t = -1000 M) 6.0e-13
+  energia de janela por modo: (2, 2) 2.2e-10 ; (2, 1) 5.6e-10 ; (3, 3) 3.7e-10 ; (3, 2) 1.3e-09 ; (4, 4) 3.1e-10 ; (4, 3) 1.4e-09 ; (5, 5) 5.2e-10
+  (2,2): antes do pico 1.8e-10 ; depois do pico 2.7e-10
+
+(b) FRAC_INICIO: max dif. relativa dos multipolos (todos os m) contra FRAC = 0.6
+  M  65 f_ini 10 Hz (f0 = 0.0032, t_i = -16430.2 M): 0.80: 6e-11 (t_i +3e-07 M) | 0.90: 6e-11 (t_i +3e-07 M) | 0.95: 6e-11 (t_i +3e-07 M)
+  M 120 f_ini 10 Hz (f0 = 0.0059, t_i =  -2975.2 M): 0.80: 3e-12 (t_i +7e-09 M) | 0.90: 5e-12 (t_i +1e-08 M) | 0.95: 1e-09 (t_i -3e-06 M)
+  M  65 f_ini 20 Hz (f0 = 0.0064, t_i =  -2367.0 M): 0.80: 1e-12 (t_i +2e-09 M) | 0.90: 3e-12 (t_i +7e-09 M) | 0.95: 3e-09 (t_i +5e-06 M)
+  M  65 f_ini 30 Hz (f0 = 0.0096, t_i =   -736.1 M): 0.80: 5e-13 (t_i -6e-10 M) | 0.90: 5e-13 (t_i -6e-10 M) | 0.95: 5e-13 (t_i -6e-10 M)
+  M 200 f_ini 10 Hz (f0 = 0.0099, t_i =   -684.7 M): 0.80: 7e-13 (t_i -7e-10 M) | 0.90: 7e-13 (t_i -7e-10 M) | 0.95: 7e-13 (t_i -7e-10 M)
+  M  65 f_ini 45 Hz (f0 = 0.0144, t_i =   -228.6 M): 0.80: 4e-16 (t_i +0e+00 M) | 0.90: 6e-16 (t_i +0e+00 M) | 0.95: 4e-16 (t_i +0e+00 M)
+  M 300 f_ini 10 Hz (f0 = 0.0148, t_i =   -212.6 M): 0.80: 6e-16 (t_i +0e+00 M) | 0.90: 6e-16 (t_i +0e+00 M) | 0.95: 3e-16 (t_i -9e-14 M)
+
+(c) memorias com todos os m num phi fixo (relativo a fase em t_i) oscilam em M: M = 65 (1 + e), e = 0..0.03
+  dt_i/de = 4.494e+04 M ; omega_orb(t_i) dt_i/de = 452.0 rad: periodo previsto em e para |m| = 1: 0.0139
+  deslocamento  (todos os m)/(m = 0) - 1: faixa [-1.37e-03, +1.99e-03] ; periodo dominante em e: 0.0073
+  spin          (todos os m)/(m = 0) - 1: faixa [-1.36e-02, +1.38e-02] ; periodo dominante em e: 0.0146
+  cm            (todos os m)/(m = 0) - 1: faixa [-5.93e-03, +5.55e-03] ; periodo dominante em e: 0.0072
+  giroscopica   (todos os m)/(m = 0) - 1: faixa [-5.38e-03, +5.23e-03] ; periodo dominante em e: 0.0146

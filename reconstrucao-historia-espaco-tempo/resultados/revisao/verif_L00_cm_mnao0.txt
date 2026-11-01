@@ -1,0 +1,34 @@
+(3) Memoria de CM: cm = nula(janela) - (3/2) M_f DeltaJ/Dfrak(l), multipolo a multipolo (sistema A)
+  nivel A, desl='janela': max |cm - (nula - 1.5 M_f dJ/Dfrak)| / max|cm| = 8.4e-24 ; cm20 = -0.049191, parte nula -0.006039 (12.3%), ordinaria -0.043152
+  nivel A, desl='total': max |cm - (nula - 1.5 M_f dJ/Dfrak)| / max|cm| = 2.6e-16 ; cm20 = -0.054074, parte nula -0.006039 (11.2%), ordinaria -0.048035
+  nivel C, desl='janela': max |cm - (nula - 1.5 M_f dJ/Dfrak)| / max|cm| = 2.7e-22 ; cm20 = -0.049763, parte nula -0.006041 (12.1%), ordinaria -0.043722
+  nivel C, desl='total': max |cm - (nula - 1.5 M_f dJ/Dfrak)| / max|cm| = 2.4e-22 ; cm20 = -0.054657, parte nula -0.006041 (11.1%), ordinaria -0.048616
+  observador (iota 50, m = 0, 'janela'): CM -0.011218 ; so ordinaria -0.009799 (87.4%) ; -(M_f/2) Delta h_+ = -0.010046
+
+  Janelas curtas desde t_i (q = 1, chi = 0, 10 Hz, M = 65): cm20 e desl20 contra a duracao
+    duracao    10 M: 'janela' desl20 +1.509e-06 cm20 -7.587e-07 (cm20/duracao -7.471e-08) ; 'total' cm20 -5.1562e-03 (-(M_f/2) Favata = -5.1555e-03)
+    duracao    25 M: 'janela' desl20 +3.740e-06 cm20 -1.880e-06 (cm20/duracao -7.475e-08) ; 'total' cm20 -5.1573e-03 (-(M_f/2) Favata = -5.1555e-03)
+    duracao    50 M: 'janela' desl20 +7.463e-06 cm20 -3.753e-06 (cm20/duracao -7.482e-08) ; 'total' cm20 -5.1592e-03 (-(M_f/2) Favata = -5.1554e-03)
+    duracao   100 M: 'janela' desl20 +1.493e-05 cm20 -7.508e-06 (cm20/duracao -7.496e-08) ; 'total' cm20 -5.1629e-03 (-(M_f/2) Favata = -5.1554e-03)
+    duracao   200 M: 'janela' desl20 +2.995e-05 cm20 -1.506e-05 (cm20/duracao -7.525e-08) ; 'total' cm20 -5.1704e-03 (-(M_f/2) Favata = -5.1554e-03)
+    duracao   400 M: 'janela' desl20 +6.033e-05 cm20 -3.034e-05 (cm20/duracao -7.582e-08) ; 'total' cm20 -5.1856e-03 (-(M_f/2) Favata = -5.1553e-03)
+  convencao M_f Phi_f - M_i Phi_i (Phi_i = Favata em x_i) contra M_f Delta Phi: cm20 -0.048962 contra -0.049191 (-0.47%)
+  (8 s)
+
+(4) todos_m contra rev_R1_m_nao_nulo.py (sistema A, janela abrupta, desl total)
+  parametros de A no exp07_pares.json: q 1.200 chi (+0.30, -0.20) M 65.0 D 400 iota 0.8727
+  copia do rev_R1, grade de 12 phi (deve reproduzir rev_R1_m_nao_nulo.txt): desl [-1.14e-03, +1.79e-03] spin [-1.34e-02, +1.34e-02] cm [-4.86e-03, +4.58e-03] giro [-5.29e-03, +5.12e-03]
+  rotacao azimutal estimada pelo spin (2,-1): alpha = -5.740e-04 rad ; |obs|/|rev_R1| - 1 = -9.3e-06
+    deslocamento  m = 0: max dif./max|m=0| 2.6e-07 ; m != 0: max dif./max|m!=0| 1.2e-05 com rotacao (5.6e-04 sem)
+    spin          m = 0: max dif./max|m=0| 2.0e-06 ; m != 0: max dif./max|m!=0| 9.3e-06 com rotacao (5.7e-04 sem)
+    cm            m = 0: max dif./max|m=0| 2.2e-07 ; m != 0: max dif./max|m!=0| 3.9e-04 com rotacao (1.5e-03 sem)
+    giroscopica   m = 0: max dif./max|m=0| 2.2e-06 ; m != 0: max dif./max|m!=0| 7.0e-06 com rotacao (5.7e-04 sem)
+  grade de  12 phi: rev_R1 desl [-1.137e-03, +1.789e-03] spin [-1.339e-02, +1.343e-02] cm [-4.860e-03, +4.582e-03] giro [-5.292e-03, +5.124e-03]
+                   observaveis desl [-1.137e-03, +1.789e-03] spin [-1.339e-02, +1.343e-02] cm [-4.859e-03, +4.582e-03] giro [-5.293e-03, +5.124e-03]
+  grade de  24 phi: rev_R1 desl [-1.232e-03, +1.789e-03] spin [-1.339e-02, +1.345e-02] cm [-4.860e-03, +4.582e-03] giro [-5.292e-03, +5.124e-03]
+                   observaveis desl [-1.232e-03, +1.789e-03] spin [-1.339e-02, +1.344e-02] cm [-4.859e-03, +4.582e-03] giro [-5.293e-03, +5.124e-03]
+  grade de 720 phi: rev_R1 desl [-1.234e-03, +1.798e-03] spin [-1.351e-02, +1.355e-02] cm [-4.919e-03, +4.583e-03] giro [-5.323e-03, +5.136e-03]
+                   observaveis desl [-1.234e-03, +1.798e-03] spin [-1.351e-02, +1.355e-02] cm [-4.919e-03, +4.583e-03] giro [-5.323e-03, +5.136e-03]
+  observaveis padrao (desl='janela', ordem 8, 3PN), 720 phi: desl [-1.373e-03, +1.999e-03] spin [-1.351e-02, +1.355e-02] cm [-5.405e-03, +5.036e-03] giro [-5.323e-03, +5.136e-03]
+  no_observador_completo contra observador(rev_R1) no mesmo dicionario: max dif. relativa 0.0e+00
+  (36 s)

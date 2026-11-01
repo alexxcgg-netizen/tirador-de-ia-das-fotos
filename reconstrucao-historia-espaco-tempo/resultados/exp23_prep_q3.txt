@@ -1,0 +1,15 @@
+  M f do pico do (2,2): 0.0620 ; bordas ate 0.0500
+fonte q3: {'q': 3.0, 'c1': 0.6, 'c2': 0.0, 'M': 65.0, 'D': 400.0, 'iota': 0.8726646259971648, 'phi': 0.0} ; 45 bordas de 10.00 a 156.17 Hz (M f 0.00320 a 0.0500)
+  jacobiano das janelas: 52 s
+  series e particao: 37 s ; soma das bandas suaves: desl 1.298307e-22 (janela 1.298307e-22), spin -2.011858e-25 s (janela -2.011858e-25)
+  bandas suaves / nitidas - 1: desl +8e-01 +2e-05 +3e-03 -3e-03 +2e-04 +3e-04 +8e-05 -8e-05
+                               spin +8e-01 +7e-06 +3e-03 -3e-03 +2e-04 +3e-04 +8e-05 +1e-04
+  CE: SNR deslocamento: serie 23.2607, sqrt(soma G) 23.2607, sqrt(soma diag) 23.5491 ; spin (x): serie 1.8848, sqrt(soma G) 1.8848, sqrt(soma diag) 2.7684 (2 s)
+     SNR por banda (desl): 3.4e-05 3.2e-05 0.00029 0.0043 0.024 0.12 0.32 0.53 0.73 0.93 1.2 23
+     SNR por banda (spin): 2.9e-06 1.9e-05 0.00014 0.0013 0.0084 0.034 0.098 0.18 0.27 0.37 0.48 2.3
+     (fmin = 10 Hz: desl 22.8066, spin 1.8783)
+  ET: SNR deslocamento: serie 8.1285, sqrt(soma G) 8.1285, sqrt(soma diag) 7.3354 ; spin (x): serie 0.4902, sqrt(soma G) 0.4902, sqrt(soma diag) 0.9129 (2 s)
+     SNR por banda (desl): 3.5e-05 6e-05 0.00052 0.0052 0.028 0.075 0.12 0.17 0.22 0.29 0.39 7.2
+     SNR por banda (spin): 1.6e-06 2e-05 0.00013 0.0013 0.0052 0.014 0.025 0.046 0.088 0.15 0.22 0.62
+     (fmin = 10 Hz: desl 5.8255, spin 0.4597)
+  (94 s)

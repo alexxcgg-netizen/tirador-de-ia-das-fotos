@@ -1,0 +1,207 @@
+Experimento 24: Fisher do sinal so de memoria nula. Sistema A: M=65, q=1.2, chi=(0.3,-0.2), D=400 Mpc, iota=50 graus, psi=0 (detector otimo para +), banda desde 10 Hz.
+T1 serie modal esparsa contra observaveis.serie_memoria(magnetica=True): max|dif|/max|s| = 4.0e-15
+T2 SNR do sinal de memoria (h+ e hx separados) e convergencia em N:
+  N = 2^18 (df = 0.0477 Hz): rho_+ / rho_x: aLIGO 0.47025 / 0.06698 ; A+ 0.89202 / 0.12741 ; ET 8.63615 / 0.81347 ; CE 34.08738 / 3.21107
+  N = 2^19 (df = 0.0238 Hz): rho_+ / rho_x: aLIGO 0.47025 / 0.06698 ; A+ 0.89203 / 0.12741 ; ET 8.63616 / 0.81347 ; CE 34.08740 / 3.21107
+  N = 2^20 (df = 0.0119 Hz): rho_+ / rho_x: aLIGO 0.47025 / 0.06698 ; A+ 0.89203 / 0.12741 ; ET 8.63619 / 0.81348 ; CE 34.08740 / 3.21107
+  (L00: rho_+ nula = 0.4702 / 0.8920 / 8.6405 / 34.0901)
+T3 inicio da janela e janela de Tukey (grade fixa de A, N = 2^19): 1 - match (amplitude e tempo livres) contra (10 Hz, T_tap = 1500 M) e razao de SNR:
+  f_ini =   8.0 Hz, T_tap =  1500 M (0.48 s): aLIGO 1-match 1.1e-11, rho/rho_ref - 1 = +2.9e-10 ; CE 1-match 3.7e-11, rho/rho_ref - 1 = +1.2e-08
+  f_ini =  12.4 Hz, T_tap =  1500 M (0.48 s): aLIGO 1-match 5.2e-11, rho/rho_ref - 1 = +1.7e-09 ; CE 1-match 1.7e-10, rho/rho_ref - 1 = +6.6e-08
+  f_ini =  16.0 Hz, T_tap =  1500 M (0.48 s): aLIGO 1-match 3.1e-10, rho/rho_ref - 1 = -1.1e-08 ; CE 1-match 9.9e-10, rho/rho_ref - 1 = +1.6e-07
+  f_ini =  10.0 Hz, T_tap =   750 M (0.24 s): aLIGO 1-match 4.5e-11, rho/rho_ref - 1 = +1.1e-09 ; CE 1-match 1.5e-10, rho/rho_ref - 1 = +3.9e-08
+  f_ini =  10.0 Hz, T_tap =  3000 M (0.96 s): aLIGO 1-match 1.2e-11, rho/rho_ref - 1 = +3.4e-10 ; CE 1-match 3.7e-11, rho/rho_ref - 1 = +1.2e-08
+T4 derivada em ln M: lei de escala (forma adimensional fixa) contra diferenca finita fisica (inicio da janela fixo em 10 Hz; espectro de M(1+-h) interpolado em F):
+  h = 2e-03: aLIGO |dif|/|d| = 3.9e-03 ; ET |dif|/|d| = 1.0e-02 ; CE |dif|/|d| = 8.7e-03
+  h = 1e-03: aLIGO |dif|/|d| = 6.1e-03 ; ET |dif|/|d| = 1.3e-02 ; CE |dif|/|d| = 1.2e-02
+  parte d s/d ln f_ini (M fixo): |.|/|d s/d ln M| = 1.4e-03 (aLIGO)
+  parte d s/d ln f_ini (M fixo): |.|/|d s/d ln M| = 3.3e-03 (CE)
+T5 convergencia das diferencas finitas em q, chi1, chi2 (Fisher de CE, detector unico):
+  max |G(4e-03) - G(2e-03)| / sqrt(G_ii G_jj) = 1.3e-04
+  max |G(2e-03) - G(1e-03)| / sqrt(G_ii G_jj) = 3.4e-05
+  Richardson contra h = 1e-3: max relativo 1.1e-05
+  autovalores branqueados (CE): Richardson / h=1e-3 - 1: -7.2e-04 -3.6e-04 +7.5e-06 +4.4e-05 -1.0e-05 -1.8e-07 -3.2e-08 -4.5e-12
+
+FISHER do sinal so de memoria nula, sistema A (D = 400 Mpc). Priors (desvio de uniforme): lnM 0.317 q 0.866 c1 0.462 c2 0.462 lnD 0.465 cosi 0.577 t0 0.05 psi 0.907
+aLIGO: detector unico rho = 0.470 ; segundo detector (45 graus) rho = 0.067
+  detector unico: autovalores branqueados = 42.5 0.365 0.00625 4.71e-05 4.86e-06 3.91e-07 1.38e-07 5.4e-10
+     d_ef = 1.25 ; I(theta; dados) = 3.0 bits ; I(intrinsecos) = 0.01 bits ; cond = 7.9e+10
+     Cramer-Rao sem prior: lnM 78.7 q 2.5e+03 c1 4.65e+03 c2 6.02e+03 lnD 1.72e+04 cosi 8.27e+03 t0 1.16 psi 664
+     posterior (com prior): lnM 0.316 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.0077 psi 0.906
+     bits por parametro: lnM 0.00 q 0.00 c1 0.00 c2 0.00 lnD 0.03 cosi 0.18 t0 2.70 psi 0.00
+     autovetor 1 (lambda 42.5): +1.00 t0 +0.02 lnM +0.02 psi +0.00 c1
+     autovetor 2 (lambda 0.365): -0.91 cosi -0.36 lnD +0.14 c1 +0.09 c2
+     autovetor 3 (lambda 0.00625): +0.97 lnM +0.13 c1 -0.12 psi +0.11 c2
+     autovetor 4 (lambda 4.71e-05): +0.93 psi -0.25 c1 +0.18 lnM -0.17 q
+  rede (2 detectores, + e x): autovalores branqueados = 44.2 0.688 0.365 0.00652 0.000462 1.17e-05 2.71e-06 3.85e-07
+     d_ef = 1.66 ; I(theta; dados) = 3.4 bits ; I(intrinsecos) = 0.01 bits ; cond = 1.1e+08
+     Cramer-Rao sem prior: lnM 20.5 q 1.13e+03 c1 414 c2 233 lnD 249 cosi 34 t0 0.0587 psi 1.2
+     posterior (com prior): lnM 0.316 q 0.865 c1 0.461 c2 0.461 lnD 0.456 cosi 0.509 t0 0.00763 psi 0.698
+     bits por parametro: lnM 0.01 q 0.00 c1 0.00 c2 0.00 lnD 0.03 cosi 0.18 t0 2.71 psi 0.38
+     autovetor 1 (lambda 44.2): +1.00 t0 +0.04 psi +0.02 lnM +0.00 c1
+     autovetor 2 (lambda 0.688): -1.00 psi +0.04 t0 +0.03 cosi +0.01 lnD
+     autovetor 3 (lambda 0.365): -0.91 cosi -0.36 lnD +0.14 c1 +0.09 c2
+     autovetor 4 (lambda 0.00652): +0.98 lnM +0.13 c1 +0.11 c2 +0.10 q
+     Fisher reduzido aos intrinsecos (perfil em amplitude e tempo): autovalores branqueados 0.0063 4.76e-05 7.58e-06 4.06e-07 1.65e-07 2.1e-09 ; d_ef 0.01
+     reduzido (perfil em ln D, t0, cos iota, psi): 0.000728 6.21e-07 2.12e-07 3.65e-09 ; d_ef 0.00
+        autovetor 1: -0.99 lnM -0.06 q -0.09 c1 -0.05 c2
+        autovetor 2: -0.10 lnM -0.08 q +0.78 c1 +0.61 c2
+A+: detector unico rho = 0.892 ; segundo detector (45 graus) rho = 0.127
+  detector unico: autovalores branqueados = 154 1.31 0.0221 0.000169 1.75e-05 1.41e-06 4.87e-07 2.02e-09
+     d_ef = 1.58 ; I(theta; dados) = 4.3 bits ; I(intrinsecos) = 0.03 bits ; cond = 7.6e+10
+     Cramer-Rao sem prior: lnM 41.5 q 1.3e+03 c1 2.4e+03 c2 3.12e+03 lnD 8.92e+03 cosi 4.28e+03 t0 0.61 psi 350
+     posterior (com prior): lnM 0.314 q 0.865 c1 0.459 c2 0.461 lnD 0.447 cosi 0.419 t0 0.00425 psi 0.906
+     bits por parametro: lnM 0.02 q 0.00 c1 0.01 c2 0.00 lnD 0.06 cosi 0.46 t0 3.56 psi 0.00
+     autovetor 1 (lambda 154): +1.00 t0 +0.02 lnM +0.02 psi +0.00 c1
+     autovetor 2 (lambda 1.31): -0.91 cosi -0.36 lnD +0.14 c1 +0.09 c2
+     autovetor 3 (lambda 0.0221): +0.97 lnM +0.13 c1 -0.12 psi +0.11 c2
+     autovetor 4 (lambda 0.000169): +0.94 psi -0.25 c1 +0.17 lnM -0.16 q
+  rede (2 detectores, + e x): autovalores branqueados = 160 2.47 1.31 0.0231 0.00167 4.17e-05 9.85e-06 1.37e-06
+     d_ef = 2.30 ; I(theta; dados) = 5.2 bits ; I(intrinsecos) = 0.03 bits ; cond = 1.2e+08
+     Cramer-Rao sem prior: lnM 10.9 q 600 c1 217 c2 123 lnD 132 cosi 17.9 t0 0.0308 psi 0.635
+     posterior (com prior): lnM 0.313 q 0.865 c1 0.459 c2 0.461 lnD 0.446 cosi 0.419 t0 0.00418 psi 0.486
+     bits por parametro: lnM 0.02 q 0.00 c1 0.01 c2 0.00 lnD 0.06 cosi 0.46 t0 3.58 psi 0.90
+     autovetor 1 (lambda 160): +1.00 t0 +0.04 psi +0.02 lnM +0.00 c1
+     autovetor 2 (lambda 2.47): +1.00 psi -0.04 t0 -0.03 cosi -0.01 lnD
+     autovetor 3 (lambda 1.31): +0.91 cosi +0.36 lnD -0.14 c1 -0.09 c2
+     autovetor 4 (lambda 0.0231): +0.98 lnM +0.13 c1 +0.11 c2 +0.10 q
+     Fisher reduzido aos intrinsecos (perfil em amplitude e tempo): autovalores branqueados 0.0223 0.000171 2.73e-05 1.46e-06 5.8e-07 7.83e-09 ; d_ef 0.02
+     reduzido (perfil em ln D, t0, cos iota, psi): 0.00263 2.25e-06 7.38e-07 1.37e-08 ; d_ef 0.00
+        autovetor 1: -0.99 lnM -0.06 q -0.09 c1 -0.05 c2
+        autovetor 2: -0.10 lnM -0.08 q +0.78 c1 +0.61 c2
+ET: detector unico rho = 8.636 ; segundo detector (45 graus) rho = 0.813
+  detector unico: autovalores branqueados = 5.81e+03 127 1.25 0.0118 0.000672 0.000118 2.52e-05 1.15e-07
+     d_ef = 2.56 ; I(theta; dados) = 10.3 bits ; I(intrinsecos) = 0.61 bits ; cond = 5.1e+10
+     Cramer-Rao sem prior: lnM 5.95 q 167 c1 337 c2 413 lnD 1.18e+03 cosi 562 t0 0.0808 psi 52
+     posterior (com prior): lnM 0.219 q 0.86 c1 0.454 c2 0.458 lnD 0.434 cosi 0.244 t0 0.00137 psi 0.896
+     bits por parametro: lnM 0.53 q 0.01 c1 0.02 c2 0.01 lnD 0.10 cosi 1.24 t0 5.19 psi 0.02
+     autovetor 1 (lambda 5.81e+03): -1.00 t0 -0.02 lnM -0.02 psi -0.00 c1
+     autovetor 2 (lambda 127): -0.90 cosi -0.36 lnD +0.15 c1 +0.14 lnM
+     autovetor 3 (lambda 1.25): +0.95 lnM -0.16 psi +0.14 cosi +0.12 q
+     autovetor 4 (lambda 0.0118): +0.90 psi -0.26 q -0.23 c1 +0.23 lnM
+  rede (2 detectores, + e x): autovalores branqueados = 6e+03 239 127 1.28 0.0692 0.00265 0.000404 0.000122
+     d_ef = 3.62 ; I(theta; dados) = 14.4 bits ; I(intrinsecos) = 0.64 bits ; cond = 4.9e+07
+     Cramer-Rao sem prior: lnM 1.65 q 54.3 c1 31.1 c2 19.3 lnD 12.8 cosi 2.8 t0 0.00451 psi 0.0613
+     posterior (com prior): lnM 0.214 q 0.858 c1 0.454 c2 0.458 lnD 0.422 cosi 0.236 t0 0.000922 psi 0.0586
+     bits por parametro: lnM 0.57 q 0.01 c1 0.02 c2 0.01 lnD 0.14 cosi 1.29 t0 5.76 psi 3.95
+     autovetor 1 (lambda 6e+03): -1.00 t0 -0.04 psi -0.02 lnM -0.00 c1
+     autovetor 2 (lambda 239): -1.00 psi +0.04 t0 +0.02 cosi +0.00 lnD
+     autovetor 3 (lambda 127): -0.90 cosi -0.36 lnD +0.15 c1 +0.14 lnM
+     autovetor 4 (lambda 1.28): +0.97 lnM +0.15 cosi +0.12 c1 +0.11 q
+     Fisher reduzido aos intrinsecos (perfil em amplitude e tempo): autovalores branqueados 1.29 0.0118 0.00103 0.000118 3.26e-05 4.38e-07 ; d_ef 0.58
+     reduzido (perfil em ln D, t0, cos iota, psi): 0.133 0.000135 5.93e-05 7.43e-07 ; d_ef 0.12
+        autovetor 1: -0.99 lnM -0.04 q -0.10 c1 -0.06 c2
+        autovetor 2: -0.08 lnM -0.43 q +0.66 c1 +0.61 c2
+CE: detector unico rho = 34.087 ; segundo detector (45 graus) rho = 3.211
+  detector unico: autovalores branqueados = 8.7e+04 1.97e+03 11.8 0.11 0.005 0.000891 0.000173 8.34e-07
+     d_ef = 3.03 ; I(theta; dados) = 15.6 bits ; I(intrinsecos) = 1.70 bits ; cond = 1e+11
+     Cramer-Rao sem prior: lnM 2.41 q 57.5 c1 132 c2 156 lnD 435 cosi 206 t0 0.0268 psi 19.6
+     posterior (com prior): lnM 0.121 q 0.854 c1 0.452 c2 0.456 lnD 0.433 cosi 0.235 t0 0.00109 psi 0.857
+     bits por parametro: lnM 1.39 q 0.02 c1 0.03 c2 0.02 lnD 0.10 cosi 1.30 t0 5.51 psi 0.08
+     autovetor 1 (lambda 8.7e+04): -1.00 t0 -0.02 psi -0.02 lnM -0.00 c1
+     autovetor 2 (lambda 1.97e+03): -0.90 cosi -0.36 lnD +0.15 c1 +0.13 lnM
+     autovetor 3 (lambda 11.8): +0.95 lnM -0.17 psi +0.13 cosi +0.13 c1
+     autovetor 4 (lambda 0.11): +0.89 psi -0.28 q +0.24 lnM -0.23 c1
+  rede (2 detectores, + e x): autovalores branqueados = 8.9e+04 3.73e+03 1.97e+03 12.5 1.03 0.0238 0.00277 0.000926
+     d_ef = 4.46 ; I(theta; dados) = 22.0 bits ; I(intrinsecos) = 1.97 bits ; cond = 9.6e+07
+     Cramer-Rao sem prior: lnM 0.628 q 18.8 c1 11.7 c2 7.55 lnD 4.43 cosi 1.04 t0 0.0016 psi 0.016
+     posterior (com prior): lnM 0.109 q 0.829 c1 0.451 c2 0.455 lnD 0.326 cosi 0.173 t0 0.000314 psi 0.015
+     bits por parametro: lnM 1.54 q 0.06 c1 0.03 c2 0.02 lnD 0.51 cosi 1.74 t0 7.31 psi 5.91
+     autovetor 1 (lambda 8.9e+04): -1.00 t0 -0.04 psi -0.02 lnM -0.00 c1
+     autovetor 2 (lambda 3.73e+03): -1.00 psi +0.04 t0 +0.02 cosi +0.00 lnD
+     autovetor 3 (lambda 1.97e+03): -0.90 cosi -0.36 lnD +0.15 c1 +0.13 lnM
+     autovetor 4 (lambda 12.5): +0.97 lnM +0.17 cosi +0.13 c1 +0.11 c2
+     Fisher reduzido aos intrinsecos (perfil em amplitude e tempo): autovalores branqueados 12.2 0.11 0.00739 0.000891 0.000239 3.09e-06 ; d_ef 1.03
+     reduzido (perfil em ln D, t0, cos iota, psi): 1.04 0.00105 0.000465 5.05e-06 ; d_ef 0.51
+        autovetor 1: -0.99 lnM -0.03 q -0.10 c1 -0.06 c2
+        autovetor 2: -0.10 lnM -0.33 q +0.69 c1 +0.63 c2
+
+Validade (Vallisneri 2008, aproximacao de sinal linearizado): deslocamentos de 1 sigma ao longo dos eixos do posterior (Fisher + prior), detector unico. dchi2_lin = (J d|J d); dchi2 = (s(th+d)-s(th)|.); eps = (s(th+d)-s(th)-J d|.).
+  ET eixo 1 (sigma_post^2 = 0.00017 em unidades de prior; fator 1.00): dchi2_lin 1.000 ; dchi2 0.995 ; eps 0.014
+      d = lnM -7.85e-05 q -1.63e-05 c1 -2.02e-05 c2 -8.4e-06 lnD +9.92e-08 cosi -1.21e-05 t0 -0.000655 psi -0.000224
+  ET eixo 2 (sigma_post^2 = 0.0078 em unidades de prior; fator 1.00): dchi2_lin 0.992 ; dchi2 0.959 ; eps 0.000
+      d = lnM +0.00379 q -0.00444 c1 +0.00623 c2 +0.00416 lnD -0.0147 cosi -0.0462 t0 -9.41e-06 psi +0.00192
+  ET eixo 3 (sigma_post^2 = 0.44 em unidades de prior; fator 1.00): dchi2_lin 0.555 ; dchi2 0.660 ; eps 0.135
+      d = lnM +0.202 q +0.0718 c1 +0.0378 c2 +0.034 lnD +0.0213 cosi +0.0525 t0 -0.000533 psi -0.0954
+  ET eixo 4 (sigma_post^2 = 0.99 em unidades de prior; fator 1.00): dchi2_lin 0.012 ; dchi2 83.280 ; eps 83.273
+      d = lnM -0.071 q +0.226 c1 +0.107 c2 +0.0622 lnD -0.00377 cosi -0.00938 t0 +0.000987 psi -0.81
+  ET eixo 5 (sigma_post^2 = 1 em unidades de prior; fator 1.00): dchi2_lin 0.001 ; dchi2 3.082 ; eps 3.082
+      d = lnM -0.0395 q +0.376 c1 +0.0431 c2 +0.365 lnD +0.122 cosi -0.0216 t0 -0.000263 psi +0.272
+  ET eixo 6 (sigma_post^2 = 1 em unidades de prior; fator 1.00): dchi2_lin 0.000 ; dchi2 2.220 ; eps 2.219
+      d = lnM +0.0131 q +0.639 c1 -0.253 c2 -0.162 lnD +0.00454 cosi -0.102 t0 +2.59e-05 psi +0.0114
+  ET eixo 7 (sigma_post^2 = 1 em unidades de prior; fator 0.51): dchi2_lin 0.000 ; dchi2 0.136 ; eps 0.136
+      d = lnM +0.011 q -0.186 c1 -0.174 c2 +0.0816 lnD +0.058 cosi -0.0448 t0 +0.000174 psi -0.129
+  ET eixo 8 (sigma_post^2 = 1 em unidades de prior; fator 1.00): dchi2_lin 0.000 ; dchi2 0.868 ; eps 0.868
+      d = lnM -0.00122 q -0.0467 c1 +0.112 c2 -0.139 lnD +0.399 cosi -0.19 t0 +1.42e-05 psi +0.000871
+  CE eixo 1 (sigma_post^2 = 1.1e-05 em unidades de prior; fator 1.00): dchi2_lin 1.000 ; dchi2 1.000 ; eps 0.001
+      d = lnM -1.96e-05 q -3.91e-06 c1 -5e-06 c2 -2.09e-06 lnD +2.53e-08 cosi -3.06e-06 t0 -0.000169 psi -5.91e-05
+  CE eixo 2 (sigma_post^2 = 0.00051 em unidades de prior; fator 1.00): dchi2_lin 0.999 ; dchi2 0.991 ; eps 0.000
+      d = lnM +0.000933 q -0.00115 c1 +0.00157 c2 +0.00105 lnD -0.00374 cosi -0.0118 t0 -2.26e-06 psi +0.000525
+  CE eixo 3 (sigma_post^2 = 0.078 em unidades de prior; fator 1.00): dchi2_lin 0.922 ; dchi2 1.025 ; eps 0.078
+      d = lnM +0.0843 q +0.0309 c1 +0.0166 c2 +0.0149 lnD +0.00873 cosi +0.0213 t0 -0.00021 psi -0.0435
+  CE eixo 4 (sigma_post^2 = 0.9 em unidades de prior; fator 1.00): dchi2_lin 0.099 ; dchi2 1090.859 ; eps 1090.808
+      d = lnM -0.0729 q +0.228 c1 +0.0998 c2 +0.0624 lnD -0.00235 cosi -0.0122 t0 +0.000962 psi -0.766
+  CE eixo 5 (sigma_post^2 = 1 em unidades de prior; fator 0.41): dchi2_lin 0.001 ; dchi2 3.030 ; eps 3.030
+      d = lnM +0.0161 q -0.168 c1 -0.0211 c2 -0.143 lnD -0.0474 cosi +0.0082 t0 +0.000124 psi -0.123
+  CE eixo 6 (sigma_post^2 = 1 em unidades de prior; fator 1.00): dchi2_lin 0.001 ; dchi2 31.968 ; eps 31.966
+      d = lnM +0.0165 q +0.614 c1 -0.264 c2 -0.17 lnD +0.00522 cosi -0.104 t0 +2.86e-05 psi +0.00611
+  CE eixo 7 (sigma_post^2 = 1 em unidades de prior; fator 1.00): dchi2_lin 0.000 ; dchi2 19.724 ; eps 19.724
+      d = lnM -0.0188 q +0.359 c1 +0.328 c2 -0.181 lnD -0.127 cosi +0.0894 t0 -0.000325 psi +0.238
+  CE eixo 8 (sigma_post^2 = 1 em unidades de prior; fator 1.00): dchi2_lin 0.000 ; dchi2 48.648 ; eps 48.648
+      d = lnM +0.00161 q +0.0419 c1 -0.118 c2 +0.142 lnD -0.397 cosi +0.188 t0 -8.05e-06 psi -0.00523
+
+SISTEMA DE MASSA BAIXA: M = 6, q = 1.2, chi = (0.3, -0.2), iota = 50 graus; fusao em ~3 kHz (acima da banda). Janela desde M f0 = 0.0016 (55 Hz, ~3 s antes do pico), T_tap = 10000 M.
+aLIGO: rho(D=400) = 0.121 ; inicio 1.2 x mais cedo: 1-match 5.3e-12 ; D com rho = 34.09: 1.4 Mpc
+  detector unico, escalado para rho = 34.09: autovalores branqueados = 2.08e+06 2.04e+03 3.32 0.0374 0.00367 0.000982 2.45e-05 9.46e-08
+     d_ef = 2.81 ; I(theta; dados) = 17.1 bits ; I(intrinsecos) = 1.01 bits ; cond = 2.2e+13
+     Cramer-Rao sem prior: lnM 5.67 q 136 c1 405 c2 484 lnD 1.28e+03 cosi 607 t0 0.00458 psi 44.2
+     posterior (com prior): lnM 0.179 q 0.849 c1 0.452 c2 0.456 lnD 0.433 cosi 0.241 t0 0.000116 psi 0.878
+     bits por parametro: lnM 0.83 q 0.03 c1 0.03 c2 0.02 lnD 0.10 cosi 1.26 t0 8.75 psi 0.05
+     autovetor 1 (lambda 2.08e+06): +1.00 t0 +0.00 psi +0.00 lnM +0.00 c1
+     autovetor 2 (lambda 2.04e+03): +0.89 cosi +0.35 lnD -0.20 lnM -0.16 c1
+     autovetor 3 (lambda 3.32): +0.91 lnM -0.24 psi +0.19 cosi +0.18 q
+     autovetor 4 (lambda 0.0374): +0.74 psi -0.55 q +0.32 lnM -0.18 c2
+     reduzido (perfil em ln D, t0, cos iota, psi), rho = 34.09: 0.397 0.00164 0.000101 5.31e-07 ; d_ef 0.29
+        autovetor 1: -0.99 lnM -0.01 q -0.14 c1 -0.10 c2
+        autovetor 2: -0.17 lnM +0.01 q +0.76 c1 +0.63 c2
+A+: rho(D=400) = 0.232 ; inicio 1.2 x mais cedo: 1-match 4.5e-12 ; D com rho = 34.09: 2.7 Mpc
+  detector unico, escalado para rho = 34.09: autovalores branqueados = 2.23e+06 2.03e+03 3.69 0.0409 0.00374 0.00109 2.92e-05 9.74e-08
+     d_ef = 2.83 ; I(theta; dados) = 17.2 bits ; I(intrinsecos) = 1.06 bits ; cond = 2.3e+13
+     Cramer-Rao sem prior: lnM 5.57 q 135 c1 396 c2 473 lnD 1.26e+03 cosi 599 t0 0.00439 psi 41.5
+     posterior (com prior): lnM 0.174 q 0.849 c1 0.452 c2 0.455 lnD 0.433 cosi 0.24 t0 0.000115 psi 0.877
+     bits por parametro: lnM 0.87 q 0.03 c1 0.03 c2 0.02 lnD 0.10 cosi 1.26 t0 8.76 psi 0.05
+     autovetor 1 (lambda 2.23e+06): +1.00 t0 +0.00 psi +0.00 lnM +0.00 c1
+     autovetor 2 (lambda 2.03e+03): +0.89 cosi +0.35 lnD -0.19 lnM -0.16 c1
+     autovetor 3 (lambda 3.69): +0.91 lnM -0.23 psi +0.19 cosi +0.18 q
+     autovetor 4 (lambda 0.0409): +0.75 psi -0.54 q +0.32 lnM -0.19 c2
+     reduzido (perfil em ln D, t0, cos iota, psi), rho = 34.09: 0.456 0.00172 0.000116 5.56e-07 ; d_ef 0.32
+        autovetor 1: -0.99 lnM -0.01 q -0.14 c1 -0.10 c2
+        autovetor 2: -0.17 lnM -0.01 q +0.75 c1 +0.64 c2
+ET: rho(D=400) = 1.541 ; inicio 1.2 x mais cedo: 1-match 6.9e-11 ; D com rho = 34.09: 18.1 Mpc
+  detector unico, escalado para rho = 34.09: autovalores branqueados = 1.39e+06 2.05e+03 2.56 0.0299 0.00936 0.00104 2.19e-05 1.6e-07
+     d_ef = 2.76 ; I(theta; dados) = 16.6 bits ; I(intrinsecos) = 0.89 bits ; cond = 8.7e+12
+     Cramer-Rao sem prior: lnM 4.34 q 93.8 c1 332 c2 403 lnD 971 cosi 461 t0 0.00435 psi 45.4
+     posterior (com prior): lnM 0.192 q 0.847 c1 0.452 c2 0.456 lnD 0.433 cosi 0.243 t0 0.00012 psi 0.88
+     bits por parametro: lnM 0.73 q 0.03 c1 0.03 c2 0.02 lnD 0.10 cosi 1.25 t0 8.70 psi 0.04
+     autovetor 1 (lambda 1.39e+06): +1.00 t0 +0.00 psi +0.00 lnM +0.00 c1
+     autovetor 2 (lambda 2.05e+03): +0.89 cosi +0.35 lnD -0.20 lnM -0.16 c1
+     autovetor 3 (lambda 2.56): +0.91 lnM -0.25 psi +0.20 q +0.19 cosi
+     autovetor 4 (lambda 0.0299): +0.66 psi -0.65 q +0.29 lnM +0.15 c1
+     reduzido (perfil em ln D, t0, cos iota, psi), rho = 34.09: 0.25 0.00324 0.000111 7.83e-07 ; d_ef 0.20
+        autovetor 1: -0.98 lnM -0.01 q -0.14 c1 -0.10 c2
+        autovetor 2: -0.17 lnM +0.09 q +0.76 c1 +0.62 c2
+CE: rho(D=400) = 5.423 ; inicio 1.2 x mais cedo: 1-match 4.6e-11 ; D com rho = 34.09: 63.6 Mpc
+  detector unico, escalado para rho = 34.09: autovalores branqueados = 5.03e+05 2.06e+03 0.876 0.0174 0.00526 0.000376 8.77e-06 7.91e-08
+     d_ef = 2.49 ; I(theta; dados) = 15.4 bits ; I(intrinsecos) = 0.49 bits ; cond = 6.4e+12
+     Cramer-Rao sem prior: lnM 6.15 q 111 c1 515 c2 637 lnD 1.34e+03 cosi 639 t0 0.00762 psi 80.7
+     posterior (com prior): lnM 0.242 q 0.85 c1 0.453 c2 0.457 lnD 0.434 cosi 0.252 t0 0.000136 psi 0.888
+     bits por parametro: lnM 0.39 q 0.03 c1 0.03 c2 0.02 lnD 0.10 cosi 1.19 t0 8.53 psi 0.03
+     autovetor 1 (lambda 5.03e+05): -1.00 t0 -0.00 psi -0.00 lnM -0.00 cosi
+     autovetor 2 (lambda 2.06e+03): -0.89 cosi -0.35 lnD +0.21 lnM +0.16 c1
+     autovetor 3 (lambda 0.876): -0.89 lnM +0.27 psi -0.24 q -0.19 cosi
+     autovetor 4 (lambda 0.0174): +0.69 q -0.47 psi -0.44 c1 -0.23 lnM
+     reduzido (perfil em ln D, t0, cos iota, psi), rho = 34.09: 0.0663 0.00155 5.95e-05 3.18e-07 ; d_ef 0.06
+        autovetor 1: -0.99 lnM -0.01 q -0.13 c1 -0.09 c2
+        autovetor 2: -0.15 lnM +0.13 q +0.76 c1 +0.62 c2
+
+figura: figuras/e24_fisher_memoria.png ; tempo total 123 s

@@ -1,0 +1,68 @@
+(a) Formula de Thorne (nucleo K, N no polo) contra a formula de modos de memorias.py
+  L=2: modos -0.000758605478+0.016553008518i | Thorne -0.000758605478+0.016553008518i | E = 0.7212151691 (tr B/16pi = 0.7212151691)
+  L=3: modos 0.311321338998-0.075430959136i | Thorne 0.311321338998-0.075430959136i | E = 1.7890897817 (tr B/16pi = 1.7890897817)
+  L=4: modos -0.390457389536+0.213406445337i | Thorne -0.390457389536+0.213406445337i | E = 2.7570062741 (tr B/16pi = 2.7570062741)
+  L=5: modos 0.614813934309+0.869994673810i | Thorne 0.614813934309+0.869994673810i | E = 5.5576488675 (tr B/16pi = 5.5576488675)
+  maior diferenca relativa (12 casos): 9.21e-15
+  N generico (theta=1.1, phi=0.7), L=4: modos -0.823337581934-0.206545533498i | Thorne -0.823337581934-0.206545533498i | dif rel 5.9e-15
+  => mesma normalizacao e mesmo sinal: D Delta h = 4 int F K dOmega' com h = r(h_+ - i h_x) do projeto.
+
+(b) c_L = sup |D Delta h(N)| / E_rad sobre radiacao com 2 <= l <= L (fluencias de ondas gravitacionais)
+  L= 2: c_L = 0.9128709292  (c_L/4 = 0.228218; 4 - c_L = 3.087e+00; var. com alpha 2.2e-16; 2o autovalor x16pi = 0.666667)
+        autovetor: m = 0 (peso 0.500000); pesos por l: 2:1.000
+  L= 3: c_L = 1.8516605417  (c_L/4 = 0.462915; 4 - c_L = 2.148e+00; var. com alpha 8.9e-16; 2o autovalor x16pi = 1.537202)
+        autovetor: m = 1 (peso 0.491024); pesos por l: 2:0.513, 3:0.487
+  L= 4: c_L = 2.2387199979  (c_L/4 = 0.559680; 4 - c_L = 1.761e+00; var. com alpha 1.8e-15; 2o autovalor x16pi = 2.134750)
+        autovetor: m = 2 (peso 0.419883); pesos por l: 2:0.493, 3:0.211, 4:0.296
+  L= 5: c_L = 2.5108013487  (c_L/4 = 0.627700; 4 - c_L = 1.489e+00; var. com alpha 2.2e-15; 2o autovalor x16pi = 2.482308)
+        autovetor: m = 2 (peso 0.410237); pesos por l: 2:0.402, 3:0.168, 4:0.281, 5:0.148
+  L= 6: c_L = 2.7146224743  (c_L/4 = 0.678656; 4 - c_L = 1.285e+00; var. com alpha 4.4e-15; 2o autovalor x16pi = 2.713430)
+        autovetor: m = 2 (peso 0.378587); pesos por l: 2:0.352, 3:0.138, 4:0.268, 5:0.161, 6:0.081
+  L= 7: c_L = 2.8796727780  (c_L/4 = 0.719918; 4 - c_L = 1.120e+00; var. com alpha 2.7e-15; 2o autovalor x16pi = 2.873651)
+        autovetor: m = 1 (peso 0.342881); pesos por l: 2:0.147, 3:0.354, 4:0.192, 5:0.123, 6:0.112, 7:0.071
+  L= 8: c_L = 3.0056805851  (c_L/4 = 0.751420; 4 - c_L = 9.943e-01; var. com alpha 3.6e-15; 2o autovalor x16pi = 3.000365)
+        autovetor: m = 1 (peso 0.323510); pesos por l: 2:0.113, 3:0.305, 4:0.205, 5:0.120, 6:0.121, 7:0.087, 8:0.049
+  L=10: c_L = 3.1865114758  (c_L/4 = 0.796628; 4 - c_L = 8.135e-01; var. com alpha 5.8e-15; 2o autovalor x16pi = 3.185966)
+        autovetor: m = 1 (peso 0.290429); pesos por l: 2:0.072, 3:0.226, 4:0.203, 5:0.125, 6:0.108, 7:0.112, 8:0.084, 9:0.044, 10:0.027
+  L=12: c_L = 3.3130007670  (c_L/4 = 0.828250; 4 - c_L = 6.870e-01; var. com alpha 4.9e-15; 2o autovalor x16pi = 3.312107)
+        autovetor: m = 2 (peso 0.270205); pesos por l: 2:0.148, 3:0.079, 4:0.092, 5:0.150, 6:0.165, 7:0.124, 8:0.081, 9:0.062, 10:0.050, 11:0.031, 12:0.019
+  L=16: c_L = 3.4754160905  (c_L/4 = 0.868854; 4 - c_L = 5.246e-01; var. com alpha 3.6e-15; 2o autovalor x16pi = 3.475351)
+        autovetor: m = 1 (peso 0.230003); pesos por l: 2:0.025, 3:0.098, 4:0.134, 5:0.119, 6:0.088, 7:0.078, 8:0.088, 9:0.096, 10:0.086, 11:0.064, 12:0.044, 13:0.032, 14:0.024, 15:0.015, 16:0.010
+  L=20: c_L = 3.5758463111  (c_L/4 = 0.893962; 4 - c_L = 4.242e-01; var. com alpha 2.7e-15; 2o autovalor x16pi = 3.575768)
+        autovetor: m = 1 (peso 0.206711); pesos por l: 2:0.015, 3:0.062, 4:0.097, 5:0.101, 6:0.084, 7:0.067, 8:0.066, 9:0.077, 10:0.085, 11:0.081, 12:0.067, 13:0.051, 14:0.040, 15:0.033, 16:0.027, 17:0.021, 18:0.014, 19:0.008, 20:0.006
+  L=24: c_L = 3.6439536819  (c_L/4 = 0.910988; 4 - c_L = 3.560e-01; var. com alpha 8.9e-16; 2o autovalor x16pi = 3.643917)
+        autovetor: m = 2 (peso 0.192264); pesos por l: 2:0.054, 3:0.044, 4:0.034, 5:0.038, 6:0.056, 7:0.079, 8:0.091, 9:0.087, 10:0.074, 11:0.060, 12:0.053, 13:0.053, 14:0.053, 15:0.050, 16:0.043, 17:0.035, 18:0.027, 19:0.021, 20:0.016, 21:0.013, 22:0.009, 23:0.005, 24:0.004
+  L=32: c_L = 3.7304733816  (c_L/4 = 0.932618; 4 - c_L = 2.695e-01; var. com alpha 2.2e-15; 2o autovalor x16pi = 3.730465)
+        autovetor: m = 1 (peso 0.164406); pesos por l: 2:0.005, 3:0.021, 4:0.041, 5:0.055, 6:0.059, 7:0.054, 8:0.046, 9:0.041, 10:0.042, 11:0.049, 12:0.058, 13:0.062, 14:0.061, 15:0.055, 16:0.047, 17:0.040, 18:0.036, 19:0.034, 20:0.033, 21:0.030, 22:0.027, 23:0.023, 24:0.019, 25:0.015, 26:0.013, 27:0.010, 28:0.008, 29:0.006, 30:0.004, 31:0.003, 32:0.002
+  ajuste 4 - c_L ~ a L^p (L >= 6): p = -0.9329, a = 6.9141
+  c_2 = 0.912870929175277 ; c_2 * 3 = 2.738612787526 ; c_2 * 5 = 4.564354645876 ; c_2*7 = 6.390096504227; c_2^2 = 0.833333333333
+
+(b2) L grande: Gamma so acopla m_j = m_k + 2 (K ~ e^{-2 i phi}); integral so em theta (Gauss-Legendre),
+     harmonicos do pacote `spherical` (mesma convencao de harmonicos.sYlm, conferida), autovalor por eigsh
+  L=  8: c_L = 3.0056805851  4 - c_L = 9.94319e-01  L(4 - c_L) = 7.95456 | 2D: 3.0056805851
+  L= 16: c_L = 3.4754160905  4 - c_L = 5.24584e-01  L(4 - c_L) = 8.39334 | 2D: 3.4754160905
+  L= 32: c_L = 3.7304733816  4 - c_L = 2.69527e-01  L(4 - c_L) = 8.62485 | 2D: 3.7304733816
+  L= 48: c_L = 3.8185922355  4 - c_L = 1.81408e-01  L(4 - c_L) = 8.70757
+  L= 64: c_L = 3.8632764935  4 - c_L = 1.36724e-01  L(4 - c_L) = 8.75030
+  L= 96: c_L = 3.9083945387  4 - c_L = 9.16055e-02  L(4 - c_L) = 8.79412
+  L=128: c_L = 3.9311211961  4 - c_L = 6.88788e-02  L(4 - c_L) = 8.81649
+  expoente local entre L=8 e 16: -0.9225
+  expoente local entre L=16 e 32: -0.9607
+  expoente local entre L=32 e 48: -0.9765
+  expoente local entre L=48 e 64: -0.9830
+  expoente local entre L=64 e 96: -0.9877
+  expoente local entre L=96 e 128: -0.9912
+
+(c) Casos restritos
+  so o multipolo l=2: c = 0.9128709292
+  so o multipolo l=3: c = 0.6674758207
+  so o multipolo l=4: c = 0.8000139815
+  so o multipolo l=6: c = 1.0580290879
+  so o multipolo l=8: c = 1.2073372934
+  quadrupolo de binaria (so (2,+-2) no referencial da fonte, B = diag): max_iota |D Dh|/E = 0.7083333333 em iota = 90.0 graus
+     = 0.775940 c_2 = 0.177083 x 4 ; 17/24 = 0.7083333333
+     iota= 0: D Dh/E = -0.0000000000 -1.2e-16i ; D Dh / [E sin^2 iota (17 + cos^2 iota)] = nan (1/24 = 0.0416666667)
+     iota=30: D Dh/E = +0.1848958333 -6.9e-17i ; D Dh / [E sin^2 iota (17 + cos^2 iota)] = 0.0416666667 (1/24 = 0.0416666667)
+     iota=50: D Dh/E = +0.4257696287 -3.2e-17i ; D Dh / [E sin^2 iota (17 + cos^2 iota)] = 0.0416666667 (1/24 = 0.0416666667)
+     iota=70: D Dh/E = +0.6297779893 -1.4e-17i ; D Dh / [E sin^2 iota (17 + cos^2 iota)] = 0.0416666667 (1/24 = 0.0416666667)
+     iota=90: D Dh/E = +0.7083333333 -9.0e-18i ; D Dh / [E sin^2 iota (17 + cos^2 iota)] = 0.0416666667 (1/24 = 0.0416666667)

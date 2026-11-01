@@ -1,0 +1,64 @@
+S00 q 2.52 chiA [-0.34, 0.04, 0.5] chiB [0.49, -0.13, -0.17]
+   autovalores de A [-0.00898 -0.00895  0.01793] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 0.82 ; e_Q22 0.83 ; e_unif 0.94 ; J_rad 1.99 ; chi_f 5.20 ; L_i 7.33 ; L_pico 7.14
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 1.59 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+S01 q 2.83 chiA [0.2, 0.37, 0.26] chiB [0.12, 0.35, -0.32]
+   autovalores de A [-0.00646 -0.00645  0.01291] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 1.47 ; e_Q22 1.87 ; e_unif 7.34 ; J_rad 3.41 ; chi_f 7.30 ; L_i 9.31 ; L_pico 10.19
+   desl: 3 zeros, indices [0.5, 0.5, 0.5], soma 1.50 ; meia abertura do par (+e1) 2.25 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+S02 q 3.32 chiA [-0.26, 0.41, -0.2] chiB [0.05, 0.17, -0.56]
+   autovalores de A [-0.00328 -0.00308  0.00636] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 2.31 ; e_Q22 1.54 ; e_unif 34.97 ; J_rad 13.57 ; chi_f 22.22 ; L_i 42.81 ; L_pico 10.74
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 7.43 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+S03 q 2.80 chiA [0.06, -0.03, 0.33] chiB [-0.01, -0.14, 0.42]
+   autovalores de A [-0.00772 -0.00771  0.01543] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 0.19 ; e_Q22 0.16 ; e_unif 0.96 ; J_rad 0.42 ; chi_f 0.98 ; L_i 1.50 ; L_pico 1.23
+   desl: 3 zeros, indices [0.5, 0.5, 0.5], soma 1.50 ; meia abertura do par (+e1) 88.57 graus ; spin: 5 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5], soma 1.50
+S04 q 2.78 chiA [0.28, 0.26, 0.27] chiB [0.49, -0.25, 0.41]
+   autovalores de A [-0.00728 -0.00724  0.01452] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 1.09 ; e_Q22 1.31 ; e_unif 5.57 ; J_rad 2.62 ; chi_f 5.52 ; L_i 8.10 ; L_pico 7.85
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 2.63 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+S05 q 2.85 chiA [-0.22, 0.4, 0.48] chiB [-0.41, -0.29, 0.01]
+   autovalores de A [-0.00821 -0.00816  0.01637] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 1.08 ; e_Q22 1.27 ; e_unif 0.44 ; J_rad 2.36 ; chi_f 6.40 ; L_i 12.70 ; L_pico 8.46
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 2.40 graus ; spin: 5 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5], soma 1.50
+S06 q 1.11 chiA [0.58, -0.24, 0.29] chiB [-0.08, -0.28, -0.17]
+   autovalores de A [-0.01139 -0.01135  0.02273] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 1.12 ; e_Q22 1.18 ; e_unif 2.05 ; J_rad 2.04 ; chi_f 6.06 ; L_i 8.42 ; L_pico 7.20
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 1.98 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+S07 q 1.80 chiA [0.49, 0.09, 0.03] chiB [-0.43, 0.01, -0.26]
+   autovalores de A [-0.00787 -0.00776  0.01563] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 1.52 ; e_Q22 1.72 ; e_unif 11.46 ; J_rad 4.77 ; chi_f 8.82 ; L_i 8.16 ; L_pico 7.99
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 3.28 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+S08 q 3.98 chiA [0.43, 0.23, 0.13] chiB [-0.19, -0.25, 0.07]
+   autovalores de A [-0.00364 -0.00361  0.00725] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 1.90 ; e_Q22 3.64 ; e_unif 20.67 ; J_rad 8.71 ; chi_f 13.01 ; L_i 16.55 ; L_pico 13.98
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 4.22 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+S09 q 2.38 chiA [-0.28, -0.25, 0.66] chiB [0.01, -0.47, 0.46]
+   autovalores de A [-0.01263 -0.0126   0.02523] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 0.68 ; e_Q22 0.54 ; e_unif 1.70 ; J_rad 1.11 ; chi_f 3.13 ; L_i 10.92 ; L_pico 7.84
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 1.44 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+X1 q4 dois spins no plano 0.8 q 4.00 chiA [0.8, 0.0, 0.0] chiB [0.0, 0.8, 0.0]
+   autovalores de A [-0.00291 -0.00263  0.00554] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 4.55 ; e_Q22 10.38 ; e_unif 37.35 ; J_rad 15.81 ; chi_f 21.85 ; L_i 28.09 ; L_pico 15.84
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 13.12 graus ; spin: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+X2 q1 antiparalelos no plano q 1.00 chiA [0.0, 0.8, 0.0] chiB [0.0, -0.8, 0.0]
+   autovalores de A [-0.011   -0.01081  0.0218 ] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 0.11 ; e_Q22 0.11 ; e_unif 0.24 ; J_rad 0.09 ; chi_f 0.12 ; L_i 0.26 ; L_pico 0.19
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 3.52 graus ; spin: 8 zeros, indices [-0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+X3 q2 spin A quase antialinhado q 2.00 chiA [0.4, 0.0, -0.69] chiB [0.0, 0.0, 0.0]
+   autovalores de A [-0.00523 -0.00473  0.00997] ; eixo distinto = autovetor 2
+   angulo e1 com: e_Q 1.58 ; e_Q22 1.07 ; e_unif 18.46 ; J_rad 6.81 ; chi_f 15.94 ; L_i 26.34 ; L_pico 4.72
+   desl: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; meia abertura do par (+e1) 11.43 graus ; spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00
+Resumo (13 sistemas): mediana / maximo do angulo de e1 com cada eixo
+   e_Q     mediana 1.12 max 4.55
+   e_Q22   mediana 1.27 max 10.38
+   e_unif  mediana 5.57 max 37.35
+   J_rad   mediana 2.62 max 15.81
+   chi_f   mediana 6.40 max 22.22
+   L_i     mediana 9.31 max 42.81
+   L_pico  mediana 7.85 max 15.84
+
+real	8m21.892s
+user	8m15.160s
+sys	0m2.705s

@@ -1,0 +1,27 @@
+sistema q1 (q=1, chi=(+0.0, +0.0)): parte nula da CM (2,0) por banda, substituto contra termo de borda
+  [0.002, 0.003]: substituto -1.1302e-05 ; borda (1/2) Delta(h hbar) K_A -5.5607e-24 ; razao 0.0000
+  [0.003, 0.004]: substituto -1.1574e-05 ; borda (1/2) Delta(h hbar) K_A -6.7064e-24 ; razao 0.0000
+  [0.004, 0.006]: substituto -2.3297e-05 ; borda (1/2) Delta(h hbar) K_A +6.7349e-24 ; razao -0.0000
+  [0.006, 0.008]: substituto -6.2026e-05 ; borda (1/2) Delta(h hbar) K_A -7.4962e-23 ; razao 0.0000
+  [0.008, 0.010]: substituto -6.4486e-05 ; borda (1/2) Delta(h hbar) K_A -8.4423e-23 ; razao 0.0000
+  [0.010, 0.012]: substituto -6.6115e-05 ; borda (1/2) Delta(h hbar) K_A -1.7179e-22 ; razao 0.0000
+  [0.012, 0.014]: substituto -6.6873e-05 ; borda (1/2) Delta(h hbar) K_A -1.6194e-23 ; razao 0.0000
+  janela inteira desde M f = 0.002: parte nula -6.0015e-03 ; termo de borda das pontas +6.0112e-25 (a fusao nao e adiabatica)
+sistema A (q=1.2, chi=(+0.3, -0.2)): parte nula da CM (2,0) por banda, substituto contra termo de borda
+  [0.002, 0.003]: substituto -1.0381e-05 ; borda (1/2) Delta(h hbar) K_A +2.5203e-25 ; razao -0.0000
+  [0.003, 0.004]: substituto -1.0682e-05 ; borda (1/2) Delta(h hbar) K_A +1.2278e-25 ; razao -0.0000
+  [0.004, 0.006]: substituto -2.0774e-05 ; borda (1/2) Delta(h hbar) K_A +2.1119e-23 ; razao -0.0000
+  [0.006, 0.008]: substituto -6.0894e-05 ; borda (1/2) Delta(h hbar) K_A +1.4424e-23 ; razao -0.0000
+  [0.008, 0.010]: substituto -6.4513e-05 ; borda (1/2) Delta(h hbar) K_A +1.0559e-22 ; razao -0.0000
+  [0.010, 0.012]: substituto -6.5886e-05 ; borda (1/2) Delta(h hbar) K_A +2.4428e-24 ; razao -0.0000
+  [0.012, 0.014]: substituto -6.7152e-05 ; borda (1/2) Delta(h hbar) K_A -1.1460e-22 ; razao 0.0000
+  janela inteira desde M f = 0.002: parte nula -6.0518e-03 ; termo de borda das pontas -2.8434e-24 (a fusao nao e adiabatica)
+sistema q4a (q=4, chi=(-0.5, -0.5)): parte nula da CM (2,0) por banda, substituto contra termo de borda
+  [0.002, 0.003]: substituto +2.0913e-05 ; borda (1/2) Delta(h hbar) K_A +6.2039e-24 ; razao 0.0000
+  [0.003, 0.004]: substituto +2.2714e-05 ; borda (1/2) Delta(h hbar) K_A +1.0753e-23 ; razao 0.0000
+  [0.004, 0.006]: substituto +4.8589e-05 ; borda (1/2) Delta(h hbar) K_A +2.3161e-23 ; razao 0.0000
+  [0.006, 0.008]: substituto +4.6906e-05 ; borda (1/2) Delta(h hbar) K_A +6.6174e-24 ; razao 0.0000
+  [0.008, 0.010]: substituto +4.6797e-05 ; borda (1/2) Delta(h hbar) K_A -5.2940e-23 ; razao -0.0000
+  [0.010, 0.012]: substituto +4.2762e-05 ; borda (1/2) Delta(h hbar) K_A +2.6470e-23 ; razao 0.0000
+  [0.012, 0.014]: substituto +3.8480e-05 ; borda (1/2) Delta(h hbar) K_A +7.9409e-23 ; razao 0.0000
+  janela inteira desde M f = 0.002: parte nula +3.4377e-03 ; termo de borda das pontas +1.2821e-23 (a fusao nao e adiabatica)

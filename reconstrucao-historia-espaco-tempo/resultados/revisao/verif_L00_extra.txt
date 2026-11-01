@@ -1,0 +1,8 @@
+  nivel A, inicio t_i (padrao) (-16430.2044 M): observaveis/binarias - 1: desl -2.6e-07 spin -2.0e-06 cm -2.2e-07 giro -2.1e-06 ; M_f +1.4e-08
+  nivel A, inicio t0b - dt/2   (-16430.3852 M): observaveis/binarias - 1: desl -5.5e-11 spin -3.0e-10 cm +1.7e-11 giro -4.7e-10 ; M_f +6.3e-11
+  nivel A, inicio t0b          (-16430.2602 M): observaveis/binarias - 1: desl -1.8e-07 spin -1.4e-06 cm -1.5e-07 giro -1.5e-06 ; M_f +9.8e-09
+  nivel C, inicio t_i (padrao) (-16430.2044 M): observaveis/binarias - 1: desl -4.2e-07 spin -2.1e-06 cm -3.4e-07 giro -2.2e-06 ; M_f +1.4e-08
+  nivel C, inicio t0b - dt/2   (-16430.3852 M): observaveis/binarias - 1: desl -4.2e-07 spin +2.6e-08 cm -3.5e-07 giro +7.7e-09 ; M_f +6.3e-11
+  nivel C, inicio t0b          (-16430.2602 M): observaveis/binarias - 1: desl -4.2e-07 spin -1.4e-06 cm -3.4e-07 giro -1.5e-06 ; M_f +9.8e-09
+  nivel C: fim de binarias t = 134.9898 M, h20 = 1.023745796340e-01 ; fim de observaveis t = 134.7500 M, h20 = 1.023745397911e-01 ; razao - 1 = -3.89e-07
+  dh20/dt no fim dos dados (t = 134.25 M): +1.69e-07 por M (|h20| = 0.1024): o modo (2,0) do substituto ainda varia

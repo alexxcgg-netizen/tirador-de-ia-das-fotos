@@ -1,0 +1,42 @@
+(a) A contra A em outra rede (t_desloc 0.37), B comecando 0.2 s depois e tempos + 1.2345678e-3 s; aLIGO, 10 Hz
+  inicio A -7.0201 s, B -6.8201 s (antes do pico); f_22 no inicio ~ 0.9 x 10 Hz
+  comparar2 {}                             1 - match 4.61e-06 ; atraso +1.999676072e-01 s (esperado +1.999676058e-01) ; atraso_rotulos +1.234566440e-03 s (esperado +1.234567800e-03) ; SNR 65.8932 65.8931
+  comparar2 {'fim': 'nada'}                1 - match 5.03e-06 ; atraso +1.999674239e-01 s (esperado +1.999676058e-01) ; atraso_rotulos +1.234749678e-03 s (esperado +1.234567800e-03) ; SNR 65.9311 65.9310
+  comparar2 {'taper': 0.0, 'fim': 'nada'}  1 - match 6.87e-04 ; atraso +1.999674337e-01 s (esperado +1.999676058e-01) ; atraso_rotulos +1.234739952e-03 s (esperado +1.234567800e-03) ; SNR 65.9461 65.9607
+  deteccao.comparar: 1 - match 7.14e-04
+  CE: comparar2 1 - match 9.33e-05 ; atraso +1.999673e-01 s
+  o mesmo com as ondas desde 0.7 f0 (taper em ~7 Hz), aLIGO: 1 - match 2.77e-08 ; atraso_rotulos +1.234567769e-03 s
+  o mesmo com as ondas desde 0.7 f0 (taper em ~7 Hz), CE   : 1 - match 3.48e-07 ; atraso_rotulos +1.234566823e-03 s
+  (11 s)
+
+(b) seno-gaussianas a(t) = exp(-(t-t0)^2/2s^2) cos(2 pi f1 (t-t0) + p): match exato contra comparar2
+  a (2.0, 0.04, 80.0, 0.3) b (2.0012345, 0.045, 83.0, 1.1): exato match 0.85213801 SNR 59.76912 64.43511 tau -1.2344997e-03 ; comparar2 match 0.85213801 SNR 59.76912 64.43511 tau -1.2119170e-03 (esperado -1.2119167e-03)
+      dif. de match: comparar2 +2.1e-09 ; deteccao.comparar +3.5e-06 ; dif. relativa de SNR comparar2 -1.3e-08
+  a (2.0, 0.02, 150.0, 0.0) b (2.0003141, 0.02, 150.0, 2.0): exato match 1.00000000 SNR 51.84508 51.84508 tau -3.1410040e-04 ; comparar2 match 1.00000000 SNR 51.84508 51.84508 tau -2.9151699e-04 (esperado -2.9151739e-04)
+      dif. de match: comparar2 -5.6e-16 ; deteccao.comparar -1.4e-06 ; dif. relativa de SNR comparar2 -2.1e-08
+  a (2.0, 0.1, 40.0, 0.7) b (1.9937, 0.08, 36.0, -0.4): exato match 0.29844108 SNR 55.96553 43.89605 tau +6.2999996e-03 ; comparar2 match 0.29844124 SNR 55.96551 43.89603 tau +6.3225824e-03 (esperado +6.3225826e-03)
+      dif. de match: comparar2 +1.6e-07 ; deteccao.comparar -8.8e-07 ; dif. relativa de SNR comparar2 -2.4e-07
+  (13 s)
+
+(c) degraus suaves (memoria) a(t) = (D/2)(1 + tanh((t - t0)/tau)), D = 1.6e-22: SNR e match exatos
+  aLIGO a (3.0, 0.003) b (3.0004321, 0.0045): exato SNR_A 9.493363e-01 match 0.97286021 ; snr2 9.493372e-01 (dif. +9.7e-07 ; sem rampa +1.3e+00 ; contra a mesma soma discreta +1.0e-10) ; comparar2 match 0.97286017 (dif. -3.2e-08) SNR_B +1.7e-06
+  aLIGO a (3.0, 0.01) b (3.0, 0.012): exato SNR_A 2.821374e-01 match 0.98865066 ; snr2 2.821396e-01 (dif. +8.1e-06 ; sem rampa +5.9e+00 ; contra a mesma soma discreta +1.0e-09) ; comparar2 match 0.98865045 (dif. -2.1e-07) SNR_B +1.2e-05
+  CE    a (3.0, 0.003) b (3.0004321, 0.0045): exato SNR_A 5.839056e+01 match 0.98985038 ; snr2 5.839370e+01 (dif. +5.4e-05 ; sem rampa +6.3e-01 ; contra a mesma soma discreta +8.5e-09) ; comparar2 match 0.98985075 (dif. +3.7e-07) SNR_B +6.8e-05
+  CE    a (3.0, 0.01) b (3.0, 0.012): exato SNR_A 3.041406e+01 match 0.99497678 ; snr2 3.041858e+01 (dif. +1.5e-04 ; sem rampa +1.7e+00 ; contra a mesma soma discreta +2.7e-08) ; comparar2 match 0.99497592 (dif. -8.6e-07) SNR_B +1.9e-04
+  (15 s)
+
+(d) A contra q = 1.19, aLIGO e CE: sinais desde 0.9 f0 (taper fora da banda) contra desde t_i (teste do D0)
+  inicio aux aLIGO: comparar2 1 - match 4.6707e-04 (taper 2 s: 4.6720e-04) ; SNR_A 65.893
+  inicio aux CE   : comparar2 1 - match 6.8455e-04 (taper 2 s: 6.8664e-04) ; SNR_A 3201.131
+  inicio ti  aLIGO: comparar2 1 - match 4.6608e-04 (taper 2 s: 4.5672e-04) ; SNR_A 65.891
+  inicio ti  CE   : comparar2 1 - match 6.5838e-04 (taper 2 s: 5.8735e-04) ; SNR_A 3194.872
+  (19 s)
+
+(d') A contra q = 1.19 com as duas ondas desde 0.7 f0 (piso A-contra-A ~3e-8 aLIGO, ~3e-7 CE, ver (a))
+  desde 0.7 f0, aLIGO: comparar2 1 - match 4.6712e-04 ; SNR_A 65.893
+  desde 0.7 f0, CE   : comparar2 1 - match 6.8660e-04 ; SNR_A 3201.666
+
+(e) atraso_rotulos com atrasos conhecidos: seno-gaussiana em grades de 16384 Hz (desde 0.1 s) e 13000 Hz (desde 0.4321 s)
+  delta verdadeiro +0.0000000e+00 s: atraso_rotulos +1.0175194e-13 s ; atraso (entre primeiras amostras) +3.3210000e-01 s ; 1 - match -2.2e-16
+  delta verdadeiro +2.3456000e-04 s: atraso_rotulos +2.3456000e-04 s ; atraso (entre primeiras amostras) +3.3186544e-01 s ; 1 - match 0.0e+00
+  delta verdadeiro -1.1110000e-03 s: atraso_rotulos -1.1110000e-03 s ; atraso (entre primeiras amostras) +3.3321100e-01 s ; 1 - match -2.2e-16

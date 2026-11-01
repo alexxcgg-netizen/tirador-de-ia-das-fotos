@@ -1,0 +1,33 @@
+
+q1.0_+0.0_+0.0: M_f 0.9516 chi_f 0.6864 ; w200 0.4132 -0.0890 ; w220 0.5535 -0.0854
+  pontual: max|D|/desl 0.177 ; (M_f/2) max dS/du / desl 0.0119 ; delta ajustado 3.72 M R2 0.275
+  pico de |D| em u = 4.75 M
+  inicio 4.8 M: 200 0.831 ; 220(falso) 0.301 ; exp sem oscilacao 0.496 ; 200+201 0.947 ; livre 0.950 (w 0.3439, g 0.0723) ; A/desl em t0: 0.225
+  inicio 8.0 M: 200 0.782 ; 220(falso) 0.372 ; exp sem oscilacao 0.224 ; 200+201 0.964 ; livre 0.918 (w 0.3405, g 0.0792) ; A/desl em t0: 0.158
+  inicio 12.0 M: 200 0.869 ; 220(falso) 0.277 ; exp sem oscilacao 0.551 ; 200+201 0.988 ; livre 0.960 (w -0.3589, g 0.1142) ; A/desl em t0: 0.164
+  inicio 16.0 M: 200 0.976 ; 220(falso) 0.656 ; exp sem oscilacao 0.703 ; 200+201 0.991 ; livre 0.985 (w 0.4106, g 0.1091) ; A/desl em t0: 0.113
+  inicio 20.0 M: 200 0.971 ; 220(falso) 0.534 ; exp sem oscilacao 0.048 ; 200+201 0.983 ; livre 0.976 (w 0.4201, g 0.0799) ; A/desl em t0: 0.066
+  inicio 30.0 M: 200 0.980 ; 220(falso) 0.577 ; exp sem oscilacao 0.635 ; 200+201 0.991 ; livre 0.986 (w 0.4121, g 0.1071) ; A/desl em t0: 0.033
+  melhor deslocamento 2.50 M ; em [-100, 30]: 3.50 M
+
+q4.0_+0.0_+0.0: M_f 0.9778 chi_f 0.4716 ; w200 0.3909 -0.0893 ; w220 0.4671 -0.0880
+  pontual: max|D|/desl 0.488 ; (M_f/2) max dS/du / desl 0.0093 ; delta ajustado 15.36 M R2 0.349
+  pico de |D| em u = 8.25 M
+  inicio 8.2 M: 200 0.906 ; 220(falso) 0.686 ; exp sem oscilacao 0.425 ; 200+201 0.985 ; livre 0.963 (w 0.3517, g 0.0661) ; A/desl em t0: 0.611
+  inicio 8.0 M: 200 0.908 ; 220(falso) 0.676 ; exp sem oscilacao 0.437 ; 200+201 0.984 ; livre 0.964 (w 0.3516, g 0.0662) ; A/desl em t0: 0.628
+  inicio 12.0 M: 200 0.875 ; 220(falso) 0.552 ; exp sem oscilacao 0.130 ; 200+201 0.995 ; livre 0.962 (w 0.3442, g 0.0863) ; A/desl em t0: 0.531
+  inicio 16.0 M: 200 0.981 ; 220(falso) 0.768 ; exp sem oscilacao 0.638 ; 200+201 0.999 ; livre 0.994 (w 0.3731, g 0.1042) ; A/desl em t0: 0.457
+  inicio 20.0 M: 200 0.998 ; 220(falso) 0.892 ; exp sem oscilacao 0.480 ; 200+201 0.999 ; livre 0.999 (w 0.3936, g 0.0941) ; A/desl em t0: 0.289
+  inicio 30.0 M: 200 0.996 ; 220(falso) 0.822 ; exp sem oscilacao 0.113 ; 200+201 0.997 ; livre 0.998 (w 0.3955, g 0.0956) ; A/desl em t0: 0.114
+  melhor deslocamento 8.25 M ; em [-100, 30]: 9.75 M
+
+q1.2_+0.3_-0.2: M_f 0.9497 chi_f 0.7140 ; w200 0.4160 -0.0886 ; w220 0.5675 -0.0845
+  pontual: max|D|/desl 0.150 ; (M_f/2) max dS/du / desl 0.0118 ; delta ajustado 3.28 M R2 0.282
+  pico de |D| em u = 4.75 M
+  inicio 4.8 M: 200 0.828 ; 220(falso) 0.269 ; exp sem oscilacao 0.525 ; 200+201 0.953 ; livre 0.957 (w 0.3438, g 0.0748) ; A/desl em t0: 0.192
+  inicio 8.0 M: 200 0.800 ; 220(falso) 0.360 ; exp sem oscilacao 0.254 ; 200+201 0.967 ; livre 0.926 (w 0.3468, g 0.0772) ; A/desl em t0: 0.132
+  inicio 12.0 M: 200 0.866 ; 220(falso) 0.236 ; exp sem oscilacao 0.524 ; 200+201 0.989 ; livre 0.960 (w -0.3617, g 0.1105) ; A/desl em t0: 0.134
+  inicio 16.0 M: 200 0.979 ; 220(falso) 0.608 ; exp sem oscilacao 0.694 ; 200+201 0.992 ; livre 0.986 (w 0.4112, g 0.1065) ; A/desl em t0: 0.094
+  inicio 20.0 M: 200 0.976 ; 220(falso) 0.487 ; exp sem oscilacao 0.047 ; 200+201 0.984 ; livre 0.980 (w 0.4207, g 0.0797) ; A/desl em t0: 0.056
+  inicio 30.0 M: 200 0.982 ; 220(falso) 0.530 ; exp sem oscilacao 0.623 ; 200+201 0.992 ; livre 0.988 (w 0.4140, g 0.1048) ; A/desl em t0: 0.028
+  melhor deslocamento 2.29 M ; em [-100, 30]: 3.25 M

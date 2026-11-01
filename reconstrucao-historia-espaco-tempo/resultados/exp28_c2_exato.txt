@@ -1,0 +1,5 @@
+Gamma (l=2, ordem m = -2..2):
+Matrix([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [sqrt(6)/(48*pi), 0, 0, 0, 0], [0, 1/(12*pi), 0, 0, 0], [0, 0, sqrt(6)/(24*pi), 0, 0]])
+autovalores de 16 pi (X+X^T)/2: [-sqrt(30)/6, sqrt(30)/6, 0, -2/3, 2/3]
+c_2 = max = sqrt(30)/6 = 0.912870929175277
+conferencia -2Y_2m contra harmonicos.sYlm em theta = 0.77: 1.1e-16

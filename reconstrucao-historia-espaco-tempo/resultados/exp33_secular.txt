@@ -1,0 +1,65 @@
+exp33_secular: parte secular e termos de borda dos m != 0 (NRSur7dq4, nivel A, f0 = 0.0070)
+
+AL1 q 1.20 chiA (0, 0, 0.3) chiB (0, 0, -0.2) ; t_i = -1836.1 M
+  conferencia: acumulado final contra memorias7: deslocamento (2,1) 2.78e-13, spin (2,1) 5.35e-15 (dif. relativa)
+  (2, 0): desl final 8.478e-02 ; |media orbital em -1000 M| / final 0.027 ; em -200 M 0.112 ; |oscilacao em -200 M| 2.94e-05 || spin final 1.622e-04 ; media -1000 M / final 0.001 ; -200 M 0.001
+  (2, 1): desl final 1.334e-05 ; |media orbital em -1000 M| / final 0.019 ; em -200 M 0.115 ; |oscilacao em -200 M| 4.88e-08 || spin final 4.726e-03 ; media -1000 M / final 0.035 ; -200 M 0.032
+  (2, 2): desl final 1.065e-04 ; |media orbital em -1000 M| / final 0.017 ; em -200 M 0.026 ; |oscilacao em -200 M| 1.50e-05 || spin final 9.415e-06 ; media -1000 M / final 0.014 ; -200 M 0.011
+  (3, 1): desl final 2.262e-04 ; |media orbital em -1000 M| / final 0.005 ; em -200 M 0.003 ; |oscilacao em -200 M| 7.99e-06 || spin final 3.162e-05 ; media -1000 M / final 0.108 ; -200 M 0.420
+  (3, 3): desl final 1.023e-06 ; |media orbital em -1000 M| / final 0.002 ; em -200 M 0.002 ; |oscilacao em -200 M| 5.69e-08 || spin final 2.499e-06 ; media -1000 M / final 0.010 ; -200 M 0.047
+  (4, 1): desl final 4.087e-07 ; |media orbital em -1000 M| / final 0.035 ; em -200 M 0.128 ; |oscilacao em -200 M| 3.10e-09 || spin final 2.117e-04 ; media -1000 M / final 0.043 ; -200 M 0.040
+  (b) inicio da janela varrido num periodo orbital (P = 285.7 M): termo de borda inicial = max|residuo da reta|/|valor|, e deriva secular num periodo /|valor|
+      deslocamento: (2, 0) 9.0e-05 (deriva 6.5e-03) ; (2, 1) 1.7e-03 (deriva 7.5e-03) ; (2, 2) 1.7e-02 (deriva 1.4e-02) ; (3, 1) 6.2e-03 (deriva 8.9e-03) ; (3, 3) 2.5e-03 (deriva 2.0e-03) ; (4, 1) 2.5e-03 (deriva 1.5e-02)
+      spin:         (2, 0) 9.1e-04 (deriva 1.8e-03) ; (2, 1) 4.4e-02 (deriva 6.4e-02) ; (2, 2) 1.8e-02 (deriva 2.4e-02) ; (3, 1) 8.2e-03 (deriva 4.7e-02) ; (3, 3) 1.2e-02 (deriva 9.8e-03) ; (4, 1) 5.5e-02 (deriva 8.0e-02)
+  (c) modelo do eixo precessante (2,0): final modelo/real 1.000 ; medias orbitais em -200 M modelo/real 1.000 ; fase (graus) 0.0
+  (c) modelo do eixo precessante (2,1): final modelo/real 1.498 ; medias orbitais em -200 M modelo/real 0.933 ; fase (graus) 12.3
+  (c) modelo do eixo precessante (2,2): final modelo/real 0.000 ; medias orbitais em -200 M modelo/real 0.000 ; fase (graus) -48.2
+  (5 s)
+
+P1 q 2.00 chiA (0.5, 0.0, 0.2) chiB (0.0, -0.3, 0.1) ; t_i = -2082.8 M
+  conferencia: acumulado final contra memorias7: deslocamento (2,1) 2.50e-15, spin (2,1) 2.92e-15 (dif. relativa)
+  (2, 0): desl final 6.852e-02 ; |media orbital em -1000 M| / final 0.034 ; em -200 M 0.108 ; |oscilacao em -200 M| 2.46e-05 || spin final 4.681e-02 ; media -1000 M / final 0.003 ; -200 M 0.004
+  (2, 1): desl final 1.248e-02 ; |media orbital em -1000 M| / final 0.045 ; em -200 M 0.247 ; |oscilacao em -200 M| 7.09e-06 || spin final 1.899e-02 ; media -1000 M / final 0.015 ; -200 M 0.014
+  (2, 2): desl final 9.522e-04 ; |media orbital em -1000 M| / final 0.074 ; em -200 M 0.490 ; |oscilacao em -200 M| 1.42e-05 || spin final 2.325e-03 ; media -1000 M / final 0.014 ; -200 M 0.022
+  (3, 1): desl final 7.150e-04 ; |media orbital em -1000 M| / final 0.004 ; em -200 M 0.002 ; |oscilacao em -200 M| 1.53e-05 || spin final 3.804e-02 ; media -1000 M / final 0.157 ; -200 M 0.584
+  (3, 3): desl final 1.663e-05 ; |media orbital em -1000 M| / final 0.003 ; em -200 M 0.010 ; |oscilacao em -200 M| 2.65e-06 || spin final 3.691e-04 ; media -1000 M / final 0.348 ; -200 M 1.563
+  (4, 1): desl final 3.054e-04 ; |media orbital em -1000 M| / final 0.030 ; em -200 M 0.136 ; |oscilacao em -200 M| 1.48e-06 || spin final 4.679e-04 ; media -1000 M / final 0.046 ; -200 M 0.036
+  (b) inicio da janela varrido num periodo orbital (P = 285.7 M): termo de borda inicial = max|residuo da reta|/|valor|, e deriva secular num periodo /|valor|
+      deslocamento: (2, 0) 7.7e-05 (deriva 6.5e-03) ; (2, 1) 2.6e-04 (deriva 3.0e-04) ; (2, 2) 1.7e-03 (deriva 1.1e-03) ; (3, 1) 4.8e-03 (deriva 7.0e-03) ; (3, 3) 6.8e-03 (deriva 3.0e-03) ; (4, 1) 2.0e-04 (deriva 2.3e-04)
+      spin:         (2, 0) 3.0e-03 (deriva 2.5e-03) ; (2, 1) 2.0e-02 (deriva 2.9e-02) ; (2, 2) 1.4e-02 (deriva 2.4e-02) ; (3, 1) 1.1e-03 (deriva 8.1e-04) ; (3, 3) 4.1e-03 (deriva 1.3e-03) ; (4, 1) 6.2e-02 (deriva 9.1e-02)
+  (c) modelo do eixo precessante (2,0): final modelo/real 0.995 ; medias orbitais em -200 M modelo/real 0.985 ; fase (graus) 0.0
+  (c) modelo do eixo precessante (2,1): final modelo/real 0.927 ; medias orbitais em -200 M modelo/real 1.009 ; fase (graus) 4.4
+  (c) modelo do eixo precessante (2,2): final modelo/real 0.830 ; medias orbitais em -200 M modelo/real 1.027 ; fase (graus) 12.5
+  (8 s)
+
+P3 q 3.00 chiA (0.7, 0.0, 0.0) chiB (0.0, 0.0, 0.1) ; t_i = -2252.3 M
+  conferencia: acumulado final contra memorias7: deslocamento (2,1) 1.68e-16, spin (2,1) 2.43e-15 (dif. relativa)
+  (2, 0): desl final 2.821e-02 ; |media orbital em -1000 M| / final 0.060 ; em -200 M 0.083 ; |oscilacao em -200 M| 7.83e-06 || spin final 5.664e-03 ; media -1000 M / final 0.024 ; -200 M 0.025
+  (2, 1): desl final 1.461e-02 ; |media orbital em -1000 M| / final 0.055 ; em -200 M 0.229 ; |oscilacao em -200 M| 1.29e-05 || spin final 2.332e-02 ; media -1000 M / final 0.012 ; -200 M 0.011
+  (2, 2): desl final 3.161e-03 ; |media orbital em -1000 M| / final 0.060 ; em -200 M 0.449 ; |oscilacao em -200 M| 1.03e-05 || spin final 6.020e-03 ; media -1000 M / final 0.006 ; -200 M 0.004
+  (3, 1): desl final 6.452e-04 ; |media orbital em -1000 M| / final 0.004 ; em -200 M 0.004 ; |oscilacao em -200 M| 1.15e-05 || spin final 2.884e-02 ; media -1000 M / final 0.257 ; -200 M 0.536
+  (3, 3): desl final 5.516e-05 ; |media orbital em -1000 M| / final 0.004 ; em -200 M 0.031 ; |oscilacao em -200 M| 1.23e-05 || spin final 2.085e-03 ; media -1000 M / final 0.284 ; -200 M 1.821
+  (4, 1): desl final 8.605e-05 ; |media orbital em -1000 M| / final 0.093 ; em -200 M 0.108 ; |oscilacao em -200 M| 1.45e-06 || spin final 7.010e-04 ; media -1000 M / final 0.032 ; -200 M 0.033
+  (b) inicio da janela varrido num periodo orbital (P = 285.7 M): termo de borda inicial = max|residuo da reta|/|valor|, e deriva secular num periodo /|valor|
+      deslocamento: (2, 0) 1.3e-04 (deriva 1.1e-02) ; (2, 1) 2.8e-04 (deriva 2.5e-04) ; (2, 2) 3.7e-04 (deriva 2.4e-04) ; (3, 1) 5.5e-03 (deriva 8.0e-03) ; (3, 3) 2.4e-03 (deriva 9.2e-04) ; (4, 1) 8.7e-04 (deriva 9.1e-04)
+      spin:         (2, 0) 2.3e-02 (deriva 1.5e-03) ; (2, 1) 1.6e-02 (deriva 2.3e-02) ; (2, 2) 6.6e-03 (deriva 1.1e-02) ; (3, 1) 1.9e-03 (deriva 9.8e-04) ; (3, 3) 9.6e-04 (deriva 2.2e-04) ; (4, 1) 4.4e-02 (deriva 6.4e-02)
+  (c) modelo do eixo precessante (2,0): final modelo/real 0.947 ; medias orbitais em -200 M modelo/real 0.945 ; fase (graus) 0.0
+  (c) modelo do eixo precessante (2,1): final modelo/real 0.961 ; medias orbitais em -200 M modelo/real 0.989 ; fase (graus) -7.3
+  (c) modelo do eixo precessante (2,2): final modelo/real 0.988 ; medias orbitais em -200 M modelo/real 1.016 ; fase (graus) -9.6
+  (10 s)
+
+P6 q 4.00 chiA (0.8, 0.0, -0.1) chiB (0.0, 0.0, 0.1) ; t_i = -2466.5 M
+  conferencia: acumulado final contra memorias7: deslocamento (2,1) 4.94e-16, spin (2,1) 5.09e-15 (dif. relativa)
+  (2, 0): desl final 9.015e-03 ; |media orbital em -1000 M| / final 0.114 ; em -200 M 0.039 ; |oscilacao em -200 M| 7.59e-06 || spin final 3.754e-02 ; media -1000 M / final 0.002 ; -200 M 0.002
+  (2, 1): desl final 1.123e-02 ; |media orbital em -1000 M| / final 0.077 ; em -200 M 0.159 ; |oscilacao em -200 M| 8.67e-06 || spin final 5.623e-03 ; media -1000 M / final 0.041 ; -200 M 0.041
+  (2, 2): desl final 4.714e-03 ; |media orbital em -1000 M| / final 0.073 ; em -200 M 0.362 ; |oscilacao em -200 M| 8.83e-06 || spin final 1.030e-02 ; media -1000 M / final 0.002 ; -200 M 0.003
+  (3, 1): desl final 2.688e-04 ; |media orbital em -1000 M| / final 0.009 ; em -200 M 0.012 ; |oscilacao em -200 M| 7.09e-06 || spin final 2.285e-04 ; media -1000 M / final 27.200 ; -200 M 24.907
+  (3, 3): desl final 1.289e-04 ; |media orbital em -1000 M| / final 0.003 ; em -200 M 0.018 ; |oscilacao em -200 M| 1.38e-05 || spin final 3.110e-03 ; media -1000 M / final 0.490 ; -200 M 1.664
+  (4, 1): desl final 6.685e-05 ; |media orbital em -1000 M| / final 0.060 ; em -200 M 0.078 ; |oscilacao em -200 M| 1.44e-06 || spin final 4.036e-04 ; media -1000 M / final 0.051 ; -200 M 0.050
+  (b) inicio da janela varrido num periodo orbital (P = 285.7 M): termo de borda inicial = max|residuo da reta|/|valor|, e deriva secular num periodo /|valor|
+      deslocamento: (2, 0) 2.9e-04 (deriva 2.6e-02) ; (2, 1) 3.3e-04 (deriva 3.5e-04) ; (2, 2) 1.8e-04 (deriva 1.3e-04) ; (3, 1) 1.1e-02 (deriva 1.6e-02) ; (3, 3) 9.4e-04 (deriva 3.4e-04) ; (4, 1) 9.1e-04 (deriva 5.1e-04)
+      spin:         (2, 0) 2.7e-03 (deriva 2.1e-04) ; (2, 1) 5.4e-02 (deriva 7.4e-02) ; (2, 2) 2.3e-03 (deriva 5.2e-03) ; (3, 1) 2.3e-01 (deriva 1.2e-01) ; (3, 3) 4.9e-04 (deriva 7.9e-05) ; (4, 1) 6.4e-02 (deriva 9.3e-02)
+  (c) modelo do eixo precessante (2,0): final modelo/real 0.827 ; medias orbitais em -200 M modelo/real 1.168 ; fase (graus) 0.0
+  (c) modelo do eixo precessante (2,1): final modelo/real 0.945 ; medias orbitais em -200 M modelo/real 0.959 ; fase (graus) -8.7
+  (c) modelo do eixo precessante (2,2): final modelo/real 1.054 ; medias orbitais em -200 M modelo/real 0.997 ; fase (graus) -9.1
+  (12 s)

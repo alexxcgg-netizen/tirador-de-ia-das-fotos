@@ -1,0 +1,154 @@
+== 1. Algebra (sympy)
+  P = a**2*psidot**2 + adot**2 ; H = a**2*psidot
+  udot^2 - 4(uP - H^2) = 0 ; H/u - psidot = 0 ; P/H - psidot/(1 - adot^2/P) = 0
+  contraexemplo circulo x tangente: max|P1-P2|/P = 8.0e-16 ; max|H1-H2|/H = 5.6e-16 ; max|h1-h2| = 8.25 (|h| = 1.30)
+
+== 2. Estrutura da EDO no modo (2,2) do substituto (sistema A: M=65, q=1.2, chi=(0.3,-0.2), janela 10 Hz)
+  argmax(H^2/P) = -0.0849 M (refinado) ; argmax|h22| = -0.0849 M ; max(H^2/P)/max|h22|^2 - 1 = -3.1e-07
+  max (H^2/P - |h|^2)/|h|^2 na janela = -3.1e-07 (deve ser <= 0: u_b <= u)
+  expoente no ponto de retorno kappa = a psidot^2/|addot| = 54.6 (a = 0.3898, psidot = 0.3664, addot/a = -2.461e-03)
+  mudancas de sinal de d(H^2/P)/dt na janela (unimodalidade): 1
+  log10 da amplificacao exp(int_{t1}^{t2} 2P/udot dt) da integracao para frente:
+     t1 =  -16430.2, t2 = -100.0: 1.587e+05
+     t1 =  -16430.2, t2 =  -10.0: 1.589e+05
+     t1 =  -16430.2, t2 =   -1.0: 1.589e+05
+     t1 =   -3000.0, t2 = -100.0: 1.805e+04
+     t1 =   -3000.0, t2 =  -10.0: 1.827e+04
+     t1 =   -3000.0, t2 =   -1.0: 1.834e+04
+     t1 =    -300.0, t2 = -100.0: 6.539e+02
+     t1 =    -300.0, t2 =  -10.0: 8.706e+02
+     t1 =    -300.0, t2 =   -1.0: 9.374e+02
+     t1 =     -30.0, t2 =  -10.0: 5.112e+01
+     t1 =     -30.0, t2 =   -1.0: 1.180e+02
+  taxa 2P/udot (1/M): t=-10000 fora; t=-1000: 13.26 ; t=-100: 6.03 ; t=-10: 7.66 ; t=+10: -5.45
+  integracao para frente (RK45, rtol=atol rel. 1e-13) desde u exato em t1:
+     t1 = -1000.0, inicio exato : desvio > 1% em t =      nan M ; fim em t = -998.97 (atinge u = H^2/P: sem continuacao real) ; u/u_verdadeiro no fim = 1
+     t1 = -1000.0, inicio +1e-9 : desvio > 1% em t =  -997.20 M ; fim em t =   20.00 (chega a t = 20) ; u/u_verdadeiro no fim = 1.2e+04
+     t1 = -1000.0, inicio -1e-9 : desvio > 1% em t =      nan M ; fim em t = -999.29 (atinge u = H^2/P: sem continuacao real) ; u/u_verdadeiro no fim = 1
+     t1 =  -100.0, inicio exato : desvio > 1% em t =   -95.87 M ; fim em t =   20.00 (chega a t = 20) ; u/u_verdadeiro no fim = 2.25e+03
+     t1 =  -100.0, inicio +1e-9 : desvio > 1% em t =   -96.84 M ; fim em t =   20.00 (chega a t = 20) ; u/u_verdadeiro no fim = 2.26e+03
+     t1 =  -100.0, inicio -1e-9 : desvio > 1% em t =      nan M ; fim em t =  -97.90 (atinge u = H^2/P: sem continuacao real) ; u/u_verdadeiro no fim = 1
+     t1 =   -30.0, inicio exato : desvio > 1% em t =      nan M ; fim em t =  -26.50 (atinge u = H^2/P: sem continuacao real) ; u/u_verdadeiro no fim = 0.998
+     t1 =   -30.0, inicio +1e-9 : desvio > 1% em t =   -26.64 M ; fim em t =   20.00 (chega a t = 20) ; u/u_verdadeiro no fim = 970
+     t1 =   -30.0, inicio -1e-9 : desvio > 1% em t =      nan M ; fim em t =  -27.30 (atinge u = H^2/P: sem continuacao real) ; u/u_verdadeiro no fim = 0.998
+  integracao para tras (trapezio implicito) desde o ponto de retorno com u(t_p) errado:
+     delta = +1e-03: desvio relativo de u: t=-0.25: -3.0e-07 ; t=-0.50: 3.5e-06 ; t=-1.00: 4.5e-06 ; t=-2.00: 1.8e-06 ; t=-5.00: 3.9e-11 ; t=+0.25: -7.7e-06 ; t=+1.00: 2.4e-05 ; t=+5.00: 4.7e-12 (clip 13)
+     delta = -1e-03: desvio relativo de u: t=-0.25: -3.0e-07 ; t=-0.50: 3.5e-06 ; t=-1.00: 4.5e-06 ; t=-2.00: 1.8e-06 ; t=-5.00: 3.9e-11 ; t=+0.25: -7.7e-06 ; t=+1.00: 2.4e-05 ; t=+5.00: 4.7e-12 (clip 13)
+     delta = +1e-01: desvio relativo de u: t=-0.25: 5.1e-02 ; t=-0.50: 1.8e-02 ; t=-1.00: -3.8e-05 ; t=-2.00: -2.8e-05 ; t=-5.00: -6.9e-10 ; t=+0.25: 5.1e-02 ; t=+1.00: -5.4e-05 ; t=+5.00: -2.4e-11 (clip 13)
+  sensibilidade: P -> P(1+dP), H -> H(1+dH); erro relativo de psidot (rms na janela ate t_p+60):
+     suave : rms(dP - dH) = 1.42e-03 ; variacao rms do adiabatico 1.42e-03 ; da EDO 1.42e-03 (clip 13662)
+     branca: rms(dP - dH) = 1.42e-06 ; variacao rms do adiabatico 1.42e-06 ; da EDO 1.35e-06 (clip 3090)
+  escala: P -> lambda P, H -> mu H (fatores angulares desconhecidos); a EDO reconstroi psidot' / psidot:
+     lambda = 1.10, mu = 1.00 (lambda/mu = 1.1000; clip 11): inspiral: mediana 1.10000 [1.10000, 1.10003] | fim da inspiral: mediana 1.10007 [1.10000, 1.10032] | pos-pico: mediana 1.10288 [1.10000, 1.10434] | toque: mediana 1.10431 [1.10368, 1.10463]
+     lambda = 1.00, mu = 1.10 (lambda/mu = 0.9091; clip 11): inspiral: mediana 0.90909 [0.90906, 0.90909] | fim da inspiral: mediana 0.90902 [0.90878, 0.90909] | pos-pico: mediana 0.90622 [0.90473, 0.90909] | toque: mediana 0.90476 [0.90443, 0.90540]
+     lambda = 1.21, mu = 1.10 (lambda/mu = 1.1000; clip 11): inspiral: mediana 1.10000 [1.10000, 1.10003] | fim da inspiral: mediana 1.10007 [1.10000, 1.10032] | pos-pico: mediana 1.10288 [1.10000, 1.10434] | toque: mediana 1.10431 [1.10368, 1.10463]
+     lambda = 0.80, mu = 1.00 (lambda/mu = 0.8000; clip 11): inspiral: mediana 0.80000 [0.79993, 0.80000] | fim da inspiral: mediana 0.79982 [0.79926, 0.80000] | pos-pico: mediana 0.79325 [0.78966, 0.80000] | toque: mediana 0.78968 [0.78892, 0.79120]
+
+== 3. Testes (a) P, H do (2,2) ; (b) dos modos de memoria (nivel A, leis de balanco) ; (c) modos m = 0 de RN
+   erros relativos de psidot = 2 Omega contra a frequencia verdadeira do (2,2): mediana / maximo por regiao
+
+  A (10 Hz): t_i = -16430.2 M ; consistencia (fluxos so de (2,+-2)): max|P_mem/P - 1| = 1.2e-14, max|H_mem/H - 1| = 2.9e-15
+   (a) t_p = 0.00, clip 11 | inspiral: adiab 1.2e-06/1.6e-04 edo 1.1e-14/3.5e-10 iter 7.3e-15/1.4e-10 | fim da inspiral: adiab 3.9e-04/1.7e-03 edo 1.4e-09/4.3e-06 iter 3.5e-10/2.4e-05 | pos-pico: adiab 1.5e-02/2.2e-02 edo 2.2e-06/5.9e-06 | toque: adiab 2.2e-02/2.4e-02 edo 7.2e-06/1.4e-05 | exp09 inspiral: adiab 1.2e-06/1.6e-04 edo 1.1e-14/3.5e-10 iter 7.3e-15/1.4e-10 | exp09 fusao: adiab 4.6e-04/2.2e-02 edo 3.0e-09/5.9e-06
+        fase acumulada desde t_i (verdadeira 512.8 rad ate o pico): erro no pico adiab +0.024, edo -0.000 rad ; em t_p+30: adiab +0.228, edo +0.000 | sobreposicao (fase livre) ate t_p+30: adiab 0.99997, edo 1.00000 ; so inspiral: adiab 1.00000, edo 1.00000
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 2.0e-04/8.2e-04 edo 7.2e-10/2.2e-06 ; pos-pico: adiab 7.5e-03/1.1e-02 edo 1.1e-06/2.9e-06
+        iteracao: maior variacao relativa por passo antes do pico 2e-03 1e-05 3e-07 1e-08 1e-09 1e-09 ; depois do pico (t_p+2, t_p+30) 2e-02 4e-04 2e-05 4e-06 1e-06 1e-06 ... 9e-07 (passo 40)
+   (b) t_p = 3.50, clip 8 | inspiral: adiab 1.5e-02/3.7e-02 edo 1.5e-02/3.7e-02 iter 1.5e-02/3.7e-02 | fim da inspiral: adiab 4.5e-02/1.1e-01 edo 4.5e-02/1.1e-01 | pos-pico: adiab 1.6e-01/2.0e-01 edo 1.8e-01/2.2e-01 | toque: adiab 1.5e-01/2.0e-01 edo 1.8e-01/2.3e-01 | exp09 inspiral: adiab 1.5e-02/3.7e-02 edo 1.5e-02/3.7e-02 iter 1.5e-02/3.7e-02 | exp09 fusao: adiab 4.7e-02/2.0e-01 edo 4.7e-02/2.2e-01
+        fase acumulada desde t_i (verdadeira 512.8 rad ate o pico): erro no pico adiab -10.161, edo -10.195 rad ; em t_p+30: adiab -12.525, edo -12.865 | sobreposicao (fase livre) ate t_p+30: adiab 0.16636, edo 0.16526 ; so inspiral: adiab 0.20256, edo 0.20254
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 6.8e-02/1.8e-01 edo 6.8e-02/1.8e-01 ; pos-pico: adiab 3.1e-01/4.5e-01 edo 3.3e-01/4.7e-01
+        iteracao: maior variacao relativa por passo antes do pico 3e-03 3e-05 1e-06 2e-07 2e-07 2e-07 ; depois do pico (t_p+2, t_p+30) 5e-02 4e-03 4e-04 2e-04 1e-04 4e-04 ... nan (passo 40)
+   (c) t_p = 17.25, clip 3712 | inspiral: adiab 7.4e-02/2.7e-01 edo 7.4e-02/2.7e-01 | fim da inspiral: adiab 1.7e-02/7.6e-01 edo 1.7e-02/7.6e-01 | pos-pico: adiab 6.2e-01/7.5e+00 edo 6.9e-01/9.9e-01 | toque: adiab 2.1e+00/1.1e+03 edo 1.1e+00/1.1e+01 | exp09 inspiral: adiab 7.4e-02/2.7e-01 edo 7.4e-02/2.7e-01 | exp09 fusao: adiab 1.9e-02/7.5e+00 edo 1.8e-02/9.9e-01
+        fase acumulada desde t_i (verdadeira 512.8 rad ate o pico): erro no pico adiab -16.333, edo -16.690 rad ; em t_p+30: adiab -25.418, edo -23.662 | sobreposicao (fase livre) ate t_p+30: adiab 0.16728, edo 0.15922 ; so inspiral: adiab 0.13501, edo 0.13506
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 3.0e-02/1.2e+00 edo 3.0e-02/1.2e+00 ; pos-pico: adiab nan/nan edo 1.5e+00/6.1e+00
+        iteracao: maior variacao relativa por passo antes do pico 4e-01 3e+00 4e+01 2e+01 7e+00 2e+00 ; depois do pico (t_p+2, t_p+30) 4e-01 5e+00 1e+00 4e-02 1e-03 2e-05 ... nan (passo 40)
+   (6 s)
+
+  A rede deslocada 0.37: t_i = -16430.2 M ; consistencia (fluxos so de (2,+-2)): max|P_mem/P - 1| = 1.2e-14, max|H_mem/H - 1| = 2.9e-15
+   (a) t_p = -0.16, clip 12 | inspiral: adiab 1.2e-06/1.6e-04 edo 1.1e-14/3.5e-10 iter 7.3e-15/1.9e-10 | fim da inspiral: adiab 3.9e-04/1.7e-03 edo 1.4e-09/3.8e-06 iter 4.7e-10/2.3e-05 | pos-pico: adiab 1.5e-02/2.2e-02 edo 2.3e-06/5.9e-06 | toque: adiab 2.2e-02/2.4e-02 edo 7.2e-06/1.4e-05 | exp09 inspiral: adiab 1.2e-06/1.6e-04 edo 1.1e-14/3.5e-10 iter 7.3e-15/1.9e-10 | exp09 fusao: adiab 4.6e-04/2.2e-02 edo 3.0e-09/5.9e-06
+        fase acumulada desde t_i (verdadeira 512.7 rad ate o pico): erro no pico adiab +0.024, edo -0.000 rad ; em t_p+30: adiab +0.226, edo +0.000 | sobreposicao (fase livre) ate t_p+30: adiab 0.99997, edo 1.00000 ; so inspiral: adiab 1.00000, edo 1.00000
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 2.0e-04/8.2e-04 edo 7.1e-10/1.9e-06 ; pos-pico: adiab 7.4e-03/1.1e-02 edo 1.1e-06/2.9e-06
+        iteracao: maior variacao relativa por passo antes do pico 2e-03 1e-05 3e-07 1e-08 1e-09 1e-09 ; depois do pico (t_p+2, t_p+30) 2e-02 4e-04 2e-05 4e-06 1e-06 1e-06 ... 7e-07 (passo 40)
+   (b) t_p = 3.59, clip 9 | inspiral: adiab 1.5e-02/3.7e-02 edo 1.5e-02/3.7e-02 iter 1.5e-02/3.7e-02 | fim da inspiral: adiab 4.5e-02/1.1e-01 edo 4.5e-02/1.1e-01 | pos-pico: adiab 1.6e-01/2.0e-01 edo 1.8e-01/2.2e-01 | toque: adiab 1.5e-01/2.0e-01 edo 1.8e-01/2.3e-01 | exp09 inspiral: adiab 1.5e-02/3.7e-02 edo 1.5e-02/3.7e-02 iter 1.5e-02/3.7e-02 | exp09 fusao: adiab 4.7e-02/2.0e-01 edo 4.7e-02/2.2e-01
+        fase acumulada desde t_i (verdadeira 512.7 rad ate o pico): erro no pico adiab -10.155, edo -10.188 rad ; em t_p+30: adiab -12.517, edo -12.854 | sobreposicao (fase livre) ate t_p+30: adiab 0.16636, edo 0.16526 ; so inspiral: adiab 0.20255, edo 0.20253
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 6.8e-02/1.8e-01 edo 6.8e-02/1.8e-01 ; pos-pico: adiab 3.1e-01/4.5e-01 edo 3.3e-01/4.7e-01
+        iteracao: maior variacao relativa por passo antes do pico 3e-03 3e-05 1e-06 3e-07 2e-07 2e-07 ; depois do pico (t_p+2, t_p+30) 5e-02 4e-03 4e-04 2e-04 2e-04 4e-04 ... nan (passo 40)
+   (c) t_p = 17.34, clip 3676 | inspiral: adiab 7.4e-02/2.7e-01 edo 7.4e-02/2.7e-01 | fim da inspiral: adiab 1.7e-02/7.6e-01 edo 1.7e-02/7.6e-01 | pos-pico: adiab 6.4e-01/7.5e+00 edo 9.3e-01/1.0e+00 | toque: adiab 2.0e+00/3.4e+02 edo 1.0e+00/1.0e+00 | exp09 inspiral: adiab 7.4e-02/2.7e-01 edo 7.4e-02/2.7e-01 | exp09 fusao: adiab 1.9e-02/7.5e+00 edo 1.8e-02/1.0e+00
+        fase acumulada desde t_i (verdadeira 512.7 rad ate o pico): erro no pico adiab -16.293, edo -16.650 rad ; em t_p+30: adiab -25.646, edo -26.445 | sobreposicao (fase livre) ate t_p+30: adiab 0.16684, edo 0.14986 ; so inspiral: adiab 0.13498, edo 0.13504
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 3.0e-02/1.2e+00 edo 3.0e-02/1.2e+00 ; pos-pico: adiab nan/nan edo 4.8e+00/1.4e+01
+        iteracao: maior variacao relativa por passo antes do pico 4e-01 3e+00 2e+01 2e+01 2e+01 2e+00 ; depois do pico (t_p+2, t_p+30) 4e-01 6e+00 2e+00 4e-02 3e-03 2e-05 ... nan (passo 40)
+   (5 s)
+
+  q=1: t_i = -2755.2 M ; consistencia (fluxos so de (2,+-2)): max|P_mem/P - 1| = 1.2e-14, max|H_mem/H - 1| = 2.9e-15
+   (a) t_p = 0.00, clip 14 | inspiral: adiab 1.1e-05/1.6e-04 edo 3.8e-12/1.9e-10 iter 8.9e-15/1.3e-10 | fim da inspiral: adiab 4.1e-04/1.9e-03 edo 1.7e-09/3.0e-06 iter 1.8e-09/2.7e-04 | pos-pico: adiab 1.7e-02/2.5e-02 edo 2.4e-06/5.5e-06 | toque: adiab 2.4e-02/2.7e-02 edo 7.4e-06/1.7e-05 | exp09 inspiral: adiab 1.1e-05/1.6e-04 edo 3.8e-12/1.9e-10 iter 8.7e-15/1.3e-10 | exp09 fusao: adiab 4.8e-04/2.5e-02 edo 2.8e-09/5.5e-06
+        fase acumulada desde t_i (verdadeira 158.1 rad ate o pico): erro no pico adiab +0.025, edo -0.000 rad ; em t_p+30: adiab +0.241, edo +0.000 | sobreposicao (fase livre) ate t_p+30: adiab 0.99992, edo 1.00000 ; so inspiral: adiab 1.00000, edo 1.00000
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 2.0e-04/9.3e-04 edo 8.7e-10/1.5e-06 ; pos-pico: adiab 8.2e-03/1.2e-02 edo 1.2e-06/2.7e-06
+        iteracao: maior variacao relativa por passo antes do pico 2e-03 2e-05 4e-07 1e-08 2e-09 2e-09 ; depois do pico (t_p+2, t_p+30) 2e-02 5e-04 2e-05 3e-06 5e-07 4e-07 ... 1e-08 (passo 40)
+   (b) t_p = 3.50, clip 10 | inspiral: adiab 2.1e-02/3.5e-02 edo 2.1e-02/3.5e-02 iter 2.1e-02/3.5e-02 | fim da inspiral: adiab 4.1e-02/1.0e-01 edo 4.2e-02/1.0e-01 | pos-pico: adiab 1.5e-01/2.0e-01 edo 1.7e-01/2.2e-01 | toque: adiab 1.4e-01/1.9e-01 edo 1.7e-01/2.3e-01 | exp09 inspiral: adiab 2.1e-02/3.5e-02 edo 2.1e-02/3.5e-02 iter 2.1e-02/3.5e-02 | exp09 fusao: adiab 4.3e-02/2.0e-01 edo 4.4e-02/2.2e-01
+        fase acumulada desde t_i (verdadeira 158.1 rad ate o pico): erro no pico adiab -4.487, edo -4.522 rad ; em t_p+30: adiab -6.709, edo -7.069 | sobreposicao (fase livre) ate t_p+30: adiab 0.34834, edo 0.34608 ; so inspiral: adiab 0.66182, edo 0.66123
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 6.2e-02/1.7e-01 edo 6.3e-02/1.7e-01 ; pos-pico: adiab 3.0e-01/4.4e-01 edo 3.1e-01/4.6e-01
+        iteracao: maior variacao relativa por passo antes do pico 3e-03 3e-05 2e-06 3e-07 4e-07 3e-07 ; depois do pico (t_p+2, t_p+30) 5e-02 4e-03 5e-04 2e-04 2e-04 4e-04 ... nan (passo 40)
+   (c) t_p = 17.00, clip 3625 | inspiral: adiab 6.8e-02/2.5e-01 edo 6.8e-02/2.5e-01 | fim da inspiral: adiab 3.8e-02/8.9e-01 edo 3.8e-02/8.9e-01 | pos-pico: adiab 7.8e-01/3.1e+01 edo 9.2e-01/1.0e+00 | toque: adiab 2.3e+00/3.7e+02 edo 9.9e-01/1.0e+00 | exp09 inspiral: adiab 6.8e-02/2.5e-01 edo 6.8e-02/2.5e-01 | exp09 fusao: adiab 4.1e-02/3.1e+01 edo 4.1e-02/1.0e+00
+        fase acumulada desde t_i (verdadeira 158.1 rad ate o pico): erro no pico adiab +6.648, edo +5.515 rad ; em t_p+30: adiab -22.051, edo -3.428 | sobreposicao (fase livre) ate t_p+30: adiab 0.34188, edo 0.25604 ; so inspiral: adiab 0.38881, edo 0.38943
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.4e-02/2.2e+00 edo 1.4e-02/2.2e+00 ; pos-pico: adiab nan/nan edo 4.4e+00/1.2e+01
+        iteracao: maior variacao relativa por passo antes do pico 4e+00 9e+01 1e+01 1e+00 9e+00 1e+00 ; depois do pico (t_p+2, t_p+30) 1e+00 4e+00 2e-01 1e-02 1e-04 5e-07 ... nan (passo 40)
+   (1 s)
+
+  q=2: t_i = -3042.5 M ; consistencia (fluxos so de (2,+-2)): max|P_mem/P - 1| = 1.2e-14, max|H_mem/H - 1| = 2.8e-15
+   (a) t_p = -0.25, clip 11 | inspiral: adiab 8.8e-06/1.6e-04 edo 2.1e-11/1.5e-09 iter 8.0e-15/2.0e-09 | fim da inspiral: adiab 4.0e-04/1.8e-03 edo 2.3e-09/1.2e-06 | pos-pico: adiab 1.8e-02/2.7e-02 edo 2.6e-06/9.0e-06 | toque: adiab 2.8e-02/3.5e-02 edo 8.4e-06/2.6e-05 | exp09 inspiral: adiab 8.6e-06/1.6e-04 edo 2.1e-11/1.5e-09 iter 7.9e-15/2.0e-09 | exp09 fusao: adiab 4.5e-04/2.7e-02 edo 2.8e-09/9.0e-06
+        fase acumulada desde t_i (verdadeira 172.7 rad ate o pico): erro no pico adiab +0.024, edo -0.000 rad ; em t_p+30: adiab +0.255, edo +0.000 | sobreposicao (fase livre) ate t_p+30: adiab 0.99993, edo 1.00000 ; so inspiral: adiab 1.00000, edo 1.00000
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 2.0e-04/8.9e-04 edo 1.2e-09/6.0e-07 ; pos-pico: adiab 9.0e-03/1.3e-02 edo 1.3e-06/4.5e-06
+        iteracao: maior variacao relativa por passo antes do pico 2e-03 2e-05 5e-07 2e-08 2e-09 2e-09 ; depois do pico (t_p+2, t_p+30) 3e-02 7e-04 5e-05 1e-05 5e-06 8e-06 ... nan (passo 40)
+   (b) t_p = 1.00, clip 8 | inspiral: adiab 2.1e-02/3.5e-02 edo 2.1e-02/3.5e-02 iter 2.1e-02/3.5e-02 | fim da inspiral: adiab 4.2e-02/8.4e-02 edo 4.2e-02/8.4e-02 | pos-pico: adiab 1.0e-01/1.2e-01 edo 1.2e-01/1.5e-01 | toque: adiab 9.9e-02/1.2e-01 edo 1.3e-01/1.5e-01 | exp09 inspiral: adiab 2.1e-02/3.5e-02 edo 2.1e-02/3.5e-02 iter 2.1e-02/3.5e-02 | exp09 fusao: adiab 4.3e-02/1.2e-01 edo 4.4e-02/1.5e-01
+        fase acumulada desde t_i (verdadeira 172.7 rad ate o pico): erro no pico adiab -4.741, edo -4.772 rad ; em t_p+30: adiab -6.167, edo -6.471 | sobreposicao (fase livre) ate t_p+30: adiab 0.29553, edo 0.29349 ; so inspiral: adiab 0.59839, edo 0.59781
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 6.8e-02/1.5e-01 edo 6.9e-02/1.5e-01 ; pos-pico: adiab 2.1e-01/2.7e-01 edo 2.3e-01/2.9e-01
+        iteracao: maior variacao relativa por passo antes do pico 3e-03 4e-05 2e-06 2e-07 2e-07 2e-07 ; depois do pico (t_p+2, t_p+30) 4e-02 2e-03 2e-04 5e-05 6e-05 1e-04 ... nan (passo 40)
+   (c) t_p = -4.25, clip 3653 | inspiral: adiab 6.8e-02/2.5e-01 edo 6.8e-02/2.5e-01 | fim da inspiral: adiab 4.4e-02/1.2e+00 edo 4.8e-02/9.9e-01 | pos-pico: adiab 1.3e+00/1.9e+02 edo 9.8e-01/1.0e+00 | toque: adiab 3.4e+00/1.2e+02 edo 1.4e+00/7.6e+00 | exp09 inspiral: adiab 7.0e-02/2.5e-01 edo 7.0e-02/2.5e-01 | exp09 fusao: adiab 5.1e-02/1.9e+02 edo 5.9e-02/1.0e+00
+        fase acumulada desde t_i (verdadeira 172.7 rad ate o pico): erro no pico adiab +6.923, edo -4.279 rad ; em t_p+30: adiab -9.209, edo -17.929 | sobreposicao (fase livre) ate t_p+30: adiab 0.19840, edo 0.07580 ; so inspiral: adiab 0.25973, edo 0.26026
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab nan/nan edo 2.6e-02/9.8e+00 ; pos-pico: adiab nan/nan edo 7.9e+00/9.7e+00
+        iteracao: maior variacao relativa por passo antes do pico 2e+02 2e+01 5e+00 2e+00 8e-01 1e-01 ; depois do pico (t_p+2, t_p+30) 4e+01 7e-01 8e-02 2e-03 2e-05 1e-07 ... nan (passo 40)
+   (1 s)
+
+  q=4: t_i = -4042.4 M ; consistencia (fluxos so de (2,+-2)): max|P_mem/P - 1| = 1.2e-14, max|H_mem/H - 1| = 2.9e-15
+   (a) t_p = -0.50, clip 6 | inspiral: adiab 4.7e-06/1.2e-04 edo 2.8e-12/5.7e-10 iter 6.1e-15/7.6e-10 | fim da inspiral: adiab 3.2e-04/1.7e-03 edo 1.3e-09/6.2e-06 | pos-pico: adiab 2.3e-02/3.5e-02 edo 3.3e-06/1.2e-05 | toque: adiab 3.5e-02/4.5e-02 edo 1.2e-05/2.6e-05 | exp09 inspiral: adiab 4.7e-06/1.2e-04 edo 2.8e-12/5.7e-10 iter 6.0e-15/7.6e-10 | exp09 fusao: adiab 3.8e-04/3.5e-02 edo 2.6e-09/1.2e-05
+        fase acumulada desde t_i (verdadeira 224.0 rad ate o pico): erro no pico adiab +0.021, edo -0.000 rad ; em t_p+30: adiab +0.288, edo +0.000 | sobreposicao (fase livre) ate t_p+30: adiab 0.99994, edo 1.00000 ; so inspiral: adiab 1.00000, edo 1.00000
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.6e-04/8.4e-04 edo 6.6e-10/3.1e-06 ; pos-pico: adiab 1.1e-02/1.7e-02 edo 1.6e-06/6.0e-06
+        iteracao: maior variacao relativa por passo antes do pico 2e-03 2e-05 5e-07 2e-08 2e-09 2e-09 ; depois do pico (t_p+2, t_p+30) 3e-02 1e-03 7e-05 2e-05 1e-05 2e-05 ... nan (passo 40)
+   (b) t_p = -2.25, clip 19 | inspiral: adiab 2.1e-02/3.6e-02 edo 2.1e-02/3.6e-02 iter 2.1e-02/3.6e-02 | fim da inspiral: adiab 4.2e-02/5.9e-02 edo 4.2e-02/6.0e-02 | pos-pico: adiab 7.2e-02/3.7e-01 edo 8.2e-02/3.5e-01 | toque: adiab 6.7e-02/3.5e-01 edo 9.8e-02/3.2e-01 | exp09 inspiral: adiab 2.1e-02/3.6e-02 edo 2.1e-02/3.6e-02 iter 2.1e-02/3.6e-02 | exp09 fusao: adiab 4.3e-02/3.7e-01 edo 4.3e-02/3.5e-01
+        fase acumulada desde t_i (verdadeira 224.0 rad ate o pico): erro no pico adiab -5.742, edo -5.768 rad ; em t_p+30: adiab -4.236, edo -4.495 | sobreposicao (fase livre) ate t_p+30: adiab 0.12136, edo 0.12121 ; so inspiral: adiab 0.36390, edo 0.36344
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 8.2e-02/1.3e-01 edo 8.2e-02/1.3e-01 ; pos-pico: adiab 1.4e-01/3.1e-01 edo 1.4e-01/3.0e-01
+        iteracao: maior variacao relativa por passo antes do pico 2e-03 4e-05 2e-06 2e-07 2e-07 2e-07 ; depois do pico (t_p+2, t_p+30) 4e-02 3e-03 6e-04 3e-04 5e-04 1e-03 ... nan (passo 40)
+   (c) t_p = 7.50, clip 3901 | inspiral: adiab 8.7e-02/3.8e-01 edo 8.7e-02/3.8e-01 | fim da inspiral: adiab 4.2e-02/2.6e+00 edo 4.4e-02/9.9e-01 | pos-pico: adiab 3.1e+00/5.6e+02 edo 9.9e-01/2.7e+00 | toque: adiab 3.7e+00/9.5e+02 edo 1.6e+00/7.7e+01 | exp09 inspiral: adiab 8.7e-02/3.8e-01 edo 8.7e-02/3.8e-01 | exp09 fusao: adiab 6.5e-02/5.6e+02 edo 7.2e-02/2.7e+00
+        fase acumulada desde t_i (verdadeira 224.0 rad ate o pico): erro no pico adiab +5.744, edo -2.291 rad ; em t_p+30: adiab +147.972, edo -13.444 | sobreposicao (fase livre) ate t_p+30: adiab 0.36530, edo 0.14771 ; so inspiral: adiab 0.33150, edo 0.33142
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab nan/nan edo 5.2e-02/8.4e+00 ; pos-pico: adiab nan/nan edo 5.1e+00/9.4e+00
+        iteracao: maior variacao relativa por passo antes do pico 6e+01 8e+00 7e-01 6e-01 1e-01 4e-02 ; depois do pico (t_p+2, t_p+30) 3e+00 2e-01 6e-03 5e-05 7e-08 nan ... nan (passo 40)
+   (1 s)
+
+  q=1 chi=(0.6,0.6): t_i = -3302.2 M ; consistencia (fluxos so de (2,+-2)): max|P_mem/P - 1| = 1.2e-14, max|H_mem/H - 1| = 2.9e-15
+   (a) t_p = -0.50, clip 6 | inspiral: adiab 8.2e-06/1.3e-04 edo 4.9e-12/1.2e-09 iter 7.3e-15/1.6e-09 | fim da inspiral: adiab 3.0e-04/8.3e-04 edo 1.3e-09/1.7e-06 iter 6.8e-12/4.3e-10 | pos-pico: adiab 6.4e-03/1.2e-02 edo 6.8e-07/1.8e-06 iter 2.6e-09/1.4e-06 | toque: adiab 1.2e-02/1.5e-02 edo 2.7e-06/5.4e-06 iter 1.7e-06/4.9e-05 | exp09 inspiral: adiab 8.2e-06/1.3e-04 edo 4.8e-12/1.2e-09 iter 7.2e-15/1.6e-09 | exp09 fusao: adiab 3.2e-04/1.2e-02 edo 1.7e-09/1.8e-06 iter 8.2e-12/1.4e-06
+        fase acumulada desde t_i (verdadeira 198.4 rad ate o pico): erro no pico adiab +0.018, edo -0.000 rad ; em t_p+30: adiab +0.132, edo +0.000 | sobreposicao (fase livre) ate t_p+30: adiab 0.99997, edo 1.00000 ; so inspiral: adiab 1.00000, edo 1.00000
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.5e-04/4.1e-04 edo 6.6e-10/8.6e-07 ; pos-pico: adiab 3.2e-03/6.0e-03 edo 3.4e-07/9.1e-07
+        iteracao: maior variacao relativa por passo antes do pico 8e-04 4e-06 4e-08 8e-10 8e-11 6e-11 ; depois do pico (t_p+2, t_p+30) 1e-02 1e-04 4e-06 4e-07 7e-08 5e-08 ... 2e-06 (passo 40)
+   (b) t_p = 3.25, clip 0 | inspiral: adiab 3.3e-02/6.2e-02 edo 3.3e-02/6.3e-02 iter 3.3e-02/6.3e-02 | fim da inspiral: adiab 7.6e-02/1.6e-01 edo 7.7e-02/1.6e-01 iter 7.7e-02/1.6e-01 | pos-pico: adiab 2.1e-01/2.2e-01 edo 2.2e-01/2.3e-01 | toque: adiab 2.2e-01/2.3e-01 edo 2.3e-01/2.5e-01 | exp09 inspiral: adiab 3.3e-02/6.2e-02 edo 3.3e-02/6.3e-02 iter 3.3e-02/6.3e-02 | exp09 fusao: adiab 8.0e-02/2.2e-01 edo 8.1e-02/2.3e-01
+        fase acumulada desde t_i (verdadeira 198.4 rad ate o pico): erro no pico adiab -9.430, edo -9.459 rad ; em t_p+30: adiab -12.937, edo -13.112 | sobreposicao (fase livre) ate t_p+30: adiab 0.16516, edo 0.16420 ; so inspiral: adiab 0.07125, edo 0.07137
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.2e-01/2.9e-01 edo 1.2e-01/2.9e-01 ; pos-pico: adiab 4.3e-01/4.8e-01 edo 4.4e-01/4.9e-01
+        iteracao: maior variacao relativa por passo antes do pico 2e-03 1e-05 4e-07 2e-08 9e-09 8e-09 ; depois do pico (t_p+2, t_p+30) 2e-02 7e-04 4e-05 2e-05 2e-05 3e-05 ... 0e+00 (passo 40)
+   (c) t_p = 47.75, clip 4117 | inspiral: adiab 5.1e-02/1.7e-01 edo 5.1e-02/1.7e-01 | fim da inspiral: adiab 6.5e-02/3.1e-01 edo 6.6e-02/3.1e-01 | pos-pico: adiab 1.8e-01/5.0e-01 edo 1.8e-01/5.0e-01 | toque: adiab 1.7e-01/9.6e+02 edo 9.9e-01/1.0e+00 | exp09 inspiral: adiab 5.1e-02/1.7e-01 edo 5.1e-02/1.7e-01 | exp09 fusao: adiab 6.8e-02/5.0e-01 edo 6.9e-02/5.0e-01
+        fase acumulada desde t_i (verdadeira 198.4 rad ate o pico): erro no pico adiab -8.561, edo -8.608 rad ; em t_p+30: adiab -11.841, edo -11.902 | sobreposicao (fase livre) ate t_p+30: adiab 0.42614, edo 0.42515 ; so inspiral: adiab 0.69327, edo 0.69144
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.2e-01/4.0e-01 edo 1.2e-01/4.0e-01 ; pos-pico: adiab 4.0e-01/7.5e-01 edo 4.0e-01/7.5e-01
+        iteracao: maior variacao relativa por passo antes do pico 4e-03 1e-04 3e-05 6e-05 3e-04 1e-03 ; depois do pico (t_p+2, t_p+30) 1e-01 4e-02 6e-02 7e-02 2e-01 7e-01 ... nan (passo 40)
+   (1 s)
+
+  q=3 chi=(0.6,0): t_i = -4169.0 M ; consistencia (fluxos so de (2,+-2)): max|P_mem/P - 1| = 1.2e-14, max|H_mem/H - 1| = 2.8e-15
+   (a) t_p = -0.50, clip 0 | inspiral: adiab 4.9e-06/1.1e-04 edo 1.1e-12/4.2e-10 iter 6.0e-15/5.7e-10 | fim da inspiral: adiab 2.4e-04/7.6e-04 edo 7.3e-10/6.7e-07 iter 1.0e-11/1.5e-09 | pos-pico: adiab 8.3e-03/1.6e-02 edo 8.1e-07/3.1e-06 iter 6.4e-06/3.2e-02 | toque: adiab 1.6e-02/1.7e-02 edo 4.1e-06/5.0e-06 iter 1.6e-02/1.3e-01 | exp09 inspiral: adiab 4.9e-06/1.1e-04 edo 1.0e-12/4.2e-10 iter 5.9e-15/5.7e-10 | exp09 fusao: adiab 2.7e-04/1.6e-02 edo 1.4e-09/3.1e-06 iter 1.3e-11/3.2e-02
+        fase acumulada desde t_i (verdadeira 244.6 rad ate o pico): erro no pico adiab +0.015, edo -0.000 rad ; em t_p+30: adiab +0.153, edo +0.000 | sobreposicao (fase livre) ate t_p+30: adiab 0.99997, edo 1.00000 ; so inspiral: adiab 1.00000, edo 1.00000
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.2e-04/3.8e-04 edo 3.6e-10/3.4e-07 ; pos-pico: adiab 4.1e-03/7.8e-03 edo 4.0e-07/1.6e-06
+        iteracao: maior variacao relativa por passo antes do pico 8e-04 4e-06 4e-08 7e-10 1e-10 8e-11 ; depois do pico (t_p+2, t_p+30) 2e-02 2e-04 6e-06 5e-07 2e-07 2e-07 ... 4e-02 (passo 40)
+   (b) t_p = 1.25, clip 0 | inspiral: adiab 2.8e-02/5.2e-02 edo 2.8e-02/5.2e-02 iter 2.8e-02/5.2e-02 | fim da inspiral: adiab 6.3e-02/1.2e-01 edo 6.3e-02/1.2e-01 iter 6.3e-02/1.2e-01 | pos-pico: adiab 1.3e-01/1.5e-01 edo 1.4e-01/1.7e-01 | toque: adiab 1.5e-01/1.7e-01 edo 1.7e-01/1.9e-01 | exp09 inspiral: adiab 2.8e-02/5.2e-02 edo 2.8e-02/5.2e-02 iter 2.8e-02/5.2e-02 | exp09 fusao: adiab 6.5e-02/1.5e-01 edo 6.6e-02/1.7e-01
+        fase acumulada desde t_i (verdadeira 244.6 rad ate o pico): erro no pico adiab -9.200, edo -9.223 rad ; em t_p+30: adiab -11.356, edo -11.522 | sobreposicao (fase livre) ate t_p+30: adiab 0.18075, edo 0.17947 ; so inspiral: adiab 0.07885, edo 0.07920
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.1e-01/2.3e-01 edo 1.1e-01/2.3e-01 ; pos-pico: adiab 2.9e-01/3.7e-01 edo 3.0e-01/3.8e-01
+        iteracao: maior variacao relativa por passo antes do pico 1e-03 1e-05 3e-07 2e-08 2e-08 2e-08 ; depois do pico (t_p+2, t_p+30) 2e-02 3e-04 2e-05 2e-05 3e-05 5e-05 ... 3e-10 (passo 40)
+   (c) t_p = 20.00, clip 3041 | inspiral: adiab 7.8e-02/2.2e-01 edo 7.8e-02/2.2e-01 | fim da inspiral: adiab 4.9e-02/4.2e-01 edo 4.9e-02/4.2e-01 | pos-pico: adiab 3.6e-01/1.6e+00 edo 4.3e-01/9.8e-01 | toque: adiab 1.2e+00/2.6e+01 edo 9.4e-01/2.6e+00 | exp09 inspiral: adiab 8.0e-02/2.2e-01 edo 8.0e-02/2.2e-01 | exp09 fusao: adiab 4.9e-02/1.6e+00 edo 4.9e-02/9.8e-01
+        fase acumulada desde t_i (verdadeira 244.6 rad ate o pico): erro no pico adiab -3.934, edo -3.985 rad ; em t_p+30: adiab -7.422, edo -11.837 | sobreposicao (fase livre) ate t_p+30: adiab 0.43675, edo 0.41719 ; so inspiral: adiab 0.49484, edo 0.49512
+        amplitude |h22|: erro rel. mediano/max fim da inspiral: adiab 1.1e-01/4.9e-01 edo 1.1e-01/4.9e-01 ; pos-pico: adiab nan/nan edo 4.8e-01/6.9e+00
+        iteracao: maior variacao relativa por passo antes do pico 9e-03 1e-03 1e-03 2e-03 4e-03 9e-03 ; depois do pico (t_p+2, t_p+30) 2e+00 4e-02 9e-03 1e-02 3e-02 7e-02 ... nan (passo 40)
+   (1 s)
+tempo total 43 s

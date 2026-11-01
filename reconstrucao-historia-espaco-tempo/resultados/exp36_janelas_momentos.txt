@@ -1,0 +1,153 @@
+(a) Conferencia do fluxo
+  int_{T_a}^{T_b} F dt = 7.0137300917e-22 ; deslocamento (2,0) de janela (observaveis, t_i = T_a) = 7.0137341754e-22 ; dif rel 5.8e-07
+  N = 16549 amostras (fs = 4096 Hz), janela [-4.00, 0.04] s; pico de F em t = 0.0024 s
+  fracao 0.10 da memoria acumulada em t = -0.2539 s
+  fracao 0.25 da memoria acumulada em t = -0.0183 s
+  fracao 0.50 da memoria acumulada em t = -0.0007 s
+  fracao 0.75 da memoria acumulada em t = 0.0032 s
+  fracao 0.90 da memoria acumulada em t = 0.0054 s
+
+(b) Numero de condicao (sigma_max/sigma_min) do operador K x N em L^2 [entre colchetes: linhas normalizadas]
+   K | mom(fusao) | mom(inicio) | mom(meio) | jan(uniforme) | jan(energia igual)
+   1 | 1.00e+00 [1.00e+00] | 1.00e+00 [1.00e+00] | 1.00e+00 [1.00e+00] | 1.00e+00 [1.00e+00] | 1.00e+00 [1.00e+00]
+   2 | 4.36e+00 [3.67e+00] | 4.39e+00 [3.73e+00] | 3.46e+00 [1.00e+00] | 2.62e+00 [2.41e+00] | 9.99e+00 [1.11e+00]
+   3 | 2.25e+01 [1.63e+01] | 2.29e+01 [1.69e+01] | 1.35e+01 [2.62e+00] | 4.05e+00 [3.89e+00] | 3.12e+01 [4.43e+00]
+   4 | 1.21e+02 [8.22e+01] | 1.25e+02 [8.61e+01] | 5.37e+01 [4.79e+00] | 5.41e+00 [5.40e+00] | 4.75e+01 [7.75e+00]
+   6 | 3.70e+03 [2.32e+03] | 3.87e+03 [2.50e+03] | 8.71e+02 [2.38e+01] | 8.06e+00 [8.47e+00] | 7.20e+01 [1.45e+01]
+   8 | 1.16e+05 [6.95e+04] | 1.24e+05 [7.70e+04] | 1.44e+04 [1.26e+02] | 1.07e+01 [1.16e+01] | 8.82e+01 [2.05e+01]
+  10 | 3.71e+06 [2.14e+06] | 4.00e+06 [2.44e+06] | 2.42e+05 [6.80e+02] | 1.32e+01 [1.47e+01] | 1.03e+02 [2.68e+01]
+  12 | 1.19e+08 [6.69e+07] | 1.31e+08 [7.84e+07] | 4.09e+06 [3.74e+03] | 1.58e+01 [1.79e+01] | 1.14e+02 [3.26e+01]
+  16 | 1.25e+11 [6.71e+10] | 1.42e+11 [8.32e+10] | 1.20e+09 [1.17e+05] | 2.09e+01 [2.43e+01] | 1.37e+02 [4.52e+01]
+  20 | 1.33e+14 [6.87e+13] | 1.57e+14 [9.00e+13] | 3.62e+11 [3.72e+06] | 2.60e+01 [3.07e+01] | 1.62e+02 [5.83e+01]
+  24 | 5.59e+15 [3.09e+15] | 7.07e+15 [5.25e+15] | 1.11e+14 [1.20e+08] | 3.11e+01 [3.72e+01] | 1.80e+02 [7.03e+01]
+  mom(fusao) normalizado: ln cond ~ 1.6166 K  (fator 5.036 por momento)
+  mom(inicio) normalizado: ln cond ~ 1.6376 K  (fator 5.143 por momento)
+  mom(meio) normalizado: ln cond ~ 0.8542 K  (fator 2.349 por momento)
+  jan(uniforme) normalizado: cond ~ K^1.075
+  jan(energia) normalizado: cond ~ K^1.207
+
+(c) Reconstrucao de m(t) = int_{T_a}^t F a partir de K funcionais com ruido sigma = eps |Delta m| (erro max |m_hat - m| / Delta m)
+   K | eps | mom(fusao) | mom(inicio) | jan(uniforme) | jan(energia igual)
+   2 | 0e+00 | 7.37e-01 | 7.37e-01 | 7.87e-01 | 3.73e-01
+   2 | 1e-06 | 7.37e-01 | 7.37e-01 | 7.87e-01 | 3.73e-01
+   2 | 1e-03 | 7.36e-01 | 7.37e-01 | 7.88e-01 | 3.73e-01
+   2 | 3e-02 | 7.40e-01 | 7.40e-01 | 7.85e-01 | 3.87e-01
+   4 | 0e+00 | 5.72e-01 | 5.72e-01 | 7.33e-01 | 1.90e-01
+   4 | 1e-06 | 5.72e-01 | 5.72e-01 | 7.33e-01 | 1.90e-01
+   4 | 1e-03 | 5.73e-01 | 5.70e-01 | 7.33e-01 | 1.89e-01
+   4 | 3e-02 | 6.42e-01 | 6.23e-01 | 7.39e-01 | 1.95e-01
+   6 | 0e+00 | 4.22e-01 | 4.22e-01 | 6.92e-01 | 1.35e-01
+   6 | 1e-06 | 4.22e-01 | 4.22e-01 | 6.92e-01 | 1.35e-01
+   6 | 1e-03 | 4.77e-01 | 4.65e-01 | 6.92e-01 | 1.35e-01
+   6 | 3e-02 | 5.12e+00 | 5.16e+00 | 6.83e-01 | 1.31e-01
+   8 | 0e+00 | 3.07e-01 | 3.07e-01 | 6.58e-01 | 9.91e-02
+   8 | 1e-06 | 3.09e-01 | 3.09e-01 | 6.58e-01 | 9.91e-02
+   8 | 1e-03 | 5.30e+00 | 7.21e+00 | 6.58e-01 | 9.93e-02
+   8 | 3e-02 | 1.22e+02 | 1.86e+02 | 6.67e-01 | 1.00e-01
+  12 | 0e+00 | 3.06e-01 | 3.06e-01 | 5.98e-01 | 6.22e-02
+  12 | 1e-06 | 2.36e+00 | 3.03e+00 | 5.98e-01 | 6.22e-02
+  12 | 1e-03 | 2.25e+03 | 2.64e+03 | 5.98e-01 | 6.27e-02
+  12 | 3e-02 | 5.88e+04 | 9.70e+04 | 6.09e-01 | 8.77e-02
+  16 | 0e+00 | 2.62e-01 | 2.62e-01 | 5.45e-01 | 4.84e-02
+  16 | 1e-06 | 1.45e+03 | 2.95e+03 | 5.45e-01 | 4.84e-02
+  16 | 1e-03 | 2.13e+06 | 1.60e+06 | 5.45e-01 | 4.85e-02
+  16 | 3e-02 | 6.42e+07 | 1.02e+08 | 5.49e-01 | 7.70e-02
+  20 | 0e+00 | 2.49e-01 | 2.49e-01 | 4.96e-01 | 3.75e-02
+  20 | 1e-06 | 2.20e+06 | 1.35e+06 | 4.96e-01 | 3.75e-02
+  20 | 1e-03 | 2.06e+09 | 2.45e+09 | 4.96e-01 | 3.85e-02
+  20 | 3e-02 | 6.83e+10 | 6.87e+10 | 5.07e-01 | 8.16e-02
+
+(d) Fisher sobre theta = (ln A, ln M, q, chi1, chi2, t0 [s])
+  conferencia da derivada em lnM: |D(h) - D(h/2)| / |D| = 1.5e-04
+  conferencia da derivada em q: |D(h) - D(h/2)| / |D| = 3.8e-05
+  conferencia da derivada em chi1: |D(h) - D(h/2)| / |D| = 5.2e-06
+  conferencia da derivada em chi2: |D(h) - D(h/2)| / |D| = 2.9e-05
+  modelo 1: ruido independente sigma = eps |Delta m| por medida; desvios de Cramer-Rao / eps (todos os 6 livres)
+   K | funcional |      lnA |      lnM |        q |     chi1 |     chi2 |       t0 | sv_min/sv_max de J | var. com passo h/2
+   6 | mom(fusao)  | 1.97e+07 | 1.13e+07 | 9.85e+07 | 5.89e+07 | 9.63e+07 | 4.31e+03 | 9.8e-09 | 1.4e-03
+   6 | mom(inicio) | 7.69e+07 | 4.29e+07 | 4.07e+08 | 2.54e+08 | 4.10e+08 | 1.38e+04 | 9.5e-10 | 1.6e-03
+   6 | jan(unif)   | 6.01e+06 | 4.76e+06 | 2.07e+08 | 1.81e+08 | 2.59e+08 | 1.89e+05 | 1.6e-09 | 6.6e-04
+   6 | jan(energ)  | 1.34e+02 | 3.14e+01 | 1.44e+03 | 1.50e+03 | 2.27e+03 | 2.48e-01 | 2.7e-04 | 9.7e-04
+   8 | mom(fusao)  | 1.28e+07 | 7.38e+06 | 6.24e+07 | 3.67e+07 | 6.03e+07 | 2.97e+03 | 1.6e-08 | 1.3e-03
+   8 | mom(inicio) | 1.22e+07 | 6.61e+06 | 6.82e+07 | 4.43e+07 | 7.07e+07 | 1.64e+03 | 4.9e-09 | 2.1e-03
+   8 | jan(unif)   | 1.54e+06 | 1.43e+06 | 4.31e+06 | 6.26e+06 | 7.73e+06 | 1.75e+04 | 3.7e-08 | 7.4e-04
+   8 | jan(energ)  | 6.44e+01 | 1.93e+01 | 6.99e+02 | 7.48e+02 | 1.13e+03 | 1.33e-01 | 4.9e-04 | 3.0e-04
+  10 | mom(fusao)  | 1.19e+07 | 6.87e+06 | 5.76e+07 | 3.37e+07 | 5.54e+07 | 2.80e+03 | 1.7e-08 | 1.3e-03
+  10 | mom(inicio) | 4.11e+06 | 2.16e+06 | 2.43e+07 | 1.64e+07 | 2.59e+07 | 3.64e+02 | 1.2e-08 | 2.7e-03
+  10 | jan(unif)   | 2.08e+05 | 1.09e+05 | 1.31e+06 | 7.07e+05 | 1.12e+06 | 2.71e+03 | 2.7e-07 | 3.3e-04
+  10 | jan(energ)  | 4.71e+01 | 1.65e+01 | 5.09e+02 | 5.48e+02 | 8.30e+02 | 1.01e-01 | 6.1e-04 | 3.8e-04
+  12 | mom(fusao)  | 1.17e+07 | 6.80e+06 | 5.68e+07 | 3.32e+07 | 5.46e+07 | 2.78e+03 | 1.7e-08 | 1.3e-03
+  12 | mom(inicio) | 1.90e+06 | 9.72e+05 | 1.18e+07 | 8.23e+06 | 1.29e+07 | 1.16e+02 | 2.3e-08 | 1.7e-03
+  12 | jan(unif)   | 7.07e+04 | 1.86e+04 | 9.22e+05 | 6.38e+05 | 9.37e+05 | 2.06e+03 | 3.1e-07 | 2.2e-04
+  12 | jan(energ)  | 3.94e+01 | 1.51e+01 | 4.23e+02 | 4.53e+02 | 6.86e+02 | 8.52e-02 | 6.8e-04 | 3.9e-04
+  16 | mom(fusao)  | 1.17e+07 | 6.79e+06 | 5.67e+07 | 3.31e+07 | 5.46e+07 | 2.77e+03 | 1.7e-08 | 1.3e-03
+  16 | mom(inicio) | 6.56e+05 | 3.17e+05 | 4.46e+06 | 3.28e+06 | 5.07e+06 | 8.61e+01 | 5.3e-08 | 1.2e-03
+  16 | jan(unif)   | 3.30e+04 | 2.37e+04 | 1.25e+05 | 9.50e+04 | 1.39e+05 | 2.68e+02 | 1.8e-06 | 3.5e-04
+  16 | jan(energ)  | 3.37e+01 | 1.31e+01 | 3.59e+02 | 3.86e+02 | 5.86e+02 | 7.34e-02 | 7.0e-04 | 3.3e-04
+  20 | mom(fusao)  | 1.17e+07 | 6.75e+06 | 5.65e+07 | 3.30e+07 | 5.43e+07 | 2.75e+03 | 1.7e-08 | 1.3e-03
+  20 | mom(inicio) | 3.19e+05 | 1.46e+05 | 2.34e+06 | 1.79e+06 | 2.75e+06 | 7.80e+01 | 9.0e-08 | 7.3e-04
+  20 | jan(unif)   | 1.99e+04 | 1.47e+04 | 6.09e+04 | 5.12e+04 | 7.51e+04 | 2.10e+02 | 3.0e-06 | 5.4e-04
+  20 | jan(energ)  | 3.01e+01 | 1.20e+01 | 3.17e+02 | 3.37e+02 | 5.12e+02 | 6.40e-02 | 7.2e-04 | 2.7e-04
+  24 | mom(fusao)  | 1.15e+07 | 6.68e+06 | 5.60e+07 | 3.27e+07 | 5.39e+07 | 2.72e+03 | 1.7e-08 | 1.3e-03
+  24 | mom(inicio) | 1.88e+05 | 8.13e+04 | 1.47e+06 | 1.16e+06 | 1.77e+06 | 6.71e+01 | 1.3e-07 | 5.0e-04
+  24 | jan(unif)   | 1.38e+04 | 9.27e+03 | 6.16e+04 | 5.01e+04 | 7.58e+04 | 1.15e+02 | 2.7e-06 | 4.1e-04
+  24 | jan(energ)  | 2.74e+01 | 1.09e+01 | 2.85e+02 | 3.06e+02 | 4.66e+02 | 5.86e-02 | 7.3e-04 | 2.9e-04
+
+  modelo 1, subconjuntos (demais parametros fixos): desvios / eps
+   4 | mom(fusao)  | (lnA,lnM,t0): lnM 2.76e+02, t0 8.77e+00 (sv 2e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 3.77e+03, q 7.83e+04 (sv 6e-05, var 5e-05) ; (lnA,lnM,q,chi1,t0): -
+   4 | mom(inicio) | (lnA,lnM,t0): lnM 4.64e+02, t0 8.15e+00 (sv 5e-04, var 1e-04) ; (lnA,lnM,q,t0): lnM 1.05e+04, q 1.96e+05 (sv 1e-05, var 5e-05) ; (lnA,lnM,q,chi1,t0): -
+   4 | jan(unif)   | (lnA,lnM,t0): lnM 7.15e+02, t0 2.18e+02 (sv 3e-04, var 1e-04) ; (lnA,lnM,q,t0): lnM 7.40e+03, q 3.90e+05 (sv 8e-06, var 2e-05) ; (lnA,lnM,q,chi1,t0): -
+   4 | jan(energ)  | (lnA,lnM,t0): lnM 6.85e+00, t0 2.03e-02 (sv 5e-02, var 6e-05) ; (lnA,lnM,q,t0): lnM 2.04e+01, q 2.78e+02 (sv 1e-02, var 8e-05) ; (lnA,lnM,q,chi1,t0): -
+   6 | mom(fusao)  | (lnA,lnM,t0): lnM 2.44e+02, t0 8.02e+00 (sv 2e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 2.27e+03, q 4.92e+04 (sv 1e-04, var 4e-05) ; (lnA,lnM,q,chi1,t0): lnM 6.36e+05, chi1 4.12e+05 (sv 5e-07, var 7e-04)
+   6 | mom(inicio) | (lnA,lnM,t0): lnM 2.68e+02, t0 3.50e+00 (sv 7e-04, var 1e-04) ; (lnA,lnM,q,t0): lnM 3.49e+03, q 5.88e+04 (sv 3e-05, var 6e-05) ; (lnA,lnM,q,chi1,t0): lnM 1.06e+06, chi1 6.78e+05 (sv 1e-07, var 6e-04)
+   6 | jan(unif)   | (lnA,lnM,t0): lnM 3.54e+02, t0 8.06e+01 (sv 5e-04, var 1e-04) ; (lnA,lnM,q,t0): lnM 2.57e+03, q 1.01e+05 (sv 2e-05, var 4e-05) ; (lnA,lnM,q,chi1,t0): lnM 2.16e+05, chi1 1.38e+05 (sv 5e-07, var 8e-05)
+   6 | jan(energ)  | (lnA,lnM,t0): lnM 5.24e+00, t0 1.64e-02 (sv 6e-02, var 5e-05) ; (lnA,lnM,q,t0): lnM 1.62e+01, q 2.33e+02 (sv 1e-02, var 8e-05) ; (lnA,lnM,q,chi1,t0): lnM 2.31e+01, chi1 5.87e+01 (sv 8e-03, var 1e-04)
+   8 | mom(fusao)  | (lnA,lnM,t0): lnM 2.33e+02, t0 7.77e+00 (sv 2e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 1.92e+03, q 4.22e+04 (sv 1e-04, var 4e-05) ; (lnA,lnM,q,chi1,t0): lnM 4.86e+05, chi1 3.15e+05 (sv 6e-07, var 8e-04)
+   8 | mom(inicio) | (lnA,lnM,t0): lnM 1.95e+02, t0 2.03e+00 (sv 9e-04, var 1e-04) ; (lnA,lnM,q,t0): lnM 2.00e+03, q 3.11e+04 (sv 5e-05, var 8e-05) ; (lnA,lnM,q,chi1,t0): lnM 3.39e+05, chi1 2.16e+05 (sv 3e-07, var 5e-04)
+   8 | jan(unif)   | (lnA,lnM,t0): lnM 2.35e+02, t0 4.40e+01 (sv 7e-04, var 1e-04) ; (lnA,lnM,q,t0): lnM 1.55e+03, q 5.27e+04 (sv 4e-05, var 5e-05) ; (lnA,lnM,q,chi1,t0): lnM 1.65e+05, chi1 1.06e+05 (sv 6e-07, var 3e-04)
+   8 | jan(energ)  | (lnA,lnM,t0): lnM 4.39e+00, t0 1.44e-02 (sv 6e-02, var 4e-05) ; (lnA,lnM,q,t0): lnM 1.31e+01, q 1.95e+02 (sv 1e-02, var 1e-04) ; (lnA,lnM,q,chi1,t0): lnM 1.83e+01, chi1 5.25e+01 (sv 9e-03, var 1e-04)
+  12 | mom(fusao)  | (lnA,lnM,t0): lnM 2.25e+02, t0 7.57e+00 (sv 2e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 1.67e+03, q 3.74e+04 (sv 1e-04, var 4e-05) ; (lnA,lnM,q,chi1,t0): lnM 3.98e+05, chi1 2.59e+05 (sv 7e-07, var 8e-04)
+  12 | mom(inicio) | (lnA,lnM,t0): lnM 1.33e+02, t0 9.80e-01 (sv 1e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 1.07e+03, q 1.47e+04 (sv 8e-05, var 1e-04) ; (lnA,lnM,q,chi1,t0): lnM 8.98e+04, chi1 5.62e+04 (sv 1e-06, var 5e-04)
+  12 | jan(unif)   | (lnA,lnM,t0): lnM 1.41e+02, t0 1.96e+01 (sv 1e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 7.93e+02, q 2.17e+04 (sv 7e-05, var 3e-05) ; (lnA,lnM,q,chi1,t0): lnM 1.20e+04, chi1 8.32e+03 (sv 7e-06, var 1e-04)
+  12 | jan(energ)  | (lnA,lnM,t0): lnM 3.57e+00, t0 1.18e-02 (sv 6e-02, var 4e-05) ; (lnA,lnM,q,t0): lnM 1.05e+01, q 1.60e+02 (sv 1e-02, var 1e-04) ; (lnA,lnM,q,chi1,t0): lnM 1.50e+01, chi1 4.75e+01 (sv 9e-03, var 2e-04)
+  20 | mom(fusao)  | (lnA,lnM,t0): lnM 2.19e+02, t0 7.44e+00 (sv 2e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 1.53e+03, q 3.46e+04 (sv 1e-04, var 4e-05) ; (lnA,lnM,q,chi1,t0): lnM 3.51e+05, chi1 2.28e+05 (sv 8e-07, var 8e-04)
+  20 | mom(inicio) | (lnA,lnM,t0): lnM 8.67e+01, t0 3.99e-01 (sv 1e-03, var 2e-04) ; (lnA,lnM,q,t0): lnM 5.78e+02, q 6.73e+03 (sv 1e-04, var 2e-04) ; (lnA,lnM,q,chi1,t0): lnM 2.19e+04, chi1 1.32e+04 (sv 3e-06, var 4e-04)
+  20 | jan(unif)   | (lnA,lnM,t0): lnM 7.89e+01, t0 7.43e+00 (sv 1e-03, var 1e-04) ; (lnA,lnM,q,t0): lnM 3.40e+02, q 6.97e+03 (sv 2e-04, var 4e-05) ; (lnA,lnM,q,chi1,t0): lnM 1.46e+04, chi1 9.95e+03 (sv 5e-06, var 4e-04)
+  20 | jan(energ)  | (lnA,lnM,t0): lnM 2.79e+00, t0 9.25e-03 (sv 6e-02, var 3e-05) ; (lnA,lnM,q,t0): lnM 8.09e+00, q 1.25e+02 (sv 1e-02, var 1e-04) ; (lnA,lnM,q,chi1,t0): lnM 1.19e+01, chi1 4.14e+01 (sv 8e-03, var 2e-04)
+
+  modelo 2: ruido branco comum na serie F (sigma_F por amostra); informacao retida por K funcionais =
+  projecao das derivadas no espaco das linhas (momentos: polinomios de grau < K; janelas: constantes por partes).
+  razao sigma_CR(serie inteira)/sigma_CR(K funcionais) (1 = toda a informacao):
+   K | funcional |      lnA |      lnM |        q |     chi1 |     chi2 |       t0
+   6 | momentos   | 3.38e-05 | 9.70e-06 | 2.37e-05 | 1.91e-05 | 1.32e-05 | 1.00e-04
+   6 | jan(unif)  | 3.79e-06 | 7.32e-07 | 4.36e-07 | 2.66e-07 | 2.04e-07 | 4.13e-08
+   6 | jan(energ) | 3.64e-01 | 4.33e-01 | 3.82e-01 | 3.77e-01 | 1.83e-01 | 2.85e-01
+   8 | momentos   | 4.49e-04 | 1.56e-04 | 2.37e-04 | 1.59e-04 | 1.14e-04 | 3.88e-04
+   8 | jan(unif)  | 1.34e-05 | 2.25e-06 | 2.06e-05 | 7.31e-06 | 6.53e-06 | 4.29e-07
+   8 | jan(energ) | 6.22e-01 | 6.36e-01 | 6.39e-01 | 6.84e-01 | 4.62e-01 | 6.16e-01
+  12 | momentos   | 2.91e-03 | 1.85e-03 | 9.94e-04 | 5.44e-04 | 4.03e-04 | 5.96e-04
+  12 | jan(unif)  | 2.89e-04 | 2.24e-04 | 7.77e-05 | 6.00e-05 | 4.51e-05 | 2.77e-06
+  12 | jan(energ) | 8.19e-01 | 7.70e-01 | 7.49e-01 | 6.71e-01 | 5.44e-01 | 6.40e-01
+  16 | momentos   | 3.15e-03 | 2.25e-03 | 1.08e-03 | 5.94e-04 | 4.39e-04 | 6.79e-04
+  16 | jan(unif)  | 6.60e-04 | 1.59e-04 | 6.17e-04 | 4.50e-04 | 3.14e-04 | 3.82e-05
+  16 | jan(energ) | 8.31e-01 | 8.94e-01 | 7.35e-01 | 7.34e-01 | 5.35e-01 | 6.60e-01
+  24 | momentos   | 3.35e-03 | 2.52e-03 | 1.14e-03 | 6.25e-04 | 4.62e-04 | 7.10e-04
+  24 | jan(unif)  | 1.52e-03 | 4.62e-04 | 8.59e-04 | 5.10e-04 | 3.69e-04 | 8.24e-05
+  24 | jan(energ) | 8.77e-01 | 9.56e-01 | 8.32e-01 | 8.29e-01 | 6.30e-01 | 7.54e-01
+  32 | momentos   | 5.77e-03 | 4.38e-03 | 1.96e-03 | 1.08e-03 | 7.97e-04 | 1.22e-03
+  32 | jan(unif)  | 1.19e-03 | 2.77e-04 | 1.13e-03 | 6.60e-04 | 4.74e-04 | 4.96e-05
+  32 | jan(energ) | 9.14e-01 | 9.73e-01 | 8.89e-01 | 8.89e-01 | 7.18e-01 | 8.27e-01
+  64 | momentos   | 5.34e-02 | 5.54e-02 | 1.86e-02 | 9.74e-03 | 7.12e-03 | 1.00e-02
+  64 | jan(unif)  | 4.06e-03 | 1.67e-03 | 1.45e-03 | 8.03e-04 | 5.96e-04 | 6.69e-04
+  64 | jan(energ) | 9.59e-01 | 9.85e-01 | 9.65e-01 | 9.86e-01 | 9.28e-01 | 9.72e-01
+
+(e) Origem do tempo e inicio da janela
+  K=4: momentos(fusao)/Delta m = [ 1.     -0.0334  0.0152 -0.0097]
+       momentos(inicio)/Delta m = [1.     0.9567 0.9293 0.9077]
+  K=8: momentos(fusao)/Delta m = [ 1.     -0.0334  0.0152 -0.0097  0.0071 -0.0056  0.0046 -0.0039]
+       momentos(inicio)/Delta m = [1.     0.9567 0.9293 0.9077 0.8892 0.8726 0.8575 0.8434]
+  inicio da janela -4 s -> -3 s (t_ref = fusao): variacao relativa dos momentos n=0..9:
+   8.32e-03 2.14e-01 4.07e-01 5.55e-01 6.66e-01 7.49e-01 8.12e-01 8.59e-01 8.94e-01 9.21e-01
+  janelas de energia igual (cortes s_k >= -0.254 s): variacao relativa: 8.3e-03 0.0e+00 0.0e+00 0.0e+00 0.0e+00 0.0e+00 0.0e+00 0.0e+00 0.0e+00 0.0e+00
+  K=12 mom(fusao): sigma(lnM)/eps com t0 livre 6.80e+06, com t0 fixo 3.28e+05; sigma(q)/eps 5.68e+07 / 5.10e+06
+  K=12 jan(energ): sigma(lnM)/eps com t0 livre 1.51e+01, com t0 fixo 1.50e+01; sigma(q)/eps 4.23e+02 / 2.80e+02

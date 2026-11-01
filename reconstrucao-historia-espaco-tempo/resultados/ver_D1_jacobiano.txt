@@ -1,0 +1,79 @@
+Verificacao D1: jacobiano T0 por caminho independente (observaveis.memorias_observaveis, uma onda por avaliacao).
+Colunas (ln M, q, chi1, chi2 | ln D, iota); escala abs = linhas / |F(iota=50)|. Passos (lnM, q, chi1, chi2).
+
+== A: p = [ 4.1744  1.2     0.3    -0.2   ], iota = 50.0 graus, dt = 0.250 (9 s)
+  passos (0.001, 0.01, 0.01, 0.01):
+    T0 livre      sigma = [4.35339 1.67197 0.62931 0.11084]
+    T0 iota conh. sigma = [3.65275 1.32998 0.21008 0.0168 ]
+    T0 intrinseco sigma = [3.09359e+00 3.16613e-01 4.52966e-02 9.48431e-04] ; sigma4/sigma1 = 3.066e-04
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [ 0.0256  0.9832  0.1426 -0.1106]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.0888  0.6813  0.0639 -0.7238]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 2.692e-02 rad
+  passos (0.0002, 0.002, 0.002, 0.002):
+    T0 livre      sigma = [4.35339 1.67197 0.62931 0.11084]
+    T0 iota conh. sigma = [3.65275 1.32998 0.21008 0.0168 ]
+    T0 intrinseco sigma = [3.09359e+00 3.16610e-01 4.52985e-02 9.50021e-04] ; sigma4/sigma1 = 3.071e-04
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [ 0.0256  0.9832  0.1428 -0.1108]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.0888  0.6813  0.0639 -0.7237]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 2.692e-02 rad
+  |J(h1) - J(h2)|_F (intrinseco, escala abs) = 7.14e-05 (comparar com sigma4 intrinseco)
+
+== A_dt0.125: p = [ 4.1744  1.2     0.3    -0.2   ], iota = 50.0 graus, dt = 0.125 (10 s)
+  passos (0.0002, 0.002, 0.002, 0.002):
+    T0 livre      sigma = [4.35339 1.67197 0.62931 0.11084]
+    T0 iota conh. sigma = [3.65275 1.32998 0.21008 0.0168 ]
+    T0 intrinseco sigma = [3.09359e+00 3.16610e-01 4.52984e-02 9.50024e-04] ; sigma4/sigma1 = 3.071e-04
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [ 0.0256  0.9832  0.1428 -0.1108]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.0888  0.6813  0.0639 -0.7237]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 2.692e-02 rad
+
+== fora1 q2.5 (-0.3,+0.5) M45: p = [ 3.8067  2.5    -0.3     0.5   ], iota = 35.0 graus, dt = 0.250 (16 s)
+  passos (0.001, 0.01, 0.01, 0.01):
+    T0 livre      sigma = [3.87973 1.44247 0.34025 0.15012]
+    T0 iota conh. sigma = [3.44157 0.89054 0.15433 0.05665]
+    T0 intrinseco sigma = [2.17157 0.29728 0.06117 0.00619] ; sigma4/sigma1 = 2.853e-03
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [ 0.046   0.6875  0.553  -0.4684]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.1821  0.7842  0.0687 -0.5892]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 4.608e-02 rad
+  passos (0.0002, 0.002, 0.002, 0.002):
+    T0 livre      sigma = [3.87973 1.44247 0.34025 0.15011]
+    T0 iota conh. sigma = [3.44157 0.89055 0.15433 0.05665]
+    T0 intrinseco sigma = [2.17157 0.29728 0.06117 0.0062 ] ; sigma4/sigma1 = 2.853e-03
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [ 0.0459  0.6875  0.553  -0.4684]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.1821  0.7842  0.0687 -0.5892]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 4.608e-02 rad
+  |J(h1) - J(h2)|_F (intrinseco, escala abs) = 1.18e-05 (comparar com sigma4 intrinseco)
+
+== fora2 q7.5 (+0.75,-0.75) M100: p = [ 4.6052  7.5     0.75   -0.75  ], iota = 65.0 graus, dt = 0.250 (3 s)
+  passos (0.001, 0.01, 0.01, 0.01):
+    T0 livre      sigma = [5.92867 2.57343 0.7819  0.19765]
+    T0 iota conh. sigma = [5.39517 2.34897 0.358   0.0147 ]
+    T0 intrinseco sigma = [5.24098e+00 9.21416e-01 8.17050e-02 2.30427e-03] ; sigma4/sigma1 = 4.397e-04
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [0.0272 0.8727 0.0462 0.4853]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.0529  0.6522  0.0373 -0.7552]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 2.857e-02 rad
+  passos (0.0002, 0.002, 0.002, 0.002):
+    T0 livre      sigma = [5.92813 2.57341 0.7819  0.1976 ]
+    T0 iota conh. sigma = [5.39457 2.34898 0.35793 0.01471]
+    T0 intrinseco sigma = [5.24037e+00 9.21343e-01 8.17078e-02 2.30383e-03] ; sigma4/sigma1 = 4.396e-04
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [0.0272 0.8727 0.0462 0.4854]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.0529  0.6522  0.0373 -0.7552]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 2.856e-02 rad
+  |J(h1) - J(h2)|_F (intrinseco, escala abs) = 8.06e-04 (comparar com sigma4 intrinseco)
+
+== perto q1 q1.05 (+0.2,+0.2) M65: p = [4.1744 1.05   0.2    0.2   ], iota = 50.0 graus, dt = 0.250 (4 s)
+  passos (0.001, 0.01, 0.01, 0.01):
+    T0 livre      sigma = [4.37451 1.66871 0.63183 0.11229]
+    T0 iota conh. sigma = [3.67447 1.33605 0.21448 0.00621]
+    T0 intrinseco sigma = [3.12364e+00 3.32908e-01 1.79998e-02 3.07131e-04] ; sigma4/sigma1 = 9.832e-05
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [ 0.0038  0.4886  0.6234 -0.6104]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.0882  0.6967  0.0413 -0.7107]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 2.789e-02 rad
+  passos (0.0002, 0.002, 0.002, 0.002):
+    T0 livre      sigma = [4.37452 1.66871 0.63183 0.11229]
+    T0 iota conh. sigma = [3.67447 1.33605 0.21448 0.00621]
+    T0 intrinseco sigma = [3.12364e+00 3.32904e-01 1.80103e-02 3.06259e-04] ; sigma4/sigma1 = 9.805e-05
+      v (direita, menor sigma) em (lnM, q, chi1, chi2) = [ 0.0038  0.4883  0.6236 -0.6105]
+      u (esquerda, menor sigma) em (desl, spin, CM, giro) = [ 0.0882  0.6968  0.0412 -0.7107]
+      angulo entre as linhas spin e giro (intrinseco, escala abs): 2.789e-02 rad
+  |J(h1) - J(h2)|_F (intrinseco, escala abs) = 9.29e-05 (comparar com sigma4 intrinseco)

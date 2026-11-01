@@ -1,0 +1,23 @@
+Polimento extra de 8 minimos interiores (residuo do interpolante entre 1e-3 e 1e-2)
+
+Por ponto: E = solucoes exatas T0 (residuo < 1e-8, dentro do dominio); b = minimos na borda |chi1| = 0.8 (residuo);
+i = minimos interiores sem solucao (residuo exato); T = numero de phi'_B (de 8) com solucao T (residuo do interpolante < 1e-6)
+chi2_B +0.8 | 1E T6                  | 1E b3e-02 T6           | 1E b3e-02 T6           | 1E T8                  | 1E T8                  | 1E T8                  | 1E T8                  | 1E T8                  | 1E T8                  | 1E T8                  | 1E T8                  | 1E b3e-02 T8           | 1E b3e-02 T8          
+chi2_B +0.6 | 1E T8                  | 1E T8                  | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b4e-02 T8           | 1E T8                  | 1E b4e-02 T8           | 1E T8                  | 1E b4e-02 T8           | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b2e-02 T8          
+chi2_B +0.4 | 1E T8                  | 1E T8                  | 1E T8                  | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b3e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E T8                 
+chi2_B +0.2 | 1E T8                  | 1E T8                  | 1E b3e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b1e-02 T8           | 1E b1e-02 T8           | 1E b7e-03 T3(2)        | 1E b1e-03 T0          
+chi2_B -0.0 | 1E T8                  | 1E T8                  | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b2e-02 T8           | 1E b1e-02 T8           | 1E b1e-02 T8(2)        | 1E b1e-02 T8(2)        | 1E b8e-03 T8(2)        | 1E b5e-03 T2(2)        | 1E b1e-03 T0           | 0E i3e-03 T0           | 0E b9e-03 T0          
+chi2_B -0.2 | 1E T6                  | 1E T5                  | 1E b1e-02 T4           | 1E b8e-03 T5(2)        | 1E b6e-03 T5(2)        | 1E b4e-03 T5(2)        | 1E b3e-03 T3(2)        | 1E b4e-04 T0           | 2E T0                  | 0E i4e-03 T0           | 0E i8e-03 T0           | 0E T0                  | 0E b2e-02 T0          
+chi2_B -0.4 | 1E T4                  | 1E T4                  | 1E i4e-04 T2           | 0E i1e-03 T1           | 0E i2e-03 T0           | 0E i3e-03 T0           | 0E i5e-03 T0           | 0E i8e-03 T0           | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E b3e-02 T0          
+chi2_B -0.6 | 0E b4e-03 T3           | 0E b8e-03 T2           | 0E b1e-02 T0           | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E b3e-02 T0           | 0E b3e-02 T0           | 0E T0                 
+chi2_B -0.8 | 0E b2e-02 T2           | 0E b2e-02 T1           | 0E b2e-02 T0           | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E T0                  | 0E b4e-02 T0           | 0E T0                  | 0E T0                  | 0E T0                 
+q_B:          1.00                   | 1.25                   | 1.50                   | 1.75                   | 2.00                   | 2.25                   | 2.50                   | 2.75                   | 3.00                   | 3.25                   | 3.50                   | 3.75                   | 4.00                  
+
+Pontos com solucao exata: 75 de 117 ; solucoes exatas: 76 ; pontos com mais de uma: 1 [(3.0, -0.2)]
+Componentes conexas (vizinhanca 4) dos pontos com solucao: 1, tamanhos [75]
+Saltos entre vizinhos (primeira solucao): max |d chi1| 0.369, max |d M| 4.05, max |d iota| 5.23 graus
+  faixa de chi1  nas solucoes exatas: -0.5607 a 0.7414
+  faixa de M     nas solucoes exatas: 64.7071 a 90.0659
+  faixa de D     nas solucoes exatas: 369.9923 a 412.3733
+  faixa de iota  nas solucoes exatas: 46.6518 a 64.8178
+  M_f fisico (M_sol): 61.316 a 87.391 (A: 61.735)

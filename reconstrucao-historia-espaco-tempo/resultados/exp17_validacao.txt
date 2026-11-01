@@ -1,0 +1,37 @@
+(a) memorias_varias (referencial 'ti') contra observaveis.memorias_observaveis(todos_m=True)
+  (1.2, +0.3, -0.2) M 65: dif max 2.0e-15 ; d M_f 0.0e+00 ; d t_i 0.0e+00 M ; borda inicial m != 0: desl 1.7e-06 spin 1.5e-04 cm 2.7e-04 giro 1.7e-05
+  (1.2, +0.3, -0.2) M 80: dif max 7.1e-15 ; d M_f -1.1e-16 ; d t_i 0.0e+00 M ; borda inicial m != 0: desl 3.2e-06 spin 2.3e-04 cm 4.1e-04 giro 2.8e-05
+  (1.2, +0.3, -0.2) M 120: dif max 7.7e-12 ; d M_f 1.0e-14 ; d t_i 1.7e-08 M ; borda inicial m != 0: desl 1.1e-05 spin 5.8e-04 cm 9.7e-04 giro 7.2e-05
+  (3.0, +0.6, +0.0) M 65: dif max 1.5e-15 ; d M_f 0.0e+00 ; d t_i 0.0e+00 M ; borda inicial m != 0: desl 4.8e-06 spin 4.4e-04 cm 3.6e-04 giro 4.7e-05
+  (3.0, +0.6, +0.0) M 80: dif max 1.2e-14 ; d M_f 0.0e+00 ; d t_i 0.0e+00 M ; borda inicial m != 0: desl 8.4e-06 spin 6.9e-04 cm 5.5e-04 giro 7.4e-05
+  (3.0, +0.6, +0.0) M 120: dif max 1.7e-12 ; d M_f -2.0e-15 ; d t_i -5.9e-09 M ; borda inicial m != 0: desl 2.6e-05 spin 1.7e-03 cm 1.3e-03 giro 1.8e-04
+  (0.8, -0.2, +0.3) M 65: dif max 2.9e-15 ; d M_f 0.0e+00 ; d t_i 0.0e+00 M ; borda inicial m != 0: desl 1.7e-06 spin 1.7e-04 cm 2.7e-04 giro 1.9e-05
+  (0.8, -0.2, +0.3) M 80: dif max 8.5e-15 ; d M_f 0.0e+00 ; d t_i 0.0e+00 M ; borda inicial m != 0: desl 3.2e-06 spin 2.7e-04 cm 4.2e-04 giro 3.1e-05
+  (0.8, -0.2, +0.3) M 120: dif max 9.0e-12 ; d M_f 1.4e-14 ; d t_i 2.4e-08 M ; borda inicial m != 0: desl 1.1e-05 spin 6.6e-04 cm 9.8e-04 giro 8.0e-05
+
+(b) media sobre o inicio da janela (m != 0, referencial do pico): diferenca contra n_orb = 3, 256 pontos
+  n_orb 2, 128 pontos: M 30: 1.6e-08 ; M 65: 3.2e-07 ; M 120: 3.9e-06
+  n_orb 3, 128 pontos: M 30: 2.4e-13 ; M 65: 4.5e-12 ; M 120: 4.4e-11
+  n_orb 5, 192 pontos: M 30: 8.6e-09 ; M 65: 2.0e-07 ; M 120: 3.3e-06
+  n_orb 8, 384 pontos: M 30: 1.3e-08 ; M 65: 3.7e-07 ; M 120: 4.4e-06
+
+(c) erro relativo do interpolante da tabela no observador (iota 50, phi' 0.7): max sobre as quatro memorias
+  q_B 1.00 chi2_B -0.0 chi1 +0.200 M 115.2: T0 6.7e-06 ; T 6.6e-06
+  q_B 1.00 chi2_B -0.0 chi1 +0.441 M 57.9: T0 6.1e-05 ; T 6.1e-05
+  q_B 1.00 chi2_B -0.0 chi1 -0.320 M 112.5: T0 3.0e-05 ; T 3.0e-05
+  q_B 1.50 chi2_B +0.2 chi1 -0.792 M 106.6: T0 3.2e-05 ; T 3.3e-05
+  q_B 1.50 chi2_B +0.2 chi1 +0.475 M 74.3: T0 1.8e-04 ; T 1.8e-04
+  q_B 1.50 chi2_B +0.2 chi1 -0.315 M 61.2: T0 1.5e-04 ; T 1.5e-04
+  q_B 2.00 chi2_B +0.4 chi1 -0.392 M 72.5: T0 4.3e-05 ; T 4.4e-05
+  q_B 2.00 chi2_B +0.4 chi1 +0.007 M 81.1: T0 4.3e-05 ; T 4.4e-05
+  q_B 2.00 chi2_B +0.4 chi1 +0.793 M 103.5: T0 1.7e-06 ; T 7.9e-06
+  q_B 2.75 chi2_B -0.2 chi1 +0.195 M 126.6: T0 7.3e-07 ; T 2.7e-05
+  q_B 2.75 chi2_B -0.2 chi1 -0.456 M 54.2: T0 1.7e-05 ; T 1.1e-04
+  q_B 2.75 chi2_B -0.2 chi1 +0.180 M 48.1: T0 2.4e-05 ; T 6.1e-05
+  q_B 3.50 chi2_B +0.6 chi1 -0.743 M 77.9: T0 3.2e-05 ; T 3.5e-05
+  q_B 3.50 chi2_B +0.6 chi1 -0.054 M 117.6: T0 1.3e-05 ; T 1.0e-04
+  q_B 3.50 chi2_B +0.6 chi1 +0.207 M 77.8: T0 3.8e-05 ; T 4.1e-05
+  q_B 4.00 chi2_B +0.8 chi1 -0.005 M 59.3: T0 1.0e-05 ; T 1.4e-05
+  q_B 4.00 chi2_B +0.8 chi1 -0.781 M 56.0: T0 1.4e-04 ; T 1.4e-04
+  q_B 4.00 chi2_B +0.8 chi1 +0.307 M 56.5: T0 8.3e-05 ; T 2.0e-04
+  mediana / maximo: T0 3.2e-05 / 1.8e-04 ; T 4.4e-05 / 2.0e-04

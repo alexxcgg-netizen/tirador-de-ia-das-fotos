@@ -1,0 +1,18 @@
+Gaunt (3j do sympy) contra quadratura com harmonicos.sYlm, 7 casos: max |dif| = 8.5e-15
+coeficientes de Gaunt nao nulos (L = 2..8, modos oscilatorios): 110
+
+dt = 0.250 M: valor final Re s: serie_memoria 1.6449830393e-22 ; deslocamento de janela 1.6449830393e-22 ; independente (deriv. 8a ordem) 1.6449830393e-22 (dif. +3.5e-12) ; independente (deriv. spline) 1.6449810459e-22 (dif. -1.2e-06)
+  Re s(u) independente / serie_memoria - 1: u=-16330: -5.1e-11 ; u=-5000: -2.1e-10 ; u=-1000: -2.7e-09 ; u=-100: -2.0e-07 ; u=-20: -3.8e-06 ; u=0: -1.2e-05 ; u=20: +8.0e-06 ; u=50: +6.4e-08
+  max |Im s| (so m = 0, deve ser 0): serie_memoria 0.0e+00 ; independente 6.2e-41
+
+dt = 0.125 M: valor final Re s: serie_memoria 1.6449831065e-22 ; deslocamento de janela 1.6449831065e-22 ; independente (deriv. 8a ordem) 1.6449831065e-22 (dif. +5.7e-13) ; independente (deriv. spline) 1.6449829789e-22 (dif. -7.8e-08)
+  Re s(u) independente / serie_memoria - 1: u=-16330: -1.3e-11 ; u=-5000: -5.3e-11 ; u=-1000: -6.6e-10 ; u=-100: -5.0e-08 ; u=-20: -9.6e-07 ; u=0: -2.9e-06 ; u=20: +2.0e-06 ; u=50: +1.6e-08
+  max |Im s| (so m = 0, deve ser 0): serie_memoria 0.0e+00 ; independente 1.7e-41
+  (53 s)
+
+SNR (h_+) da memoria nula de A, D = 400 Mpc, iota 50, phi 0, f_min 10 Hz:
+  aLIGO: snr2 0.4702 ; outro tratamento (8192 Hz, Planck 16 s) 0.4702 ; serie independente L <= 8 0.4702 ; L <= 4 0.4703 (rev_R5 0.470) ; 4096 Hz, 4 s + 8 s 0.4702
+  A+   : snr2 0.8920 ; outro tratamento (8192 Hz, Planck 16 s) 0.8920 ; serie independente L <= 8 0.8920 ; L <= 4 0.8922 (rev_R5 0.892) ; 4096 Hz, 4 s + 8 s 0.8920
+  ET   : snr2 8.6405 ; outro tratamento (8192 Hz, Planck 16 s) 8.6403 ; serie independente L <= 8 8.6405 ; L <= 4 8.6420 (rev_R5 8.642) ; 4096 Hz, 4 s + 8 s 8.6403
+  CE   : snr2 34.0901 ; outro tratamento (8192 Hz, Planck 16 s) 34.0896 ; serie independente L <= 8 34.0901 ; L <= 4 34.0962 (rev_R5 34.096) ; 4096 Hz, 4 s + 8 s 34.0896
+  (69 s)

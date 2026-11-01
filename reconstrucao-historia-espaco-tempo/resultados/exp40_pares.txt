@@ -1,0 +1,58 @@
+exp40_pares: pares do exp12 (A circular x B excentrica, janela desde 10 Hz) com as correcoes da L16
+A (SEOBNRv5EHM, e0 = 0), valores com as correcoes: deslocamento 1.643716e-22, spin -2.489040e-25, cm -2.917035e-26, giroscopica -3.156014e-41
+  cadeia do exp12 (derivada de 8a ordem) contra exp12_pares.json:
+   deslocamento +1.11e-07 spin +5.31e-07 cm -1.10e-07 giroscopica +5.63e-07
+
+B e0 = 0.1, q_B = 1.2, chi2_B = -0.2 (exp12: M 65.158 chi1 +0.3491 D 401.70 iota 49.38 graus, residuo 5.5e-04) ; max|h20_osc| = 2.38e-03
+   cadeia do exp12        : max 5.21e-04 [desl -1.82e-05 spin +1.86e-04 cm -5.21e-04 giro -9.96e-05] ; E_lig B 5.577524e-03
+   so (2,0) oscilatorio    : max 5.20e-04 [desl -1.93e-05 spin +1.86e-04 cm -5.20e-04 giro -9.96e-05] ; E_lig B 5.577524e-03
+   so E_lig EOB excentrica : max 5.23e-04 [desl -1.82e-05 spin +1.86e-04 cm -5.23e-04 giro -9.96e-05] ; E_lig B 5.550727e-03
+   as duas correcoes       : max 5.22e-04 [desl -1.93e-05 spin +1.86e-04 cm -5.22e-04 giro -9.96e-05] ; E_lig B 5.550727e-03
+   resolvido de novo com as correcoes: max 9.50e-07 [desl +1.4e-16 spin +5.7e-07 cm +1.8e-07 giro +9.5e-07] -> M 65.1471 (-1.6e-04) chi1 +0.3832 (+3.4e-02) D 403.17 iota 48.964 graus
+   tentativas (residuo, avaliacoes, diff_step): (np.float64(0.0005417939694975123), 15, 0.003); (np.float64(0.00044774275508460503), 18, 0.01); (np.float64(0.00043595503910483414), 26, 0.003); (np.float64(9.49609970121331e-07), 31, 0.01)
+
+B e0 = 0.2, q_B = 1.2, chi2_B = -0.2 (exp12: M 65.906 chi1 +0.5565 D 412.98 iota 46.17 graus, residuo 2.4e-04) ; max|h20_osc| = 5.18e-03
+   cadeia do exp12        : max 2.60e-04 [desl +1.09e-04 spin +2.60e-04 cm -1.20e-04 giro -1.44e-04] ; E_lig B 5.618531e-03
+   so (2,0) oscilatorio    : max 2.60e-04 [desl +1.05e-04 spin +2.60e-04 cm -1.16e-04 giro -1.44e-04] ; E_lig B 5.618531e-03
+   so E_lig EOB excentrica : max 2.60e-04 [desl +1.09e-04 spin +2.60e-04 cm -1.23e-04 giro -1.44e-04] ; E_lig B 5.590049e-03
+   as duas correcoes       : max 2.60e-04 [desl +1.05e-04 spin +2.60e-04 cm -1.19e-04 giro -1.44e-04] ; E_lig B 5.590049e-03
+   resolvido de novo com as correcoes: max 4.96e-06 [desl +0.0e+00 spin -9.9e-07 cm -9.1e-07 giro +5.0e-06] -> M 65.9306 (+3.8e-04) chi1 +0.5618 (+5.3e-03) D 413.39 iota 46.107 graus
+   tentativas (residuo, avaliacoes, diff_step): (np.float64(0.00014159586144680015), 25, 0.003); (np.float64(0.00023537573399602405), 17, 0.01); (np.float64(4.960096084071141e-06), 24, 0.003); (np.float64(1.3501067451657742e-05), 23, 0.01)
+
+B e0 = 0.3, q_B = 1.2, chi2_B = -0.2 (exp12: M 67.390 chi1 +0.6706 D 416.63 iota 44.38 graus, residuo 1.1e-02) ; max|h20_osc| = 8.49e-03
+   cadeia do exp12        : max 1.15e-02 [desl +9.95e-06 spin +5.58e-03 cm -1.15e-02 giro -1.58e-03] ; E_lig B 5.699378e-03
+   so (2,0) oscilatorio    : max 1.15e-02 [desl +1.65e-06 spin +5.58e-03 cm -1.15e-02 giro -1.58e-03] ; E_lig B 5.699378e-03
+   so E_lig EOB excentrica : max 1.15e-02 [desl +9.95e-06 spin +5.58e-03 cm -1.15e-02 giro -1.58e-03] ; E_lig B 5.645095e-03
+   as duas correcoes       : max 1.15e-02 [desl +1.65e-06 spin +5.58e-03 cm -1.15e-02 giro -1.58e-03] ; E_lig B 5.645095e-03
+   resolvido de novo com as correcoes: max 1.07e-02 [desl +1.4e-16 spin +1.1e-02 cm -1.1e-02 giro -3.6e-03] -> M 67.0220 (-5.5e-03) chi1 +0.6428 (-2.8e-02) D 411.49 iota 44.867 graus
+   tentativas (residuo, avaliacoes, diff_step): (np.float64(0.011451541278943562), 21, 0.003); (np.float64(0.011457329946712957), 21, 0.01); (np.float64(0.01138336872319876), 26, 0.003); (np.float64(0.010867427431948663), 22, 0.01); (np.float64(0.01138171386975029), 22, 0.003); (np.float64(0.010713255436446993), 33, 0.01)
+
+B e0 = 0.2, q_B = 2.0, chi2_B = +0.0 (exp12: M 72.588 chi1 +0.0596 D 383.23 iota 56.31 graus, residuo 1.3e-06) ; max|h20_osc| = 4.72e-03
+   cadeia do exp12        : max 6.76e-06 [desl +6.24e-06 spin -2.34e-06 cm -6.76e-06 giro -1.98e-06] ; E_lig B 5.357896e-03
+   so (2,0) oscilatorio    : max 2.34e-06 [desl +9.88e-07 spin -2.34e-06 cm -1.19e-06 giro -1.98e-06] ; E_lig B 5.357896e-03
+   so E_lig EOB excentrica : max 4.65e-05 [desl +6.24e-06 spin -2.34e-06 cm -4.65e-05 giro -1.98e-06] ; E_lig B 5.296320e-03
+   as duas correcoes       : max 4.10e-05 [desl +9.88e-07 spin -2.34e-06 cm -4.10e-05 giro -1.98e-06] ; E_lig B 5.296320e-03
+   resolvido de novo com as correcoes: max 1.55e-06 [desl +0.0e+00 spin +1.5e-06 cm +7.1e-08 giro -1.1e-06] -> M 72.5850 (-3.4e-05) chi1 +0.0597 (+5.8e-05) D 383.23 iota 56.314 graus
+   tentativas (residuo, avaliacoes, diff_step): (np.float64(3.157259487173045e-05), 19, 0.003); (np.float64(3.141833105324065e-05), 17, 0.01); (np.float64(1.1350357495272454e-05), 16, 0.003); (np.float64(1.5481220715990924e-06), 22, 0.01)
+
+B e0 = 0.3, q_B = 2.0, chi2_B = +0.0 (exp12: M 73.232 chi1 +0.1833 D 387.71 iota 53.96 graus, residuo 2.0e-06) ; max|h20_osc| = 7.67e-03
+   cadeia do exp12        : max 8.64e-06 [desl -8.64e-06 spin +3.18e-06 cm +5.83e-06 giro +1.10e-06] ; E_lig B 5.388277e-03
+   so (2,0) oscilatorio    : max 1.91e-05 [desl -1.91e-05 spin +3.18e-06 cm +1.72e-05 giro +1.10e-06] ; E_lig B 5.388277e-03
+   so E_lig EOB excentrica : max 5.73e-05 [desl -8.64e-06 spin +3.18e-06 cm -5.73e-05 giro +1.10e-06] ; E_lig B 5.303891e-03
+   as duas correcoes       : max 4.59e-05 [desl -1.91e-05 spin +3.18e-06 cm -4.59e-05 giro +1.10e-06] ; E_lig B 5.303891e-03
+   resolvido de novo com as correcoes: max 2.74e-06 [desl +0.0e+00 spin +1.7e-06 cm -2.7e-06 giro +8.0e-07] -> M 73.2287 (-4.3e-05) chi1 +0.1835 (+1.4e-04) D 387.72 iota 53.956 graus
+   tentativas (residuo, avaliacoes, diff_step): (np.float64(2.7428159629979597e-06), 20, 0.003); (np.float64(5.577188645820737e-05), 18, 0.01)
+
+B e0 = 0.2, q_B = 1.0, chi2_B = +0.0 (exp12: M 65.606 chi1 +0.6676 D 421.61 iota 43.98 graus, residuo 5.8e-05) ; max|h20_osc| = 5.27e-03
+   cadeia do exp12        : max 5.66e-05 [desl -5.66e-05 spin -5.21e-05 cm +4.74e-05 giro +2.59e-05] ; E_lig B 5.648726e-03
+   so (2,0) oscilatorio    : max 6.05e-05 [desl -6.05e-05 spin -5.21e-05 cm +5.15e-05 giro +2.59e-05] ; E_lig B 5.648726e-03
+   so E_lig EOB excentrica : max 5.95e-05 [desl -5.66e-05 spin -5.21e-05 cm +5.95e-05 giro +2.59e-05] ; E_lig B 5.637735e-03
+   as duas correcoes       : max 6.36e-05 [desl -6.05e-05 spin -5.21e-05 cm +6.36e-05 giro +2.59e-05] ; E_lig B 5.637735e-03
+   resolvido de novo com as correcoes: max 2.42e-05 [desl +1.4e-16 spin -2.4e-05 cm +1.9e-05 giro +1.4e-06] -> M 65.5990 (-1.0e-04) chi1 +0.6664 (-1.2e-03) D 421.54 iota 43.989 graus
+   tentativas (residuo, avaliacoes, diff_step): (np.float64(6.665789980021843e-05), 26, 0.003); (np.float64(2.4164040109996383e-05), 20, 0.01); (np.float64(6.957262317116028e-05), 31, 0.003); (np.float64(0.00011333880281204878), 24, 0.01); (np.float64(0.00036258267554003035), 22, 0.003); (np.float64(0.00022730050397908006), 25, 0.01)
+
+Conferencia do (2,0) newtoniano:
+  q = 2.0, e0 = 0.2: max|h20_osc|/max|h22| (2 orbitas) EOB-newtoniano 0.0520 ; PN newtoniano 0.0725 ; razao 0.717
+  q = 1.2, e0 = 0.1: max|h20_osc|/max|h22| (2 orbitas) EOB-newtoniano 0.0292 ; PN newtoniano 0.0380 ; razao 0.767
+  q = 1.2, e0 = 0.3: max|h20_osc|/max|h22| (2 orbitas) EOB-newtoniano 0.0739 ; PN newtoniano 0.1040 ; razao 0.710
+(418 s)

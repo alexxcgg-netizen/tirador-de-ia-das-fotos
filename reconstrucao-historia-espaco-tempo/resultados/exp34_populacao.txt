@@ -1,0 +1,359 @@
+exp34_populacao: zeros da memoria de deslocamento no ceu (NRSur7dq4, nivel A, janela f_22 >= 0.0070, l <= 8)
+angulos em graus; e1 = eixo principal do tensor l = 2 do deslocamento; e_Q = eixo de luminosidade
+
+Sistemas nomeados (icosfera nivel 6):
+  AL1 q 1.20 chiA [0.0, 0.0, 0.3] chiB [0.0, 0.0, -0.2]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.094 graus
+      meia abertura dos pares: medida 2.547 graus ; eixos opticos de A (l = 2) 2.595 ; prevista por Q 0.010 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 0.01 ; L_pico 0.01 ; J_rad 0.00 ; chi_f 0.00 ; J_i 0.01 ; e_Q 0.00
+      angulo do ponto medio do par (+) com: L_i 0.22 ; L_pico 0.21 ; J_rad 0.21 ; chi_f 0.21 ; J_i 0.22 ; e_Q 0.21
+      spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  AL2 q 3.00 chiA [0.0, 0.0, 0.5] chiB [0.0, 0.0, 0.3]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 2.666 graus
+      meia abertura dos pares: medida 1.333 graus ; eixos opticos de A (l = 2) 1.253 ; prevista por Q 0.026 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 0.03 ; L_pico 0.06 ; J_rad 0.02 ; chi_f 0.03 ; J_i 0.03 ; e_Q 0.02
+      angulo do ponto medio do par (+) com: L_i 0.27 ; L_pico 0.30 ; J_rad 0.27 ; chi_f 0.27 ; J_i 0.27 ; e_Q 0.28
+      spin: 6 zeros, indices [0.5, 0.5, -0.5, 0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  P1 q 2.00 chiA [0.5, 0.0, 0.2] chiB [0.0, -0.3, 0.1]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 3.905 graus
+      meia abertura dos pares: medida 2.307 graus ; eixos opticos de A (l = 2) 2.096 ; prevista por Q 2.497 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 8.37 ; L_pico 6.95 ; J_rad 2.55 ; chi_f 5.48 ; J_i 4.84 ; e_Q 0.80
+      angulo do ponto medio do par (+) com: L_i 8.04 ; L_pico 7.00 ; J_rad 2.39 ; chi_f 5.53 ; J_i 4.88 ; e_Q 0.97
+      spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  P2 q 1.20 chiA [0.6, 0.2, 0.0] chiB [-0.3, 0.4, 0.2]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 2.920 graus
+      meia abertura dos pares: medida 1.460 graus ; eixos opticos de A (l = 2) 1.616 ; prevista por Q 1.044 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 7.69 ; L_pico 2.57 ; J_rad 0.95 ; chi_f 2.91 ; J_i 2.45 ; e_Q 0.39
+      angulo do ponto medio do par (+) com: L_i 7.71 ; L_pico 2.45 ; J_rad 1.16 ; chi_f 3.04 ; J_i 2.58 ; e_Q 0.39
+      spin: 6 zeros, indices [0.5, 0.5, 0.5, -0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  P3 q 3.00 chiA [0.7, 0.0, 0.0] chiB [0.0, 0.0, 0.1]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 10.231 graus
+      meia abertura dos pares: medida 5.115 graus ; eixos opticos de A (l = 2) 6.610 ; prevista por Q 8.060 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 21.48 ; L_pico 12.85 ; J_rad 10.90 ; chi_f 15.69 ; J_i 15.48 ; e_Q 2.74
+      angulo do ponto medio do par (+) com: L_i 22.34 ; L_pico 13.40 ; J_rad 10.04 ; chi_f 15.15 ; J_i 14.82 ; e_Q 3.53
+      spin: 6 zeros, indices [0.5, 0.5, 0.5, -0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  P4 q 1.05 chiA [0.5, 0.0, 0.0] chiB [-0.5, 0.0, 0.0]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 2.833 graus
+      meia abertura dos pares: medida 2.943 graus ; eixos opticos de A (l = 2) 2.150 ; prevista por Q 0.571 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 0.56 ; L_pico 0.99 ; J_rad 0.47 ; chi_f 1.09 ; J_i 0.91 ; e_Q 0.27
+      angulo do ponto medio do par (+) com: L_i 0.49 ; L_pico 1.02 ; J_rad 0.49 ; chi_f 1.06 ; J_i 0.90 ; e_Q 0.29
+      spin: 6 zeros, indices [0.5, 0.5, 0.5, -0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  P5 q 1.50 chiA [0.3, 0.3, -0.3] chiB [0.2, -0.4, 0.4]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 7.763 graus
+      meia abertura dos pares: medida 4.084 graus ; eixos opticos de A (l = 2) 4.014 ; prevista por Q 2.755 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.38 ; L_pico 4.86 ; J_rad 2.93 ; chi_f 5.20 ; J_i 5.01 ; e_Q 0.68
+      angulo do ponto medio do par (+) com: L_i 3.85 ; L_pico 4.89 ; J_rad 3.39 ; chi_f 5.24 ; J_i 5.17 ; e_Q 0.89
+      spin: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  P6 q 4.00 chiA [0.8, 0.0, -0.1] chiB [0.0, 0.0, 0.1]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 17.085 graus
+      meia abertura dos pares: medida 8.543 graus ; eixos opticos de A (l = 2) 12.106 ; prevista por Q 14.434 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 37.15 ; L_pico 18.65 ; J_rad 19.85 ; chi_f 24.77 ; J_i 24.85 ; e_Q 4.98
+      angulo do ponto medio do par (+) com: L_i 39.19 ; L_pico 18.22 ; J_rad 19.13 ; chi_f 24.97 ; J_i 24.80 ; e_Q 5.50
+      spin: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; CM: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00
+  AL1 so m = 0: zeros [[2e-06, -2e-06, 1.0], [2e-06, 4e-06, -1.0]], indices [1.0, 1.0] ; com todos os m: razao |l=2, m!=0|/|a20| = 1.79e-03, sqrt = 4.23e-02 rad = 2.425 graus
+
+Populacao aleatoria (60 sistemas, icosfera nivel 5):
+  R00 q 1.39 chiA [0.15, 0.13, -0.05] chiB [-0.52, 0.56, -0.06]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.085 graus
+      meia abertura dos pares: medida 3.084 graus ; eixos opticos de A (l = 2) 2.559 ; prevista por Q 1.004 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 8.5e-07 graus
+      angulo de e1 com: L_i 8.08 ; L_pico 2.06 ; J_rad 0.25 ; chi_f 1.39 ; J_i 1.49 ; e_Q 0.50
+      angulo do ponto medio do par (+) com: L_i 8.18 ; L_pico 2.24 ; J_rad 0.14 ; chi_f 1.15 ; J_i 1.21 ; e_Q 0.57
+      (301 s)
+  R01 q 2.87 chiA [0.27, -0.02, 0.12] chiB [-0.17, 0.21, 0.37]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.719 graus
+      meia abertura dos pares: medida 2.360 graus ; eixos opticos de A (l = 2) 2.416 ; prevista por Q 1.815 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 6.84 ; L_pico 4.93 ; J_rad 3.34 ; chi_f 5.03 ; J_i 4.78 ; e_Q 0.43
+      angulo do ponto medio do par (+) com: L_i 6.24 ; L_pico 4.81 ; J_rad 3.67 ; chi_f 5.11 ; J_i 4.94 ; e_Q 0.69
+      (305 s)
+  R02 q 3.45 chiA [0.18, -0.23, -0.39] chiB [-0.08, -0.23, -0.1]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 15.254 graus
+      meia abertura dos pares: medida 7.627 graus ; eixos opticos de A (l = 2) 8.540 ; prevista por Q 9.569 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 32.98 ; L_pico 8.33 ; J_rad 8.27 ; chi_f 20.73 ; J_i 13.44 ; e_Q 1.79
+      angulo do ponto medio do par (+) com: L_i 32.23 ; L_pico 8.41 ; J_rad 8.82 ; chi_f 19.36 ; J_i 12.22 ; e_Q 2.72
+      (308 s)
+  R03 q 3.41 chiA [-0.25, 0.01, 0.15] chiB [-0.14, 0.07, 0.13]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.009 graus
+      meia abertura dos pares: medida 2.505 graus ; eixos opticos de A (l = 2) 3.111 ; prevista por Q 2.271 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 8.85 ; L_pico 5.85 ; J_rad 3.36 ; chi_f 5.90 ; J_i 5.10 ; e_Q 0.95
+      angulo do ponto medio do par (+) com: L_i 8.86 ; L_pico 6.51 ; J_rad 2.64 ; chi_f 5.05 ; J_i 4.27 ; e_Q 1.68
+      (312 s)
+  R04 q 3.02 chiA [0.1, -0.02, -0.07] chiB [0.11, 0.47, -0.55]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 10.480 graus
+      meia abertura dos pares: medida 5.240 graus ; eixos opticos de A (l = 2) 5.467 ; prevista por Q 2.334 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 8.44 ; L_pico 2.75 ; J_rad 2.64 ; chi_f 4.31 ; J_i 3.43 ; e_Q 0.47
+      angulo do ponto medio do par (+) com: L_i 7.46 ; L_pico 3.82 ; J_rad 1.58 ; chi_f 3.28 ; J_i 2.31 ; e_Q 1.43
+      (316 s)
+  R05 q 3.09 chiA [-0.76, 0.06, 0.23] chiB [0.1, 0.06, 0.04]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 7.153 graus
+      meia abertura dos pares: medida 6.051 graus ; eixos opticos de A (l = 2) 5.273 ; prevista por Q 7.280 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 17.70 ; L_pico 16.63 ; J_rad 5.31 ; chi_f 10.69 ; J_i 9.89 ; e_Q 2.84
+      angulo do ponto medio do par (+) com: L_i 19.31 ; L_pico 17.62 ; J_rad 5.28 ; chi_f 9.85 ; J_i 9.08 ; e_Q 4.03
+      (320 s)
+  R06 q 3.54 chiA [-0.14, 0.06, 0.06] chiB [0.17, -0.12, 0.37]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.365 graus
+      meia abertura dos pares: medida 3.183 graus ; eixos opticos de A (l = 2) 3.366 ; prevista por Q 2.039 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 7.58 ; L_pico 3.02 ; J_rad 2.65 ; chi_f 4.41 ; J_i 3.79 ; e_Q 0.53
+      angulo do ponto medio do par (+) com: L_i 7.34 ; L_pico 3.98 ; J_rad 1.70 ; chi_f 3.58 ; J_i 2.89 ; e_Q 1.49
+      (323 s)
+  R07 q 1.38 chiA [0.22, -0.57, 0.39] chiB [0.06, -0.07, 0.14]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.403 graus
+      meia abertura dos pares: medida 2.201 graus ; eixos opticos de A (l = 2) 2.359 ; prevista por Q 2.426 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 11.45 ; L_pico 5.03 ; J_rad 1.38 ; chi_f 3.30 ; J_i 2.31 ; e_Q 0.75
+      angulo do ponto medio do par (+) com: L_i 11.50 ; L_pico 5.22 ; J_rad 1.36 ; chi_f 3.15 ; J_i 2.12 ; e_Q 0.92
+      (327 s)
+  R08 q 1.05 chiA [0.19, 0.39, 0.55] chiB [0.69, 0.36, -0.07]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.922 graus
+      meia abertura dos pares: medida 3.990 graus ; eixos opticos de A (l = 2) 3.678 ; prevista por Q 4.040 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 16.62 ; L_pico 11.17 ; J_rad 2.55 ; chi_f 5.70 ; J_i 3.27 ; e_Q 1.15
+      angulo do ponto medio do par (+) com: L_i 16.78 ; L_pico 10.98 ; J_rad 2.68 ; chi_f 5.90 ; J_i 3.47 ; e_Q 0.99
+      (331 s)
+  R09 q 3.82 chiA [-0.41, 0.19, 0.43] chiB [-0.06, -0.26, 0.05]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 2.287 graus
+      meia abertura dos pares: medida 2.067 graus ; eixos opticos de A (l = 2) 1.711 ; prevista por Q 3.312 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 15.95 ; L_pico 11.45 ; J_rad 2.68 ; chi_f 5.78 ; J_i 5.30 ; e_Q 1.42
+      angulo do ponto medio do par (+) com: L_i 15.10 ; L_pico 11.41 ; J_rad 2.39 ; chi_f 5.94 ; J_i 5.45 ; e_Q 1.55
+      (334 s)
+  R10 q 3.54 chiA [-0.52, -0.17, 0.21] chiB [0.25, -0.44, 0.18]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.633 graus
+      meia abertura dos pares: medida 2.954 graus ; eixos opticos de A (l = 2) 2.906 ; prevista por Q 4.773 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 12.99 ; L_pico 8.87 ; J_rad 5.58 ; chi_f 10.65 ; J_i 9.23 ; e_Q 1.85
+      angulo do ponto medio do par (+) com: L_i 13.04 ; L_pico 8.65 ; J_rad 5.83 ; chi_f 11.07 ; J_i 9.64 ; e_Q 1.76
+      (338 s)
+  R11 q 1.43 chiA [-0.52, 0.28, 0.22] chiB [-0.13, -0.74, -0.28]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 2.854 graus
+      meia abertura dos pares: medida 2.609 graus ; eixos opticos de A (l = 2) 1.465 ; prevista por Q 1.543 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 9.21 ; L_pico 3.43 ; J_rad 1.44 ; chi_f 2.55 ; J_i 2.67 ; e_Q 0.92
+      angulo do ponto medio do par (+) com: L_i 9.48 ; L_pico 3.14 ; J_rad 1.48 ; chi_f 2.75 ; J_i 2.75 ; e_Q 0.79
+      (342 s)
+  R12 q 1.43 chiA [-0.5, 0.47, 0.18] chiB [0.01, -0.05, -0.15]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 7.494 graus
+      meia abertura dos pares: medida 4.768 graus ; eixos opticos de A (l = 2) 4.243 ; prevista por Q 3.919 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 7.04 ; L_pico 8.48 ; J_rad 3.05 ; chi_f 6.68 ; J_i 6.23 ; e_Q 1.47
+      angulo do ponto medio do par (+) com: L_i 7.23 ; L_pico 8.55 ; J_rad 3.33 ; chi_f 6.77 ; J_i 6.33 ; e_Q 1.41
+      (345 s)
+  R13 q 2.83 chiA [-0.33, -0.26, 0.24] chiB [-0.19, -0.25, 0.14]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 3.969 graus
+      meia abertura dos pares: medida 1.984 graus ; eixos opticos de A (l = 2) 1.430 ; prevista por Q 3.339 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 9.14 ; L_pico 10.51 ; J_rad 3.36 ; chi_f 7.05 ; J_i 6.15 ; e_Q 1.37
+      angulo do ponto medio do par (+) com: L_i 8.85 ; L_pico 10.36 ; J_rad 3.54 ; chi_f 7.48 ; J_i 6.51 ; e_Q 1.45
+      (349 s)
+  R14 q 1.39 chiA [0.16, -0.07, 0.06] chiB [-0.61, 0.33, -0.25]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.746 graus
+      meia abertura dos pares: medida 3.229 graus ; eixos opticos de A (l = 2) 2.814 ; prevista por Q 2.342 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.98 ; L_pico 5.25 ; J_rad 1.57 ; chi_f 4.39 ; J_i 3.10 ; e_Q 1.03
+      angulo do ponto medio do par (+) com: L_i 5.03 ; L_pico 5.45 ; J_rad 1.57 ; chi_f 4.20 ; J_i 2.91 ; e_Q 1.14
+      (353 s)
+  R15 q 3.10 chiA [0.14, 0.09, 0.11] chiB [-0.37, -0.39, -0.26]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.599 graus
+      meia abertura dos pares: medida 3.101 graus ; eixos opticos de A (l = 2) 3.016 ; prevista por Q 1.071 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.39 ; L_pico 2.52 ; J_rad 2.26 ; chi_f 3.24 ; J_i 3.03 ; e_Q 0.40
+      angulo do ponto medio do par (+) com: L_i 5.11 ; L_pico 3.08 ; J_rad 1.63 ; chi_f 3.11 ; J_i 2.74 ; e_Q 0.88
+      (357 s)
+  R16 q 3.41 chiA [-0.06, 0.16, -0.22] chiB [-0.02, 0.06, 0.29]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 13.049 graus
+      meia abertura dos pares: medida 7.533 graus ; eixos opticos de A (l = 2) 7.023 ; prevista por Q 4.630 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 16.25 ; L_pico 3.73 ; J_rad 4.39 ; chi_f 8.77 ; J_i 6.34 ; e_Q 0.69
+      angulo do ponto medio do par (+) com: L_i 17.35 ; L_pico 2.95 ; J_rad 5.27 ; chi_f 9.85 ; J_i 7.45 ; e_Q 0.80
+      (361 s)
+  R17 q 2.82 chiA [-0.11, 0.31, 0.12] chiB [0.36, -0.14, 0.07]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.826 graus
+      meia abertura dos pares: medida 2.913 graus ; eixos opticos de A (l = 2) 3.308 ; prevista por Q 2.200 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 8.39 ; L_pico 4.82 ; J_rad 3.38 ; chi_f 6.13 ; J_i 5.20 ; e_Q 1.03
+      angulo do ponto medio do par (+) com: L_i 8.34 ; L_pico 5.46 ; J_rad 2.83 ; chi_f 5.36 ; J_i 4.46 ; e_Q 1.80
+      (364 s)
+  R18 q 2.66 chiA [0.7, 0.26, 0.23] chiB [-0.04, -0.2, 0.03]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 3.679 graus
+      meia abertura dos pares: medida 1.839 graus ; eixos opticos de A (l = 2) 2.863 ; prevista por Q 5.471 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 14.38 ; L_pico 11.07 ; J_rad 4.75 ; chi_f 11.30 ; J_i 9.16 ; e_Q 2.50
+      angulo do ponto medio do par (+) com: L_i 13.35 ; L_pico 11.13 ; J_rad 4.81 ; chi_f 11.81 ; J_i 9.66 ; e_Q 2.47
+      (368 s)
+  R19 q 3.40 chiA [0.55, 0.21, 0.21] chiB [-0.41, -0.15, -0.45]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 8.848 graus
+      meia abertura dos pares: medida 4.424 graus ; eixos opticos de A (l = 2) 4.885 ; prevista por Q 6.255 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 11.92 ; L_pico 11.65 ; J_rad 7.03 ; chi_f 11.66 ; J_i 11.32 ; e_Q 2.33
+      angulo do ponto medio do par (+) com: L_i 12.73 ; L_pico 12.13 ; J_rad 6.35 ; chi_f 11.16 ; J_i 10.78 ; e_Q 2.99
+      (372 s)
+  R20 q 2.15 chiA [0.34, 0.01, 0.52] chiB [0.32, -0.27, -0.26]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 2.661 graus
+      meia abertura dos pares: medida 1.330 graus ; eixos opticos de A (l = 2) 1.415 ; prevista por Q 1.782 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 11.05 ; L_pico 4.12 ; J_rad 1.21 ; chi_f 3.09 ; J_i 1.71 ; e_Q 0.44
+      angulo do ponto medio do par (+) com: L_i 11.01 ; L_pico 4.32 ; J_rad 1.21 ; chi_f 2.85 ; J_i 1.46 ; e_Q 0.68
+      (376 s)
+  R21 q 1.19 chiA [0.15, -0.3, -0.57] chiB [0.53, 0.02, -0.47]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 8.842 graus
+      meia abertura dos pares: medida 4.421 graus ; eixos opticos de A (l = 2) 4.990 ; prevista por Q 3.265 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 16.02 ; L_pico 4.92 ; J_rad 4.48 ; chi_f 7.28 ; J_i 5.69 ; e_Q 1.01
+      angulo do ponto medio do par (+) com: L_i 15.76 ; L_pico 4.77 ; J_rad 4.82 ; chi_f 7.29 ; J_i 5.88 ; e_Q 0.99
+      (380 s)
+  R22 q 2.11 chiA [0.3, -0.25, 0.08] chiB [-0.32, 0.07, 0.22]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 3.187 graus
+      meia abertura dos pares: medida 2.080 graus ; eixos opticos de A (l = 2) 1.834 ; prevista por Q 2.210 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.76 ; L_pico 6.48 ; J_rad 3.04 ; chi_f 5.81 ; J_i 4.91 ; e_Q 0.72
+      angulo do ponto medio do par (+) com: L_i 5.03 ; L_pico 6.45 ; J_rad 3.12 ; chi_f 6.15 ; J_i 5.18 ; e_Q 0.86
+      (383 s)
+  R23 q 2.58 chiA [0.1, 0.02, 0.04] chiB [0.06, -0.09, 0.07]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.528 graus
+      meia abertura dos pares: medida 3.568 graus ; eixos opticos de A (l = 2) 3.447 ; prevista por Q 0.764 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 8.5e-07 graus
+      angulo de e1 com: L_i 3.68 ; L_pico 1.40 ; J_rad 1.17 ; chi_f 2.03 ; J_i 1.75 ; e_Q 0.30
+      angulo do ponto medio do par (+) com: L_i 3.72 ; L_pico 0.73 ; J_rad 1.83 ; chi_f 2.66 ; J_i 2.41 ; e_Q 0.37
+      (387 s)
+  R24 q 3.97 chiA [0.05, 0.21, 0.12] chiB [0.23, -0.15, -0.04]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.107 graus
+      meia abertura dos pares: medida 2.554 graus ; eixos opticos de A (l = 2) 3.624 ; prevista por Q 2.753 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 10.09 ; L_pico 7.37 ; J_rad 3.87 ; chi_f 6.47 ; J_i 5.47 ; e_Q 1.16
+      angulo do ponto medio do par (+) com: L_i 9.38 ; L_pico 7.73 ; J_rad 3.56 ; chi_f 5.75 ; J_i 4.83 ; e_Q 1.73
+      (391 s)
+  R25 q 3.60 chiA [0.09, -0.5, -0.34] chiB [-0.27, -0.17, 0.15]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 25.640 graus
+      meia abertura dos pares: medida 12.820 graus ; eixos opticos de A (l = 2) 13.036 ; prevista por Q 15.440 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 8.5e-07 graus
+      angulo de e1 com: L_i 56.27 ; L_pico 11.75 ; J_rad 17.39 ; chi_f 30.09 ; J_i 23.14 ; e_Q 2.51
+      angulo do ponto medio do par (+) com: L_i 56.51 ; L_pico 11.05 ; J_rad 18.42 ; chi_f 30.22 ; J_i 23.46 ; e_Q 1.94
+      (395 s)
+  R26 q 2.52 chiA [0.18, -0.04, -0.32] chiB [0.09, -0.08, 0.06]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 9.762 graus
+      meia abertura dos pares: medida 4.881 graus ; eixos opticos de A (l = 2) 5.373 ; prevista por Q 3.589 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 13.44 ; L_pico 3.95 ; J_rad 3.78 ; chi_f 7.30 ; J_i 4.89 ; e_Q 0.75
+      angulo do ponto medio do par (+) com: L_i 13.42 ; L_pico 4.71 ; J_rad 2.75 ; chi_f 7.26 ; J_i 4.59 ; e_Q 1.72
+      (398 s)
+  R27 q 2.36 chiA [-0.38, -0.06, -0.05] chiB [0.24, 0.43, -0.1]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.869 graus
+      meia abertura dos pares: medida 3.435 graus ; eixos opticos de A (l = 2) 3.800 ; prevista por Q 2.562 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 10.48 ; L_pico 5.19 ; J_rad 4.94 ; chi_f 7.43 ; J_i 6.89 ; e_Q 0.58
+      angulo do ponto medio do par (+) com: L_i 11.20 ; L_pico 5.79 ; J_rad 4.19 ; chi_f 7.15 ; J_i 6.40 ; e_Q 1.31
+      (402 s)
+  R28 q 1.26 chiA [0.22, 0.33, -0.12] chiB [0.51, 0.2, -0.16]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 7.616 graus
+      meia abertura dos pares: medida 3.808 graus ; eixos opticos de A (l = 2) 3.986 ; prevista por Q 3.465 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 6.63 ; L_pico 6.00 ; J_rad 3.16 ; chi_f 6.53 ; J_i 6.66 ; e_Q 1.22
+      angulo do ponto medio do par (+) com: L_i 6.91 ; L_pico 6.26 ; J_rad 2.91 ; chi_f 6.24 ; J_i 6.38 ; e_Q 1.47
+      (406 s)
+  R29 q 2.12 chiA [0.07, -0.11, 0.3] chiB [0.3, -0.01, -0.72]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.143 graus
+      meia abertura dos pares: medida 2.571 graus ; eixos opticos de A (l = 2) 2.684 ; prevista por Q 0.612 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.21 ; L_pico 1.55 ; J_rad 0.75 ; chi_f 1.30 ; J_i 1.23 ; e_Q 0.41
+      angulo do ponto medio do par (+) com: L_i 3.94 ; L_pico 1.88 ; J_rad 0.79 ; chi_f 1.08 ; J_i 1.15 ; e_Q 0.80
+      (410 s)
+  R30 q 1.50 chiA [-0.37, 0.19, -0.14] chiB [-0.27, 0.1, 0.25]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.404 graus
+      meia abertura dos pares: medida 3.311 graus ; eixos opticos de A (l = 2) 2.757 ; prevista por Q 1.672 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 8.16 ; L_pico 3.07 ; J_rad 1.80 ; chi_f 3.39 ; J_i 3.55 ; e_Q 0.52
+      angulo do ponto medio do par (+) com: L_i 7.89 ; L_pico 2.78 ; J_rad 2.10 ; chi_f 3.71 ; J_i 3.87 ; e_Q 0.21
+      (413 s)
+  R31 q 1.38 chiA [0.17, -0.08, 0.42] chiB [0.16, 0.29, -0.57]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.143 graus
+      meia abertura dos pares: medida 2.572 graus ; eixos opticos de A (l = 2) 2.701 ; prevista por Q 0.488 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.40 ; L_pico 0.90 ; J_rad 0.17 ; chi_f 0.84 ; J_i 0.80 ; e_Q 0.15
+      angulo do ponto medio do par (+) com: L_i 4.12 ; L_pico 0.57 ; J_rad 0.56 ; chi_f 1.25 ; J_i 1.22 ; e_Q 0.39
+      (417 s)
+  R32 q 2.43 chiA [0.08, -0.07, 0.08] chiB [0.15, -0.37, 0.15]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.735 graus
+      meia abertura dos pares: medida 2.868 graus ; eixos opticos de A (l = 2) 2.920 ; prevista por Q 0.772 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.77 ; L_pico 2.44 ; J_rad 0.97 ; chi_f 1.98 ; J_i 1.63 ; e_Q 0.48
+      angulo do ponto medio do par (+) com: L_i 4.21 ; L_pico 2.78 ; J_rad 1.16 ; chi_f 1.81 ; J_i 1.62 ; e_Q 0.88
+      (421 s)
+  R33 q 3.15 chiA [-0.07, -0.2, -0.03] chiB [0.09, -0.66, 0.23]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 7.911 graus
+      meia abertura dos pares: medida 3.955 graus ; eixos opticos de A (l = 2) 4.205 ; prevista por Q 3.117 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 14.28 ; L_pico 5.39 ; J_rad 4.85 ; chi_f 7.04 ; J_i 6.31 ; e_Q 0.66
+      angulo do ponto medio do par (+) com: L_i 14.49 ; L_pico 4.58 ; J_rad 5.66 ; chi_f 7.73 ; J_i 7.08 ; e_Q 0.57
+      (425 s)
+  R34 q 2.25 chiA [0.35, -0.32, 0.2] chiB [-0.34, 0.13, -0.01]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.282 graus
+      meia abertura dos pares: medida 3.856 graus ; eixos opticos de A (l = 2) 3.395 ; prevista por Q 3.486 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 5.17 ; L_pico 7.41 ; J_rad 3.83 ; chi_f 6.62 ; J_i 6.45 ; e_Q 0.91
+      angulo do ponto medio do par (+) com: L_i 5.18 ; L_pico 7.43 ; J_rad 4.12 ; chi_f 6.68 ; J_i 6.53 ; e_Q 1.04
+      (429 s)
+  R35 q 2.01 chiA [-0.05, 0.01, 0.22] chiB [-0.32, -0.01, -0.02]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.701 graus
+      meia abertura dos pares: medida 2.554 graus ; eixos opticos de A (l = 2) 2.497 ; prevista por Q 0.544 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 3.70 ; L_pico 1.21 ; J_rad 0.40 ; chi_f 0.68 ; J_i 0.48 ; e_Q 0.28
+      angulo do ponto medio do par (+) com: L_i 3.52 ; L_pico 1.56 ; J_rad 0.04 ; chi_f 0.39 ; J_i 0.12 ; e_Q 0.66
+      (432 s)
+  R36 q 2.16 chiA [-0.21, 0.06, 0.74] chiB [-0.24, -0.01, -0.08]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 1.649 graus
+      meia abertura dos pares: medida 0.825 graus ; eixos opticos de A (l = 2) 0.916 ; prevista por Q 0.551 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 6.16 ; L_pico 0.91 ; J_rad 0.42 ; chi_f 0.57 ; J_i 0.29 ; e_Q 0.18
+      angulo do ponto medio do par (+) com: L_i 6.32 ; L_pico 0.87 ; J_rad 0.57 ; chi_f 0.70 ; J_i 0.43 ; e_Q 0.24
+      (436 s)
+  R37 q 3.67 chiA [0.62, 0.3, 0.28] chiB [-0.01, 0.1, 0.38]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.005 graus
+      meia abertura dos pares: medida 3.969 graus ; eixos opticos de A (l = 2) 3.499 ; prevista por Q 5.701 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 20.56 ; L_pico 11.97 ; J_rad 4.51 ; chi_f 11.30 ; J_i 9.15 ; e_Q 2.49
+      angulo do ponto medio do par (+) com: L_i 21.58 ; L_pico 12.57 ; J_rad 4.18 ; chi_f 10.46 ; J_i 8.34 ; e_Q 3.37
+      (439 s)
+  R38 q 3.06 chiA [0.15, 0.02, -0.01] chiB [-0.11, -0.13, -0.55]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 8.225 graus
+      meia abertura dos pares: medida 4.933 graus ; eixos opticos de A (l = 2) 4.509 ; prevista por Q 1.870 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 7.66 ; L_pico 3.32 ; J_rad 2.58 ; chi_f 4.11 ; J_i 3.25 ; e_Q 0.56
+      angulo do ponto medio do par (+) com: L_i 8.65 ; L_pico 3.64 ; J_rad 2.48 ; chi_f 4.73 ; J_i 3.66 ; e_Q 1.07
+      (443 s)
+  R39 q 2.22 chiA [-0.02, 0.11, 0.05] chiB [-0.18, -0.02, 0.04]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.190 graus
+      meia abertura dos pares: medida 3.151 graus ; eixos opticos de A (l = 2) 3.155 ; prevista por Q 1.111 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 3.79 ; L_pico 2.82 ; J_rad 1.42 ; chi_f 2.68 ; J_i 2.13 ; e_Q 0.42
+      angulo do ponto medio do par (+) com: L_i 3.23 ; L_pico 2.94 ; J_rad 1.68 ; chi_f 2.60 ; J_i 2.19 ; e_Q 0.70
+      (447 s)
+  R40 q 3.92 chiA [0.16, -0.13, -0.24] chiB [0.0, 0.12, -0.02]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 12.976 graus
+      meia abertura dos pares: medida 6.488 graus ; eixos opticos de A (l = 2) 6.968 ; prevista por Q 7.101 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 23.47 ; L_pico 5.71 ; J_rad 6.45 ; chi_f 14.00 ; J_i 9.70 ; e_Q 0.95
+      angulo do ponto medio do par (+) com: L_i 22.19 ; L_pico 7.30 ; J_rad 4.84 ; chi_f 13.19 ; J_i 8.68 ; e_Q 2.55
+      (451 s)
+  R41 q 1.67 chiA [0.36, -0.35, 0.28] chiB [-0.21, 0.56, -0.02]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.953 graus
+      meia abertura dos pares: medida 2.477 graus ; eixos opticos de A (l = 2) 2.677 ; prevista por Q 3.420 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 1.69 ; L_pico 7.77 ; J_rad 3.04 ; chi_f 7.15 ; J_i 5.46 ; e_Q 1.40
+      angulo do ponto medio do par (+) com: L_i 1.92 ; L_pico 8.15 ; J_rad 2.74 ; chi_f 6.75 ; J_i 5.07 ; e_Q 1.77
+      (454 s)
+  R42 q 3.38 chiA [-0.18, -0.19, 0.57] chiB [0.32, 0.13, -0.18]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 3.312 graus
+      meia abertura dos pares: medida 1.656 graus ; eixos opticos de A (l = 2) 1.599 ; prevista por Q 1.575 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 8.61 ; L_pico 4.24 ; J_rad 1.33 ; chi_f 3.20 ; J_i 2.26 ; e_Q 0.42
+      angulo do ponto medio do par (+) com: L_i 8.70 ; L_pico 4.08 ; J_rad 1.46 ; chi_f 3.36 ; J_i 2.41 ; e_Q 0.26
+      (458 s)
+  R43 q 1.40 chiA [0.1, 0.25, -0.51] chiB [-0.01, 0.25, -0.36]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 10.988 graus
+      meia abertura dos pares: medida 5.494 graus ; eixos opticos de A (l = 2) 5.882 ; prevista por Q 2.300 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 11.97 ; L_pico 3.33 ; J_rad 3.16 ; chi_f 5.26 ; J_i 3.83 ; e_Q 0.67
+      angulo do ponto medio do par (+) com: L_i 11.39 ; L_pico 3.75 ; J_rad 2.95 ; chi_f 4.68 ; J_i 3.37 ; e_Q 1.23
+      (462 s)
+  R44 q 3.13 chiA [0.21, -0.24, 0.18] chiB [0.09, 0.11, 0.09]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 3.940 graus
+      meia abertura dos pares: medida 2.553 graus ; eixos opticos de A (l = 2) 2.044 ; prevista por Q 2.458 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 7.82 ; L_pico 6.97 ; J_rad 3.99 ; chi_f 6.31 ; J_i 6.07 ; e_Q 0.76
+      angulo do ponto medio do par (+) com: L_i 8.70 ; L_pico 7.39 ; J_rad 3.48 ; chi_f 6.09 ; J_i 5.75 ; e_Q 1.38
+      (465 s)
+  R45 q 2.35 chiA [-0.05, -0.2, -0.01] chiB [0.56, -0.03, -0.39]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.983 graus
+      meia abertura dos pares: medida 3.565 graus ; eixos opticos de A (l = 2) 3.248 ; prevista por Q 3.018 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 10.35 ; L_pico 6.62 ; J_rad 3.46 ; chi_f 6.58 ; J_i 4.85 ; e_Q 1.14
+      angulo do ponto medio do par (+) com: L_i 9.64 ; L_pico 6.90 ; J_rad 3.52 ; chi_f 6.17 ; J_i 4.57 ; e_Q 1.44
+      (469 s)
+  R46 q 2.66 chiA [0.29, 0.14, -0.03] chiB [-0.09, 0.31, 0.04]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.066 graus
+      meia abertura dos pares: medida 3.831 graus ; eixos opticos de A (l = 2) 3.285 ; prevista por Q 3.010 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 13.65 ; L_pico 8.19 ; J_rad 4.96 ; chi_f 8.22 ; J_i 6.56 ; e_Q 1.17
+      angulo do ponto medio do par (+) com: L_i 14.68 ; L_pico 8.29 ; J_rad 4.90 ; chi_f 8.69 ; J_i 6.86 ; e_Q 1.53
+      (473 s)
+  R47 q 2.51 chiA [-0.33, 0.04, -0.28] chiB [0.02, -0.01, -0.32]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 11.400 graus
+      meia abertura dos pares: medida 7.061 graus ; eixos opticos de A (l = 2) 6.259 ; prevista por Q 5.303 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 21.20 ; L_pico 6.62 ; J_rad 6.11 ; chi_f 10.98 ; J_i 7.66 ; e_Q 1.27
+      angulo do ponto medio do par (+) com: L_i 22.19 ; L_pico 6.82 ; J_rad 5.90 ; chi_f 11.91 ; J_i 8.35 ; e_Q 1.53
+      (477 s)
+  R48 q 3.61 chiA [-0.46, 0.56, -0.21] chiB [-0.06, -0.45, 0.4]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 21.970 graus
+      meia abertura dos pares: medida 10.985 graus ; eixos opticos de A (l = 2) 12.712 ; prevista por Q 13.912 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 54.65 ; L_pico 11.06 ; J_rad 19.08 ; chi_f 28.90 ; J_i 25.09 ; e_Q 4.13
+      angulo do ponto medio do par (+) com: L_i 52.31 ; L_pico 12.20 ; J_rad 18.28 ; chi_f 26.81 ; J_i 23.20 ; e_Q 6.00
+      (481 s)
+  R49 q 2.35 chiA [-0.1, -0.55, -0.13] chiB [-0.65, -0.17, 0.06]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 8.149 graus
+      meia abertura dos pares: medida 4.075 graus ; eixos opticos de A (l = 2) 4.617 ; prevista por Q 4.456 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 20.38 ; L_pico 6.36 ; J_rad 6.46 ; chi_f 10.93 ; J_i 9.45 ; e_Q 1.94
+      angulo do ponto medio do par (+) com: L_i 19.82 ; L_pico 7.13 ; J_rad 5.95 ; chi_f 10.06 ; J_i 8.68 ; e_Q 2.83
+      (485 s)
+  R50 q 3.96 chiA [-0.1, -0.16, 0.1] chiB [-0.03, 0.11, 0.17]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 7.008 graus
+      meia abertura dos pares: medida 4.506 graus ; eixos opticos de A (l = 2) 3.879 ; prevista por Q 2.457 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 10.30 ; L_pico 4.89 ; J_rad 3.55 ; chi_f 5.88 ; J_i 5.05 ; e_Q 0.87
+      angulo do ponto medio do par (+) com: L_i 11.12 ; L_pico 4.68 ; J_rad 4.15 ; chi_f 6.74 ; J_i 5.86 ; e_Q 1.19
+      (488 s)
+  R51 q 1.06 chiA [0.12, -0.4, -0.0] chiB [0.45, 0.14, 0.03]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 6.025 graus
+      meia abertura dos pares: medida 3.012 graus ; eixos opticos de A (l = 2) 3.130 ; prevista por Q 1.866 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 6.01 ; L_pico 3.48 ; J_rad 1.42 ; chi_f 3.91 ; J_i 3.49 ; e_Q 0.68
+      angulo do ponto medio do par (+) com: L_i 5.88 ; L_pico 3.37 ; J_rad 1.51 ; chi_f 4.04 ; J_i 3.61 ; e_Q 0.61
+      (492 s)
+  R52 q 1.29 chiA [0.12, 0.28, -0.12] chiB [0.25, -0.54, 0.33]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.581 graus
+      meia abertura dos pares: medida 2.821 graus ; eixos opticos de A (l = 2) 2.600 ; prevista por Q 2.344 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 4.16 ; L_pico 5.92 ; J_rad 1.67 ; chi_f 4.61 ; J_i 3.17 ; e_Q 0.86
+      angulo do ponto medio do par (+) com: L_i 4.32 ; L_pico 6.47 ; J_rad 1.36 ; chi_f 4.05 ; J_i 2.61 ; e_Q 1.36
+      (496 s)
+  R53 q 1.04 chiA [-0.02, 0.25, -0.48] chiB [0.41, -0.48, 0.39]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.521 graus
+      meia abertura dos pares: medida 2.761 graus ; eixos opticos de A (l = 2) 3.069 ; prevista por Q 2.114 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 3.71 ; L_pico 4.15 ; J_rad 1.50 ; chi_f 4.10 ; J_i 3.13 ; e_Q 0.78
+      angulo do ponto medio do par (+) com: L_i 3.45 ; L_pico 3.52 ; J_rad 2.17 ; chi_f 4.76 ; J_i 3.79 ; e_Q 0.14
+      (499 s)
+  R54 q 1.73 chiA [-0.03, -0.26, 0.08] chiB [0.62, -0.44, 0.21]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 4.381 graus
+      meia abertura dos pares: medida 2.190 graus ; eixos opticos de A (l = 2) 2.431 ; prevista por Q 1.196 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 10.25 ; L_pico 3.77 ; J_rad 1.42 ; chi_f 2.68 ; J_i 1.89 ; e_Q 0.82
+      angulo do ponto medio do par (+) com: L_i 10.50 ; L_pico 3.70 ; J_rad 1.29 ; chi_f 2.74 ; J_i 1.81 ; e_Q 0.92
+      (503 s)
+  R55 q 3.72 chiA [0.31, 0.06, -0.1] chiB [0.39, 0.24, -0.11]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 12.952 graus
+      meia abertura dos pares: medida 8.400 graus ; eixos opticos de A (l = 2) 7.241 ; prevista por Q 6.371 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 27.15 ; L_pico 9.13 ; J_rad 7.79 ; chi_f 12.42 ; J_i 9.49 ; e_Q 1.54
+      angulo do ponto medio do par (+) com: L_i 28.27 ; L_pico 9.91 ; J_rad 7.30 ; chi_f 13.19 ; J_i 10.00 ; e_Q 2.38
+      (507 s)
+  R56 q 2.78 chiA [-0.41, -0.33, 0.14] chiB [-0.26, 0.26, 0.27]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 5.569 graus
+      meia abertura dos pares: medida 2.784 graus ; eixos opticos de A (l = 2) 3.146 ; prevista por Q 4.156 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 8.5e-07 graus
+      angulo de e1 com: L_i 11.10 ; L_pico 8.41 ; J_rad 4.80 ; chi_f 9.60 ; J_i 8.15 ; e_Q 1.73
+      angulo do ponto medio do par (+) com: L_i 11.48 ; L_pico 9.07 ; J_rad 4.21 ; chi_f 8.83 ; J_i 7.40 ; e_Q 2.49
+      (511 s)
+  R57 q 3.43 chiA [-0.36, -0.14, 0.6] chiB [0.21, -0.33, 0.37]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 2.101 graus
+      meia abertura dos pares: medida 1.050 graus ; eixos opticos de A (l = 2) 1.357 ; prevista por Q 2.180 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 14.11 ; L_pico 6.67 ; J_rad 1.94 ; chi_f 3.89 ; J_i 2.73 ; e_Q 0.60
+      angulo do ponto medio do par (+) com: L_i 14.06 ; L_pico 6.73 ; J_rad 1.90 ; chi_f 3.83 ; J_i 2.67 ; e_Q 0.66
+      (515 s)
+  R58 q 3.91 chiA [-0.58, -0.47, 0.2] chiB [0.21, 0.17, -0.31]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 10.618 graus
+      meia abertura dos pares: medida 9.381 graus ; eixos opticos de A (l = 2) 8.000 ; prevista por Q 9.416 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 18.80 ; L_pico 21.43 ; J_rad 7.28 ; chi_f 13.00 ; J_i 12.65 ; e_Q 3.52
+      angulo do ponto medio do par (+) com: L_i 21.14 ; L_pico 23.62 ; J_rad 6.74 ; chi_f 11.43 ; J_i 11.13 ; e_Q 5.38
+      (519 s)
+  R59 q 2.44 chiA [-0.45, 0.55, 0.09] chiB [0.26, -0.51, -0.49]: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 (icosfera 2.00) ; menor distancia entre zeros 12.642 graus
+      meia abertura dos pares: medida 7.899 graus ; eixos opticos de A (l = 2) 7.044 ; prevista por Q 7.345 ; zeros so de l = 2 contra eixos opticos: 4 zeros, desvio max 0.0e+00 graus
+      angulo de e1 com: L_i 13.60 ; L_pico 9.88 ; J_rad 8.94 ; chi_f 13.51 ; J_i 13.40 ; e_Q 2.23
+      angulo do ponto medio do par (+) com: L_i 13.30 ; L_pico 9.28 ; J_rad 9.59 ; chi_f 14.10 ; J_i 14.01 ; e_Q 1.61
+      (522 s)
+
+Resumo da populacao (60):
+  numero de zeros: {4: 60}
+  somas de indices (laco): [2.0] ; (icosfera): [2.0]
+  angulo e1 - L_i   : mediana 10.17, percentil 90 20.63, max 56.27 ; ponto medio do par - L_i   : mediana 9.56, p90 21.64, max 56.51
+  angulo e1 - L_pico: mediana 5.55, percentil 90 11.20, max 21.43 ; ponto medio do par - L_pico: mediana 6.03, p90 11.16, max 23.62
+  angulo e1 - J_rad : mediana 3.25, percentil 90 7.06, max 19.08 ; ponto medio do par - J_rad : mediana 2.93, p90 6.39, max 18.42
+  angulo e1 - chi_f : mediana 6.01, percentil 90 12.48, max 30.09 ; ponto medio do par - chi_f : mediana 6.01, p90 12.04, max 30.22
+  angulo e1 - J_i   : mediana 5.08, percentil 90 10.04, max 25.09 ; ponto medio do par - J_i   : mediana 4.88, p90 10.08, max 23.46
+  angulo e1 - e_Q   : mediana 0.89, percentil 90 2.35, max 4.13 ; ponto medio do par - e_Q   : mediana 1.33, p90 2.73, max 6.00
+  meia abertura medida: mediana 3.21 graus (min 0.82, max 12.82) ; |medida - eixos opticos de A|: mediana 0.38, max 1.73 ; |medida - prevista por Q|: mediana 1.14, max 3.63 ; correlacao (medida, Q) 0.853
+  inclinacao de chi_f em relacao a L_i: mediana 10.25 graus, max 31.16

@@ -1,0 +1,75 @@
+1_lnM_-1 15 s
+1_lnM_1 27 s
+base 38 s
+1_q_-1 39 s
+1_q_1 50 s
+1_c1_-1 50 s
+1_c1_1 62 s
+1_c2_-1 63 s
+1_c2_1 75 s
+2_lnM_-1 76 s
+2_lnM_1 86 s
+2_q_-1 88 s
+2_q_1 98 s
+2_c1_-1 101 s
+2_c1_1 110 s
+2_c2_-1 113 s
+2_c2_1 123 s
+rho_+, rho_x: {'aLIGO': (np.float64(0.47024603690907885), np.float64(0.06698006361225192)), 'A+': (np.float64(0.8920254042138243), np.float64(0.12740847279894815)), 'ET': (np.float64(8.638320668216949), np.float64(0.8135110919933185)), 'CE': (np.float64(34.08875104246683), np.float64(3.21109178912208))}
+1 aLIGO lam [4.249e+01 3.650e-01 6.250e-03 4.713e-05 4.865e-06] d_ef 1.251 I 2.95 I_intr 0.011 post lnM 0.316 cosi 0.509 t0 7.70e-03
+    prior t0_10ms d_ef 0.907 I 0.95 I_intr 0.016 post_lnM 0.315
+    prior t0_1s d_ef 1.274 I 7.25 I_intr 0.011 post_lnM 0.316
+    prior M_fator2 d_ef 1.247 I 2.95 I_intr 0.008 post_lnM 0.200
+    prior M_fator10 d_ef 1.271 I 2.97 I_intr 0.028 post_lnM 0.655
+    prior q_1a8 d_ef 1.255 I 2.95 I_intr 0.016 post_lnM 0.316
+1 A+ lam [1.536e+02 1.313e+00 2.209e-02 1.689e-04 1.749e-05] d_ef 1.583 I 4.26 I_intr 0.030 post lnM 0.314 cosi 0.419 t0 4.25e-03
+    prior t0_10ms d_ef 1.452 I 2.05 I_intr 0.036 post_lnM 0.312
+    prior t0_1s d_ef 1.589 I 8.57 I_intr 0.030 post_lnM 0.314
+    prior M_fator2 d_ef 1.571 I 4.25 I_intr 0.020 post_lnM 0.199
+    prior M_fator10 d_ef 1.647 I 4.31 I_intr 0.081 post_lnM 0.635
+    prior q_1a8 d_ef 1.589 I 4.27 I_intr 0.040 post_lnM 0.314
+1 ET lam [5.815e+03 1.267e+02 1.249e+00 1.184e-02 6.770e-04] d_ef 2.560 I 10.34 I_intr 0.606 post lnM 0.219 cosi 0.244 t0 1.37e-03
+    prior t0_10ms d_ef 2.554 I 8.04 I_intr 0.610 post_lnM 0.218
+    prior t0_1s d_ef 2.560 I 14.67 I_intr 0.606 post_lnM 0.219
+    prior M_fator2 d_ef 2.362 I 10.07 I_intr 0.333 post_lnM 0.167
+    prior M_fator10 d_ef 2.835 I 11.08 I_intr 1.343 post_lnM 0.275
+    prior q_1a8 d_ef 2.580 I 10.38 I_intr 0.647 post_lnM 0.222
+1 CE lam [8.705e+04 1.969e+03 1.176e+01 1.104e-01 5.056e-03] d_ef 3.027 I 15.59 I_intr 1.704 post lnM 0.121 cosi 0.235 t0 1.09e-03
+    prior t0_10ms d_ef 3.025 I 13.28 I_intr 1.707 post_lnM 0.121
+    prior t0_1s d_ef 3.027 I 19.92 I_intr 1.704 post_lnM 0.121
+    prior M_fator2 d_ef 2.939 I 15.07 I_intr 1.183 post_lnM 0.109
+    prior M_fator10 d_ef 3.088 I 16.58 I_intr 2.686 post_lnM 0.128
+    prior q_1a8 d_ef 3.065 I 15.68 I_intr 1.788 post_lnM 0.135
+    autovetor 1 {'t0': -1.0}
+    autovetor 2 {'lnM': 0.131, 'c1': 0.151, 'c2': 0.101, 'lnD': -0.357, 'cosi': -0.905}
+    autovetor 3 {'lnM': 0.95, 'q': 0.127, 'c1': 0.129, 'c2': 0.115, 'cosi': 0.132, 'psi': -0.171}
+    autovetor 4 {'lnM': 0.242, 'q': -0.278, 'c1': -0.228, 'c2': -0.143, 'psi': 0.889}
+2 aLIGO lam [4.249e+01 3.650e-01 6.241e-03 4.711e-05 4.816e-06] d_ef 1.251 I 2.95 I_intr 0.011 post lnM 0.316 cosi 0.509 t0 7.70e-03
+    prior t0_10ms d_ef 0.907 I 0.95 I_intr 0.016 post_lnM 0.315
+    prior t0_1s d_ef 1.274 I 7.25 I_intr 0.011 post_lnM 0.316
+    prior M_fator2 d_ef 1.247 I 2.95 I_intr 0.008 post_lnM 0.200
+    prior M_fator10 d_ef 1.271 I 2.97 I_intr 0.027 post_lnM 0.655
+    prior q_1a8 d_ef 1.255 I 2.95 I_intr 0.016 post_lnM 0.316
+2 A+ lam [1.536e+02 1.313e+00 2.205e-02 1.688e-04 1.732e-05] d_ef 1.583 I 4.26 I_intr 0.030 post lnM 0.314 cosi 0.419 t0 4.25e-03
+    prior t0_10ms d_ef 1.451 I 2.05 I_intr 0.036 post_lnM 0.312
+    prior t0_1s d_ef 1.589 I 8.57 I_intr 0.029 post_lnM 0.314
+    prior M_fator2 d_ef 1.571 I 4.25 I_intr 0.020 post_lnM 0.199
+    prior M_fator10 d_ef 1.647 I 4.31 I_intr 0.081 post_lnM 0.635
+    prior q_1a8 d_ef 1.589 I 4.27 I_intr 0.039 post_lnM 0.314
+2 ET lam [5.815e+03 1.267e+02 1.248e+00 1.184e-02 6.705e-04] d_ef 2.560 I 10.34 I_intr 0.606 post lnM 0.219 cosi 0.244 t0 1.37e-03
+    prior t0_10ms d_ef 2.554 I 8.04 I_intr 0.610 post_lnM 0.218
+    prior t0_1s d_ef 2.560 I 14.67 I_intr 0.606 post_lnM 0.219
+    prior M_fator2 d_ef 2.362 I 10.07 I_intr 0.333 post_lnM 0.167
+    prior M_fator10 d_ef 2.835 I 11.08 I_intr 1.343 post_lnM 0.275
+    prior q_1a8 d_ef 2.580 I 10.38 I_intr 0.646 post_lnM 0.222
+2 CE lam [8.705e+04 1.969e+03 1.176e+01 1.106e-01 4.992e-03] d_ef 3.027 I 15.59 I_intr 1.704 post lnM 0.121 cosi 0.235 t0 1.09e-03
+    prior t0_10ms d_ef 3.025 I 13.28 I_intr 1.707 post_lnM 0.121
+    prior t0_1s d_ef 3.027 I 19.92 I_intr 1.704 post_lnM 0.121
+    prior M_fator2 d_ef 2.939 I 15.07 I_intr 1.183 post_lnM 0.109
+    prior M_fator10 d_ef 3.088 I 16.58 I_intr 2.686 post_lnM 0.128
+    prior q_1a8 d_ef 3.065 I 15.68 I_intr 1.788 post_lnM 0.135
+    autovetor 1 {'t0': -1.0}
+    autovetor 2 {'lnM': 0.13, 'c1': 0.151, 'c2': 0.101, 'lnD': -0.357, 'cosi': -0.905}
+    autovetor 3 {'lnM': 0.95, 'q': 0.127, 'c1': 0.129, 'c2': 0.115, 'cosi': 0.132, 'psi': -0.171}
+    autovetor 4 {'lnM': 0.242, 'q': -0.278, 'c1': -0.228, 'c2': -0.143, 'psi': 0.889}
+tempo 123 s

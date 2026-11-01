@@ -1,0 +1,140 @@
+(1) Ponto A (q 1.2, chi (0.3, -0.2), M 65, D 400, iota 50, phi' = 0); colunas ('lnM', 'q', 'chi1', 'chi2', 'lnD', 'iota', 'phi')
+    F_ref (fisico, T0, iota 50): [ 1.6450e-22 -2.4979e-25 -2.7929e-26 -3.1565e-41]
+    T0  livre  abs  n=6 sigma = [4.3534 1.672  0.6293 0.1108]  tau = 1.1e-05  posto 4
+    T0  livre  rel  n=6 sigma = [4.3534 1.672  0.6293 0.1108]  tau = 1.1e-05  posto 4
+    T0  iota   abs  n=5 sigma = [3.9903 0.8057 0.3154 0.0346]  tau = 1.1e-05  posto 4
+    T0  iota   rel  n=5 sigma = [3.9903 0.8057 0.3154 0.0346]  tau = 1.1e-05  posto 4
+    T0  iotaD  abs  n=4 sigma = [3.0936e+00 3.1661e-01 4.5298e-02 9.5002e-04]  tau = 1.1e-05  posto 4
+    T0  iotaD  rel  n=4 sigma = [3.0936e+00 3.1661e-01 4.5298e-02 9.5002e-04]  tau = 1.1e-05  posto 4
+    T0  intr   abs  n=4 sigma = [3.0936e+00 3.1661e-01 4.5298e-02 9.5002e-04]  tau = 1.1e-05  posto 4
+    T0  intr   rel  n=4 sigma = [3.0936e+00 3.1661e-01 4.5298e-02 9.5002e-04]  tau = 1.1e-05  posto 4
+    T   livre  abs  n=7 sigma = [4.3685 1.6838 0.6313 0.1158]  tau = 1.1e-05  posto 4
+    T   livre  rel  n=7 sigma = [4.3589 1.6789 0.6295 0.115 ]  tau = 1.1e-05  posto 4
+    T   iota   abs  n=6 sigma = [4.0104 0.8074 0.3129 0.0333]  tau = 1.1e-05  posto 4
+    T   iota   rel  n=6 sigma = [3.9964 0.8059 0.3124 0.033 ]  tau = 1.1e-05  posto 4
+    T   iotaD  abs  n=5 sigma = [3.1104 0.314  0.0348 0.017 ]  tau = 1.1e-05  posto 4
+    T   iotaD  rel  n=5 sigma = [3.1015 0.3137 0.0345 0.017 ]  tau = 1.1e-05  posto 4
+    T   intr   abs  n=4 sigma = [3.1103 0.314  0.0348 0.0165]  tau = 1.1e-05  posto 4
+    T   intr   rel  n=4 sigma = [3.1015 0.3137 0.0345 0.0165]  tau = 1.1e-05  posto 4
+    O   livre  abs  n=7 sigma = [2.7478 0.8827]  tau = 7.1e-06  posto 2
+    O   livre  rel  n=7 sigma = [2.7315 0.8758]  tau = 7.1e-06  posto 2
+    O   iota   abs  n=6 sigma = [2.3473 0.3412]  tau = 7.1e-06  posto 2
+    O   iota   rel  n=6 sigma = [2.3279 0.3393]  tau = 7.1e-06  posto 2
+    O   iotaD  abs  n=5 sigma = [1.8776 0.2703]  tau = 7.1e-06  posto 2
+    O   iotaD  rel  n=5 sigma = [1.8606 0.2691]  tau = 7.1e-06  posto 2
+    O   intr   abs  n=4 sigma = [1.8776 0.2703]  tau = 7.1e-06  posto 2
+    O   intr   rel  n=4 sigma = [1.8606 0.2691]  tau = 7.1e-06  posto 2
+    O0  livre  abs  n=6 sigma = [2.7336 0.8673]  tau = 7.2e-06  posto 2
+    O0  livre  rel  n=6 sigma = [2.7336 0.8673]  tau = 7.2e-06  posto 2
+    O0  iota   abs  n=5 sigma = [2.3213 0.338 ]  tau = 7.2e-06  posto 2
+    O0  iota   rel  n=5 sigma = [2.3213 0.338 ]  tau = 7.2e-06  posto 2
+    O0  iotaD  abs  n=4 sigma = [1.8519 0.2706]  tau = 7.2e-06  posto 2
+    O0  iotaD  rel  n=4 sigma = [1.8519 0.2706]  tau = 7.2e-06  posto 2
+    O0  intr   abs  n=4 sigma = [1.8519 0.2706]  tau = 7.2e-06  posto 2
+    O0  intr   rel  n=4 sigma = [1.8519 0.2706]  tau = 7.2e-06  posto 2
+    [rev_R1 (desl. total, linhas / |F(50)|): sv 4.395 1.665 0.608 0.115; intrinsecos 3.147 0.264 0.0407 6.59e-4]
+    T0 livre rel: jacobiano relativo (linhas desl, spin, CM, giro):
+      deslocamento [ 0.9283 -0.0531  0.4414  0.3115 -1.      1.5807]   (erro max 5.9e-06)
+      spin         [-1.4945  0.055  -0.2628 -0.2018  1.     -0.4725]   (erro max 3.9e-06)
+      cm           [-1.936   0.0817 -0.3789 -0.211   1.     -1.6562]   (erro max 7.7e-06)
+      giroscopica  [-1.4641  0.0511 -0.227  -0.1702  2.      0.1361]   (erro max 3.3e-06)
+
+(2) Espaco nulo de T0 (livre): tangente da fibra na carta do exp07 (q_B, chi2_B livres)
+    d(ln M, chi1, ln D, iota[graus]) / dq  e  / dchi2, em A e em pontos da grade (iota = 50, M = 65)
+    A: d/dq   = lnM +0.0284  chi1 +0.0131  lnD -0.0040  iota +0.612 graus
+       d/dchi2 = lnM +0.0141  chi1 -1.2494  lnD -0.0538  iota +6.272 graus   (cond 6.2e+01)
+    q 1.0 chi (-0.6, +0.0): d/dq: lnM +0.0146 chi1 +0.0140 lnD -0.0375 iota +4.767 | d/dchi2: lnM -0.0057 chi1 -0.7970 lnD +0.0160 iota -1.260
+    q 1.0 chi (+0.0, +0.0): d/dq: lnM -0.0037 chi1 +0.0093 lnD -0.0033 iota +0.181 | d/dchi2: lnM -0.0001 chi1 -0.9974 lnD +0.0003 iota -0.036
+    q 1.0 chi (+0.6, +0.0): d/dq: lnM -0.0116 chi1 +0.0818 lnD +0.0565 iota -7.733 | d/dchi2: lnM +0.0043 chi1 -1.2422 lnD -0.0263 iota +2.629
+    q 1.2 chi (-0.6, +0.0): d/dq: lnM +0.0669 chi1 -0.1337 lnD -0.0731 iota +9.718 | d/dchi2: lnM +0.0051 chi1 -0.8083 lnD -0.0028 iota +1.298
+    q 1.2 chi (+0.0, +0.0): d/dq: lnM +0.0414 chi1 -0.0405 lnD -0.0390 iota +5.174 | d/dchi2: lnM +0.0103 chi1 -1.0274 lnD -0.0272 iota +3.599
+    q 1.2 chi (+0.6, +0.0): d/dq: lnM +0.0265 chi1 +0.1410 lnD +0.0268 iota -3.409 | d/dchi2: lnM +0.0101 chi1 -1.2860 lnD -0.0687 iota +8.318
+    q 2.0 chi (-0.6, +0.0): d/dq: lnM +0.1895 chi1 -0.8743 lnD -0.1609 iota +20.776 | d/dchi2: lnM +0.0747 chi1 -1.1468 lnD -0.0679 iota +10.120
+    q 2.0 chi (+0.0, +0.0): d/dq: lnM +0.1208 chi1 -0.5308 lnD -0.1352 iota +17.088 | d/dchi2: lnM +0.0902 chi1 -1.7737 lnD -0.1735 iota +22.354
+    q 2.0 chi (+0.6, +0.0): d/dq: lnM +0.0583 chi1 +0.3970 lnD +0.0223 iota -2.785 | d/dchi2: lnM +0.0613 chi1 -2.4678 lnD -0.3810 iota +49.104
+    q 3.0 chi (-0.6, +0.0): d/dq: lnM -0.6231 chi1 +5.4053 lnD +0.4081 iota -59.510 | d/dchi2: lnM -0.6742 chi1 +4.8076 lnD +0.4466 iota -62.234
+    q 3.0 chi (+0.0, +0.0): d/dq: lnM -0.0164 chi1 +1.1272 lnD +0.0827 iota -11.221 | d/dchi2: lnM -0.2402 chi1 +2.3855 lnD +0.3382 iota -42.765
+    q 3.0 chi (+0.6, +0.0): d/dq: lnM +0.0784 chi1 -0.1472 lnD -0.0846 iota +10.548 | d/dchi2: lnM -0.0736 chi1 +1.3916 lnD +0.3338 iota -42.236
+    q 5.0 chi (-0.6, +0.0): d/dq: lnM +0.0243 chi1 +0.2967 lnD -0.0239 iota +1.142 | d/dchi2: lnM -0.0734 chi1 +0.2499 lnD +0.0323 iota -4.453
+    q 5.0 chi (+0.0, +0.0): d/dq: lnM +0.0474 chi1 +0.1505 lnD -0.0267 iota +2.231 | d/dchi2: lnM -0.0580 chi1 +0.3255 lnD +0.0598 iota -7.431
+    q 5.0 chi (+0.6, +0.0): d/dq: lnM +0.0588 chi1 -0.0157 lnD -0.0460 iota +5.078 | d/dchi2: lnM -0.0210 chi1 +0.2605 lnD +0.0877 iota -10.516
+
+(3) Direcao quase nula intrinseca (T0, D e iota fixos, escala rel): v_min em (ln M, q, chi1, chi2) e em
+    (d ln Mc, d eta, d chi_eff, d chi_a), normalizada por |d ln eta| = 1; sigma_4/sigma_1
+    A: v = [-0.0256 -0.9832 -0.1428  0.1108] ; (dlnMc, deta, dchi_eff, dchi_a)/|dln eta| = [ 0.2569  0.2479 -1.7336 -1.7024] ; sigma4/sigma1 = 3.07e-04
+    grade (q != 1 ou chi1 != chi2; iota 30, 50, 70): N = 324
+      sigma4/sigma1     mediana +1.056e-03  percentis 10/90: +1.979e-04 / +3.653e-03
+      dlnMc/dln eta     mediana +2.333e-01  percentis 10/90: +1.215e-01 / +4.382e-01
+      dchi_eff/dln eta  mediana -1.697e+00  percentis 10/90: -2.250e+00 / -7.857e-01
+      dchi_a/dln eta    mediana -1.785e+00  percentis 10/90: -3.384e+01 / +1.493e+00
+      |v_q|             mediana +8.517e-01  percentis 10/90: +2.660e-01 / +9.529e-01
+      sigma4/tau        mediana +3.467e+02  percentis 10/90: +4.049e+01 / +1.841e+03
+      q = 1.2: dchi_eff/dln eta mediana -1.227 ; dlnMc/dln eta +0.170 ; sigma4/sigma1 6.79e-04
+      q = 2.0: dchi_eff/dln eta mediana -1.616 ; dlnMc/dln eta +0.252 ; sigma4/sigma1 9.33e-04
+      q = 3.0: dchi_eff/dln eta mediana -1.851 ; dlnMc/dln eta +0.280 ; sigma4/sigma1 1.20e-03
+      q = 5.0: dchi_eff/dln eta mediana -1.983 ; dlnMc/dln eta +0.284 ; sigma4/sigma1 1.53e-03
+
+(4) T com iota e D conhecidos (n = 5: ln M, q, chi1, chi2, phi'): tangente da fibra 1D, normalizada por d phi' = 1 rad
+    A, phi' = 0.00: sigma [3.11  0.314 0.035 0.017] ; d(lnM, q, chi1, chi2)/dphi' = [-0.0025 -0.1463 -0.1302  0.1584]
+    A, phi' = 1.05: sigma [3.114 0.317 0.026 0.009] ; d(lnM, q, chi1, chi2)/dphi' = [-0.0433 -1.6021 -0.3266  0.3265]
+    A, phi' = 2.09: sigma [3.089 0.318 0.072 0.009] ; d(lnM, q, chi1, chi2)/dphi' = [ 0.0178  0.6706  0.1718 -0.1831]
+
+(5) Loci exatos
+    iota = 90, T (phi' = 0.7): linha spin         |F|/|F_ref| = 1.5e-15 ; max |J| fora da coluna iota = 1.4e-11 ; J_iota = 2.659e+00
+    iota = 90, T (phi' = 0.7): linha giroscopica  |F|/|F_ref| = 1.6e-15 ; max |J| fora da coluna iota = 3.7e-13 ; J_iota = 2.245e+00
+    desl e CM: J_iota em 90 graus = -1.6e-10, 0.0e+00 (pares em iota - pi/2)
+    iota = 0.0000 rad, T0 : |F|/|F_ref| = [0.   0.   0.   0.56] ; sigma = [1.379 0.    0.    0.   ] ; tau = 1.4e-06 ; posto 1
+    iota = 0.0000 rad, T  : |F|/|F_ref| = [1.62e-03 3.36e-04 4.55e-03 5.61e-01] ; sigma = [1.379 0.029 0.019 0.002] ; tau = 2.1e-06 ; posto 4
+    iota = 0.0000 rad, O  : |F|/|F_ref| = [0. 0.] ; sigma = [0.029 0.004] ; tau = 7.5e-07 ; posto 2
+    iota = 0.0000 rad, O0 : |F|/|F_ref| = [0. 0.] ; sigma = [0. 0.] ; tau = 0.0e+00 ; posto 0
+    iota = 0.0010 rad, T0 : |F|/|F_ref| = [1.81e-06 2.67e-06 1.73e-06 5.61e-01] ; sigma = [1.379e+00 7.319e-03 1.068e-06 2.670e-07] ; tau = 1.4e-06 ; posto 2
+    iota = 0.0010 rad, T  : |F|/|F_ref| = [1.63e-03 3.66e-04 4.55e-03 5.61e-01] ; sigma = [1.379 0.035 0.018 0.002] ; tau = 2.1e-06 ; posto 4
+    iota = 0.0010 rad, O  : |F|/|F_ref| = [0. 0.] ; sigma = [0.035 0.004] ; tau = 7.5e-07 ; posto 2
+    iota = 0.0010 rad, O0 : |F|/|F_ref| = [1.81e-06 2.67e-06] ; sigma = [6.454e-03 9.099e-07] ; tau = 6.7e-11 ; posto 2
+    iota = 0.0100 rad, T0 : |F|/|F_ref| = [1.81e-04 2.67e-04 1.73e-04 5.61e-01] ; sigma = [1.379e+00 7.316e-02 1.067e-04 2.670e-05] ; tau = 1.4e-06 ; posto 4
+    iota = 0.0100 rad, T  : |F|/|F_ref| = [0.   0.   0.   0.56] ; sigma = [1.38  0.098 0.017 0.002] ; tau = 2.1e-06 ; posto 4
+    iota = 0.0100 rad, O  : |F|/|F_ref| = [0. 0.] ; sigma = [0.092 0.003] ; tau = 7.5e-07 ; posto 2
+    iota = 0.0100 rad, O0 : |F|/|F_ref| = [0. 0.] ; sigma = [6.453e-02 9.099e-05] ; tau = 1.8e-09 ; posto 2
+    iota = 0.0349 rad, T0 : |F|/|F_ref| = [0.   0.   0.   0.56] ; sigma = [1.387e+00 2.539e-01 1.301e-03 3.247e-04] ; tau = 1.4e-06 ; posto 4
+    iota = 0.0349 rad, T  : |F|/|F_ref| = [0.   0.   0.01 0.56] ; sigma = [1.39  0.277 0.017 0.002] ; tau = 2.1e-06 ; posto 4
+    iota = 0.0349 rad, O  : |F|/|F_ref| = [0. 0.] ; sigma = [0.252 0.003] ; tau = 7.4e-07 ; posto 2
+    iota = 0.0349 rad, O0 : |F|/|F_ref| = [0. 0.] ; sigma = [0.225 0.001] ; tau = 2.0e-08 ; posto 2
+    q = 1, chi1 = chi2 (simetria de troca): colunas (escala abs, iota 50, M 65)
+      chi = -0.6 T0: |col q| = 7.72e-03 (erro 1.7e-05) ; |col chi1 - col chi2| = 1.90e-03 (erro 6.5e-07) ; |col chi1| = 4.29e-01
+         livre  sigma = [4.224 1.68  0.619 0.122] tau = 1.7e-05 posto 4
+         iota   sigma = [3.851e+00 8.232e-01 2.271e-01 7.096e-04] tau = 1.7e-05 posto 4
+         iotaD  sigma = [2.915e+00 2.436e-01 4.102e-03 7.089e-04] tau = 1.7e-05 posto 4
+      chi = -0.6 T : |col q| = 5.60e-02 (erro 1.8e-05) ; |col chi1 - col chi2| = 9.78e-02 (erro 2.6e-06) ; |col chi1| = 4.53e-01
+         livre  sigma = [4.247 1.666 0.634 0.147] tau = 1.8e-05 posto 4
+         iota   sigma = [3.879 0.833 0.233 0.068] tau = 1.8e-05 posto 4
+         iotaD  sigma = [2.945 0.258 0.07  0.007] tau = 1.8e-05 posto 4
+      chi = -0.6: (F(1+h)-F(1))/(h F) [m=0] para h = 4e-3, 2e-3, 1e-3: [-2.190e-03 -6.921e-04  5.899e-05] ; razoes [ 0.316 -0.085]
+      chi = +0.0 T0: |col q| = 9.35e-03 (erro 1.5e-05) ; |col chi1 - col chi2| = 1.06e-03 (erro 1.9e-06) ; |col chi1| = 5.35e-01
+         livre  sigma = [4.33  1.671 0.627 0.114] tau = 1.5e-05 posto 4
+         iota   sigma = [3.967e+00 8.046e-01 2.909e-01 1.769e-03] tau = 1.5e-05 posto 4
+         iotaD  sigma = [3.063e+00 2.945e-01 1.791e-03 2.449e-04] tau = 1.5e-05 posto 4
+      chi = +0.0 T : |col q| = 4.29e-02 (erro 1.6e-05) ; |col chi1 - col chi2| = 8.37e-02 (erro 2.1e-06) ; |col chi1| = 5.55e-01
+         livre  sigma = [4.334 1.667 0.63  0.127] tau = 1.6e-05 posto 4
+         iota   sigma = [3.972 0.805 0.291 0.051] tau = 1.6e-05 posto 4
+         iotaD  sigma = [3.067 0.296 0.052 0.004] tau = 1.6e-05 posto 4
+      chi = +0.0: (F(1+h)-F(1))/(h F) [m=0] para h = 4e-3, 2e-3, 1e-3: [-0.011 -0.009 -0.009] ; razoes [0.88  0.932]
+      chi = +0.6 T0: |col q| = 1.33e-02 (erro 9.2e-06) ; |col chi1 - col chi2| = 7.40e-03 (erro 5.7e-06) ; |col chi1| = 7.87e-01
+         livre  sigma = [4.486 1.668 0.647 0.117] tau = 1.0e-05 posto 4
+         iota   sigma = [4.131e+00 8.028e-01 4.517e-01 3.351e-03] tau = 1.0e-05 posto 4
+         iotaD  sigma = [3.273e+00 4.535e-01 3.941e-03 9.180e-05] tau = 1.0e-05 posto 4
+      chi = +0.6 T : |col q| = 1.82e-02 (erro 8.6e-06) ; |col chi1 - col chi2| = 4.19e-02 (erro 5.3e-06) ; |col chi1| = 7.97e-01
+         livre  sigma = [4.486 1.668 0.647 0.118] tau = 9.4e-06 posto 4
+         iota   sigma = [4.131 0.803 0.451 0.018] tau = 9.4e-06 posto 4
+         iotaD  sigma = [3.273e+00 4.530e-01 1.788e-02 1.985e-03] tau = 9.4e-06 posto 4
+      chi = +0.6: (F(1+h)-F(1))/(h F) [m=0] para h = 4e-3, 2e-3, 1e-3: [-0.011 -0.01  -0.009] ; razoes [0.908 0.949]
+    paridade com todos os m (A, phi' = 0.7): F(pi - iota)/F(iota) = [[ 1. -1.  1. -1.]
+ [ 1. -1.  1. -1.]
+ [ 1. -1.  1. -1.]]
+
+(5e) T0 com iota e D conhecidos (4 x 4) no ponto A, varrendo iota: det(J) e sigma_4 (escala abs)
+    det muda de sinal entre iota = 37.0 e 37.5 graus (sigma_4 = 1.50e-05 e 1.41e-05; tau = 7.8e-06)
+
+(6) Razao r = CM_adim / desl_adim (= CM / (M desl) fisico) na grade, T0 e T (phi' = k pi/3)
+    T0: r de -0.6160 ((np.float64(1.0), np.float64(-0.6), np.float64(-0.6)), M 120, iota 90) a -0.1771 ((np.float64(5.0), np.float64(-0.6), np.float64(0.6)), M 120, iota 1)
+    T : r de -379.6300 ((np.float64(2.0), np.float64(0.6), np.float64(-0.6)), M 120, iota 1) a 138.7810 ((np.float64(3.0), np.float64(0.0), np.float64(0.6)), M 30, iota 1)
+    A: r = -0.5303 ; logo M_B = 65 r_A / r_B fica em [56.0, 194.7] para r_B na faixa acima (T0)

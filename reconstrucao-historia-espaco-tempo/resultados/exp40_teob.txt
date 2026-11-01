@@ -1,0 +1,6 @@
+exp40_teob: TEOBResumS 4.4.1 honra a excentricidade?
+  {'ecc': 0.2}: duracao 16522.5 M (circular 16522.5 M) ; amplitude e fase do (2,2) identicas bit a bit ao circular: True
+  {'ecc': 0.2, 'ecc_freq': 2, 'anomaly': 1.0}: duracao 16522.5 M (circular 16522.5 M) ; amplitude e fase do (2,2) identicas bit a bit ao circular: True
+  {'ecc': 0.3, 'ecc_freq': 1, 'anomaly': 2.0}: duracao 16522.5 M (circular 16522.5 M) ; amplitude e fase do (2,2) identicas bit a bit ao circular: True
+  colunas da dinamica: ['E', 'MOmega', 'MOmega_orb', 'Pphi', 'Prstar', 'ddor', 'phi', 'r', 't'] (sem variaveis excentricas)
+  conclusao: este build e o ramo quase circular; a checagem com um 2o modelo excentrico nao foi possivel.

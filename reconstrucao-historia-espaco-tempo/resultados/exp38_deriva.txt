@@ -1,0 +1,44 @@
+exp38_deriva: atraso de centroide (l = 2) com a deriva da inspiral ajustada e removida
+colunas: u_s, u_a, modelo da deriva -> beta, gamma/desl, delta (M) ; delta_ord = (3/2) M_f/Dfrak(2) ~ 0.48 M
+
+q1.0_+0.0_+0.0
+  u_s  -1000 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +1.32e-03 -> delta +1.132 M ; normalizado +1.283 M ; D'(fim)/desl +2.9e-03
+  u_s  -1000 u_a   -60 beta+gamma: beta +3.487e-02 gamma/desl -2.12e-04 -> delta +1.391 M ; normalizado -0.164 M ; D'(fim)/desl -3.0e-02
+  u_s  -1000 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +1.09e-03 -> delta +0.908 M ; normalizado +1.070 M ; D'(fim)/desl +3.1e-03
+  u_s  -1000 u_a  -100 beta+gamma: beta +2.837e-02 gamma/desl -1.70e-05 -> delta +1.252 M ; normalizado +0.015 M ; D'(fim)/desl -2.4e-02
+  u_s   -500 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +1.42e-03 -> delta +1.234 M ; normalizado +1.289 M ; D'(fim)/desl +2.0e-03
+  u_s   -500 u_a   -60 beta+gamma: beta +4.428e-02 gamma/desl -4.73e-04 -> delta +1.486 M ; normalizado +0.400 M ; D'(fim)/desl -4.0e-02
+  u_s   -500 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +1.00e-03 -> delta +1.023 M ; normalizado +1.089 M ; D'(fim)/desl +2.4e-03
+  u_s   -500 u_a  -100 beta+gamma: beta +3.348e-02 gamma/desl -1.78e-04 -> delta +1.341 M ; normalizado +0.533 M ; D'(fim)/desl -3.0e-02
+  u_s   -300 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +1.63e-03 -> delta +1.328 M ; normalizado +1.346 M ; D'(fim)/desl +1.1e-03
+  u_s   -300 u_a   -60 beta+gamma: beta +5.704e-02 gamma/desl -6.34e-04 -> delta +1.575 M ; normalizado +0.713 M ; D'(fim)/desl -5.4e-02
+  u_s   -300 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +9.47e-04 -> delta +1.123 M ; normalizado +1.153 M ; D'(fim)/desl +1.8e-03
+  u_s   -300 u_a  -100 beta+gamma: beta +4.269e-02 gamma/desl -2.95e-04 -> delta +1.444 M ; normalizado +0.803 M ; D'(fim)/desl -4.0e-02
+
+q1.2_+0.3_-0.2
+  u_s  -1000 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +1.64e-03 -> delta +1.153 M ; normalizado +1.510 M ; D'(fim)/desl +6.8e-03
+  u_s  -1000 u_a   -60 beta+gamma: beta +3.422e-02 gamma/desl +1.61e-04 -> delta +1.405 M ; normalizado +0.089 M ; D'(fim)/desl -2.6e-02
+  u_s  -1000 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +1.45e-03 -> delta +0.961 M ; normalizado +1.328 M ; D'(fim)/desl +7.0e-03
+  u_s  -1000 u_a  -100 beta+gamma: beta +3.078e-02 gamma/desl +2.63e-04 -> delta +1.333 M ; normalizado +0.185 M ; D'(fim)/desl -2.2e-02
+  u_s   -500 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +1.31e-03 -> delta +1.260 M ; normalizado +1.426 M ; D'(fim)/desl +6.0e-03
+  u_s   -500 u_a   -60 beta+gamma: beta +3.704e-02 gamma/desl -2.66e-04 -> delta +1.469 M ; normalizado +0.679 M ; D'(fim)/desl -2.9e-02
+  u_s   -500 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +9.73e-04 -> delta +1.090 M ; normalizado +1.264 M ; D'(fim)/desl +6.3e-03
+  u_s   -500 u_a  -100 beta+gamma: beta +2.967e-02 gamma/desl -6.57e-05 -> delta +1.370 M ; normalizado +0.771 M ; D'(fim)/desl -2.2e-02
+  u_s   -300 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +1.36e-03 -> delta +1.347 M ; normalizado +1.436 M ; D'(fim)/desl +5.3e-03
+  u_s   -300 u_a   -60 beta+gamma: beta +4.521e-02 gamma/desl -4.39e-04 -> delta +1.541 M ; normalizado +0.930 M ; D'(fim)/desl -3.8e-02
+  u_s   -300 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +8.18e-04 -> delta +1.186 M ; normalizado +1.283 M ; D'(fim)/desl +5.9e-03
+  u_s   -300 u_a  -100 beta+gamma: beta +3.481e-02 gamma/desl -1.94e-04 -> delta +1.446 M ; normalizado +0.996 M ; D'(fim)/desl -2.8e-02
+
+q4.0_+0.0_+0.0
+  u_s  -1000 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +3.01e-03 -> delta +2.203 M ; normalizado +2.550 M ; D'(fim)/desl +3.8e-03
+  u_s  -1000 u_a   -60 beta+gamma: beta +3.950e-02 gamma/desl +1.07e-04 -> delta +2.755 M ; normalizado -0.108 M ; D'(fim)/desl -3.3e-02
+  u_s  -1000 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +2.59e-03 -> delta +1.783 M ; normalizado +2.167 M ; D'(fim)/desl +4.2e-03
+  u_s  -1000 u_a  -100 beta+gamma: beta +3.092e-02 gamma/desl +5.38e-04 -> delta +2.436 M ; normalizado +0.277 M ; D'(fim)/desl -2.4e-02
+  u_s   -500 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +2.27e-03 -> delta +2.466 M ; normalizado +2.570 M ; D'(fim)/desl +2.2e-03
+  u_s   -500 u_a   -60 beta+gamma: beta +5.092e-02 gamma/desl -1.28e-03 -> delta +3.053 M ; normalizado +0.983 M ; D'(fim)/desl -4.5e-02
+  u_s   -500 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +1.45e-03 -> delta +2.056 M ; normalizado +2.198 M ; D'(fim)/desl +3.0e-03
+  u_s   -500 u_a  -100 beta+gamma: beta +3.348e-02 gamma/desl -5.01e-04 -> delta +2.635 M ; normalizado +1.319 M ; D'(fim)/desl -2.8e-02
+  u_s   -300 u_a   -60 gamma     : beta +0.000e+00 gamma/desl +2.87e-03 -> delta +2.695 M ; normalizado +2.714 M ; D'(fim)/desl +6.7e-04
+  u_s   -300 u_a   -60 beta+gamma: beta +7.213e-02 gamma/desl -1.67e-03 -> delta +3.392 M ; normalizado +1.509 M ; D'(fim)/desl -6.7e-02
+  u_s   -300 u_a  -100 gamma     : beta +0.000e+00 gamma/desl +1.48e-03 -> delta +2.276 M ; normalizado +2.336 M ; D'(fim)/desl +2.1e-03
+  u_s   -300 u_a  -100 beta+gamma: beta +4.530e-02 gamma/desl -6.52e-04 -> delta +2.931 M ; normalizado +1.764 M ; D'(fim)/desl -4.1e-02

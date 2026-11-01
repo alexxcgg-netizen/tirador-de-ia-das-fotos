@@ -1,0 +1,48 @@
+(a) Nucleo e coeficientes de transferencia
+  beta=1.0: |D Dh| / |coef| para fluencias l=0 + l=1 aleatorias (5): max 1.9e-15
+  beta=0.9: |D Dh| / |coef| para fluencias l=0 + l=1 aleatorias (5): max 6.5e-16
+  beta=0.5: |D Dh| / |coef| para fluencias l=0 + l=1 aleatorias (5): max 3.1e-16
+  beta=0.1: |D Dh| / |coef| para fluencias l=0 + l=1 aleatorias (5): max 1.2e-17
+  lambda_l(beta)/lambda_l(1) (transferencia fluencia l -> memoria l; beta = velocidade das particulas):
+   l | b=1     | b=0.999 | b=0.99  | b=0.9   | b=0.7   | b=0.5   | b=0.3   | b=0.1   | b=0.01 
+   2 | 1.00000 | 0.99702 | 0.97116 | 0.75750 | 0.42530 | 0.20782 | 0.07295 | 0.00801 | 8.00e-05
+   3 | 1.00000 | 0.99408 | 0.94487 | 0.60836 | 0.23784 | 0.07816 | 0.01591 | 0.00057 | 5.71e-07
+   4 | 1.00000 | 0.99022 | 0.91254 | 0.47207 | 0.12598 | 0.02761 | 0.00325 | 3.83e-05 | 3.81e-09
+   5 | 1.00000 | 0.98548 | 0.87553 | 0.35687 | 0.06422 | 0.00934 | 0.00063 | 2.44e-06 | 2.42e-11
+   6 | 1.00000 | 0.97989 | 0.83508 | 0.26429 | 0.03181 | 0.00306 | 0.00012 | 1.51e-07 | 1.49e-13
+   7 | 1.00000 | 0.97350 | 0.79229 | 0.19253 | 0.01542 | 0.00098 | 2.20e-05 | 9.06e-09 | 8.95e-16
+   8 | 1.00000 | 0.96635 | 0.74812 | 0.13836 | 0.00734 | 0.00031 | 3.96e-06 | 5.34e-10 | 4.21e-18
+  conferencia l=2: Thorne(beta=1) 3.236043187593-2.0e-16i, modos 3.236043187593-2.1e-16i; Thorne(0.5)/Thorne(1) = 0.2078164743, tabela 0.2078164743
+  conferencia l=4: Thorne(beta=1) 1.120998243280-6.7e-17i, modos 1.120998243280-6.5e-17i; Thorne(0.5)/Thorne(1) = 0.0276120122, tabela 0.0276120122
+  limite beta -> 0: lambda_l(0.01)/lambda_l(1) / 0.01^l = l=2: 0.8000, l=3: 0.5714, l=4: 0.3810, l=5: 0.2424, l=6: 0.1492, l=7: 0.0895, l=8: 0.0421
+
+(b) Historia G (so ondas, (2,+-2), energia E) x historia N (ondas (1-eps)E + neutrinos eps E, jato bipolar
+    com a forma angular das ondas + componente dipolar de um lado so)
+  S(polo)/S(equador) = 7.9552 (polar/equatorial: jato bipolar largo); min F_nu = 3.633e-04 >= 0; dipolo d = 0.0837 (max 0.1047)
+  energia dos neutrinos 0.015000 (= eps E = 0.015000); momento z levado 1.256e-03 -> recuo do remanescente v = 1.256e-03 (M = 1)
+  memoria nula, ceu inteiro (l<=8): max |N - G| / max |G| = 1.28e-14
+  memoria ORDINARIA do recuo (Thorne: 4 M_f v^2 (n.mbar)^2/(1 - v.N)) ~ 2 v^2 = 3.2e-06, contra a nula 3.5e-02 (a degenerescencia so cai em O(v^2))
+
+(c-i) Perfil temporal: SNR (h_+) de uma memoria com subida exponencial de tempo tau, relativa ao degrau rapido
+  aLIGO: tau=0.001 s: 0.966 (1.000); tau=0.01 s: 0.303 (0.314); tau=0.03 s: 0.113 (0.117); tau=0.1 s: 0.0347 (0.036); tau=0.3 s: 0.0116 (0.012); tau=1 s: 0.00348 (0.004)
+  CE: tau=0.001 s: 43.7 (1.000); tau=0.01 s: 22.6 (0.516); tau=0.03 s: 9.57 (0.219); tau=0.1 s: 3 (0.069); tau=0.3 s: 1 (0.023); tau=1 s: 0.301 (0.007)
+  => neutrinos emitidos em ~1 s (supernova) quase nao aparecem em banda; so a fracao com subida de ms compete.
+
+(c-ii) Particulas massivas: o mesmo F_nu emitido como particulas com beta < 1 (mesma energia total)
+  beta=0.99: memoria de lado (iota=90) 3.511552e-02 contra 3.541667e-02 (beta=1): razao 0.99150; em iota=30: razao 0.99075 (padrao angular muda: razoes diferentes)
+  beta=0.90: memoria de lado (iota=90) 3.286564e-02 contra 3.541667e-02 (beta=1): razao 0.92797; em iota=30: razao 0.92432 (padrao angular muda: razoes diferentes)
+  beta=0.50: memoria de lado (iota=90) 2.701581e-02 contra 3.541667e-02 (beta=1): razao 0.76280; em iota=30: razao 0.76050 (padrao angular muda: razoes diferentes)
+
+(c-iii) Polarizacao: jato bipolar estreito (meia abertura 15 graus) de neutrinos, eixo inclinado de alpha do eixo
+        das ondas, fora do plano (z, N); observador iota = 60 graus. psi = (1/2) arg(Dh_+ - i Dh_x)
+  alpha= 0: ondas Dh_+=1.8867e-02 | jato Dh_+=+2.8268e-02 Dh_x=-2.9836e-19 | total psi = +0.000 graus (ondas sozinhas: 0)
+  alpha=15: ondas Dh_+=1.8867e-02 | jato Dh_+=+2.3310e-02 Dh_x=-1.6391e-02 | total psi = +10.619 graus (ondas sozinhas: 0)
+  alpha=30: ondas Dh_+=1.8867e-02 | jato Dh_+=+1.1121e-02 Dh_x=-2.6779e-02 | total psi = +20.882 graus (ondas sozinhas: 0)
+  alpha=60: ondas Dh_+=1.8867e-02 | jato Dh_+=-1.7553e-02 Dh_x=-2.3596e-02 | total psi = +43.407 graus (ondas sozinhas: 0)
+  alpha=90: ondas Dh_+=1.8867e-02 | jato Dh_+=-2.8269e-02 Dh_x=+6.5611e-19 | total psi = -90.000 graus (ondas sozinhas: 0)
+  nota: a memoria nula e sempre de paridade eletrica (E) para qualquer canal; o que separa canais e a ORIENTACAO
+  do padrao, isto e, o angulo de polarizacao da memoria relativo ao previsto pelo fluxo das ondas.
+
+(c-iv) Razao memoria/oscilacao: o fluxo das ondas (medido pela parte oscilatoria) preve so a parte das ondas
+  de lado: memoria observada (G e N) 3.54167e-02; prevista pelo fluxo das ondas: G 3.54167e-02, N 2.47917e-02 -> excesso em N 0.429
+  excesso minimo de energia nao gravitacional pela desigualdade (c_inf = 4): E_x >= D |excesso| / 4 = 0.0027 (verdadeiro 0.0150; razao 0.177)

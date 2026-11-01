@@ -1,0 +1,25 @@
+O0_K3: conjunto O0, janelas desde 10.00, 19.36, 37.48 Hz, 6 equacoes, 5 incognitas (q_B fixo)
+  q_B=1.30 partida A          : max|r| 2.00e-06 norma 2.52e-06 ( 81 aval.,  8 it.) -> q 1.300 chi1 +0.3854 chi2 -0.3314 M 65.267 iota 49.99 D 398.7
+  q_B=1.30 partida continuacao: max|r| 2.00e-06 norma 2.52e-06 ( 81 aval.,  8 it.) -> q 1.300 chi1 +0.3854 chi2 -0.3314 M 65.267 iota 49.99 D 398.7
+  -> q_B=1.30 melhor: norma 2.52e-06 max 2.00e-06
+  q_B=1.60 partida A          : max|r| 1.04e-05 norma 1.30e-05 ( 84 aval.,  9 it.) -> q 1.600 chi1 +0.5668 chi2 -0.6934 M 66.298 iota 49.94 D 392.8
+  q_B=1.60 partida continuacao: max|r| 1.04e-05 norma 1.30e-05 ( 73 aval.,  8 it.) -> q 1.600 chi1 +0.5668 chi2 -0.6934 M 66.298 iota 49.94 D 392.8
+  q_B=1.60 partida aleatoria  : max|r| 1.04e-05 norma 1.30e-05 ( 88 aval., 10 it.) -> q 1.600 chi1 +0.5668 chi2 -0.6934 M 66.298 iota 49.94 D 392.8
+  -> q_B=1.60 melhor: norma 1.30e-05 max 1.04e-05
+  q_B=2.00 partida A          : max|r| 3.73e-02 norma 7.99e-02 (244 aval., 30 it.) -> q 2.000 chi1 +0.6652 chi2 -0.8000 M 67.108 iota 49.97 D 378.0
+  q_B=2.00 partida continuacao: max|r| 1.06e-02 norma 2.33e-02 (245 aval., 30 it.) -> q 2.000 chi1 +0.6321 chi2 -0.8000 M 66.679 iota 50.00 D 375.3
+  q_B=2.00 partida exp07      : max|r| 7.18e-04 norma 9.21e-04 (248 aval., 30 it.) -> q 2.000 chi1 +0.6168 chi2 -0.8000 M 66.393 iota 49.99 D 373.1
+  -> q_B=2.00 melhor: norma 9.21e-04 max 7.18e-04
+  q_B=3.00 partida A          : max|r| 1.43e-02 norma 3.09e-02 (245 aval., 30 it.) -> q 3.000 chi1 +0.7182 chi2 -0.8000 M 66.297 iota 50.33 D 324.2
+  q_B=3.00 partida continuacao: max|r| 1.46e-02 norma 3.19e-02 (245 aval., 30 it.) -> q 3.000 chi1 +0.7196 chi2 -0.8000 M 66.484 iota 50.38 D 325.8
+  q_B=3.00 partida exp07      : max|r| 3.40e-03 norma 4.15e-03 (247 aval., 30 it.) -> q 3.000 chi1 +0.7018 chi2 -0.8000 M 65.309 iota 50.16 D 316.5
+  q_B=3.00 partida aleatoria  : max|r| 4.63e-03 norma 5.73e-03 (246 aval., 30 it.) -> q 3.000 chi1 +0.7057 chi2 -0.8000 M 65.877 iota 50.33 D 321.4
+  -> q_B=3.00 melhor: norma 4.15e-03 max 3.40e-03
+  q_B=1.10 partida A          : max|r| 1.64e-06 norma 2.07e-06 ( 78 aval.,  9 it.) -> q 1.100 chi1 +0.1829 chi2 -0.0489 M 64.792 iota 50.01 D 400.6
+  q_B=1.10 partida continuacao: max|r| 1.64e-06 norma 2.07e-06 ( 78 aval.,  9 it.) -> q 1.100 chi1 +0.1829 chi2 -0.0489 M 64.792 iota 50.01 D 400.6
+  -> q_B=1.10 melhor: norma 2.07e-06 max 1.64e-06
+  q_B=1.00 partida A          : max|r| 2.91e-06 norma 3.67e-06 ( 49 aval.,  5 it.) -> q 1.000 chi1 +0.4102 chi2 -0.2605 M 64.947 iota 50.01 D 402.9
+  q_B=1.00 partida continuacao: max|r| 2.91e-06 norma 3.67e-06 ( 90 aval.,  9 it.) -> q 1.000 chi1 +0.4102 chi2 -0.2605 M 64.947 iota 50.01 D 402.9
+  q_B=1.00 partida exp07      : max|r| 2.38e-06 norma 3.01e-06 ( 71 aval.,  8 it.) -> q 1.000 chi1 -0.2070 chi2 +0.3535 M 64.903 iota 50.00 D 402.4
+  -> q_B=1.00 melhor: norma 3.01e-06 max 2.38e-06
+(832 s)

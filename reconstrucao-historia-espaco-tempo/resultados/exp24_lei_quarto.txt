@@ -1,0 +1,74 @@
+Teste da lei (M f)^(1/4): T(F) = 2 pi i F S+(F)/Delta H_tot, iota = 50 graus, janela desde M f0 = 0.0016.
+Previsao: 1 - |T| ~ c cos(pi/8) (2 pi F)^(1/4), c = |Gamma(-1/4)| (5/eta)^(1/4)/(16 x*), x* = Delta H_tot/(Q eta).
+
+q 1.2 chi (0.3, -0.2): Delta H_tot = 0.02353 (janela 0.02201) ; x* = 0.4457 ; c previsto = 1.4565
+   M f = 9.9e-05: 1-|T| numerico 0.1862 ; previsto (ordem dominante) 0.2126 ; razao 0.876
+   M f = 2.0e-04: 1-|T| numerico 0.2145 ; previsto (ordem dominante) 0.2528 ; razao 0.848
+   M f = 5.0e-04: 1-|T| numerico 0.2572 ; previsto (ordem dominante) 0.3185 ; razao 0.808
+   M f = 1.0e-03: 1-|T| numerico 0.2955 ; previsto (ordem dominante) 0.3788 ; razao 0.780
+   M f = 2.0e-03: 1-|T| numerico 0.3444 ; previsto (ordem dominante) 0.4505 ; razao 0.765
+   M f = 5.0e-03: 1-|T| numerico 0.4467 ; previsto (ordem dominante) 0.5665 ; razao 0.788
+   M f = 1.0e-02: 1-|T| numerico 0.5833 ; previsto (ordem dominante) 0.6737 ; razao 0.866
+   M f = 2.0e-02: 1-|T| numerico 0.7838 ; previsto (ordem dominante) 0.8012 ; razao 0.978
+   M f = 5.0e-02: 1-|T| numerico 0.9829 ; previsto (ordem dominante) 1.0074 ; razao 0.976
+   inclinacao log-log de 1-|T| em M f in [1e-4, 1e-3]: 0.198 (previsto 0.25)
+
+q 1.0 chi (0.0, 0.0): Delta H_tot = 0.02260 (janela 0.02107) ; x* = 0.4247 ; c previsto = 1.5256
+   M f = 9.9e-05: 1-|T| numerico 0.1925 ; previsto (ordem dominante) 0.2227 ; razao 0.864
+   M f = 2.0e-04: 1-|T| numerico 0.2211 ; previsto (ordem dominante) 0.2648 ; razao 0.835
+   M f = 5.0e-04: 1-|T| numerico 0.2635 ; previsto (ordem dominante) 0.3336 ; razao 0.790
+   M f = 1.0e-03: 1-|T| numerico 0.3012 ; previsto (ordem dominante) 0.3968 ; razao 0.759
+   M f = 2.0e-03: 1-|T| numerico 0.3490 ; previsto (ordem dominante) 0.4718 ; razao 0.740
+   M f = 5.0e-03: 1-|T| numerico 0.4487 ; previsto (ordem dominante) 0.5934 ; razao 0.756
+   M f = 1.0e-02: 1-|T| numerico 0.5824 ; previsto (ordem dominante) 0.7056 ; razao 0.825
+   M f = 2.0e-02: 1-|T| numerico 0.7808 ; previsto (ordem dominante) 0.8392 ; razao 0.930
+   M f = 5.0e-02: 1-|T| numerico 0.9821 ; previsto (ordem dominante) 1.0552 ; razao 0.931
+   inclinacao log-log de 1-|T| em M f in [1e-4, 1e-3]: 0.191 (previsto 0.25)
+
+q 4.0 chi (0.0, 0.0): Delta H_tot = 0.00865 (janela 0.00768) ; x* = 0.2541 ; c previsto = 2.8508
+   M f = 9.9e-05: 1-|T| numerico 0.3344 ; previsto (ordem dominante) 0.4161 ; razao 0.804
+   M f = 2.0e-04: 1-|T| numerico 0.3756 ; previsto (ordem dominante) 0.4949 ; razao 0.759
+   M f = 5.0e-04: 1-|T| numerico 0.4333 ; previsto (ordem dominante) 0.6235 ; razao 0.695
+   M f = 1.0e-03: 1-|T| numerico 0.4787 ; previsto (ordem dominante) 0.7414 ; razao 0.646
+   M f = 2.0e-03: 1-|T| numerico 0.5297 ; previsto (ordem dominante) 0.8817 ; razao 0.601
+   M f = 5.0e-03: 1-|T| numerico 0.6200 ; previsto (ordem dominante) 1.1089 ; razao 0.559
+   M f = 1.0e-02: 1-|T| numerico 0.7253 ; previsto (ordem dominante) 1.3186 ; razao 0.550
+   M f = 2.0e-02: 1-|T| numerico 0.8658 ; previsto (ordem dominante) 1.5682 ; razao 0.552
+   M f = 5.0e-02: 1-|T| numerico 0.9809 ; previsto (ordem dominante) 1.9718 ; razao 0.497
+   inclinacao log-log de 1-|T| em M f in [1e-4, 1e-3]: 0.152 (previsto 0.25)
+
+q 1.0 chi (0.8, 0.8): Delta H_tot = 0.04495 (janela 0.04342) ; x* = 0.8446 ; c previsto = 0.7671
+   M f = 9.9e-05: 1-|T| numerico 0.1125 ; previsto (ordem dominante) 0.1120 ; razao 1.005
+   M f = 2.0e-04: 1-|T| numerico 0.1342 ; previsto (ordem dominante) 0.1332 ; razao 1.008
+   M f = 5.0e-04: 1-|T| numerico 0.1723 ; previsto (ordem dominante) 0.1678 ; razao 1.027
+   M f = 1.0e-03: 1-|T| numerico 0.2119 ; previsto (ordem dominante) 0.1995 ; razao 1.062
+   M f = 2.0e-03: 1-|T| numerico 0.2694 ; previsto (ordem dominante) 0.2372 ; razao 1.136
+   M f = 5.0e-03: 1-|T| numerico 0.4044 ; previsto (ordem dominante) 0.2984 ; razao 1.355
+   M f = 1.0e-02: 1-|T| numerico 0.5891 ; previsto (ordem dominante) 0.3548 ; razao 1.660
+   M f = 2.0e-02: 1-|T| numerico 0.8299 ; previsto (ordem dominante) 0.4220 ; razao 1.967
+   M f = 5.0e-02: 1-|T| numerico 0.9928 ; previsto (ordem dominante) 0.5306 ; razao 1.871
+   inclinacao log-log de 1-|T| em M f in [1e-4, 1e-3]: 0.277 (previsto 0.25)
+
+q 1.0 chi (-0.8, -0.8): Delta H_tot = 0.01484 (janela 0.01331) ; x* = 0.2789 ; c previsto = 2.3233
+   M f = 9.9e-05: 1-|T| numerico 0.2552 ; previsto (ordem dominante) 0.3391 ; razao 0.752
+   M f = 2.0e-04: 1-|T| numerico 0.2832 ; previsto (ordem dominante) 0.4033 ; razao 0.702
+   M f = 5.0e-04: 1-|T| numerico 0.3213 ; previsto (ordem dominante) 0.5081 ; razao 0.632
+   M f = 1.0e-03: 1-|T| numerico 0.3522 ; previsto (ordem dominante) 0.6042 ; razao 0.583
+   M f = 2.0e-03: 1-|T| numerico 0.3899 ; previsto (ordem dominante) 0.7186 ; razao 0.543
+   M f = 5.0e-03: 1-|T| numerico 0.4693 ; previsto (ordem dominante) 0.9037 ; razao 0.519
+   M f = 1.0e-02: 1-|T| numerico 0.5816 ; previsto (ordem dominante) 1.0746 ; razao 0.541
+   M f = 2.0e-02: 1-|T| numerico 0.7623 ; previsto (ordem dominante) 1.2780 ; razao 0.596
+   M f = 5.0e-02: 1-|T| numerico 0.9784 ; previsto (ordem dominante) 1.6070 ; razao 0.609
+   inclinacao log-log de 1-|T| em M f in [1e-4, 1e-3]: 0.136 (previsto 0.25)
+
+q 3.0 chi (0.5, -0.5): Delta H_tot = 0.01590 (janela 0.01476) ; x* = 0.3983 ; c previsto = 1.7480
+   M f = 9.9e-05: 1-|T| numerico 0.2247 ; previsto (ordem dominante) 0.2552 ; razao 0.881
+   M f = 2.0e-04: 1-|T| numerico 0.2582 ; previsto (ordem dominante) 0.3034 ; razao 0.851
+   M f = 5.0e-04: 1-|T| numerico 0.3097 ; previsto (ordem dominante) 0.3823 ; razao 0.810
+   M f = 1.0e-03: 1-|T| numerico 0.3550 ; previsto (ordem dominante) 0.4546 ; razao 0.781
+   M f = 2.0e-03: 1-|T| numerico 0.4109 ; previsto (ordem dominante) 0.5406 ; razao 0.760
+   M f = 5.0e-03: 1-|T| numerico 0.5205 ; previsto (ordem dominante) 0.6799 ; razao 0.765
+   M f = 1.0e-02: 1-|T| numerico 0.6559 ; previsto (ordem dominante) 0.8085 ; razao 0.811
+   M f = 2.0e-02: 1-|T| numerico 0.8383 ; previsto (ordem dominante) 0.9615 ; razao 0.872
+   M f = 5.0e-02: 1-|T| numerico 0.9894 ; previsto (ordem dominante) 1.2090 ; razao 0.818
+   inclinacao log-log de 1-|T| em M f in [1e-4, 1e-3]: 0.197 (previsto 0.25)

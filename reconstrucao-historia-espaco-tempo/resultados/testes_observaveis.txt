@@ -1,0 +1,113 @@
+Testes de observaveis.py ; sistema A: M = 65, q = 1.2, chi = (+0.3, -0.2), D = 400 Mpc, iota = 50 graus, 10 Hz
+(a) Suavidade em M (memorias de janela de A no observador, iota = 50 graus, phi = 0; niveis A e C)
+  passo 1e-07, k = 0..6, nivel A: max |1a dif.| desl 7.17e-09 spin 5.05e-08 cm 6.40e-09 giro 5.36e-08
+                                    max |2a dif.| desl 3.3e-15 spin 1.5e-14 cm 3.7e-15 giro 1.3e-14
+  passo 1e-07, k = 0..6, nivel C: max |1a dif.| desl 7.08e-09 spin 5.30e-08 cm 6.32e-09 giro 5.44e-08
+                                    max |2a dif.| desl 4.4e-16 spin 1.3e-14 cm 4.4e-16 giro 1.3e-14
+  passo 1e-06, k = 0..12, nivel A: max |1a dif.| desl 7.17e-08 spin 5.05e-07 cm 6.40e-08 giro 5.36e-07
+                                    max |2a dif.| desl 1.3e-12 spin 9.3e-12 cm 1.1e-12 giro 9.9e-12
+  passo 1e-06, k = 0..12, nivel C: max |1a dif.| desl 7.08e-08 spin 5.30e-07 cm 6.32e-08 giro 5.44e-07
+                                    max |2a dif.| desl 2.6e-13 spin 9.8e-12 cm 1.9e-13 giro 1.0e-11
+  contraste binarias.memorias_fisicas (nivel A), passo 1e-6: max |2a dif.| desl 3.6e-07 spin 2.8e-06 cm 3.0e-07 giro 3.0e-06
+  todos os m (phi = 0.8 rad), nivel A, passo 1e-6, k = 0..12: max |2a dif.| desl 6.2e-10 spin 5.7e-10 cm 4.5e-10 giro 1.8e-10
+  inicio auxiliar 0.8 f0 contra 0.9 f0 (todos os m): max dif. relativa dos multipolos desl 6.1e-16 spin 1.2e-15 cm 5.6e-16 giro 3.4e-16 ; t_i 0.000e+00 M
+  (23 s)
+  figura e00_escada_suavidade.png: binarias salta 2.80e-06 (max-min 5.60e-06) ; observaveis varia linearmente 6.07e-06
+
+(b) Convergencia em dt (memorias de janela de A, nivel A, todos os m guardados; observador phi = 0 e multipolos)
+  derivada ordem 8: dt 0.2500 contra 0.0625: observador desl -8.23e-08 spin -3.32e-10 cm -5.93e-08 giro -2.03e-10
+                                       multipolos desl 4.7e-08 spin 1.4e-09 cm 3.7e-08 giro 8.4e-10
+  derivada ordem 8: dt 0.1250 contra 0.0625: observador desl -1.46e-08 spin -1.57e-10 cm -1.21e-08 giro -1.09e-10
+                                       multipolos desl 6.7e-09 spin 1.3e-10 cm 5.4e-09 giro 2.7e-11
+  derivada ordem 4: dt 0.2500 contra 0.0625: observador desl -7.52e-06 spin -1.39e-06 cm -6.86e-06 giro -1.24e-06
+                                       multipolos desl 7.5e-06 spin 1.2e-06 cm 6.8e-06 giro 1.2e-06
+  derivada ordem 4: dt 0.1250 contra 0.0625: observador desl -4.71e-07 spin -8.23e-08 cm -4.28e-07 giro -7.34e-08
+                                       multipolos desl 4.5e-07 spin 6.9e-08 cm 4.1e-07 giro 6.8e-08
+  ordem 8 contra ordem 4 em dt 0.0625: desl +3.29e-08 spin +5.49e-09 cm +3.00e-08 giro +4.89e-09
+  rede deslocada de meio passo (dt 0.25, t_desloc 0.5) contra a rede padrao: observador desl -5.12e-08 spin -4.38e-10 cm -5.50e-08 giro +6.40e-13
+                                                              multipolos desl 3.4e-08 spin 1.2e-09 cm 2.8e-08 giro 7.1e-10
+  (39 s)
+
+(c) desl='total', todos_m=False contra binarias.memorias_fisicas (A desde 10 Hz)
+  nivel A, deriv. 4a ordem, E_lig 1PN (mesmas formulas): observador desl -2.59e-07 spin -2.03e-06 cm -2.20e-07 giro -2.15e-06
+                                                         multipolos desl 2.6e-07 spin 2.0e-06 cm 2.2e-07 giro 2.2e-06 ; M_f +1.42e-08
+  nivel A, padrao (deriv. 8a ordem, E_lig 3PN+SO): observador desl +6.30e-06 spin -8.58e-07 cm +2.84e-05 giro -9.84e-07
+                                                   multipolos desl 6.4e-06 spin 8.6e-07 cm 2.9e-05 giro 1.0e-06 ; M_f +2.37e-05
+  (inicio da janela: binarias t0 = -16430.2602 M com regra do retangulo, ~ t0 - dt/2 = -16430.3852 ; observaveis t_i = -16430.2044 M)
+  nivel C, deriv. 4a ordem, E_lig 1PN (mesmas formulas): observador desl -4.23e-07 spin -2.10e-06 cm -3.36e-07 giro -2.17e-06
+                                                         multipolos desl 3.9e-07 spin 2.1e-06 cm 3.4e-07 giro 2.2e-06 ; M_f +1.42e-08
+  nivel C, padrao (deriv. 8a ordem, E_lig 3PN+SO): observador desl -4.40e-07 spin -2.10e-06 cm +2.24e-05 giro -1.37e-06
+                                                   multipolos desl 3.9e-07 spin 2.1e-06 cm 2.2e-05 giro 1.0e-06 ; M_f +2.37e-05
+  (inicio da janela: binarias t0 = -16430.2602 M com regra do retangulo, ~ t0 - dt/2 = -16430.3852 ; observaveis t_i = -16430.2044 M)
+  (40 s)
+
+(d) Multipolos m != 0 no observador (iota = 50 graus): (todos os m)/(so m = 0) - 1 ao longo de phi (24 valores)
+  desl='janela': desl [-1.37e-03, +1.99e-03] spin [-1.34e-02, +1.34e-02] cm [-5.34e-03, +5.03e-03] giro [-5.29e-03, +5.12e-03]
+    deslocamento  maior multipolo m != 0: (3, -1) |.| = 1.66e-04 ; maior m = 0: 9.09e-02
+    spin          maior multipolo m != 0: (2, -1) |.| = 4.44e-03 ; maior m = 0: 2.60e-01
+    cm            maior multipolo m != 0: (2, -2) |.| = 1.16e-04 ; maior m = 0: 4.92e-02
+    giroscopica   maior multipolo m != 0: (2, -1) |.| = 3.58e-03 ; maior m = 0: 1.32e+00
+    phi do maior efeito no spin: 315 graus
+  desl='total': desl [-1.23e-03, +1.79e-03] spin [-1.34e-02, +1.34e-02] cm [-4.86e-03, +4.58e-03] giro [-5.29e-03, +5.12e-03]
+  nivel C, desl='janela': desl [-2.81e-03, +2.95e-03] spin [-1.32e-02, +1.34e-02] cm [-3.60e-03, +2.98e-03] giro [-5.66e-03, +4.84e-03]
+  (41 s)
+
+(e) Serie 'nula': valor final (Re = Delta h_+) contra o deslocamento de janela de memorias_observaveis
+  todos_m=False, phi = 0.0: Re s(fim) = 1.6449830393e-22 ; deslocamento = 1.6449830393e-22 ; dif. relativa 1.6e-15 ; s(t_i) = 0.0e+00 ; max|Im s|/|Re s(fim)| = 0.0e+00
+  todos_m=True, phi = 0.7: Re s(fim) = 1.6447305677e-22 ; deslocamento = 1.6447305677e-22 ; dif. relativa 1.3e-15 ; s(t_i) = 0.0e+00 ; max|Im s|/|Re s(fim)| = 1.5e-02
+  todos_m=True, phi = 2.9: Re s(fim) = 1.6447203251e-22 ; deslocamento = 1.6447203251e-22 ; dif. relativa 2.2e-15 ; s(t_i) = 0.0e+00 ; max|Im s|/|Re s(fim)| = 1.2e-02
+  magnetica=True: int h_x dt (trapezio da serie) = -2.497911e-25 s ; memoria de spin (janela) = -2.497911e-25 s ; dif. -2.2e-16
+  tipo 'rn': Re s(fim) = 1.6668365196e-22 ; deslocamento de janela nivel C so l = 2, 4 = 1.6668365196e-22 (dif. 0.0e+00) ; com l = 6, 8 do fluxo = 1.666634e-22 (dif. 1.2e-04)
+  (94 s)
+
+(f) comparar2: A (rede padrao) contra A amostrado na rede deslocada de 0.37 dt e com os tempos somados de tau = 1.2345678e-3 s (todos os modos, observador iota = 50 graus, phi = 0, aLIGO, f_min 10 Hz)
+  t_i das duas redes: -16430.204376 e -16430.204376 M (dif. -1.3e-07 M)
+  comparar2: 1 - match = 1.04e-12 ; SNR_A 65.8910 SNR_B 65.8910 ; rho_crit 6.94e+05 ; atraso -6.178e-11 s
+    variante: up =  1, refino continuo False: 1 - match = 1.04e-12
+    variante: up = 16, refino continuo False: 1 - match = 1.04e-12
+    variante: up = 16, refino continuo True : 1 - match = 1.04e-12
+  (as duas series comecam no mesmo instante fisico t_i, entao a reamostragem em 1/fs cai nos mesmos instantes: este caso testa a reamostragem por spline, nao a busca no tempo)
+  mesma amostragem, so os tempos somados de tau: 1 - match = 0.00e+00
+  deteccao.comparar no mesmo par: 1 - match = 5.72e-08 (h_+)
+  atraso eps = 9.0332e-05 s: up  1 refino False 1-match 8.13e-04 (atraso 0.0000e+00 s) | up 16 refino False 1-match 1.49e-07 (atraso -9.1553e-05 s) | up 16 refino True  1-match 5.80e-10 (atraso -9.0332e-05 s) ; deteccao.comparar 8.14e-04
+  atraso eps = 1.2346e-03 s: up  1 refino False 1-match 1.92e-05 (atraso -1.2207e-03 s) | up 16 refino False 1-match 1.96e-07 (atraso -1.2360e-03 s) | up 16 refino True  1-match 2.59e-09 (atraso -1.2346e-03 s) ; deteccao.comparar 6.28e-04
+  atraso eps = 5.3000e-05 s: up  1 refino False 1-match 2.80e-04 (atraso 0.0000e+00 s) | up 16 refino False 1-match 5.20e-06 (atraso -4.5776e-05 s) | up 16 refino True  1-match 1.62e-09 (atraso -5.2882e-05 s) ; deteccao.comparar 2.80e-04
+  A contra q = 1.19 (demais parametros iguais), aLIGO: comparar2 1-match 4.661e-04 (rho_crit 32.7) ; sem taper e sem rampa 2.742e-03 ; deteccao.comparar 3.762e-03
+  SNR das memorias de A (h_+, D = 400 Mpc, iota = 50 graus, f_min 10 Hz):
+    aLIGO: nula 0.470 (rev_R5 0.470 ; sem taper 0.470) ; rn 0.759 (exp15 0.759)
+    A+   : nula 0.892 (rev_R5 0.892 ; sem taper 0.892) ; rn 1.444 (exp15 1.444)
+    ET   : nula 8.640 (rev_R5 8.642 ; sem taper 8.640) ; rn 10.686 (exp15 10.686)
+    CE   : nula 34.090 (rev_R5 34.096 ; sem taper 34.090) ; rn 39.104 (exp15 39.103)
+  (114 s)
+
+(g) Refutacao de E_lig e M_f
+  limite de massa teste (Kerr equatorial, E/mu): Kerr - formula, coeficientes de v^2..v^9 em a^0: [0, 0, 0, 0, 0, 0, 0, 0] ; em a^1: [0, 0, 0, 0, 0, 0, 0, 0]
+  q 1.2 chi (+0.0, +0.0): E_rad(10->20 Hz) substituto 2.971832e-03 ; PN-substituto: 1PN +1.06e-04 ; 3PN+SO -2.28e-06 ; 3PN sem SO -2.28e-06
+  q 4.0 chi (+0.0, +0.0): E_rad(10->20 Hz) substituto 1.908923e-03 ; PN-substituto: 1PN +7.92e-05 ; 3PN+SO -2.42e-06 ; 3PN sem SO -2.42e-06
+  q 1.2 chi (+0.5, +0.5): E_rad(10->20 Hz) substituto 3.147254e-03 ; PN-substituto: 1PN -6.95e-05 ; 3PN+SO -2.03e-06 ; 3PN sem SO -1.78e-04
+  q 4.0 chi (+0.5, +0.5): E_rad(10->20 Hz) substituto 2.038457e-03 ; PN-substituto: 1PN -5.04e-05 ; 3PN+SO -7.63e-06 ; 3PN sem SO -1.32e-04
+  q 1.2 chi (-0.5, -0.5): E_rad(10->20 Hz) substituto 2.775727e-03 ; PN-substituto: 1PN +3.02e-04 ; 3PN+SO +1.82e-05 ; 3PN sem SO +1.94e-04
+  q 4.0 chi (-0.5, -0.5): E_rad(10->20 Hz) substituto 1.768128e-03 ; PN-substituto: 1PN +2.20e-04 ; 3PN+SO +1.40e-05 ; 3PN sem SO +1.38e-04
+  q 1.2 chi (+0.3, -0.2): E_rad(10->20 Hz) substituto 3.002003e-03 ; PN-substituto: 1PN +7.57e-05 ; 3PN+SO -5.17e-06 ; 3PN sem SO -3.24e-05
+  q 4.0 chi (+0.3, -0.2): E_rad(10->20 Hz) substituto 1.965282e-03 ; PN-substituto: 1PN +2.28e-05 ; 3PN+SO -4.26e-06 ; 3PN sem SO -5.88e-05
+  q 1.2 chi (+0.3, -0.2): M_f observaveis 0.949766 (com E_lig 1PN 0.949742) ; NRSur3dq8Remnant 0.949714 +- 1.2e-04 ; dif. +5.2e-05
+  q 1.0 chi (+0.0, +0.0): M_f observaveis 0.951647 (com E_lig 1PN 0.951611) ; NRSur3dq8Remnant 0.951590 +- 1.2e-04 ; dif. +5.6e-05
+  q 4.0 chi (+0.5, +0.0): M_f observaveis 0.968741 (com E_lig 1PN 0.968758) ; NRSur3dq8Remnant 0.968674 +- 1.2e-04 ; dif. +6.7e-05
+  q 2.0 chi (-0.5, +0.5): M_f observaveis 0.966409 (com E_lig 1PN 0.966350) ; NRSur3dq8Remnant 0.966355 +- 1.2e-04 ; dif. +5.4e-05
+  (121 s)
+
+(h) Memoria de CM (2,0) numa janela curta (50 M desde t_i), A, q = 1, chi = 0, f_ini 10 Hz, M = 65
+  desl='janela': desl20 = +7.426e-06 ; cm20 = -3.734e-06
+  desl='total': desl20 = +1.038e-02 ; cm20 = -5.159e-03
+  -(M_f/2) h20_Favata(x_i) = -5.155e-03
+  janela completa: cm20 'janela' = -0.04729 ; 'total' = -0.05223 ; fracao de cm20 'total' vinda de antes da janela 9.4%
+  (122 s)
+
+(i) Origem da diferenca M_f(observaveis) - NRSur3dq8Remnant ~ +5.5e-5: modos ausentes do substituto CCE e energia irradiada de outro substituto (NRSur7dq4, todos os modos l <= 4) na mesma janela f_22 >= 0.0055/M
+  q 1.2 chi (+0.3, -0.2): E_janela CCE 0.042449 ; NRSur7dq4 0.042558 (dif. -1.1e-04) ; energia nos modos l <= 4 ausentes do CCE (NRSur7dq4) 9.3e-07
+      1 - E_lig - E_janela: CCE 0.949768 ; NRSur7dq4 0.949660 ; ajustes: NRSur3dq8Remnant 0.949714 +- 1.2e-04 ; NRSur7dq4Remnant 0.949730 +- 5.9e-05
+  q 1.0 chi (+0.0, +0.0): E_janela CCE 0.040535 ; NRSur7dq4 0.040556 (dif. -2.2e-05) ; energia nos modos l <= 4 ausentes do CCE (NRSur7dq4) 6.6e-07
+      1 - E_lig - E_janela: CCE 0.951648 ; NRSur7dq4 0.951626 ; ajustes: NRSur3dq8Remnant 0.951590 +- 1.2e-04 ; NRSur7dq4Remnant 0.951580 +- 5.7e-05
+  q 2.0 chi (-0.5, +0.5): E_janela CCE 0.026716 ; NRSur7dq4 0.026488 (dif. +2.3e-04) ; energia nos modos l <= 4 ausentes do CCE (NRSur7dq4) 1.2e-06
+      1 - E_lig - E_janela: CCE 0.966407 ; NRSur7dq4 0.966635 ; ajustes: NRSur3dq8Remnant 0.966355 +- 1.2e-04 ; NRSur7dq4Remnant 0.966374 +- 6.2e-05
+  (123 s)

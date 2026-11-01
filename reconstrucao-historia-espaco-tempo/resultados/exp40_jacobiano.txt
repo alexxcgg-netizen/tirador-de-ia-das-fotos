@@ -1,0 +1,27 @@
+exp40_jacobiano: duas janelas (10 e 20 Hz), 7 residuos (D eliminado), em A (SEOBNRv5EHM com as correcoes)
+residuo em A (deve ser o tremor): +0.0e+00 +0.0e+00 +4.8e-16 +0.0e+00 +1.3e-16 -2.1e-16 +4.8e-16
+colunas circulares, erro relativo passo h x h/2: iota 2.9e-04 chi1 1.7e-02 M 1.6e-01 q 5.6e-02 chi2 1.1e-02
+e0 = 0.03: dF/dX = -2.54e-03 +6.55e-03 +1.80e-02 +4.55e-04 -9.45e-03 +6.60e-03 +1.05e-02
+          dF/dY = -1.23e-02 -1.15e-03 -4.70e-02 -4.02e-03 -7.15e-05 +2.25e-03 -3.43e-02
+          media em l0 - F(A) = +5.7e-04 +1.7e-05 +6.3e-04 +7.9e-05 -2.9e-04 -5.0e-05 -2.8e-04 (termo ~ e0^2)
+e0 = 0.06: dF/dX = +1.77e-02 +9.78e-04 +5.16e-02 +5.04e-03 +7.77e-04 -3.45e-03 +3.41e-02
+          dF/dY = +2.81e-03 +6.23e-03 +2.43e-02 +1.56e-03 -9.80e-03 +5.49e-03 +1.09e-02
+          media em l0 - F(A) = +2.4e-03 +1.4e-05 +2.7e-03 +8.0e-05 +1.5e-04 -5.4e-05 +3.3e-04 (termo ~ e0^2)
+linearidade: |dF/dX(0.06) - dF/dX(0.03)|/|dF/dX| = 1.95 ; idem Y 1.46 ; razao das medias (0.06/0.03) = 3.84 (e0^2 -> 4)
+valores singulares (colunas escaladas por [0.01 0.1  1.   0.1  0.1  0.1  0.1 ]):
+  circular (7 x 5): 1.22e-01 3.15e-02 1.07e-02 3.44e-03 5.39e-05
+  com X, Y (7 x 7): 1.22e-01 3.15e-02 1.08e-02 3.52e-03 1.60e-04 8.32e-05 1.55e-05
+  direcao mais fraca (7 x 7), em unidades da escala: iota +0.106 chi1 -0.520 M -0.044 q -0.020 chi2 +0.651 X -0.326 Y -0.431
+  com X, Y de e0 = 0,06: 1.22e-01 3.15e-02 1.08e-02 3.71e-03 3.20e-04 7.60e-05 1.73e-05
+  deslocamento (em unidades de escala) que muda os residuos so 1e-5 na direcao mais fraca: 6.4e-01
+
+buscas locais a partir da familia circular de duas janelas, com e0 e l0 livres:
+  controle q=1.196 + e0=0.03, l0=0.00: max|res| 6.62e-04 -> iota 50.02 graus chi1 +0.2737 M 64.961 q 1.196 chi2 -0.1647 e0 0.0300 l0 6.283 (68 s)
+      residuos: +2.9e-04 +1.6e-04 +5.6e-04 +3.6e-05 -6.6e-04 +1.2e-04 -4.6e-04
+  controle q=1.196 + e0=0.03, l0=3.14: max|res| 1.81e-04 -> iota 50.10 graus chi1 +0.2681 M 65.054 q 1.210 chi2 -0.1640 e0 0.0292 l0 3.128 (94 s)
+      residuos: +5.2e-05 -1.0e-04 +7.0e-05 -1.8e-04 -1.6e-05 +1.0e-04 -7.6e-05
+  controle q=1.233 + e0=0.03, l0=0.00: max|res| 4.02e-04 -> iota 49.96 graus chi1 +0.4167 M 65.317 q 1.237 chi2 -0.3757 e0 0.0287 l0 0.000 (92 s)
+      residuos: +3.6e-04 -2.0e-04 +3.7e-04 +9.8e-05 -1.6e-04 -9.8e-05 -4.0e-04
+  controle q=1.233 + e0=0.03, l0=3.14: max|res| 1.48e-04 -> iota 49.96 graus chi1 +0.4209 M 65.341 q 1.240 chi2 -0.3771 e0 0.0289 l0 3.150 (90 s)
+      residuos: -1.7e-05 -1.5e-04 +5.6e-05 -6.3e-05 -3.5e-06 +1.2e-04 -1.3e-04
+(212 s)

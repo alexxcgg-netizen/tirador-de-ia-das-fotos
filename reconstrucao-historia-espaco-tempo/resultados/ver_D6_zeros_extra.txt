@@ -1,0 +1,12 @@
+S01 deslocamento: icosfera soma 2.00 (4 triangulos) ; exp34: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 2.678 graus
+S01 spin        : icosfera soma 2.00 (6 triangulos) ; exp34: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 6.265 graus
+S03 deslocamento: icosfera soma 2.00 (4 triangulos) ; exp34: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 2.351 graus
+S03 spin        : icosfera soma 2.00 (6 triangulos) ; exp34: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 1.576 graus
+S05 deslocamento: icosfera soma 2.00 (4 triangulos) ; exp34: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 4.806 graus
+S05 spin        : icosfera soma 2.00 (6 triangulos) ; exp34: 6 zeros, indices [-0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 2.639 graus
+X2 deslocamento: icosfera soma 2.00 (4 triangulos) ; exp34: 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 7.037 graus
+X2 spin        : icosfera soma 2.00 (8 triangulos) ; exp34: 8 zeros, indices [-0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], soma 2.00 ; menor distancia entre zeros 7.206 graus
+
+real	1m52.650s
+user	1m51.124s
+sys	0m0.632s

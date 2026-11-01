@@ -1,0 +1,48 @@
+== 1. Sinal analitico sintetico: a = A0 sech(t/tau)^0.5 ... (unimodal), psidot = w0 + w1 tanh(t/tau2)
+  exp30_comum.edo_retorno (trapezio): max |psidot/psidot_ver - 1| = 1.26e-09 (clip 0) ; adiabatico: 4.82e-03
+  integrador proprio (w, Radau, partida Briot-Bouquet dos dados): t_p = 0.0000 ; y* = 1.7361e-07 (verdadeiro a^2 add^2/P = 1.7361e-07) ; max erro psidot = 4.34e-12
+  edo_retorno com dt = 0.10: max erro psidot = 5.05e-09 (clip 0)
+  edo_retorno com dt = 0.20: max erro psidot = 2.02e-08 (clip 0)
+  edo_retorno com dt = 0.40: max erro psidot = 8.08e-08 (clip 0)
+
+== Sistema A (NRHybSur3dq8_CCE, M=65, q=1.2, chi=(0.3,-0.2), 10 Hz), modo (2,2)
+  t_p (grade) = 0.000 ; clip da referencia = 11
+  integrador proprio [-3000,-200]  max |psidot/ver - 1| = 1.34e-10 ; edo_retorno 3.54e-10 ; |u_proprio/u_edo - 1| max 3.57e-10
+  integrador proprio [-200,-0.1]   max |psidot/ver - 1| = 1.15e-09 ; edo_retorno 4.33e-06 ; |u_proprio/u_edo - 1| max 4.33e-06
+  integrador proprio [0.1,30]      max |psidot/ver - 1| = 6.37e-09 ; edo_retorno 5.89e-06 ; |u_proprio/u_edo - 1| max 5.90e-06
+  integrador proprio [30,60]       max |psidot/ver - 1| = 1.56e-08 ; edo_retorno 1.41e-05 ; |u_proprio/u_edo - 1| max 1.41e-05
+  y* (Briot-Bouquet, dados) = 6.6967e-06 ; a^2 addot^2 / P (verdade) = 6.8529e-06 ; kappa = sqrt(P/y*) = 55.20 ; relatorio 54.6
+
+== 2. Solucoes com quina: ramo + de t_p ate t_k, depois ramo - (mesmos P, H; u -> 0 nos dois lados)
+  t_k =   0.5: max u/u_ver = 1.036 ; |Delta fase| em t_p+30 = 0.005 rad, em t_p+60 = 0.005 ; max|P_rec/P-1| = 1.4e-04, max|H_rec/H-1| = 7.6e-05 (longe das quinas) ; salto de udot na quina = 0.273 u/M ; u(t_p+60)/u_ver = 1.0000 ; sobreposicao ate t_p+30 = 1.00000
+  t_k =   2.0: max u/u_ver = 1.602 ; |Delta fase| em t_p+30 = 0.237 rad, em t_p+60 = 0.236 ; max|P_rec/P-1| = 1.4e-04, max|H_rec/H-1| = 7.6e-05 (longe das quinas) ; salto de udot na quina = 0.755 u/M ; u(t_p+60)/u_ver = 1.0000 ; sobreposicao ate t_p+30 = 0.99964
+  t_k =   5.0: max u/u_ver = 5.321 ; |Delta fase| em t_p+30 = 2.000 rad, em t_p+60 = 2.000 ; max|P_rec/P-1| = 1.6e-03, max|H_rec/H-1| = 1.2e-03 (longe das quinas) ; salto de udot na quina = 0.667 u/M ; u(t_p+60)/u_ver = 1.0000 ; sobreposicao ate t_p+30 = 0.98422
+  t_k =  10.0: max u/u_ver = 25.510 ; |Delta fase| em t_p+30 = 9.095 rad, em t_p+60 = 9.095 ; max|P_rec/P-1| = 1.6e-03, max|H_rec/H-1| = 1.1e-03 (longe das quinas) ; salto de udot na quina = 0.375 u/M ; u(t_p+60)/u_ver = 1.0000 ; sobreposicao ate t_p+30 = 0.92888
+
+== 3. u(t_p) errado (tabela de contracao do relatorio): desvio relativo de u contra a referencia
+  delta = +1e-01: -0.25: +5.1e-02 ; -0.50: +1.8e-02 ; -1.00: -3.8e-05 ; -5.00: -6.9e-10 ; +0.25: +5.1e-02 ; +1.00: -5.4e-05 ; +5.00: -2.4e-11 | clip 13 ; na fronteira (20 passos antes/depois): 1/1
+  delta = +1e-02: -0.25: +7.9e-05 ; -0.50: -1.0e-05 ; -1.00: -2.3e-05 ; -5.00: -2.5e-10 ; +0.25: +1.1e-04 ; +1.00: -2.7e-05 ; +5.00: -6.9e-12 | clip 13 ; na fronteira (20 passos antes/depois): 1/1
+  delta = +1e-03: -0.25: -3.0e-07 ; -0.50: +3.5e-06 ; -1.00: +4.5e-06 ; -5.00: +3.9e-11 ; +0.25: -7.7e-06 ; +1.00: +2.4e-05 ; +5.00: +4.7e-12 | clip 13 ; na fronteira (20 passos antes/depois): 1/1
+  delta = +1e-04: -0.25: -3.0e-07 ; -0.50: +3.5e-06 ; -1.00: +4.5e-06 ; -5.00: +3.9e-11 ; +0.25: -7.7e-06 ; +1.00: +2.4e-05 ; +5.00: +4.7e-12 | clip 13 ; na fronteira (20 passos antes/depois): 1/1
+  delta = -1e-03: -0.25: -3.0e-07 ; -0.50: +3.5e-06 ; -1.00: +4.5e-06 ; -5.00: +3.9e-11 ; +0.25: -7.7e-06 ; +1.00: +2.4e-05 ; +5.00: +4.7e-12 | clip 13 ; na fronteira (20 passos antes/depois): 1/1
+  delta = -1e-01: -0.25: -3.0e-07 ; -0.50: +3.5e-06 ; -1.00: +4.5e-06 ; -5.00: +3.9e-11 ; +0.25: -7.7e-06 ; +1.00: +2.4e-05 ; +5.00: +4.7e-12 | clip 13 ; na fronteira (20 passos antes/depois): 1/1
+  referencia: na fronteira (20 passos antes/depois): 0/0 ; u_ver/u_b - 1 em t_p -/+ 0.25: 1.2e-06 / 5.1e-06
+  t = -10000.0: L = 2P/|udot| = 24.8 /M ; L dt = 6.19 ; fator do trapezio por passo = -0.511 (exato e^{-L dt} = 2.1e-03)
+  t = -1000.0: L = 2P/|udot| = 13.3 /M ; L dt = 3.31 ; fator do trapezio por passo = -0.247 (exato e^{-L dt} = 3.6e-02)
+  t =  -100.0: L = 2P/|udot| = 6.03 /M ; L dt = 1.51 ; fator do trapezio por passo = +0.140 (exato e^{-L dt} = 2.2e-01)
+  t =   -10.0: L = 2P/|udot| = 7.66 /M ; L dt = 1.92 ; fator do trapezio por passo = +0.021 (exato e^{-L dt} = 1.5e-01)
+  t =    -1.0: L = 2P/|udot| = 61.5 /M ; L dt = 15.4 ; fator do trapezio por passo = -0.770 (exato e^{-L dt} = 2.1e-07)
+  t =    -0.5: L = 2P/|udot| = 134 /M ; L dt = 33.4 ; fator do trapezio por passo = -0.887 (exato e^{-L dt} = 3.1e-15)
+
+== 4. Teste (a) com dt = 0.5 (subamostragem do mesmo (2,2)) contra dt = 0.25
+  dt = 0.25: max erro psidot: insp 3.5e-10 ; fim 4.3e-06 ; pos 5.9e-06 ; toque 1.4e-05 (clip 11)
+  dt = 0.50: max erro psidot: insp 1.4e-09 ; fim 8.5e-06 ; pos 2.4e-05 ; toque 5.6e-05 (clip 6)
+
+== 5. Ruido suave 1e-3 (20 senos, 50-2000 M) em P e H: onde a EDO cai na fronteira (= adiabatico)
+  amplitude 1e-03: clip 13662 ; fracao de passos na fronteira: inspiral 0.208, fim 0.000 ; rms variacao psidot inspiral EDO 1.41e-03 adiab 1.41e-03 ; rms erro total no fim da inspiral EDO 1.88e-03 adiab 1.35e-03
+  amplitude 1e-05: clip 11 ; fracao de passos na fronteira: inspiral 0.000, fim 0.000 ; rms variacao psidot inspiral EDO 1.43e-05 adiab 1.43e-05 ; rms erro total no fim da inspiral EDO 9.52e-06 adiab 7.49e-04
+  amplitude 1e-07: clip 11 ; fracao de passos na fronteira: inspiral 0.000, fim 0.000 ; rms variacao psidot inspiral EDO 1.40e-07 adiab 1.40e-07 ; rms erro total no fim da inspiral EDO 3.34e-07 adiab 7.42e-04
+
+== 6. Amplificacao para frente, ordem dominante PN: int 2P/udot dt = (5/1024)/(eta^2 x^5) (de x_i ate x)
+  eta = 0.2479 ; x_i (10 Hz) = 0.0466 ; log10 amplificacao ~ 1.571e+05 (relatorio 1.59e5) ; taxa em x=0.0942 (t~-1000): (5/16)/(eta x) = 13.38/M (relatorio 13.26)
+tempo 42 s

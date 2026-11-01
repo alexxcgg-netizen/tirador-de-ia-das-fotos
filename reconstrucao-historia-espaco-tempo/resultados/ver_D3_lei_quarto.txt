@@ -1,0 +1,30 @@
+eta 0.25 x* 0.45 tau_m 50 janela None: c = 1.4397 ; fracao depositada na fusao 0.558
+   w M = 1e-05: 1-|T| 0.07427 ; previsto 0.07480 ; razao 0.9930 ; arg(1-T) -0.395 (previsto -pi/8 = -0.393)
+   w M = 1e-04: 1-|T| 0.13113 ; previsto 0.13301 ; razao 0.9859 ; arg(1-T) -0.406 (previsto -pi/8 = -0.393)
+   w M = 1e-03: 1-|T| 0.22800 ; previsto 0.23653 ; razao 0.9639 ; arg(1-T) -0.463 (previsto -pi/8 = -0.393)
+   w M = 1e-02: 1-|T| 0.36329 ; previsto 0.42061 ; razao 0.8637 ; arg(1-T) -0.654 (previsto -pi/8 = -0.393)
+   w M = 3e-02: 1-|T| 0.41361 ; previsto 0.55356 ; razao 0.7472 ; arg(1-T) -0.527 (previsto -pi/8 = -0.393)
+eta 0.25 x* 0.45 tau_m 10 janela None: c = 1.4397 ; fracao depositada na fusao 0.339
+   w M = 1e-05: 1-|T| 0.07428 ; previsto 0.07480 ; razao 0.9931 ; arg(1-T) -0.393 (previsto -pi/8 = -0.393)
+   w M = 1e-04: 1-|T| 0.13125 ; previsto 0.13301 ; razao 0.9868 ; arg(1-T) -0.393 (previsto -pi/8 = -0.393)
+   w M = 1e-03: 1-|T| 0.23013 ; previsto 0.23653 ; razao 0.9729 ; arg(1-T) -0.397 (previsto -pi/8 = -0.393)
+   w M = 1e-02: 1-|T| 0.39263 ; previsto 0.42061 ; razao 0.9335 ; arg(1-T) -0.415 (previsto -pi/8 = -0.393)
+   w M = 3e-02: 1-|T| 0.49083 ; previsto 0.55356 ; razao 0.8867 ; arg(1-T) -0.437 (previsto -pi/8 = -0.393)
+eta 0.16 x* 0.25 tau_m 50 janela None: c = 2.8973 ; fracao depositada na fusao 0.111
+   w M = 1e-05: 1-|T| 0.14825 ; previsto 0.15053 ; razao 0.9849 ; arg(1-T) -0.392 (previsto -pi/8 = -0.393)
+   w M = 1e-04: 1-|T| 0.25947 ; previsto 0.26768 ; razao 0.9693 ; arg(1-T) -0.390 (previsto -pi/8 = -0.393)
+   w M = 1e-03: 1-|T| 0.44332 ; previsto 0.47601 ; razao 0.9313 ; arg(1-T) -0.376 (previsto -pi/8 = -0.393)
+   w M = 1e-02: 1-|T| 0.69931 ; previsto 0.84647 ; razao 0.8261 ; arg(1-T) -0.296 (previsto -pi/8 = -0.393)
+   w M = 3e-02: 1-|T| 0.80940 ; previsto 1.11402 ; razao 0.7266 ; arg(1-T) -0.155 (previsto -pi/8 = -0.393)
+eta 0.25 x* 0.45 tau_m 50 janela 100000.0: c = 1.4397 ; fracao depositada na fusao 0.558
+   w M = 1e-05: 1-|T| 0.07036 ; previsto 0.07480 ; razao 0.9407 ; arg(1-T) -0.292 (previsto -pi/8 = -0.393)
+   w M = 1e-04: 1-|T| 0.13175 ; previsto 0.13301 ; razao 0.9905 ; arg(1-T) -0.413 (previsto -pi/8 = -0.393)
+   w M = 1e-03: 1-|T| 0.22810 ; previsto 0.23653 ; razao 0.9644 ; arg(1-T) -0.463 (previsto -pi/8 = -0.393)
+   w M = 1e-02: 1-|T| 0.36328 ; previsto 0.42061 ; razao 0.8637 ; arg(1-T) -0.654 (previsto -pi/8 = -0.393)
+   w M = 3e-02: 1-|T| 0.41361 ; previsto 0.55356 ; razao 0.7472 ; arg(1-T) -0.527 (previsto -pi/8 = -0.393)
+eta 0.25 x* 0.45 tau_m 50 janela 10000.0: c = 1.4397 ; fracao depositada na fusao 0.558
+   w M = 1e-05: 1-|T| 0.11756 ; previsto 0.07480 ; razao 1.5717 ; arg(1-T) -0.035 (previsto -pi/8 = -0.393)
+   w M = 1e-04: 1-|T| 0.12467 ; previsto 0.13301 ; razao 0.9373 ; arg(1-T) -0.305 (previsto -pi/8 = -0.393)
+   w M = 1e-03: 1-|T| 0.22885 ; previsto 0.23653 ; razao 0.9675 ; arg(1-T) -0.470 (previsto -pi/8 = -0.393)
+   w M = 1e-02: 1-|T| 0.36356 ; previsto 0.42061 ; razao 0.8643 ; arg(1-T) -0.654 (previsto -pi/8 = -0.393)
+   w M = 3e-02: 1-|T| 0.41361 ; previsto 0.55356 ; razao 0.7472 ; arg(1-T) -0.527 (previsto -pi/8 = -0.393)

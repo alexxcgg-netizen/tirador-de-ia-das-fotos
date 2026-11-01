@@ -1,0 +1,54 @@
+exp40_anomalia: dependencia das memorias globais (m = 0, janela desde 10 Hz) na anomalia relativistica inicial l0
+amplitude do 1o harmonico em l0 (relativa a media) | 2o harmonico | resto rms ; 12 valores de l0
+
+Sistema A (1.2, 0.3, -0.2, 65.0) ; circular: desl20 9.08521e-02 spin30 -2.59078e-01 E_jan 4.492196e-02 M_f 0.949534
+  e0 = 0.02 (e_EOB em -500 M 0.0055, em -100 M 0.0029): desl20 8.35e-04|1.1e-05|2e-05 ; spin30 6.55e-04|8.0e-06|2e-06 ; cm20 7.63e-04|1.0e-05|2e-05 ; giro10 6.48e-04|8.3e-06|2e-06 ; E_janela 8.67e-04|1.1e-05|2e-05 ; M_f 4.01e-05|5.2e-07|1e-06
+            E_janela pico a pico 7.75e-05 ; -nu H(fim da dinamica) pico a pico 1.89e-04 (correlacao -0.495) ; resto (energia depois do fim da dinamica) pico a pico 2.61e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.34 (correlacao 0.936), 500 M: 0.83 ; M_f pico a pico 7.58e-05 (relativo 8.0e-05) ; media de desl20 - circular +1.43e-05
+  e0 = 0.05 (e_EOB em -500 M 0.0137, em -100 M 0.0074): desl20 2.01e-03|9.3e-05|1e-05 ; spin30 1.35e-03|5.3e-05|3e-06 ; cm20 1.82e-03|8.0e-05|2e-05 ; giro10 1.32e-03|5.1e-05|3e-06 ; E_janela 2.09e-03|9.6e-05|1e-05 ; M_f 9.84e-05|4.5e-06|7e-07
+            E_janela pico a pico 1.87e-04 ; -nu H(fim da dinamica) pico a pico 2.58e-04 (correlacao 0.222) ; resto (energia depois do fim da dinamica) pico a pico 2.84e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.37 (correlacao 0.941), 500 M: 0.85 ; M_f pico a pico 1.87e-04 (relativo 2.0e-04) ; media de desl20 - circular +1.27e-04
+  e0 = 0.10 (e_EOB em -500 M 0.0277, em -100 M 0.0149): desl20 4.14e-03|3.4e-04|3e-05 ; spin30 3.43e-03|2.5e-04|2e-05 ; cm20 3.74e-03|3.2e-04|3e-05 ; giro10 3.41e-03|2.5e-04|2e-05 ; E_janela 4.30e-03|3.5e-04|3e-05 ; M_f 1.99e-04|1.7e-05|1e-06
+            E_janela pico a pico 3.86e-04 ; -nu H(fim da dinamica) pico a pico 3.33e-04 (correlacao -0.148) ; resto (energia depois do fim da dinamica) pico a pico 5.50e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.34 (correlacao 0.930), 500 M: 0.83 ; M_f pico a pico 3.77e-04 (relativo 4.0e-04) ; media de desl20 - circular -1.32e-05
+  e0 = 0.20 (e_EOB em -500 M 0.0581, em -100 M 0.0312): desl20 8.11e-03|1.5e-03|2e-04 ; spin30 6.04e-03|1.1e-03|2e-04 ; cm20 7.33e-03|1.4e-03|2e-04 ; giro10 6.00e-03|1.1e-03|2e-04 ; E_janela 8.41e-03|1.6e-03|2e-04 ; M_f 4.02e-04|7.4e-05|1e-05
+            E_janela pico a pico 7.63e-04 ; -nu H(fim da dinamica) pico a pico 4.72e-04 (correlacao -0.183) ; resto (energia depois do fim da dinamica) pico a pico 9.70e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.39 (correlacao 0.920), 500 M: 0.86 ; M_f pico a pico 7.73e-04 (relativo 8.1e-04) ; media de desl20 - circular -7.08e-04
+  e0 = 0.30 (e_EOB em -500 M 0.0946, em -100 M 0.0505): desl20 1.35e-02|3.5e-03|8e-04 ; spin30 1.18e-02|2.6e-03|6e-04 ; cm20 1.21e-02|3.3e-03|8e-04 ; giro10 1.18e-02|2.6e-03|6e-04 ; E_janela 1.40e-02|3.6e-03|8e-04 ; M_f 6.49e-04|1.7e-04|4e-05
+            E_janela pico a pico 1.33e-03 ; -nu H(fim da dinamica) pico a pico 5.89e-04 (correlacao -0.037) ; resto (energia depois do fim da dinamica) pico a pico 1.51e-03
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.32 (correlacao 0.922), 500 M: 0.84 ; M_f pico a pico 1.31e-03 (relativo 1.4e-03) ; media de desl20 - circular -1.89e-03
+  desl20: 1o harmonico ~ e0^1.02 (ajuste em e0 = (0.02, 0.05, 0.1, 0.2, 0.3)) ; a1/e0 = 4.18e-02 4.02e-02 4.14e-02 4.05e-02 4.49e-02
+  spin30: 1o harmonico ~ e0^1.06 (ajuste em e0 = (0.02, 0.05, 0.1, 0.2, 0.3)) ; a1/e0 = 3.27e-02 2.71e-02 3.43e-02 3.02e-02 3.94e-02
+  M_f: 1o harmonico ~ e0^1.02 (ajuste em e0 = (0.02, 0.05, 0.1, 0.2, 0.3)) ; a1/e0 = 2.01e-03 1.97e-03 1.99e-03 2.01e-03 2.16e-03
+
+Sistema B (2.0, 0.0596, 0.0, 72.5875) ; circular: desl20 6.64736e-02 spin30 -1.99944e-01 E_jan 3.446502e-02 M_f 0.960212
+  e0 = 0.02 (e_EOB em -500 M 0.0060, em -100 M 0.0033): desl20 9.24e-04|8.2e-06|7e-06 ; spin30 7.15e-04|7.2e-06|3e-06 ; cm20 9.01e-04|8.9e-06|5e-06 ; giro10 7.08e-04|7.2e-06|3e-06 ; E_janela 9.36e-04|8.3e-06|7e-06 ; M_f 3.26e-05|3.0e-07|3e-07
+            E_janela pico a pico 6.42e-05 ; -nu H(fim da dinamica) pico a pico 3.38e-04 (correlacao -0.182) ; resto (energia depois do fim da dinamica) pico a pico 3.57e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.39 (correlacao 0.909), 500 M: 0.83 ; M_f pico a pico 6.24e-05 (relativo 6.5e-05) ; media de desl20 - circular -1.11e-06
+  e0 = 0.05 (e_EOB em -500 M 0.0151, em -100 M 0.0083): desl20 2.28e-03|7.6e-05|6e-06 ; spin30 1.56e-03|5.0e-05|2e-06 ; cm20 2.21e-03|6.9e-05|5e-06 ; giro10 1.53e-03|4.9e-05|3e-06 ; E_janela 2.31e-03|7.7e-05|6e-06 ; M_f 8.14e-05|2.7e-06|2e-07
+            E_janela pico a pico 1.58e-04 ; -nu H(fim da dinamica) pico a pico 3.84e-04 (correlacao -0.011) ; resto (energia depois do fim da dinamica) pico a pico 4.53e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.41 (correlacao 0.922), 500 M: 0.84 ; M_f pico a pico 1.56e-04 (relativo 1.6e-04) ; media de desl20 - circular +1.08e-04
+  e0 = 0.10 (e_EOB em -500 M 0.0306, em -100 M 0.0168): desl20 4.53e-03|3.9e-04|4e-05 ; spin30 3.44e-03|2.6e-04|2e-05 ; cm20 4.43e-03|4.0e-04|4e-05 ; giro10 3.42e-03|2.6e-04|2e-05 ; E_janela 4.59e-03|4.0e-04|4e-05 ; M_f 1.64e-04|1.4e-05|1e-06
+            E_janela pico a pico 3.11e-04 ; -nu H(fim da dinamica) pico a pico 4.08e-04 (correlacao -0.250) ; resto (energia depois do fim da dinamica) pico a pico 6.00e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.42 (correlacao 0.895), 500 M: 0.85 ; M_f pico a pico 3.07e-04 (relativo 3.2e-04) ; media de desl20 - circular -1.80e-04
+  e0 = 0.20 (e_EOB em -500 M 0.0641, em -100 M 0.0354): desl20 9.29e-03|1.3e-03|2e-04 ; spin30 6.05e-03|8.5e-04|1e-04 ; cm20 9.01e-03|1.1e-03|1e-04 ; giro10 5.88e-03|8.3e-04|1e-04 ; E_janela 9.40e-03|1.3e-03|2e-04 ; M_f 3.36e-04|4.5e-05|6e-06
+            E_janela pico a pico 6.60e-04 ; -nu H(fim da dinamica) pico a pico 4.48e-04 (correlacao 0.164) ; resto (energia depois do fim da dinamica) pico a pico 8.54e-04
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.44 (correlacao 0.921), 500 M: 0.85 ; M_f pico a pico 6.58e-04 (relativo 6.9e-04) ; media de desl20 - circular +2.13e-03
+  e0 = 0.30 (e_EOB em -500 M 0.1042, em -100 M 0.0570): desl20 1.56e-02|3.5e-03|7e-04 ; spin30 1.30e-02|2.6e-03|5e-04 ; cm20 1.52e-02|3.5e-03|7e-04 ; giro10 1.29e-02|2.5e-03|5e-04 ; E_janela 1.58e-02|3.5e-03|7e-04 ; M_f 5.49e-04|1.3e-04|3e-05
+            E_janela pico a pico 1.11e-03 ; -nu H(fim da dinamica) pico a pico 6.62e-04 (correlacao -0.104) ; resto (energia depois do fim da dinamica) pico a pico 1.45e-03
+            variacao de desl20 com l0 vinda dos ultimos 100 M: 1.38 (correlacao 0.908), 500 M: 0.83 ; M_f pico a pico 1.07e-03 (relativo 1.1e-03) ; media de desl20 - circular -8.79e-05
+  desl20: 1o harmonico ~ e0^1.03 (ajuste em e0 = (0.02, 0.05, 0.1, 0.2, 0.3)) ; a1/e0 = 4.62e-02 4.56e-02 4.53e-02 4.64e-02 5.21e-02
+  spin30: 1o harmonico ~ e0^1.04 (ajuste em e0 = (0.02, 0.05, 0.1, 0.2, 0.3)) ; a1/e0 = 3.58e-02 3.13e-02 3.44e-02 3.02e-02 4.33e-02
+  M_f: 1o harmonico ~ e0^1.03 (ajuste em e0 = (0.02, 0.05, 0.1, 0.2, 0.3)) ; a1/e0 = 1.63e-03 1.63e-03 1.64e-03 1.68e-03 1.83e-03
+
+Controle PN (Peters + quadrupolo, so inspiral ate p = 6 + 2e), sistema B (eta de q = 2), desde 10 Hz:
+ fim na separatriz secular p = 6 + 2e:
+  e0 = 0.1: desl20 1o harm. 4.52e-03 (2o 7.2e-05) ; spin30 2.07e-03 ; E irradiada 4.52e-03 ; duracao media 13274 M (pico a pico 0.0 M)
+  e0 = 0.2: desl20 1o harm. 9.25e-03 (2o 5.1e-04) ; spin30 4.02e-03 ; E irradiada 9.25e-03 ; duracao media 11854 M (pico a pico 0.0 M)
+  e0 = 0.3: desl20 1o harm. 1.50e-02 (2o 1.4e-03) ; spin30 6.57e-03 ; E irradiada 1.50e-02 ; duracao media 9748 M (pico a pico 0.0 M)
+ fim quando r(t) instantaneo < 8 M:
+  e0 = 0.1: desl20 1o harm. 2.93e-02 (2o 1.4e-02) ; spin30 1.54e-02 ; E irradiada 2.93e-02 ; duracao media 13024 M (pico a pico 64.6 M)
+  e0 = 0.2: desl20 1o harm. 3.77e-02 (2o 1.9e-02) ; spin30 2.14e-02 ; E irradiada 3.77e-02 ; duracao media 11579 M (pico a pico 99.9 M)
+  e0 = 0.3: desl20 1o harm. 3.76e-02 (2o 2.0e-02) ; spin30 2.31e-02 ; E irradiada 3.76e-02 ; duracao media 9406 M (pico a pico 118.3 M)
+
+(71 s)

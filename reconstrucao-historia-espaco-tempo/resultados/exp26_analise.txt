@@ -1,0 +1,79 @@
+SISTEMA A: 174 pontos
+  CE, D = 400.0 Mpc (rho = 34.09, limiar 1-match < 4.30e-04): fracao dos 160 pontos de Sobol dentro: 0.79 (M e iota livres) ; 0.72 (so M livre, iota = 50 graus) ; 0.63 (M = M_A)
+  CE: rho necessario para excluir cada ponto (1/sqrt(2 mm_min)), percentis 10/50/90 dos Sobol: 29 / 61 / 471 ; fracao excluida com rho = 100: 0.66, 300: 0.83, 1000: 0.95
+  ET, D = 400.0 Mpc (rho = 8.64, limiar 1-match < 6.70e-03): fracao dos 160 pontos de Sobol dentro: 1.00 (M e iota livres) ; 1.00 (so M livre, iota = 50 graus) ; 1.00 (M = M_A)
+  ET: rho necessario para excluir cada ponto (1/sqrt(2 mm_min)), percentis 10/50/90 dos Sobol: 21 / 43 / 344 ; fracao excluida com rho = 100: 0.72, 300: 0.88, 1000: 0.97
+  curvatura do vale em ln M (CE, so M livre): 1-match ~ a (ln M - ln M*)^2, a mediano = 0.0111 ; meia largura no limiar de CE (rho = 34.1): Delta ln M = 0.196
+  Fisher contra perfil (CE, ponto A, iota fixo, D/t0/psi livres): d ln M | 1-match perfil | Fisher
+     -0.288  3.078e-03  9.254e-04  (razao 3.33)
+     -0.210  1.645e-03  4.944e-04  (razao 3.33)
+     -0.133  6.300e-04  1.973e-04  (razao 3.19)
+     -0.055  8.736e-05  3.435e-05  (razao 2.54)
+     +0.022  3.946e-06  5.408e-06  (razao 0.73)
+     +0.099  6.883e-05  1.105e-04  (razao 0.62)
+     +0.177  2.580e-04  3.496e-04  (razao 0.74)
+     +0.254  6.515e-04  7.228e-04  (razao 0.90)
+     +0.332  1.338e-03  1.230e-03  (razao 1.09)
+  Fisher contra perfil (ET, ponto A, iota fixo, D/t0/psi livres): d ln M | 1-match perfil | Fisher
+     -0.288  5.657e-03  1.776e-03  (razao 3.18)
+     -0.210  2.989e-03  9.488e-04  (razao 3.15)
+     -0.133  1.141e-03  3.787e-04  (razao 3.01)
+     -0.055  1.633e-04  6.593e-05  (razao 2.48)
+     +0.022  7.133e-06  1.038e-05  (razao 0.69)
+     +0.099  1.190e-04  2.121e-04  (razao 0.56)
+     +0.177  4.439e-04  6.710e-04  (razao 0.66)
+     +0.254  1.114e-03  1.387e-03  (razao 0.80)
+     +0.332  2.264e-03  2.361e-03  (razao 0.96)
+  A                    q 1.2 chi (0.30, -0.20): CE 1-match_min -2.22e-16 (M* 65.00, cos i* 0.64) ; ET 0.00e+00 ; com M = 65: CE 0.00e+00
+  exp07 qB=1 c2B=0     q 1.0 chi (0.08, 0.00): CE 1-match_min 1.13e-08 (M* 65.34, cos i* 0.69) ; ET 2.73e-08 ; com M = 65: CE 3.12e-07
+  exp07 qB=2 c2B=0     q 2.0 chi (0.22, 0.00): CE 1-match_min 1.32e-05 (M* 63.45, cos i* 0.95) ; ET 2.67e-05 ; com M = 65: CE 1.80e-05
+  exp07 qB=3 c2B=0     q 3.0 chi (0.55, 0.00): CE 1-match_min 6.46e-05 (M* 59.67, cos i* -0.00) ; ET 1.25e-04 ; com M = 65: CE 1.67e-04
+  exp07 qB=4 c2B=0     q 4.0 chi (0.80, 0.00): CE 1-match_min 6.97e-05 (M* 53.88, cos i* 0.00) ; ET 1.31e-04 ; com M = 65: CE 7.01e-04
+  exp07 qB=6 c2B=0     q 6.0 chi (0.80, 0.00): CE 1-match_min 2.60e-04 (M* 53.31, cos i* -0.00) ; ET 4.93e-04 ; com M = 65: CE 1.31e-03
+  exp07 qB=2 c2B=0.5   q 2.0 chi (-0.14, 0.50): CE 1-match_min 2.90e-05 (M* 63.98, cos i* -0.00) ; ET 5.84e-05 ; com M = 65: CE 3.41e-05
+  exp07 qB=3 c2B=-0.5  q 3.0 chi (0.80, -0.50): CE 1-match_min 1.13e-05 (M* 56.61, cos i* 0.00) ; ET 1.96e-05 ; com M = 65: CE 1.94e-04
+  O que fixa o vale (pontos com 1-match_min(M) < 5 x limiar de CE, n = 174): desvio padrao de cada candidato
+     ln M*                                      0.0656 (todos os pontos: 0.0656)
+     ln(M* m_f)                                 0.0710 (todos os pontos: 0.0710)
+     ln(M* m_f / omega_220)                     0.2078 (todos os pontos: 0.2078)
+     ln(M* x largura a meia altura da taxa)     0.0997 (todos os pontos: 0.0997)
+     ln(M* x desvio padrao da taxa)             0.0921 (todos os pontos: 0.0921)
+     ln(M* eta^0.6) (chirp)                     0.1671 (todos os pontos: 0.1671)
+     ln(M*/(eta x*^4)) (lei 1/4, ordem dominante) 1.6793 (todos os pontos: 1.6793)
+SISTEMA baixa: 71 pontos
+  CE, D = 400.0 Mpc (rho = 5.42, limiar 1-match < 1.70e-02): fracao dos 64 pontos de Sobol dentro: 1.00 (M e iota livres) ; 1.00 (so M livre, iota = 50 graus) ; 1.00 (M = M_A)
+  CE, D = 63.6 Mpc (rho = 34.09, limiar 1-match < 4.30e-04): fracao dos 64 pontos de Sobol dentro: 0.59 (M e iota livres) ; 0.55 (so M livre, iota = 50 graus) ; 0.53 (M = M_A)
+  CE: rho necessario para excluir cada ponto (1/sqrt(2 mm_min)), percentis 10/50/90 dos Sobol: 23 / 40 / 534 ; fracao excluida com rho = 100: 0.72, 300: 0.84, 1000: 0.95
+  ET, D = 400.0 Mpc (rho = 1.54, limiar 1-match < 2.10e-01): fracao dos 64 pontos de Sobol dentro: 1.00 (M e iota livres) ; 1.00 (so M livre, iota = 50 graus) ; 1.00 (M = M_A)
+  ET, D = 63.6 Mpc (rho = 9.69, limiar 1-match < 5.33e-03): fracao dos 64 pontos de Sobol dentro: 1.00 (M e iota livres) ; 1.00 (so M livre, iota = 50 graus) ; 1.00 (M = M_A)
+  ET: rho necessario para excluir cada ponto (1/sqrt(2 mm_min)), percentis 10/50/90 dos Sobol: 19 / 34 / 425 ; fracao excluida com rho = 100: 0.75, 300: 0.88, 1000: 0.98
+  curvatura do vale em ln M (CE, so M livre): 1-match ~ a (ln M - ln M*)^2, a mediano = 0.000751 ; meia largura no limiar de CE (rho = 5.4): Delta ln M = 4.758
+  Fisher contra perfil (CE, ponto A, iota fixo, D/t0/psi livres): d ln M | 1-match perfil | Fisher
+     -0.347  2.114e-04  3.923e-05  (razao 5.39)
+     -0.260  1.124e-04  2.207e-05  (razao 5.09)
+     -0.173  4.237e-05  9.807e-06  (razao 4.32)
+     -0.087  6.525e-06  2.452e-06  (razao 2.66)
+     +0.000  0.000e+00  0.000e+00  (razao nan)
+     +0.087  1.562e-06  2.452e-06  (razao 0.64)
+     +0.173  6.403e-06  9.807e-06  (razao 0.65)
+     +0.260  1.724e-05  2.207e-05  (razao 0.78)
+     +0.347  3.810e-05  3.923e-05  (razao 0.97)
+  Fisher contra perfil (ET, ponto A, iota fixo, D/t0/psi livres): d ln M | 1-match perfil | Fisher
+     -0.347  7.172e-04  1.281e-04  (razao 5.60)
+     -0.260  3.942e-04  7.207e-05  (razao 5.47)
+     -0.173  1.576e-04  3.203e-05  (razao 4.92)
+     -0.087  2.652e-05  8.008e-06  (razao 3.31)
+     +0.000  4.441e-16  0.000e+00  (razao nan)
+     +0.087  5.145e-06  8.008e-06  (razao 0.64)
+     +0.173  2.252e-05  3.203e-05  (razao 0.70)
+     +0.260  6.260e-05  7.207e-05  (razao 0.87)
+     +0.347  1.399e-04  1.281e-04  (razao 1.09)
+  A                    q 1.2 chi (0.30, -0.20): CE 1-match_min 1.11e-16 (M* 6.00, cos i* 0.64) ; ET 1.11e-16 ; com M = 65: CE 0.00e+00
+  O que fixa o vale (pontos com 1-match_min(M) < 5 x limiar de CE, n = 71): desvio padrao de cada candidato
+     ln M*                                      0.3430 (todos os pontos: 0.3430)
+     ln(M* m_f)                                 0.3541 (todos os pontos: 0.3541)
+     ln(M* m_f / omega_220)                     0.4924 (todos os pontos: 0.4924)
+     ln(M* x largura a meia altura da taxa)     0.2486 (todos os pontos: 0.2486)
+     ln(M* x desvio padrao da taxa)             0.3925 (todos os pontos: 0.3925)
+     ln(M* eta^0.6) (chirp)                     0.3102 (todos os pontos: 0.3102)
+     ln(M*/(eta x*^4)) (lei 1/4, ordem dominante) 2.0111 (todos os pontos: 2.0111)

@@ -1,0 +1,91 @@
+A: M = 65, q = 1.2, chi = (+0.3, -0.2), D = 400 Mpc, iota = 50 graus; janela desde 10 Hz (nivel A, observaveis)
+  T0 (m = 0, desl. de janela): deslocamento 1.644983e-22, spin -2.497911e-25, cm -2.792950e-26, giroscopica -3.156457e-41
+  T  (todos os m, phi'_A = 0): deslocamento 1.646264e-22, spin -2.530523e-25, cm -2.781795e-26, giroscopica -3.172328e-41
+  T/T0 - 1: deslocamento +7.785e-04, spin +1.306e-02, cm -3.994e-03, giroscopica +5.028e-03
+  M_f = 0.949766 M, E_janela = 0.044690, Phi_pico = 256.400 rad
+  [exp07, desl. total, so m = 0: desl 1.829e-22, spin -2.498e-25 s, CM -3.069e-26 s, giro -3.157e-41 rad]
+
+Caso q_B = 1.0, chi2_B = +0.0; par do exp07: M 64.9863, chi1 +0.07908, D 398.614 Mpc, iota 50.4132 graus
+  (a) par do exp07 em T0 (desl. de janela), sem resolver: deslocamento -2.63e-03, spin -1.76e-06, cm -2.41e-03, giroscopica -1.90e-06
+  (b) T0 resolvido: M 64.9330, chi1 +0.07402, D 398.092 Mpc, iota 50.5576 graus | residuo max 9.7e-12 (17 avaliacoes, 44 ondas)
+      desloca: M -0.0533, chi1 -0.00506, D -0.522 Mpc, iota +0.1444 graus ; M_f B = 0.950621 M (M_f B M_B / M_f A M_A - 1 = -0.0001)
+  (T) phi'_B em 8 valores: M     de 65.0870 a 66.2926
+  (T) phi'_B em 8 valores: chi1  de 0.1314 a 0.3477
+  (T) phi'_B em 8 valores: D     de 401.4718 a 413.1411
+  (T) phi'_B em 8 valores: iota  de 47.7153 a 49.9550
+  (T) residuo max ao longo da curva: 2.3e-10 ; no limite em 0 de 8
+  onda T0 (phi = 0 nos dois): match aLIGO 0.9443 (SNR_A 65.9, rho_crit 3.01) ; ET 0.7267 (SNR_A 901, rho_crit 1.36)
+  onda T (phi'_B = 0, pi/2, pi, 3pi/2): match aLIGO de 0.9617 a 0.9918 ; rho_crit de 3.61 a 7.67
+  (88 s)
+
+Caso q_B = 2.0, chi2_B = +0.0; par do exp07: M 69.4550, chi1 +0.21740, D 389.248 Mpc, iota 54.1508 graus
+  (a) par do exp07 em T0 (desl. de janela), sem resolver: deslocamento -1.59e-02, spin -1.55e-06, cm -2.32e-02, giroscopica -1.25e-06
+  (b) T0 resolvido: M 69.9350, chi1 +0.16569, D 385.573 Mpc, iota 55.5922 graus | residuo max 4.7e-11 (11 avaliacoes, 29 ondas)
+      desloca: M +0.4800, chi1 -0.05171, D -3.675 Mpc, iota +1.4414 graus ; M_f B = 0.958054 M (M_f B M_B / M_f A M_A - 1 = +0.0853)
+  (T) phi'_B em 8 valores: M     de 69.4344 a 69.8101
+  (T) phi'_B em 8 valores: chi1  de 0.0876 a 0.3558
+  (T) phi'_B em 8 valores: D     de 378.4974 a 400.3609
+  (T) phi'_B em 8 valores: iota  de 52.0325 a 57.1640
+  (T) residuo max ao longo da curva: 7.4e-11 ; no limite em 0 de 8
+  onda T0 (phi = 0 nos dois): match aLIGO 0.8854 (SNR_A 65.9, rho_crit 2.13) ; ET 0.5131 (SNR_A 901, rho_crit 1.04)
+  onda T (phi'_B = 0, pi/2, pi, 3pi/2): match aLIGO de 0.7764 a 0.9732 ; rho_crit de 1.55 a 4.34
+  (170 s)
+
+Caso q_B = 3.0, chi2_B = +0.0; par do exp07: M 73.6894, chi1 +0.54886, D 387.013 Mpc, iota 54.9641 graus
+  (a) par do exp07 em T0 (desl. de janela), sem resolver: deslocamento -9.50e-03, spin -3.95e-07, cm -2.46e-02, giroscopica +8.78e-07
+  (b) T0 resolvido: M 75.7194, chi1 +0.45580, D 381.266 Mpc, iota 57.6389 graus | residuo max 1.1e-10 (15 avaliacoes, 43 ondas)
+      desloca: M +2.0299, chi1 -0.09306, D -5.747 Mpc, iota +2.6748 graus ; M_f B = 0.961755 M (M_f B M_B / M_f A M_A - 1 = +0.1796)
+  (T) phi'_B em 8 valores: M     de 73.6303 a 75.4928
+  (T) phi'_B em 8 valores: chi1  de 0.4505 a 0.6495
+  (T) phi'_B em 8 valores: D     de 379.7972 a 398.0795
+  (T) phi'_B em 8 valores: iota  de 52.2613 a 57.9071
+  (T) residuo max ao longo da curva: 1.0e-10 ; no limite em 0 de 8
+  onda T0 (phi = 0 nos dois): match aLIGO 0.6542 (SNR_A 65.9, rho_crit 1.24) ; ET 0.3295 (SNR_A 901, rho_crit 0.89)
+  onda T (phi'_B = 0, pi/2, pi, 3pi/2): match aLIGO de 0.4368 a 0.6686 ; rho_crit de 0.94 a 1.27
+  (263 s)
+
+Caso q_B = 4.0, chi2_B = +0.0; par do exp07: M 75.3999, chi1 +0.80000, D 384.297 Mpc, iota 53.0884 graus
+  (a) par do exp07 em T0 (desl. de janela), sem resolver: deslocamento +8.73e-03, spin -1.46e-02, cm +3.31e-03, giroscopica +5.64e-03
+  (b) T0 resolvido: M 76.4205, chi1 +0.79075, D 387.518 Mpc, iota 53.1298 graus | residuo max 8.7e-03 (40 avaliacoes, 91 ondas)
+      desloca: M +1.0207, chi1 -0.00925, D +3.221 Mpc, iota +0.0414 graus ; M_f B = 0.957319 M (M_f B M_B / M_f A M_A - 1 = +0.1851)
+  (T) phi'_B em 8 valores: M     de 76.4223 a 76.8442
+  (T) phi'_B em 8 valores: chi1  de 0.7615 a 0.8000
+  (T) phi'_B em 8 valores: D     de 383.1622 a 387.5343
+  (T) phi'_B em 8 valores: iota  de 52.6220 a 54.1977
+  (T) residuo max ao longo da curva: 1.9e-02 ; no limite em 2 de 8
+  (405 s)
+
+Caso q_B = 6.0, chi2_B = +0.0; par do exp07: M 83.5718, chi1 +0.80000, D 336.538 Mpc, iota 60.6340 graus
+  (a) par do exp07 em T0 (desl. de janela), sem resolver: deslocamento -1.35e-02, spin -7.79e-02, cm +1.02e-02, giroscopica +3.72e-02
+  (b) T0 resolvido: M 85.3754, chi1 +0.80000, D 341.483 Mpc, iota 61.0577 graus | residuo max 6.6e-02 (40 avaliacoes, 115 ondas) NO LIMITE do dominio
+      desloca: M +1.8036, chi1 -0.00000, D +4.945 Mpc, iota +0.4237 graus ; M_f B = 0.969408 M (M_f B M_B / M_f A M_A - 1 = +0.3406)
+  (T) phi'_B em 8 valores: M     de 85.2667 a 85.4217
+  (T) phi'_B em 8 valores: chi1  de 0.8000 a 0.8000
+  (T) phi'_B em 8 valores: D     de 340.1527 a 340.6539
+  (T) phi'_B em 8 valores: iota  de 60.9009 a 60.9944
+  (T) residuo max ao longo da curva: 7.6e-02 ; no limite em 8 de 8
+  (572 s)
+
+Caso q_B = 2.0, chi2_B = +0.5; par do exp07: M 72.2978, chi1 -0.14298, D 383.998 Mpc, iota 57.0115 graus
+  (a) par do exp07 em T0 (desl. de janela), sem resolver: deslocamento -3.58e-02, spin -2.05e-06, cm -4.89e-02, giroscopica -1.80e-06
+  (b) T0 resolvido: M 73.1887, chi1 -0.19033, D 379.442 Mpc, iota 58.9939 graus | residuo max 1.7e-11 (14 avaliacoes, 35 ondas)
+      desloca: M +0.8909, chi1 -0.04735, D -4.557 Mpc, iota +1.9825 graus ; M_f B = 0.961922 M (M_f B M_B / M_f A M_A - 1 = +0.1404)
+  (T) phi'_B em 8 valores: M     de 72.3555 a 73.2502
+  (T) phi'_B em 8 valores: chi1  de -0.3955 a 0.0718
+  (T) phi'_B em 8 valores: D     de 360.0049 a 401.6966
+  (T) phi'_B em 8 valores: iota  de 54.2448 a 62.8215
+  (T) residuo max ao longo da curva: 7.4e-11 ; no limite em 0 de 8
+  onda T0 (phi = 0 nos dois): match aLIGO 0.6204 (SNR_A 65.9, rho_crit 1.20) ; ET 0.3124 (SNR_A 901, rho_crit 0.88)
+  onda T (phi'_B = 0, pi/2, pi, 3pi/2): match aLIGO de 0.5291 a 0.8178 ; rho_crit de 1.10 a 1.67
+  (645 s)
+
+Caso q_B = 3.0, chi2_B = -0.5; par do exp07: M 70.2334, chi1 +0.79991, D 391.423 Mpc, iota 50.1381 graus
+  (a) par do exp07 em T0 (desl. de janela), sem resolver: deslocamento +1.39e-02, spin -1.84e-02, cm +1.89e-02, giroscopica +6.22e-03
+  (b) T0 resolvido: M 70.9812, chi1 +0.75267, D 389.552 Mpc, iota 51.1335 graus | residuo max 1.7e-02 (35 avaliacoes, 71 ondas)
+      desloca: M +0.7479, chi1 -0.04723, D -1.872 Mpc, iota +0.9954 graus ; M_f B = 0.953244 M (M_f B M_B / M_f A M_A - 1 = +0.0960)
+  (T) phi'_B em 8 valores: M     de 70.9097 a 71.3044
+  (T) phi'_B em 8 valores: chi1  de 0.7184 a 0.7678
+  (T) phi'_B em 8 valores: D     de 385.1056 a 390.0338
+  (T) phi'_B em 8 valores: iota  de 50.5811 a 52.0620
+  (T) residuo max ao longo da curva: 2.9e-02 ; no limite em 0 de 8
+  (798 s)

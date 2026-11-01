@@ -1,0 +1,37 @@
+exp39: atraso da memoria (CM) como observavel combinado memoria + onda; q = 1.2, chi = (+0.3, -0.2), D = 400 Mpc, iota = 50 graus, h_+, janela desde 10 Hz
+sigma_delta = 1/||d s_nula/dt|| ; delta_tot = -CM/desl no observador (nula + ordinaria da CM) ; f_rms = ||ds/dt||/(2 pi rho)
+
+M = 30 (M_f = 0.9498 M): delta_tot = 0.5279 M = 78.0 us ; delta_ord = 0.4634 M = 68.5 us
+  aLIGO_10  rho_nula   0.363  rho_rn   0.441  f_rms   65.6 Hz  sigma_delta   6688.5 us  delta/sigma 0.012 (ord 0.010)  [direto 0.012]  rho(rn - nula) 0.171  eventos iguais p/ 3 sigma 66181 ; sigma(M_f)/M_f = 85.75
+  A+_10     rho_nula   0.689  rho_rn   0.842  f_rms   65.9 Hz  sigma_delta   3507.8 us  delta/sigma 0.022 (ord 0.020)  [direto 0.022]  rho(rn - nula) 0.335  eventos iguais p/ 3 sigma 18202 ; sigma(M_f)/M_f = 44.97
+  ET_10     rho_nula   5.363  rho_rn   5.970  f_rms   47.4 Hz  sigma_delta    626.2 us  delta/sigma 0.125 (ord 0.109)  [direto 0.125]  rho(rn - nula) 1.785  eventos iguais p/ 3 sigma 580 ; sigma(M_f)/M_f = 8.03
+  CE_10     rho_nula  20.717  rho_rn  21.638  f_rms   37.5 Hz  sigma_delta    205.1 us  delta/sigma 0.380 (ord 0.334)  [direto 0.380]  rho(rn - nula) 3.826  eventos iguais p/ 3 sigma 62 ; sigma(M_f)/M_f = 2.63
+  ET_5      rho_nula   6.660  rho_rn   7.168  f_rms   38.4 Hz  sigma_delta    621.7 us  delta/sigma 0.125 (ord 0.110)  [direto 0.125]  rho(rn - nula) 1.785  eventos iguais p/ 3 sigma 572 ; sigma(M_f)/M_f = 7.97
+  CE_5      rho_nula  20.969  rho_rn  21.880  f_rms   37.0 Hz  sigma_delta    204.9 us  delta/sigma 0.381 (ord 0.334)  [direto 0.381]  rho(rn - nula) 3.826  eventos iguais p/ 3 sigma 62 ; sigma(M_f)/M_f = 2.63
+
+M = 65 (M_f = 0.9498 M): delta_tot = 0.5303 M = 169.8 us ; delta_ord = 0.4632 M = 148.3 us
+  aLIGO_10  rho_nula   0.470  rho_rn   0.759  f_rms   44.1 Hz  sigma_delta   7674.9 us  delta/sigma 0.022 (ord 0.019)  [direto 0.022]  rho(rn - nula) 0.448  eventos iguais p/ 3 sigma 18390 ; sigma(M_f)/M_f = 45.20
+  A+_10     rho_nula   0.892  rho_rn   1.444  f_rms   44.2 Hz  sigma_delta   4036.0 us  delta/sigma 0.042 (ord 0.037)  [direto 0.042]  rho(rn - nula) 0.856  eventos iguais p/ 3 sigma 5086 ; sigma(M_f)/M_f = 23.77
+  ET_10     rho_nula   8.640  rho_rn  10.686  f_rms   28.1 Hz  sigma_delta    655.9 us  delta/sigma 0.259 (ord 0.226)  [direto 0.259]  rho(rn - nula) 4.691  eventos iguais p/ 3 sigma 134 ; sigma(M_f)/M_f = 3.86
+  CE_10     rho_nula  34.090  rho_rn  39.104  f_rms   27.5 Hz  sigma_delta    169.5 us  delta/sigma 1.001 (ord 0.875)  [direto 1.001]  rho(rn - nula) 12.414  eventos iguais p/ 3 sigma 9 ; sigma(M_f)/M_f = 1.00
+  ET_5      rho_nula  11.662  rho_rn  13.261  f_rms   21.4 Hz  sigma_delta    636.5 us  delta/sigma 0.267 (ord 0.233)  [direto 0.267]  rho(rn - nula) 4.693  eventos iguais p/ 3 sigma 126 ; sigma(M_f)/M_f = 3.75
+  CE_5      rho_nula  34.679  rho_rn  39.621  f_rms   27.1 Hz  sigma_delta    169.2 us  delta/sigma 1.003 (ord 0.876)  [direto 1.003]  rho(rn - nula) 12.415  eventos iguais p/ 3 sigma 9 ; sigma(M_f)/M_f = 1.00
+
+M = 120 (M_f = 0.9498 M): delta_tot = 0.5335 M = 315.3 us ; delta_ord = 0.4630 M = 273.7 us
+  aLIGO_10  rho_nula   0.466  rho_rn   1.109  f_rms   31.4 Hz  sigma_delta  10856.2 us  delta/sigma 0.029 (ord 0.025)  [direto 0.029]  rho(rn - nula) 0.828  eventos iguais p/ 3 sigma 10667 ; sigma(M_f)/M_f = 34.43
+  A+_10     rho_nula   0.877  rho_rn   2.104  f_rms   31.9 Hz  sigma_delta   5690.6 us  delta/sigma 0.055 (ord 0.048)  [direto 0.055]  rho(rn - nula) 1.571  eventos iguais p/ 3 sigma 2931 ; sigma(M_f)/M_f = 18.05
+  ET_10     rho_nula  11.491  rho_rn  16.189  f_rms   19.3 Hz  sigma_delta    715.9 us  delta/sigma 0.440 (ord 0.382)  [direto 0.440]  rho(rn - nula) 8.805  eventos iguais p/ 3 sigma 46 ; sigma(M_f)/M_f = 2.27
+  CE_10     rho_nula  43.492  rho_rn  60.732  f_rms   21.8 Hz  sigma_delta    168.0 us  delta/sigma 1.877 (ord 1.629)  [direto 1.877]  rho(rn - nula) 29.124  eventos iguais p/ 3 sigma 3 ; sigma(M_f)/M_f = 0.53
+  ET_5      rho_nula  17.259  rho_rn  20.757  f_rms   14.1 Hz  sigma_delta    655.5 us  delta/sigma 0.481 (ord 0.418)  [direto 0.481]  rho(rn - nula) 8.863  eventos iguais p/ 3 sigma 39 ; sigma(M_f)/M_f = 2.08
+  CE_5      rho_nula  44.688  rho_rn  61.619  f_rms   21.3 Hz  sigma_delta    167.3 us  delta/sigma 1.885 (ord 1.636)  [direto 1.885]  rho(rn - nula) 29.141  eventos iguais p/ 3 sigma 3 ; sigma(M_f)/M_f = 0.53
+
+M = 200 (M_f = 0.9498 M): delta_tot = 0.5364 M = 528.4 us ; delta_ord = 0.4627 M = 455.8 us
+  aLIGO_10  rho_nula   0.381  rho_rn   1.401  f_rms   23.2 Hz  sigma_delta  17981.9 us  delta/sigma 0.029 (ord 0.025)  [direto 0.029]  rho(rn - nula) 1.187  eventos iguais p/ 3 sigma 10422 ; sigma(M_f)/M_f = 34.03
+  A+_10     rho_nula   0.697  rho_rn   2.659  f_rms   24.0 Hz  sigma_delta   9491.2 us  delta/sigma 0.056 (ord 0.048)  [direto 0.056]  rho(rn - nula) 2.259  eventos iguais p/ 3 sigma 2903 ; sigma(M_f)/M_f = 17.96
+  ET_10     rho_nula  12.818  rho_rn  21.971  f_rms   15.7 Hz  sigma_delta    792.9 us  delta/sigma 0.666 (ord 0.575)  [direto 0.666]  rho(rn - nula) 13.675  eventos iguais p/ 3 sigma 20 ; sigma(M_f)/M_f = 1.50
+  CE_10     rho_nula  44.512  rho_rn  86.510  f_rms   18.1 Hz  sigma_delta    197.1 us  delta/sigma 2.682 (ord 2.313)  [direto 2.681]  rho(rn - nula) 55.537  eventos iguais p/ 3 sigma 1 ; sigma(M_f)/M_f = 0.37
+  ET_5      rho_nula  22.262  rho_rn  29.111  f_rms   10.9 Hz  sigma_delta    657.7 us  delta/sigma 0.803 (ord 0.693)  [direto 0.803]  rho(rn - nula) 13.893  eventos iguais p/ 3 sigma 14 ; sigma(M_f)/M_f = 1.24
+  CE_5      rho_nula  46.689  rho_rn  87.830  f_rms   17.5 Hz  sigma_delta    195.1 us  delta/sigma 2.708 (ord 2.336)  [direto 2.708]  rho(rn - nula) 55.579  eventos iguais p/ 3 sigma 1 ; sigma(M_f)/M_f = 0.37
+
+Escala: delta/sigma ~ rho_nula * 2 pi f_rms * delta ; rho ~ 1/D ; para D = 100 Mpc multiplicar por 4.
+(116 s)

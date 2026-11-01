@@ -1,0 +1,38 @@
+(a) varredura em M = 65 (1 + e), e = 0 .. 4e-5, 81 valores (sistema A, observador iota = 50 graus)
+  nivel A, m = 0                         t_i varia 1.804 M (7 intervalos da rede): residuo grau 3 desl 9.3e-13 spin 6.5e-12 cm 7.9e-13 giro 6.9e-12 M_f 4.6e-14
+                                         max |2a dif.|/|V| desl 6.2e-13 spin 4.5e-12 cm 5.3e-13 giro 4.8e-12 M_f 3.2e-14
+  nivel C, m = 0                         t_i varia 1.804 M (7 intervalos da rede): residuo grau 3 desl 3.7e-13 spin 6.9e-12 cm 2.9e-13 giro 7.0e-12 M_f 4.6e-14
+                                         max |2a dif.|/|V| desl 1.2e-13 spin 4.7e-12 cm 8.5e-14 giro 4.9e-12 M_f 3.2e-14
+  nivel A, todos os m, phi = 0.8         t_i varia 1.804 M (7 intervalos da rede): residuo grau 3 desl 1.2e-11 spin 8.6e-11 cm 5.8e-11 giro 3.7e-11 M_f 4.6e-14
+                                         max |2a dif.|/|V| desl 1.6e-10 spin 1.7e-10 cm 1.4e-10 giro 5.7e-11 M_f 3.2e-14
+  (70 s)
+  contraste binarias (41 valores): residuo grau 3 desl 1.7e-07 spin 1.3e-06 cm 1.5e-07 giro 1.4e-06 M_f 9.8e-09
+  (75 s)
+
+(b) varreduras em q e chi1 (nivel A; m = 0 e todos os m com phi = 0.8)
+  q = 1.2 + k 2e-6, m = 0                t_i varia 0.121 M (1 intervalos da rede): residuo grau 3 desl 2.9e-10 spin 4.2e-11 cm 2.4e-10 giro 2.7e-11 M_f 1.0e-11
+                                         max |2a dif.|/|V| desl 9.1e-10 spin 1.3e-10 cm 7.4e-10 giro 8.3e-11 M_f 3.2e-11
+  q = 1.2 + k 2e-6, todos os m           t_i varia 0.121 M (1 intervalos da rede): residuo grau 3 desl 2.2e-10 spin 1.9e-10 cm 3.6e-11 giro 5.9e-11 M_f 1.0e-11
+                                         max |2a dif.|/|V| desl 6.8e-10 spin 4.8e-10 cm 1.2e-10 giro 1.4e-10 M_f 3.2e-11
+  chi1 = 0.3 + k 2e-6, m = 0             t_i varia 0.119 M (1 intervalos da rede): residuo grau 3 desl 3.5e-10 spin 4.9e-11 cm 2.9e-10 giro 2.9e-11 M_f 1.2e-11
+                                         max |2a dif.|/|V| desl 7.6e-10 spin 1.1e-10 cm 6.2e-10 giro 7.2e-11 M_f 2.7e-11
+  chi1 = 0.3 + k 2e-6, todos os m        t_i varia 0.119 M (1 intervalos da rede): residuo grau 3 desl 2.7e-10 spin 2.1e-10 cm 3.4e-11 giro 6.5e-11 M_f 1.2e-11
+                                         max |2a dif.|/|V| desl 5.7e-10 spin 4.8e-10 cm 9.4e-11 giro 1.5e-10 M_f 2.7e-11
+  (116 s)
+
+(c) inicio auxiliar FRAC_INICIO (onda gerada desde FRAC f0): multipolos (todos os m) contra FRAC = 0.9
+  M =  65.0 (desalinh. de rede 0e+00): 0.80: modos 4e-13 mem 1e-15 ti 0e+00 | 0.85: modos 3e-13 mem 1e-15 ti 0e+00 | 0.88: modos 3e-15 mem 5e-16 ti 0e+00 | 0.93: modos 2e-13 mem 6e-16 ti 0e+00 | 0.95: modos 7e-14 mem 3e-16 ti 0e+00 | 0.97: modos 4e-09 mem 1e-11 ti 8e-08
+  M =  30.0 (desalinh. de rede 0e+00): 0.80: modos 3e-12 mem 6e-15 ti 0e+00 | 0.85: modos 2e-12 mem 4e-15 ti 0e+00 | 0.88: modos 7e-13 mem 2e-15 ti 0e+00 | 0.93: modos 7e-13 mem 2e-15 ti 0e+00 | 0.95: modos 5e-13 mem 2e-15 ti 0e+00 | 0.97: modos 1e-13 mem 2e-15 ti 0e+00
+  M = 120.0 (desalinh. de rede 0e+00): 0.80: modos 4e-10 mem 2e-12 ti -4e-09 | 0.85: modos 4e-10 mem 2e-12 ti -4e-09 | 0.88: modos 7e-10 mem 3e-12 ti -7e-09 | 0.93: modos 5e-09 mem 2e-11 ti 5e-08 | 0.95: modos 3e-07 mem 1e-09 ti -3e-06 | 0.97: modos 1e-05 mem 7e-08 ti 2e-04
+  (144 s)
+
+(d) fase do (2,2) em t_i antes (dphi) e depois da correcao, grade de M (20..150) e q (1, 1.2, 2, 4, 8)
+  max |dphi| = 1.114e-02 rad (omega_22 dt em 10 Hz, M = 150: 1.161e-02) ; max |fase residual| = 4.6e-12 rad
+  (205 s)
+
+(e) jacobiano por diferencas centrais (nivel A, todos os m, phi = 0.8): D(h) - D(h/2) e D(h/2) - D(h/4)
+  M  h = 6.5e-02: razao desl 3.87 spin 3.96 cm 3.85 giro 3.96 M_f 0.89 ; |D(h/2) - D(h/4)|/|D| desl 1.5e-02 spin 5.9e-03 cm 2.5e-02 giro 5.1e-03 M_f 5.3e-04
+  q  h = 1.0e-03: razao desl 3.34 spin 4.19 cm 4.01 giro 4.16 M_f -1.04 ; |D(h/2) - D(h/4)|/|D| desl 9.5e-04 spin 2.5e-05 cm 1.1e-04 giro 3.3e-05 M_f 9.3e-06
+  c1 h = 1.0e-03: razao desl 4.02 spin 4.03 cm 4.00 giro 4.03 M_f 3.01 ; |D(h/2) - D(h/4)|/|D| desl 1.1e-05 spin 1.8e-05 cm 5.8e-05 giro 1.2e-05 M_f 1.1e-07
+  c2 h = 1.0e-03: razao desl 3.42 spin 4.28 cm 4.03 giro 4.25 M_f -0.85 ; |D(h/2) - D(h/4)|/|D| desl 8.2e-06 spin 1.3e-05 cm 4.1e-05 giro 8.5e-06 M_f 1.3e-06
+  (210 s)

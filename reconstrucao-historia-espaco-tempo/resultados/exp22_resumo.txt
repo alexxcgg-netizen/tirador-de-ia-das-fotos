@@ -1,0 +1,67 @@
+Residuo minimo (norma e max|r|) sobre (chi1, chi2, M, iota, D) com q_B fixo; melhor de todas as partidas
+  T0_K1   (T0, 4 eq.): |P_perp J_q| = 3.399e-17
+     q_B=1.00: norma 1.09e-11 max 8.20e-12 (linear 6.80e-18) -> chi1 +0.077 chi2 -0.003 M 64.93 iota 50.6 D 398
+     q_B=1.10: norma 1.22e-11 max 8.68e-12 (linear 3.40e-18) -> chi1 +0.078 chi2 -0.003 M 64.98 iota 50.6 D 398
+     q_B=1.30: norma 3.09e-12 max 2.22e-12 (linear 3.40e-18) -> chi1 +0.091 chi2 -0.014 M 65.50 iota 51.4 D 396
+     q_B=1.60: norma 9.63e-12 max 6.92e-12 (linear 1.36e-17) -> chi1 -0.061 chi2 +0.180 M 67.72 iota 54.5 D 388
+     q_B=2.00: norma 3.19e-12 max 1.91e-12 (linear 2.72e-17) -> chi1 +0.031 chi2 +0.171 M 71.08 iota 57.0 D 383
+     q_B=3.00: norma 1.95e-11 max 1.39e-11 (linear 6.12e-17) -> chi1 +0.266 chi2 +0.296 M 79.84 iota 61.0 D 375
+  T0_K2r  (T0, 8 eq.): |P_perp J_q| = 2.594e-03
+     q_B=1.00: norma 3.56e-04 max 2.07e-04 (linear 5.19e-04) -> chi1 +0.519 chi2 -0.370 M 64.83 iota 49.9 D 401
+     q_B=1.10: norma 1.79e-04 max 1.07e-04 (linear 2.59e-04) -> chi1 +0.341 chi2 -0.233 M 64.85 iota 49.9 D 400
+     q_B=1.30: norma 3.19e-04 max 1.75e-04 (linear 2.59e-04) -> chi1 +0.302 chi2 -0.201 M 65.23 iota 50.2 D 400
+     q_B=1.60: norma 1.76e-03 max 9.47e-04 (linear 1.04e-03) -> chi1 +0.363 chi2 -0.242 M 66.28 iota 50.8 D 398
+     q_B=2.00: norma 4.19e-03 max 2.24e-03 (linear 2.08e-03) -> chi1 +0.454 chi2 -0.283 M 68.07 iota 51.9 D 396
+     q_B=3.00: norma 1.10e-02 max 5.91e-03 (linear 4.67e-03) -> chi1 +0.605 chi2 -0.177 M 73.42 iota 54.5 D 390
+  T0_K2   (T0, 8 eq.): |P_perp J_q| = 5.383e-03
+     q_B=1.00: norma 8.71e-04 max 5.42e-04 (linear 1.08e-03) -> chi1 +0.494 chi2 -0.347 M 64.85 iota 49.9 D 401
+     q_B=1.10: norma 3.99e-04 max 2.47e-04 (linear 5.38e-04) -> chi1 +0.331 chi2 -0.224 M 64.86 iota 49.9 D 400
+     q_B=1.30: norma 6.55e-04 max 3.62e-04 (linear 5.38e-04) -> chi1 +0.310 chi2 -0.208 M 65.23 iota 50.1 D 400
+     q_B=1.60: norma 3.60e-03 max 1.94e-03 (linear 2.15e-03) -> chi1 +0.384 chi2 -0.262 M 66.24 iota 50.6 D 399
+     q_B=2.00: norma 8.44e-03 max 4.47e-03 (linear 4.31e-03) -> chi1 +0.487 chi2 -0.316 M 67.93 iota 51.5 D 397
+     q_B=3.00: norma 2.18e-02 max 1.14e-02 (linear 9.69e-03) -> chi1 +0.649 chi2 -0.236 M 72.93 iota 53.6 D 393
+  T0_K3   (T0, 12 eq.): |P_perp J_q| = 5.905e-03
+     q_B=1.00: norma 9.22e-04 max 5.11e-04 (linear 1.18e-03) -> chi1 +0.497 chi2 -0.350 M 64.85 iota 49.9 D 401
+     q_B=1.10: norma 4.40e-04 max 2.60e-04 (linear 5.90e-04) -> chi1 +0.331 chi2 -0.224 M 64.86 iota 49.9 D 400
+     q_B=1.30: norma 7.10e-04 max 3.65e-04 (linear 5.90e-04) -> chi1 +0.310 chi2 -0.208 M 65.22 iota 50.1 D 400
+     q_B=1.60: norma 3.81e-03 max 1.92e-03 (linear 2.36e-03) -> chi1 +0.385 chi2 -0.263 M 66.23 iota 50.6 D 399
+     q_B=2.00: norma 8.85e-03 max 4.40e-03 (linear 4.72e-03) -> chi1 +0.488 chi2 -0.318 M 67.90 iota 51.5 D 397
+     q_B=3.00: norma 2.26e-02 max 1.11e-02 (linear 1.06e-02) -> chi1 +0.650 chi2 -0.238 M 72.87 iota 53.6 D 393
+  T0_K4   (T0, 16 eq.): |P_perp J_q| = 6.347e-03
+     q_B=1.00: norma 9.75e-04 max 4.96e-04 (linear 1.27e-03) -> chi1 +0.499 chi2 -0.352 M 64.85 iota 49.9 D 401
+     q_B=1.10: norma 4.75e-04 max 2.77e-04 (linear 6.35e-04) -> chi1 +0.331 chi2 -0.225 M 64.86 iota 49.9 D 400
+     q_B=1.30: norma 7.65e-04 max 3.87e-04 (linear 6.35e-04) -> chi1 +0.309 chi2 -0.208 M 65.22 iota 50.1 D 400
+     q_B=1.60: norma 4.13e-03 max 2.04e-03 (linear 2.54e-03) -> chi1 +0.384 chi2 -0.262 M 66.23 iota 50.7 D 399
+     q_B=2.00: norma 9.61e-03 max 4.65e-03 (linear 5.08e-03) -> chi1 +0.487 chi2 -0.318 M 67.90 iota 51.5 D 397
+     q_B=3.00: norma 2.44e-02 max 1.16e-02 (linear 1.14e-02) -> chi1 +0.650 chi2 -0.240 M 72.83 iota 53.6 D 393
+  O0_K2   (O0, 4 eq.): |P_perp J_q| = 2.404e-17
+     q_B=1.00: norma 4.04e-11 max 2.67e-11 (linear 4.81e-18) -> chi1 +0.322 chi2 -0.176 M 64.85 iota 50.0 D 402
+     q_B=1.10: norma 5.06e-11 max 3.43e-11 (linear 2.40e-18) -> chi1 +0.305 chi2 -0.192 M 65.01 iota 50.0 D 402
+     q_B=1.30: norma 1.24e-11 max 8.02e-12 (linear 2.40e-18) -> chi1 +0.304 chi2 -0.201 M 64.89 iota 50.0 D 396
+     q_B=1.60: norma 2.20e-11 max 2.08e-11 (linear 9.61e-18) -> chi1 +0.026 chi2 +0.568 M 62.10 iota 49.9 D 365
+     q_B=2.00: norma 4.93e-12 max 3.49e-12 (linear 1.92e-17) -> chi1 +0.359 chi2 +0.054 M 62.34 iota 49.9 D 345
+     q_B=3.00: norma 2.14e-11 max 1.38e-11 (linear 4.33e-17) -> chi1 +0.681 chi2 -0.695 M 64.00 iota 49.8 D 305
+  O0_K3   (O0, 6 eq.): |P_perp J_q| = 2.271e-05
+     q_B=1.00: norma 3.01e-06 max 2.38e-06 (linear 4.54e-06) -> chi1 -0.207 chi2 +0.354 M 64.90 iota 50.0 D 402
+     q_B=1.10: norma 2.07e-06 max 1.64e-06 (linear 2.27e-06) -> chi1 +0.183 chi2 -0.049 M 64.79 iota 50.0 D 401
+     q_B=1.30: norma 2.52e-06 max 2.00e-06 (linear 2.27e-06) -> chi1 +0.385 chi2 -0.331 M 65.27 iota 50.0 D 399
+     q_B=1.60: norma 1.30e-05 max 1.04e-05 (linear 9.08e-06) -> chi1 +0.567 chi2 -0.693 M 66.30 iota 49.9 D 393
+     q_B=2.00: norma 9.21e-04 max 7.18e-04 (linear 1.82e-05) -> chi1 +0.617 chi2 -0.800 M 66.39 iota 50.0 D 373
+     q_B=3.00: norma 4.15e-03 max 3.40e-03 (linear 4.09e-05) -> chi1 +0.702 chi2 -0.800 M 65.31 iota 50.2 D 316
+  O0_K4   (O0, 8 eq.): |P_perp J_q| = 9.715e-05
+     q_B=1.00: norma 6.62e-06 max 4.58e-06 (linear 1.94e-05) -> chi1 -0.228 chi2 +0.376 M 64.93 iota 50.0 D 403
+     q_B=1.10: norma 1.05e-05 max 8.10e-06 (linear 9.72e-06) -> chi1 +0.200 chi2 -0.069 M 64.82 iota 50.0 D 401
+     q_B=1.30: norma 9.99e-06 max 7.47e-06 (linear 9.72e-06) -> chi1 +0.380 chi2 -0.323 M 65.24 iota 50.0 D 399
+     q_B=1.60: norma 4.34e-05 max 3.16e-05 (linear 3.89e-05) -> chi1 +0.564 chi2 -0.687 M 66.27 iota 49.9 D 393
+     q_B=2.00: norma 1.68e-03 max 1.18e-03 (linear 7.77e-05) -> chi1 +0.618 chi2 -0.800 M 66.65 iota 50.1 D 376
+     q_B=3.00: norma 5.67e-03 max 3.86e-03 (linear 1.75e-04) -> chi1 +0.704 chi2 -0.800 M 65.68 iota 50.3 D 320
+
+Faixa de q_B (perfil) com max|r| abaixo do limiar:
+  T0_K1   1e-04: [1.00, 3.00] ; 1e-03: [1.00, 3.00] ; 1e-02: [1.00, 3.00]
+  T0_K2r  1e-04: nenhum ; 1e-03: [1.00, 1.60] ; 1e-02: [1.00, 3.00]
+  T0_K2   1e-04: nenhum ; 1e-03: [1.00, 1.30] ; 1e-02: [1.00, 2.00]
+  T0_K3   1e-04: nenhum ; 1e-03: [1.00, 1.30] ; 1e-02: [1.00, 2.00]
+  T0_K4   1e-04: nenhum ; 1e-03: [1.00, 1.30] ; 1e-02: [1.00, 2.00]
+  O0_K2   1e-04: [1.00, 3.00] ; 1e-03: [1.00, 3.00] ; 1e-02: [1.00, 3.00]
+  O0_K3   1e-04: [1.00, 1.60] ; 1e-03: [1.00, 2.00] ; 1e-02: [1.00, 3.00]
+  O0_K4   1e-04: [1.00, 1.60] ; 1e-03: [1.00, 1.60] ; 1e-02: [1.00, 3.00]

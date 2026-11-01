@@ -1,0 +1,14 @@
+fonte M150: {'q': 1.2, 'c1': 0.3, 'c2': -0.2, 'M': 150.0, 'D': 400.0, 'iota': 0.8726646259971648, 'phi': 0.0} ; 23 bordas de 10.00 a 40.61 Hz (M f 0.00739 a 0.0300)
+  jacobiano das janelas: 9 s
+  series e particao: 4 s ; soma das bandas suaves: desl 3.503729e-22 (janela 3.503729e-22), spin -8.548183e-25 s (janela -8.548183e-25)
+  bandas suaves / nitidas - 1: desl +5e-03 -3e-03 +7e-04 -7e-05
+                               spin +4e-03 -3e-03 +7e-04 -9e-05
+  CE: SNR deslocamento: serie 46.6258, sqrt(soma G) 46.6258, sqrt(soma diag) 48.0955 ; spin (x): serie 6.8143, sqrt(soma G) 6.8143, sqrt(soma diag) 7.9732 (0 s)
+     SNR por banda (desl): 0.0033 0.066 0.32 0.9 1.5 2.1
+     SNR por banda (spin): 0.0016 0.047 0.18 0.55 1 1.5
+     (fmin = 10 Hz: desl 45.0693, spin 6.7556)
+  ET: SNR deslocamento: serie 19.5021, sqrt(soma G) 19.5021, sqrt(soma diag) 20.5093 ; spin (x): serie 1.8976, sqrt(soma G) 1.8976, sqrt(soma diag) 2.3531 (0 s)
+     SNR por banda (desl): 0.0047 0.071 0.21 0.34 0.47 0.63
+     SNR por banda (spin): 0.0019 0.026 0.075 0.14 0.26 0.5
+     (fmin = 10 Hz: desl 12.2915, spin 1.6174)
+  (13 s)

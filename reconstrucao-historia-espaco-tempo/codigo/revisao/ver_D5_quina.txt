@@ -1,0 +1,13 @@
+t_p = -0.0838 ; y*(verdadeira) = 6.697e-06 ; y*(ramo + tangente) = 2.104e-02
+
+1. Quina depois do pico (antes de t_p: verdadeira; t_p..t_k: ramo + tangente; depois: ramo -)
+  t_k = 1 M                          max u/u_ver =    1.169 ; |dfase| t_p+30 =  0.043 rad, t_p+60 =  0.043 ; max|P_rec/P-1| = 1.9e-06 ; max|H_rec/H-1| = 1.0e-06 (longe das quinas) ; u/u_ver(t_p+60) = 1.00000 ; sobreposicao(-380, 30) = 0.99991
+  t_k = 3 M                          max u/u_ver =    2.479 ; |dfase| t_p+30 =  0.683 rad, t_p+60 =  0.683 ; max|P_rec/P-1| = 6.7e-05 ; max|H_rec/H-1| = 3.8e-05 (longe das quinas) ; u/u_ver(t_p+60) = 1.00000 ; sobreposicao(-380, 30) = 0.98211
+  t_k = 6 M                          max u/u_ver =    7.744 ; |dfase| t_p+30 =  2.971 rad, t_p+60 =  2.971 ; max|P_rec/P-1| = 1.5e-05 ; max|H_rec/H-1| = 7.1e-06 (longe das quinas) ; u/u_ver(t_p+60) = 1.00000 ; sobreposicao(-380, 30) = 0.82965
+  t_k = 10 M                         max u/u_ver =   25.841 ; |dfase| t_p+30 =  9.210 rad, t_p+60 =  9.210 ; max|P_rec/P-1| = 8.9e-06 ; max|H_rec/H-1| = 4.3e-06 (longe das quinas) ; u/u_ver(t_p+60) = 1.00000 ; sobreposicao(-380, 30) = 0.63776
+  referencia (sem quina, Radau)      max u/u_ver =    1.000 ; |dfase| t_p+30 =  0.000 rad, t_p+60 =  0.000 ; max|P_rec/P-1| = 1.9e-06 ; max|H_rec/H-1| = 1.0e-06 (longe das quinas) ; u/u_ver(t_p+60) = 1.00000 ; sobreposicao(-380, 30) = 1.00000
+
+2. Escape ANTES do pico: u(t1) = (1+eps) u_ver, ramo + desde t1 ate t_k, depois ramo -
+  t1=-30, eps=1e-09, t_k=10          max u/u_ver = 68338.960 ; |dfase| t_p+30 = 20.505 rad, t_p+60 = 37.547 ; max|P_rec/P-1| = 3.8e-06 ; max|H_rec/H-1| = 1.6e-06 (longe das quinas) ; u/u_ver(t_p+60) = 71074.93258 ; sobreposicao(-380, 30) = 0.17542
+  t1=-30, eps=1e-06, t_k=5           max u/u_ver =  734.155 ; |dfase| t_p+30 = 20.623 rad, t_p+60 = 37.556 ; max|P_rec/P-1| = 3.7e-06 ; max|H_rec/H-1| = 1.7e-06 (longe das quinas) ; u/u_ver(t_p+60) = 756.20976 ; sobreposicao(-380, 30) = 0.23576
+  t1=-100, eps=1e-09, t_k=20         max u/u_ver = 1220305.188 ; |dfase| t_p+30 = 31.203 rad, t_p+60 = 48.250 ; max|P_rec/P-1| = 2.5e-06 ; max|H_rec/H-1| = 1.2e-06 (longe das quinas) ; u/u_ver(t_p+60) = 1270240.66840 ; sobreposicao(-380, 30) = 0.04655

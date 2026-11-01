@@ -1,0 +1,65 @@
+Sistema A (M = 65, q = 1.2, chi = (0.3, -0.2), D = 400 Mpc, iota = 50 graus); Fisher da memoria nula: resultados/exp24_fisher_memoria.json (agente D3)
+parametros: ['lnM', 'q', 'c1', 'c2', 'lnD', 'cosi', 't0', 'psi'] ; desvios do prior: [0.3171, 0.866, 0.4619, 0.4619, 0.4646, 0.5774, 0.05, 0.9069]
+conferencia das derivadas (passo 2e-3 contra 1e-3, |razao - 1|): max 3.7e-05
+
+fase verdadeira acumulada ate o pico Delta psi (rad) e gradiente (d/dlnM, d/dq, d/dchi1, d/dchi2, d/dt0 [rad/ms]):
+  f22 = 10 Hz            t_a =  -16430.1 M (-5260.2 ms): Delta psi =  512.77 ; grad = -330.5, +19.30, +33.03, +25.64, -1.079
+  f22 = 20 Hz            t_a =   -2366.9 M ( -757.8 ms): Delta psi =  145.60 ; grad = -95.2, +6.29, +16.25, +12.47, -1.016
+  f22 = 30 Hz            t_a =    -736.0 M ( -235.6 ms): Delta psi =   67.70 ; grad = -44.4, +3.09, +9.71, +7.37, -0.953
+  f22 = 50 Hz            t_a =    -169.9 M (  -54.4 ms): Delta psi =   25.82 ; grad = -17.1, +1.16, +4.44, +3.31, -0.827
+  f22 = 100 Hz           t_a =     -27.4 M (   -8.8 ms): Delta psi =    7.22 ; grad = -5.5, +0.25, +1.20, +0.87, -0.513
+  100 ms antes do pico   t_a =    -312.3 M ( -100.0 ms): Delta psi =   38.57 ; grad = -25.4, +1.77, +6.29, +4.73, -0.888
+  30 ms antes do pico    t_a =     -93.7 M (  -30.0 ms): Delta psi =   17.35 ; grad = -11.7, +0.74, +3.05, +2.25, -0.750
+  10 ms antes do pico    t_a =     -31.2 M (  -10.0 ms): Delta psi =    7.97 ; grad = -6.0, +0.28, +1.34, +0.97, -0.544
+  5 ms antes do pico     t_a =     -15.6 M (   -5.0 ms): Delta psi =    4.62 ; grad = -3.8, +0.14, +0.73, +0.52, -0.380
+  2 ms antes do pico     t_a =      -6.2 M (   -2.0 ms): Delta psi =    2.08 ; grad = -1.9, +0.05, +0.30, +0.21, -0.191
+
+ET | detector unico | todos livres (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.219, sigma_t0 = 1.37 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 80 rad (0.00 bits) ; f22 = 20 Hz: 25 rad (0.00 bits) ; f22 = 30 Hz: 12 rad (0.00 bits) ; f22 = 50 Hz: 4.7 rad (0.00 bits) ; f22 = 100 Hz: 1.4 rad (0.23 bits) ; 100 ms: 7 rad (0.00 bits) ; 30 ms: 3.2 rad (0.00 bits) ; 10 ms: 1.5 rad (0.15 bits) ; 5 ms: 0.92 rad (0.73 bits) ; 2 ms: 0.43 rad (1.81 bits)
+
+ET | detector unico | q, chi conhecidos (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.215, sigma_t0 = 1.37 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 70 rad (0.00 bits) ; f22 = 20 Hz: 20 rad (0.00 bits) ; f22 = 30 Hz: 8.9 rad (0.00 bits) ; f22 = 50 Hz: 3.2 rad (0.00 bits) ; f22 = 100 Hz: 0.99 rad (0.63 bits) ; 100 ms: 4.9 rad (0.00 bits) ; 30 ms: 2.1 rad (0.02 bits) ; 10 ms: 1.1 rad (0.52 bits) ; 5 ms: 0.68 rad (1.15 bits) ; 2 ms: 0.34 rad (2.15 bits)
+
+ET | detector unico | so lnM e t0 livres (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.150, sigma_t0 = 0.79 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 49 rad (0.00 bits) ; f22 = 20 Hz: 14 rad (0.00 bits) ; f22 = 30 Hz: 6.3 rad (0.00 bits) ; f22 = 50 Hz: 2.3 rad (0.01 bits) ; f22 = 100 Hz: 0.69 rad (1.15 bits) ; 100 ms: 3.5 rad (0.00 bits) ; 30 ms: 1.5 rad (0.15 bits) ; 10 ms: 0.75 rad (1.03 bits) ; 5 ms: 0.47 rad (1.68 bits) ; 2 ms: 0.24 rad (2.69 bits)
+
+ET | detector unico | so prior (sem dados) (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.317, sigma_t0 = 50.00 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 1.2e+02 rad (0.00 bits) ; f22 = 20 Hz: 60 rad (0.00 bits) ; f22 = 30 Hz: 50 rad (0.00 bits) ; f22 = 50 Hz: 42 rad (0.00 bits) ; f22 = 100 Hz: 26 rad (0.00 bits) ; 100 ms: 45 rad (0.00 bits) ; 30 ms: 38 rad (0.00 bits) ; 10 ms: 27 rad (0.00 bits) ; 5 ms: 19 rad (0.00 bits) ; 2 ms: 9.6 rad (0.00 bits)
+
+ET | rede (h+ e hx) | todos livres (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.214, sigma_t0 = 0.92 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 79 rad (0.00 bits) ; f22 = 20 Hz: 24 rad (0.00 bits) ; f22 = 30 Hz: 12 rad (0.00 bits) ; f22 = 50 Hz: 4.6 rad (0.00 bits) ; f22 = 100 Hz: 1.3 rad (0.28 bits) ; 100 ms: 6.9 rad (0.00 bits) ; 30 ms: 3.1 rad (0.00 bits) ; 10 ms: 1.4 rad (0.19 bits) ; 5 ms: 0.86 rad (0.83 bits) ; 2 ms: 0.4 rad (1.92 bits)
+
+ET | rede (h+ e hx) | q, chi conhecidos (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.210, sigma_t0 = 0.92 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 69 rad (0.00 bits) ; f22 = 20 Hz: 19 rad (0.00 bits) ; f22 = 30 Hz: 8.8 rad (0.00 bits) ; f22 = 50 Hz: 3.1 rad (0.00 bits) ; f22 = 100 Hz: 0.9 rad (0.77 bits) ; 100 ms: 4.8 rad (0.00 bits) ; 30 ms: 2.1 rad (0.02 bits) ; 10 ms: 0.98 rad (0.64 bits) ; 5 ms: 0.61 rad (1.31 bits) ; 2 ms: 0.3 rad (2.32 bits)
+
+ET | rede (h+ e hx) | so lnM e t0 livres (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.149, sigma_t0 = 0.78 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 49 rad (0.00 bits) ; f22 = 20 Hz: 14 rad (0.00 bits) ; f22 = 30 Hz: 6.2 rad (0.00 bits) ; f22 = 50 Hz: 2.2 rad (0.01 bits) ; f22 = 100 Hz: 0.68 rad (1.17 bits) ; 100 ms: 3.4 rad (0.00 bits) ; 30 ms: 1.5 rad (0.16 bits) ; 10 ms: 0.74 rad (1.04 bits) ; 5 ms: 0.47 rad (1.70 bits) ; 2 ms: 0.23 rad (2.71 bits)
+
+ET | rede (h+ e hx) | so prior (sem dados) (rho+ = 8.64, rhox = 0.81; sigma_lnM = 0.317, sigma_t0 = 50.00 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 1.2e+02 rad (0.00 bits) ; f22 = 20 Hz: 60 rad (0.00 bits) ; f22 = 30 Hz: 50 rad (0.00 bits) ; f22 = 50 Hz: 42 rad (0.00 bits) ; f22 = 100 Hz: 26 rad (0.00 bits) ; 100 ms: 45 rad (0.00 bits) ; 30 ms: 38 rad (0.00 bits) ; 10 ms: 27 rad (0.00 bits) ; 5 ms: 19 rad (0.00 bits) ; 2 ms: 9.6 rad (0.00 bits)
+
+CE | detector unico | todos livres (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.121, sigma_t0 = 1.09 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 56 rad (0.00 bits) ; f22 = 20 Hz: 19 rad (0.00 bits) ; f22 = 30 Hz: 9.7 rad (0.00 bits) ; f22 = 50 Hz: 4 rad (0.00 bits) ; f22 = 100 Hz: 1.2 rad (0.41 bits) ; 100 ms: 5.8 rad (0.00 bits) ; 30 ms: 2.7 rad (0.00 bits) ; 10 ms: 1.3 rad (0.30 bits) ; 5 ms: 0.76 rad (1.01 bits) ; 2 ms: 0.34 rad (2.14 bits)
+
+CE | detector unico | q, chi conhecidos (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.102, sigma_t0 = 1.09 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 33 rad (0.00 bits) ; f22 = 20 Hz: 9.1 rad (0.00 bits) ; f22 = 30 Hz: 4 rad (0.00 bits) ; f22 = 50 Hz: 1.3 rad (0.25 bits) ; f22 = 100 Hz: 0.47 rad (1.70 bits) ; 100 ms: 2.1 rad (0.02 bits) ; 30 ms: 0.91 rad (0.74 bits) ; 10 ms: 0.5 rad (1.60 bits) ; 5 ms: 0.34 rad (2.18 bits) ; 2 ms: 0.17 rad (3.17 bits)
+
+CE | detector unico | so lnM e t0 livres (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.047, sigma_t0 = 0.22 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 15 rad (0.00 bits) ; f22 = 20 Hz: 4.4 rad (0.00 bits) ; f22 = 30 Hz: 2 rad (0.03 bits) ; f22 = 50 Hz: 0.71 rad (1.10 bits) ; f22 = 100 Hz: 0.21 rad (2.86 bits) ; 100 ms: 1.1 rad (0.50 bits) ; 30 ms: 0.47 rad (1.69 bits) ; 10 ms: 0.23 rad (2.74 bits) ; 5 ms: 0.14 rad (3.41 bits) ; 2 ms: 0.071 rad (4.41 bits)
+
+CE | detector unico | so prior (sem dados) (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.317, sigma_t0 = 50.00 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 1.2e+02 rad (0.00 bits) ; f22 = 20 Hz: 60 rad (0.00 bits) ; f22 = 30 Hz: 50 rad (0.00 bits) ; f22 = 50 Hz: 42 rad (0.00 bits) ; f22 = 100 Hz: 26 rad (0.00 bits) ; 100 ms: 45 rad (0.00 bits) ; 30 ms: 38 rad (0.00 bits) ; 10 ms: 27 rad (0.00 bits) ; 5 ms: 19 rad (0.00 bits) ; 2 ms: 9.6 rad (0.00 bits)
+
+CE | rede (h+ e hx) | todos livres (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.109, sigma_t0 = 0.31 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 54 rad (0.00 bits) ; f22 = 20 Hz: 18 rad (0.00 bits) ; f22 = 30 Hz: 9.6 rad (0.00 bits) ; f22 = 50 Hz: 3.9 rad (0.00 bits) ; f22 = 100 Hz: 1.1 rad (0.48 bits) ; 100 ms: 5.8 rad (0.00 bits) ; 30 ms: 2.7 rad (0.00 bits) ; 10 ms: 1.2 rad (0.36 bits) ; 5 ms: 0.7 rad (1.12 bits) ; 2 ms: 0.32 rad (2.27 bits)
+
+CE | rede (h+ e hx) | q, chi conhecidos (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.088, sigma_t0 = 0.31 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 29 rad (0.00 bits) ; f22 = 20 Hz: 8.1 rad (0.00 bits) ; f22 = 30 Hz: 3.7 rad (0.00 bits) ; f22 = 50 Hz: 1.3 rad (0.29 bits) ; f22 = 100 Hz: 0.36 rad (2.06 bits) ; 100 ms: 2 rad (0.03 bits) ; 30 ms: 0.85 rad (0.83 bits) ; 10 ms: 0.4 rad (1.93 bits) ; 5 ms: 0.25 rad (2.62 bits) ; 2 ms: 0.12 rad (3.63 bits)
+
+CE | rede (h+ e hx) | so lnM e t0 livres (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.046, sigma_t0 = 0.21 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 15 rad (0.00 bits) ; f22 = 20 Hz: 4.3 rad (0.00 bits) ; f22 = 30 Hz: 1.9 rad (0.03 bits) ; f22 = 50 Hz: 0.7 rad (1.13 bits) ; f22 = 100 Hz: 0.21 rad (2.89 bits) ; 100 ms: 1.1 rad (0.52 bits) ; 30 ms: 0.46 rad (1.72 bits) ; 10 ms: 0.22 rad (2.76 bits) ; 5 ms: 0.14 rad (3.43 bits) ; 2 ms: 0.07 rad (4.44 bits)
+
+CE | rede (h+ e hx) | so prior (sem dados) (rho+ = 34.09, rhox = 3.21; sigma_lnM = 0.317, sigma_t0 = 50.00 ms):
+   desvio da fase prevista ate o pico: f22 = 10 Hz: 1.2e+02 rad (0.00 bits) ; f22 = 20 Hz: 60 rad (0.00 bits) ; f22 = 30 Hz: 50 rad (0.00 bits) ; f22 = 50 Hz: 42 rad (0.00 bits) ; f22 = 100 Hz: 26 rad (0.00 bits) ; 100 ms: 45 rad (0.00 bits) ; 30 ms: 38 rad (0.00 bits) ; 10 ms: 27 rad (0.00 bits) ; 5 ms: 19 rad (0.00 bits) ; 2 ms: 9.6 rad (0.00 bits)
+
+Leitura: a fase modulo 2 pi so e conhecida (> 1 bit) onde o desvio cai abaixo de ~1 rad.

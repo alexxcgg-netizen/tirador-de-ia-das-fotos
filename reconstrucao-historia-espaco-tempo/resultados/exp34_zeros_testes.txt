@@ -1,0 +1,12 @@
+exp34_zeros: testes do localizador de zeros e dos indices
+1. Phi = Y20 (eletrico, axissimetrico): zeros [([0.0, -0.0, 1.0], 1.0), ([0.0, 0.0, -1.0], 1.0)] ; soma dos indices (laco) 2.000 ; triangulos: soma 2.00, 4 triangulos com indice != 0
+2. magnetico Psi = Y20: zeros [([0.0, -0.0, 1.0], 1.0), ([0.0, 0.0, -1.0], 1.0)] ; soma 2.000
+3.0 l = 2 triaxial (autovalores [-2.773  0.79   1.983]): 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 ; triangulos soma 2.00 ; maior distancia zero previsto (eixos opticos, meia abertura 59.94 graus) - achado: 1.48e-06 graus
+3.1 l = 2 triaxial (autovalores [-4.99   1.541  3.449]): 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 ; triangulos soma 2.00 ; maior distancia zero previsto (eixos opticos, meia abertura 61.61 graus) - achado: 1.48e-06 graus
+3.2 l = 2 triaxial (autovalores [-1.793  0.342  1.451]): 4 zeros, indices [0.5, 0.5, 0.5, 0.5], soma 2.000 ; triangulos soma 2.00 ; maior distancia zero previsto (eixos opticos, meia abertura 54.22 graus) - achado: 0.00e+00 graus
+4.0 eletrico l = 2..4 aleatorio: 12 zeros, indices [0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5], soma 2.000 ; triangulos: soma 2.00 (12)
+    E + B: 12 zeros, indices [0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5], soma 2.000 ; triangulos: soma 2.00
+4.1 eletrico l = 2..4 aleatorio: 10 zeros, indices [-0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5], soma 2.000 ; triangulos: soma 2.00 (10)
+    E + B: 8 zeros, indices [0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5], soma 2.000 ; triangulos: soma 2.00
+4.2 eletrico l = 2..4 aleatorio: 12 zeros, indices [0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5], soma 2.000 ; triangulos: soma 2.00 (12)
+    E + B: 12 zeros, indices [0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5], soma 2.000 ; triangulos: soma 2.00

@@ -1,0 +1,171 @@
+exp38: memoria de CM como atraso (NRHybSur3dq8_CCE, M = 65, janela desde 10 Hz, nivel A x modos m = 0 de RN)
+delta_ord_l = (3/2) M_f / Dfrak(l): l = 2 -> M_f/2 ; l = 4 -> M_f/30 ; delta_tot = -cm_l/desl_l (codigo)
+
+q = 1.0 chi = (+0.0, +0.0): M_f = 0.95165 ; QNM (2,0,0) M omega = 0.4132 - 0.0890 i (livre: 0.4106 - -0.1091 i) ; toque A/desl = 0.113, ajuste explica 98% da variancia de D para u >= 16 M
+  l = 2: desl A 8.68115e-02 C 8.74738e-02 (C/A-1 = +7.63e-03) ; cm tot -4.7295e-02 (ord -4.1307e-02) ; delta_ord 0.4758 M, delta_tot 0.5448 M
+        area total int D = +0.7348 (prevista = cm_tot = -0.0473) -> delta_area_total = -7.436 M ; D/desl em -3000/-1000/-300/-100/-30 M: -5.4e-05 +3.9e-03 +5.3e-03 +8.2e-03 +1.6e-02
+        deriva dD/dS: [-2500,-300] +0.050 ; [-1000,-100] +0.036 ; [-300,-50] +0.068
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -2.886 (+6.3e-03) -1000: +0.030 (+4.2e-03) -500: +0.614 (+3.4e-03) -300: +0.884 (+2.7e-03) -200: +1.033 (+2.2e-03) -100: +1.481 (-7.4e-04)
+        pontual em [-60,60]: max|D|/desl = 0.177 contra delta_ord max(dS/du)/desl = 0.0119 ; ajuste D ~ c - delta dS: delta = +3.72 M, R^2 = 0.275
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +2.50 M (rms/desl 3.68e-02 ; d = 0: 4.12e-02 ; d = delta_ord: 3.97e-02) ; pico da taxa: fluxo +7.50 M, RN +10.75 M
+  l = 4: desl A 1.44635e-03 C 1.46395e-03 (C/A-1 = +1.22e-02) ; cm tot -1.8416e-04 (ord -4.5880e-05) ; delta_ord 0.0317 M, delta_tot 0.1273 M
+        area total int D = +0.0033 (prevista = cm_tot = -0.0002) -> delta_area_total = -0.650 M ; D/desl em -3000/-1000/-300/-100/-30 M: +9.3e-04 +1.1e-04 +1.8e-03 -4.7e-03 -2.2e-02
+        deriva dD/dS: [-2500,-300] +0.049 ; [-1000,-100] -0.059 ; [-300,-50] -0.195
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -2.650 (+1.6e-02) -1000: +1.036 (+1.3e-02) -500: +2.521 (+1.1e-02) -300: +2.375 (+1.2e-02) -200: +1.968 (+1.3e-02) -100: +1.168 (+2.0e-02)
+        pontual em [-60,60]: max|D|/desl = 0.093 contra delta_ord max(dS/du)/desl = 0.0011 ; ajuste D ~ c - delta dS: delta = -0.39 M, R^2 = 0.022
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = -0.12 M (rms/desl 1.45e-02 ; d = 0: 1.45e-02 ; d = delta_ord: 1.45e-02) ; pico da taxa: fluxo +11.00 M, RN +13.75 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +1.08e-02 -2500: -7.30e-03 -1000: -3.36e-03 -300: +3.21e-03
+  modos fora do CCE (NRSur7dq4): +3.54e-03 em S20, +1.10e-01 em S40 (acumulado desde -4300 M) ; ultimos 100 M: +4.17e-03, +1.20e-01
+  observador iota = 50 graus: CM/desl = -0.5338 M  -> atraso efetivo 0.5338 M = 170.9 us (M = 65)
+
+q = 2.0 chi = (+0.0, +0.0): M_f = 0.96126 ; QNM (2,0,0) M omega = 0.4051 - 0.0891 i (livre: 0.3945 - -0.1123 i) ; toque A/desl = 0.182, ajuste explica 98% da variancia de D para u >= 16 M
+  l = 2: desl A 6.48256e-02 C 6.53414e-02 (C/A-1 = +7.96e-03) ; cm tot -3.2161e-02 (ord -3.1157e-02) ; delta_ord 0.4806 M, delta_tot 0.4961 M
+        area total int D = +0.7405 (prevista = cm_tot = -0.0322) -> delta_area_total = -10.351 M ; D/desl em -3000/-1000/-300/-100/-30 M: -8.7e-05 +5.0e-03 +7.1e-03 +1.1e-02 +2.4e-02
+        deriva dD/dS: [-2500,-300] +0.058 ; [-1000,-100] +0.047 ; [-300,-50] +0.091
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -3.902 (+5.8e-03) -1000: -0.593 (+3.3e-03) -500: +0.227 (+2.2e-03) -300: +0.634 (+1.1e-03) -200: +0.879 (+9.0e-05) -100: +1.549 (-4.5e-03)
+        pontual em [-60,60]: max|D|/desl = 0.234 contra delta_ord max(dS/du)/desl = 0.0111 ; ajuste D ~ c - delta dS: delta = +5.88 M, R^2 = 0.330
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +3.65 M (rms/desl 4.80e-02 ; d = 0: 5.44e-02 ; d = delta_ord: 5.29e-02) ; pico da taxa: fluxo +6.75 M, RN +11.75 M
+  l = 4: desl A 6.07831e-04 C 6.34554e-04 (C/A-1 = +4.40e-02) ; cm tot -3.9963e-05 (ord -1.9476e-05) ; delta_ord 0.0320 M, delta_tot 0.0657 M
+        area total int D = -0.0105 (prevista = cm_tot = -0.0000) -> delta_area_total = +23.151 M ; D/desl em -3000/-1000/-300/-100/-30 M: +3.3e-03 -1.8e-02 -1.2e-02 -6.3e-03 -7.4e-03
+        deriva dD/dS: [-2500,-300] -0.063 ; [-1000,-100] +0.087 ; [-300,-50] +0.049
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: +10.962 (+6.3e-02) -1000: -0.676 (+7.1e-02) -500: +0.011 (+7.0e-02) -300: +0.407 (+6.9e-02) -200: +0.551 (+6.8e-02) -100: +0.645 (+6.8e-02)
+        pontual em [-60,60]: max|D|/desl = 0.126 contra delta_ord max(dS/du)/desl = 0.0007 ; ajuste D ~ c - delta dS: delta = +0.29 M, R^2 = 0.003
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +0.26 M (rms/desl 1.60e-02 ; d = 0: 1.61e-02 ; d = delta_ord: 1.60e-02) ; pico da taxa: fluxo +6.75 M, RN +13.25 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +1.67e-02 -2500: -3.57e-03 -1000: +4.57e-04 -300: +6.21e-03
+  modos fora do CCE (NRSur7dq4): +2.08e-03 em S20, +1.03e-01 em S40 (acumulado desde -4300 M) ; ultimos 100 M: +2.53e-03, +1.26e-01
+  observador iota = 50 graus: CM/desl = -0.4896 M  -> atraso efetivo 0.4896 M = 156.7 us (M = 65)
+
+q = 4.0 chi = (+0.0, +0.0): M_f = 0.97799 ; QNM (2,0,0) M omega = 0.3909 - 0.0893 i (livre: 0.3731 - -0.1042 i) ; toque A/desl = 0.457, ajuste explica 98% da variancia de D para u >= 16 M
+  l = 2: desl A 3.16081e-02 C 3.21256e-02 (C/A-1 = +1.64e-02) ; cm tot -1.1778e-02 (ord -1.5456e-02) ; delta_ord 0.4890 M, delta_tot 0.3726 M
+        area total int D = +0.8006 (prevista = cm_tot = -0.0118) -> delta_area_total = -23.123 M ; D/desl em -3000/-1000/-300/-100/-30 M: -5.9e-06 +1.1e-02 +1.4e-02 +1.8e-02 +4.2e-02
+        deriva dD/dS: [-2500,-300] +0.088 ; [-1000,-100] +0.043 ; [-300,-50] +0.106
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -8.966 (+1.3e-02) -1000: -0.202 (+6.9e-03) -500: +1.540 (+4.5e-03) -300: +1.934 (+3.6e-03) -200: +2.185 (+2.8e-03) -100: +3.087 (-2.8e-03)
+        pontual em [-60,60]: max|D|/desl = 0.488 contra delta_ord max(dS/du)/desl = 0.0093 ; ajuste D ~ c - delta dS: delta = +15.36 M, R^2 = 0.349
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +8.25 M (rms/desl 9.66e-02 ; d = 0: 1.10e-01 ; d = delta_ord: 1.08e-01) ; pico da taxa: fluxo +5.00 M, RN +13.50 M
+  l = 4: desl A -7.26711e-05 C -9.40073e-05 (C/A-1 = +2.94e-01) ; cm tot 6.5036e-05 (ord 2.3691e-06) ; delta_ord 0.0326 M, delta_tot 0.8949 M
+        area total int D = +0.0243 (prevista = cm_tot = +0.0001) -> delta_area_total = +373.697 M ; D/desl em -3000/-1000/-300/-100/-30 M: -3.4e-02 -6.0e-02 -2.0e-01 -3.0e-01 -3.7e-01
+        deriva dD/dS: [-2500,-300] +0.444 ; [-1000,-100] +0.572 ; [-300,-50] +0.512
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: +55.343 (+2.0e-01) -1000: +31.300 (+2.2e-01) -500: +8.591 (+2.5e-01) -300: +2.470 (+2.7e-01) -200: +0.186 (+2.8e-01) -100: -1.810 (+2.9e-01)
+        pontual em [-60,60]: max|D|/desl = -1.091 contra delta_ord max(dS/du)/desl = -0.0050 ; ajuste D ~ c - delta dS: delta = -1.35 M, R^2 = 0.023
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = -0.49 M (rms/desl -1.22e-01 ; d = 0: -1.24e-01 ; d = delta_ord: -1.24e-01) ; pico da taxa: fluxo -24.00 M, RN +4.75 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +3.37e-02 -2500: +3.22e-03 -1000: +4.94e-03 -300: +6.96e-03
+  modos fora do CCE (NRSur7dq4): +1.22e-03 em S20, -1.43e-01 em S40 (acumulado desde -4300 M) ; ultimos 100 M: +1.58e-03, -8.37e-02
+  observador iota = 50 graus: CM/desl = -0.3706 M  -> atraso efetivo 0.3706 M = 118.7 us (M = 65)
+
+q = 6.0 chi = (+0.0, +0.0): M_f = 0.98552 ; QNM (2,0,0) M omega = 0.3845 - 0.0893 i (livre: 0.3613 - -0.1012 i) ; toque A/desl = 0.790, ajuste explica 97% da variancia de D para u >= 16 M
+  l = 2: desl A 1.91208e-02 C 1.94547e-02 (C/A-1 = +1.75e-02) ; cm tot -5.7572e-03 (ord -9.4220e-03) ; delta_ord 0.4928 M, delta_tot 0.3011 M
+        area total int D = +0.6064 (prevista = cm_tot = -0.0058) -> delta_area_total = -29.361 M ; D/desl em -3000/-1000/-300/-100/-30 M: +6.0e-05 +1.4e-02 +1.8e-02 +2.4e-02 +6.5e-02
+        deriva dD/dS: [-2500,-300] +0.095 ; [-1000,-100] +0.056 ; [-300,-50] +0.160
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -14.020 (+1.5e-02) -1000: -1.705 (+5.1e-03) -500: +0.702 (+1.6e-03) -300: +1.319 (-1.3e-04) -200: +1.719 (-1.6e-03) -100: +3.268 (-1.2e-02)
+        pontual em [-60,60]: max|D|/desl = 0.781 contra delta_ord max(dS/du)/desl = 0.0080 ; ajuste D ~ c - delta dS: delta = +24.15 M, R^2 = 0.246
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +11.25 M (rms/desl 1.57e-01 ; d = 0: 1.72e-01 ; d = delta_ord: 1.71e-01) ; pico da taxa: fluxo +4.00 M, RN +14.25 M
+  l = 4: desl A -1.25094e-04 C -1.20388e-04 (C/A-1 = -3.76e-02) ; cm tot 5.9923e-05 (ord 4.1094e-06) ; delta_ord 0.0329 M, delta_tot 0.4790 M
+        area total int D = +0.0296 (prevista = cm_tot = +0.0001) -> delta_area_total = +231.383 M ; D/desl em -3000/-1000/-300/-100/-30 M: -2.3e-03 -8.3e-02 -1.6e-01 -2.1e-01 -2.7e-01
+        deriva dD/dS: [-2500,-300] +1.247 ; [-1000,-100] +1.365 ; [-300,-50] +2.362
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: +112.900 (-4.3e-03) -1000: +43.597 (+3.7e-02) -500: +16.237 (+7.2e-02) -300: +8.591 (+9.1e-02) -200: +5.285 (+1.0e-01) -100: +1.971 (+1.3e-01)
+        pontual em [-60,60]: max|D|/desl = -0.822 contra delta_ord max(dS/du)/desl = -0.0024 ; ajuste D ~ c - delta dS: delta = -0.68 M, R^2 = 0.005
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = -0.04 M (rms/desl -1.21e-01 ; d = 0: -1.21e-01 ; d = delta_ord: -1.21e-01) ; pico da taxa: fluxo +55.25 M, RN +15.75 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +5.41e-02 -2500: +9.27e-03 -1000: +4.53e-03 -300: -1.70e-03
+  observador iota = 50 graus: CM/desl = -0.2991 M  -> atraso efetivo 0.2991 M = 95.8 us (M = 65)
+
+q = 8.0 chi = (+0.0, +0.0): M_f = 0.98946 ; QNM (2,0,0) M omega = 0.3812 - 0.0893 i (livre: 0.3574 - -0.0952 i) ; toque A/desl = 1.091, ajuste explica 97% da variancia de D para u >= 16 M
+  l = 2: desl A 1.32639e-02 C 1.35158e-02 (C/A-1 = +1.90e-02) ; cm tot -3.5018e-03 (ord -6.5621e-03) ; delta_ord 0.4947 M, delta_tot 0.2640 M
+        area total int D = +0.1021 (prevista = cm_tot = -0.0035) -> delta_area_total = -5.142 M ; D/desl em -3000/-1000/-300/-100/-30 M: +4.7e-04 +2.3e-03 +7.3e-03 +2.2e-02 +7.7e-02
+        deriva dD/dS: [-2500,-300] +0.043 ; [-1000,-100] +0.097 ; [-300,-50] +0.258
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -2.986 (+2.6e-02) -1000: -1.550 (+2.4e-02) -500: -0.912 (+2.3e-02) -300: -0.088 (+2.0e-02) -200: +1.143 (+1.4e-02) -100: +3.767 (-5.7e-03)
+        pontual em [-60,60]: max|D|/desl = 1.063 contra delta_ord max(dS/du)/desl = 0.0070 ; ajuste D ~ c - delta dS: delta = +31.61 M, R^2 = 0.178
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +13.25 M (rms/desl 2.16e-01 ; d = 0: 2.30e-01 ; d = delta_ord: 2.30e-01) ; pico da taxa: fluxo +3.25 M, RN +14.75 M
+  l = 4: desl A -1.07568e-04 C -1.03751e-04 (C/A-1 = -3.55e-02) ; cm tot 4.6837e-05 (ord 3.5478e-06) ; delta_ord 0.0330 M, delta_tot 0.4354 M
+        area total int D = +0.0061 (prevista = cm_tot = +0.0000) -> delta_area_total = +52.326 M ; D/desl em -3000/-1000/-300/-100/-30 M: +2.7e-02 -9.7e-02 -1.6e-01 -1.9e-01 -2.5e-01
+        deriva dD/dS: [-2500,-300] +2.433 ; [-1000,-100] +2.777 ; [-300,-50] -7.235
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: +128.930 (-1.9e-03) -1000: +39.641 (+5.2e-02) -500: +13.371 (+8.7e-02) -300: +7.844 (+1.0e-01) -200: +5.685 (+1.1e-01) -100: +3.520 (+1.3e-01)
+        pontual em [-60,60]: max|D|/desl = -1.153 contra delta_ord max(dS/du)/desl = -0.0021 ; ajuste D ~ c - delta dS: delta = -0.76 M, R^2 = 0.003
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +0.02 M (rms/desl -1.86e-01 ; d = 0: -1.86e-01 ; d = delta_ord: -1.86e-01) ; pico da taxa: fluxo +55.50 M, RN +16.00 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +7.83e-02 -2500: +1.86e-02 -1000: +4.29e-03 -300: -1.65e-02
+  observador iota = 50 graus: CM/desl = -0.2617 M  -> atraso efetivo 0.2617 M = 83.8 us (M = 65)
+
+q = 1.0 chi = (+0.6, +0.6): M_f = 0.92687 ; QNM (2,0,0) M omega = 0.4396 - 0.0866 i (livre: 0.4143 - -0.1452 i) ; toque A/desl = 0.020, ajuste explica 90% da variancia de D para u >= 16 M
+  l = 2: desl A 1.43914e-01 C 1.44939e-01 (C/A-1 = +7.13e-03) ; cm tot -7.1419e-02 (ord -6.6695e-02) ; delta_ord 0.4634 M, delta_tot 0.4963 M
+        area total int D = +0.0731 (prevista = cm_tot = -0.0714) -> delta_area_total = +0.452 M ; D/desl em -3000/-1000/-300/-100/-30 M: -5.2e-04 +9.6e-04 +2.0e-03 +3.3e-03 +1.9e-03
+        deriva dD/dS: [-2500,-300] +0.028 ; [-1000,-100] +0.020 ; [-300,-50] +0.014
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -0.811 (+7.4e-03) -1000: +0.139 (+6.7e-03) -500: +0.453 (+6.2e-03) -300: +0.590 (+5.9e-03) -200: +0.727 (+5.4e-03) -100: +0.848 (+4.8e-03)
+        pontual em [-60,60]: max|D|/desl = 0.045 contra delta_ord max(dS/du)/desl = 0.0105 ; ajuste D ~ c - delta dS: delta = +1.14 M, R^2 = 0.285
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +1.00 M (rms/desl 9.33e-03 ; d = 0: 1.13e-02 ; d = delta_ord: 9.95e-03) ; pico da taxa: fluxo +9.00 M, RN +10.50 M
+  l = 4: desl A 2.90282e-03 C 3.13777e-03 (C/A-1 = +8.09e-02) ; cm tot -1.9878e-04 (ord -8.9685e-05) ; delta_ord 0.0309 M, delta_tot 0.0685 M
+        area total int D = +0.0110 (prevista = cm_tot = -0.0002) -> delta_area_total = +7.122 M ; D/desl em -3000/-1000/-300/-100/-30 M: +5.3e-04 -4.0e-03 -4.5e-03 -4.9e-03 -6.7e-03
+        deriva dD/dS: [-2500,-300] -0.074 ; [-1000,-100] -0.012 ; [-300,-50] -0.016
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: +6.679 (+8.6e-02) -1000: +3.087 (+8.9e-02) -500: +1.926 (+9.0e-02) -300: +1.418 (+9.2e-02) -200: +1.110 (+9.3e-02) -100: +0.698 (+9.7e-02)
+        pontual em [-60,60]: max|D|/desl = 0.089 contra delta_ord max(dS/du)/desl = 0.0009 ; ajuste D ~ c - delta dS: delta = -0.35 M, R^2 = 0.005
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +0.10 M (rms/desl 5.81e-03 ; d = 0: 5.87e-03 ; d = delta_ord: 5.84e-03) ; pico da taxa: fluxo +11.00 M, RN +12.00 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +3.32e-02 -2500: +1.30e-02 -1000: +1.36e-02 -300: +1.46e-02
+  modos fora do CCE (NRSur7dq4): +4.63e-03 em S20, +1.15e-01 em S40 (acumulado desde -4300 M) ; ultimos 100 M: +5.33e-03, +1.23e-01
+  observador iota = 50 graus: CM/desl = -0.4826 M  -> atraso efetivo 0.4826 M = 154.5 us (M = 65)
+
+q = 1.0 chi = (-0.6, -0.6): M_f = 0.96377 ; QNM (2,0,0) M omega = 0.3975 - 0.0904 i (livre: 0.3964 - -0.0974 i) ; toque A/desl = 0.316, ajuste explica 99% da variancia de D para u >= 16 M
+  l = 2: desl A 5.99236e-02 C 6.03805e-02 (C/A-1 = +7.62e-03) ; cm tot -3.6092e-02 (ord -2.8876e-02) ; delta_ord 0.4819 M, delta_tot 0.6023 M
+        area total int D = +0.7563 (prevista = cm_tot = -0.0361) -> delta_area_total = -11.594 M ; D/desl em -3000/-1000/-300/-100/-30 M: +8.7e-04 +4.1e-03 +6.4e-03 +1.3e-02 +3.8e-02
+        deriva dD/dS: [-2500,-300] +0.052 ; [-1000,-100] +0.079 ; [-300,-50] +0.194
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -2.571 (+5.8e-03) -1000: +0.033 (+3.9e-03) -500: +0.960 (+2.7e-03) -300: +1.447 (+1.5e-03) -200: +1.830 (-3.6e-05) -100: +2.902 (-7.2e-03)
+        pontual em [-60,60]: max|D|/desl = 0.482 contra delta_ord max(dS/du)/desl = 0.0129 ; ajuste D ~ c - delta dS: delta = +8.99 M, R^2 = 0.260
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +4.37 M (rms/desl 1.01e-01 ; d = 0: 1.09e-01 ; d = delta_ord: 1.07e-01) ; pico da taxa: fluxo +7.25 M, RN +10.75 M
+  l = 4: desl A 8.50899e-04 C 8.47859e-04 (C/A-1 = -3.57e-03) ; cm tot -1.9397e-04 (ord -2.7336e-05) ; delta_ord 0.0321 M, delta_tot 0.2280 M
+        area total int D = +0.0269 (prevista = cm_tot = -0.0002) -> delta_area_total = -32.070 M ; D/desl em -3000/-1000/-300/-100/-30 M: +1.8e-03 +1.1e-02 +1.8e-02 +1.6e-02 +4.4e-03
+        deriva dD/dS: [-2500,-300] +0.228 ; [-1000,-100] +0.060 ; [-300,-50] -0.109
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -16.691 (-7.7e-03) -1000: -5.078 (-1.6e-02) -500: -0.502 (-2.2e-02) -300: +0.459 (-2.5e-02) -200: +0.604 (-2.5e-02) -100: +0.402 (-2.4e-02)
+        pontual em [-60,60]: max|D|/desl = 0.250 contra delta_ord max(dS/du)/desl = 0.0013 ; ajuste D ~ c - delta dS: delta = -0.11 M, R^2 = 0.001
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = -0.08 M (rms/desl 3.85e-02 ; d = 0: 3.85e-02 ; d = delta_ord: 3.85e-02) ; pico da taxa: fluxo +11.75 M, RN +15.00 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +2.01e-02 -2500: -1.54e-03 -1000: +8.13e-05 -300: +2.75e-03
+  modos fora do CCE (NRSur7dq4): +3.88e-03 em S20, +1.44e-01 em S40 (acumulado desde -4300 M) ; ultimos 100 M: +4.58e-03, +1.59e-01
+  observador iota = 50 graus: CM/desl = -0.5939 M  -> atraso efetivo 0.5939 M = 190.1 us (M = 65)
+
+q = 3.0 chi = (+0.6, +0.0): M_f = 0.95698 ; QNM (2,0,0) M omega = 0.4198 - 0.0860 i (livre: 0.3967 - -0.1150 i) ; toque A/desl = 0.051, ajuste explica 96% da variancia de D para u >= 16 M
+  l = 2: desl A 7.32006e-02 C 7.44137e-02 (C/A-1 = +1.66e-02) ; cm tot -3.4115e-02 (ord -3.5026e-02) ; delta_ord 0.4785 M, delta_tot 0.4661 M
+        area total int D = +0.3203 (prevista = cm_tot = -0.0341) -> delta_area_total = -2.142 M ; D/desl em -3000/-1000/-300/-100/-30 M: -1.1e-03 +3.5e-03 +5.7e-03 +8.2e-03 +9.6e-03
+        deriva dD/dS: [-2500,-300] +0.057 ; [-1000,-100] +0.033 ; [-300,-50] +0.031
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -2.858 (+1.7e-02) -1000: -0.125 (+1.5e-02) -500: +0.597 (+1.4e-02) -300: +0.822 (+1.3e-02) -200: +1.005 (+1.3e-02) -100: +1.236 (+1.1e-02)
+        pontual em [-60,60]: max|D|/desl = 0.075 contra delta_ord max(dS/du)/desl = 0.0095 ; ajuste D ~ c - delta dS: delta = +2.48 M, R^2 = 0.367
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +1.94 M (rms/desl 1.54e-02 ; d = 0: 1.90e-02 ; d = delta_ord: 1.75e-02) ; pico da taxa: fluxo +8.25 M, RN +12.25 M
+  l = 4: desl A 2.69764e-04 C 3.14996e-04 (C/A-1 = +1.68e-01) ; cm tot 1.5697e-05 (ord -8.6053e-06) ; delta_ord 0.0319 M, delta_tot -0.0582 M
+        area total int D = -0.0062 (prevista = cm_tot = +0.0000) -> delta_area_total = +45.435 M ; D/desl em -3000/-1000/-300/-100/-30 M: +1.5e-03 -2.9e-02 -2.2e-03 +1.7e-02 +3.2e-02
+        deriva dD/dS: [-2500,-300] +0.058 ; [-1000,-100] +0.150 ; [-300,-50] +0.107
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: +38.101 (+2.5e-01) -1000: +16.046 (+2.7e-01) -500: +14.423 (+2.8e-01) -300: +12.574 (+2.9e-01) -200: +11.269 (+3.1e-01) -100: +10.024 (+3.6e-01)
+        pontual em [-60,60]: max|D|/desl = 0.225 contra delta_ord max(dS/du)/desl = 0.0004 ; ajuste D ~ c - delta dS: delta = +8.10 M, R^2 = 0.479
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +7.41 M (rms/desl 2.35e-02 ; d = 0: 4.38e-02 ; d = delta_ord: 4.37e-02) ; pico da taxa: fluxo -3.50 M, RN +2.50 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +3.50e-02 -2500: +1.16e-02 -1000: +1.45e-02 -300: +1.82e-02
+  modos fora do CCE (NRSur7dq4): +3.26e-03 em S20, +5.93e-01 em S40 (acumulado desde -4300 M) ; ultimos 100 M: +3.95e-03, +1.48e+00
+  observador iota = 50 graus: CM/desl = -0.4628 M  -> atraso efetivo 0.4628 M = 148.2 us (M = 65)
+
+q = 1.2 chi = (+0.3, -0.2): M_f = 0.94977 ; QNM (2,0,0) M omega = 0.4160 - 0.0886 i (livre: 0.4112 - -0.1065 i) ; toque A/desl = 0.094, ajuste explica 98% da variancia de D para u >= 16 M
+  l = 2: desl A 9.08691e-02 C 9.20696e-02 (C/A-1 = +1.32e-02) ; cm tot -4.9191e-02 (ord -4.3152e-02) ; delta_ord 0.4749 M, delta_tot 0.5413 M
+        area total int D = +1.0871 (prevista = cm_tot = -0.0492) -> delta_area_total = -10.183 M ; D/desl em -3000/-1000/-300/-100/-30 M: -2.7e-04 +5.5e-03 +7.5e-03 +9.9e-03 +1.5e-02
+        deriva dD/dS: [-2500,-300] +0.075 ; [-1000,-100] +0.036 ; [-300,-50] +0.053
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -4.449 (+1.2e-02) -1000: -0.059 (+8.5e-03) -500: +0.801 (+7.3e-03) -300: +1.050 (+6.7e-03) -200: +1.171 (+6.3e-03) -100: +1.509 (+4.3e-03)
+        pontual em [-60,60]: max|D|/desl = 0.150 contra delta_ord max(dS/du)/desl = 0.0118 ; ajuste D ~ c - delta dS: delta = +3.28 M, R^2 = 0.282
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +2.29 M (rms/desl 3.12e-02 ; d = 0: 3.55e-02 ; d = delta_ord: 3.40e-02) ; pico da taxa: fluxo +7.75 M, RN +10.75 M
+  l = 4: desl A 1.50393e-03 C 1.52090e-03 (C/A-1 = +1.13e-02) ; cm tot -1.8256e-04 (ord -4.7613e-05) ; delta_ord 0.0317 M, delta_tot 0.1214 M
+        area total int D = +0.0082 (prevista = cm_tot = -0.0002) -> delta_area_total = -3.919 M ; D/desl em -3000/-1000/-300/-100/-30 M: +4.8e-04 +2.5e-03 +6.1e-03 -8.4e-04 -2.0e-02
+        deriva dD/dS: [-2500,-300] +0.126 ; [-1000,-100] -0.041 ; [-300,-50] -0.208
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -7.373 (+1.5e-02) -1000: -0.198 (+9.3e-03) -500: +2.505 (+5.7e-03) -300: +2.575 (+5.8e-03) -200: +2.194 (+7.6e-03) -100: +1.354 (+1.4e-02)
+        pontual em [-60,60]: max|D|/desl = 0.084 contra delta_ord max(dS/du)/desl = 0.0010 ; ajuste D ~ c - delta dS: delta = -0.38 M, R^2 = 0.022
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = -0.10 M (rms/desl 1.45e-02 ; d = 0: 1.45e-02 ; d = delta_ord: 1.46e-02) ; pico da taxa: fluxo +11.25 M, RN +13.50 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +1.45e-02 -2500: -4.29e-03 -1000: -7.84e-04 -300: +4.94e-03
+  modos fora do CCE (NRSur7dq4): +3.82e-03 em S20, +1.18e-01 em S40 (acumulado desde -4300 M) ; ultimos 100 M: +4.49e-03, +1.29e-01
+  observador iota = 50 graus: CM/desl = -0.5303 M  -> atraso efetivo 0.5303 M = 169.8 us (M = 65)
+
+q = 8.0 chi = (+0.6, +0.0): M_f = 0.98260 ; QNM (2,0,0) M omega = 0.4031 - 0.0854 i (livre: 0.3399 - -0.1101 i) ; toque A/desl = 0.109, ajuste explica 84% da variancia de D para u >= 16 M
+  l = 2: desl A 2.49755e-02 C 2.52461e-02 (C/A-1 = +1.08e-02) ; cm tot -9.1096e-03 (ord -1.2270e-02) ; delta_ord 0.4913 M, delta_tot 0.3647 M
+        area total int D = -0.8392 (prevista = cm_tot = -0.0091) -> delta_area_total = +35.062 M ; D/desl em -3000/-1000/-300/-100/-30 M: -3.9e-03 -3.3e-03 +3.2e-03 +1.2e-02 +1.7e-02
+        deriva dD/dS: [-2500,-300] +0.051 ; [-1000,-100] +0.075 ; [-300,-50] +0.079
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: -5.421 (+2.0e-02) -1000: -3.797 (+1.8e-02) -500: -1.922 (+1.4e-02) -300: -0.915 (+1.1e-02) -200: +0.367 (+5.1e-03) -100: +1.423 (-2.7e-03)
+        pontual em [-60,60]: max|D|/desl = 0.122 contra delta_ord max(dS/du)/desl = 0.0064 ; ajuste D ~ c - delta dS: delta = +5.95 M, R^2 = 0.417
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = +4.50 M (rms/desl 2.23e-02 ; d = 0: 2.79e-02 ; d = delta_ord: 2.69e-02) ; pico da taxa: fluxo +6.25 M, RN +15.25 M
+  l = 4: desl A -2.64280e-04 C -3.00372e-04 (C/A-1 = +1.37e-01) ; cm tot 5.5057e-05 (ord 8.6560e-06) ; delta_ord 0.0328 M, delta_tot 0.2083 M
+        area total int D = +0.0811 (prevista = cm_tot = +0.0001) -> delta_area_total = +325.176 M ; D/desl em -3000/-1000/-300/-100/-30 M: -2.1e-02 -5.6e-02 -1.1e-01 -1.2e-01 -1.1e-01
+        deriva dD/dS: [-2500,-300] +2.222 ; [-1000,-100] +4.318 ; [-300,-50] -0.414
+        atraso de centroide normalizado delta_c(u_s) [M] (lambda-1): -2000: +66.244 (+1.4e-01) -1000: +25.127 (+1.8e-01) -500: +6.440 (+2.0e-01) -300: +1.670 (+2.2e-01) -200: +0.148 (+2.3e-01) -100: -0.811 (+2.3e-01)
+        pontual em [-60,60]: max|D|/desl = -0.277 contra delta_ord max(dS/du)/desl = -0.0015 ; ajuste D ~ c - delta dS: delta = -0.89 M, R^2 = 0.011
+        melhor deslocamento R(u) ~ lam S(u-d)+c em [-100,100]: d = -0.13 M (rms/desl -7.40e-03 ; d = 0: -7.62e-03 ; d = delta_ord: -7.74e-03) ; pico da taxa: fluxo +59.75 M, RN +33.50 M
+  controle magnetico int h30_RN / int hB30_fluxo - 1: inicio: +4.11e-02 -2500: +4.26e-03 -1000: +7.02e-03 -300: +1.08e-02
+  observador iota = 50 graus: CM/desl = -0.3675 M  -> atraso efetivo 0.3675 M = 117.7 us (M = 65)
+
+(165 s)

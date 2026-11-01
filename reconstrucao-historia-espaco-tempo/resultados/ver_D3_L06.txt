@@ -1,0 +1,8 @@
+n = 6000, binarias 1500
+MOPED 8 com ruido (CE)                     | ln M: hgb 0.496 rf 0.506 knn 0.472 | ln M_chirp: hgb 0.502 rf 0.523 knn 0.502 | ln M_f: hgb 0.477 rf 0.492 knn 0.456
+so componente lnD do MOPED (amplitude)     | ln M: hgb -0.021 rf -0.074 knn -0.006 | ln M_chirp: hgb 0.031 rf -0.018 knn 0.045 | ln M_f: hgb -0.028 rf -0.081 knn -0.012
+MOPED sem a componente lnM                 | ln M: hgb 0.475 rf 0.475 knn 0.462 | ln M_chirp: hgb 0.491 rf 0.504 knn 0.494 | ln M_f: hgb 0.460 rf 0.460 knn 0.446
+so componente lnM do MOPED                 | ln M: hgb 0.059 rf 0.022 knn 0.070 | ln M_chirp: hgb 0.144 rf 0.113 knn 0.153 | ln M_f: hgb 0.043 rf 0.006 knn 0.055
+componentes lnM + lnD                      | ln M: hgb 0.512 rf 0.524 knn 0.529 | ln M_chirp: hgb 0.521 rf 0.533 knn 0.537 | ln M_f: hgb 0.497 rf 0.510 knn 0.515
+SNR verdadeiro (rho+, rhox, sem ruido)     | ln M: hgb 0.254 rf 0.279 knn 0.293 | ln M_chirp: hgb 0.369 rf 0.392 knn 0.403 | ln M_f: hgb 0.240 rf 0.265 knn 0.278
+controle nulo (ln M embaralhado entre binarias), MOPED 8: hgb -0.119

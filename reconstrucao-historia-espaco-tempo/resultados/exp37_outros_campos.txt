@@ -1,0 +1,17 @@
+(a) Escalar complexo carregado sem massa, l <= 3 (16 modos), filtro de fase comum aleatorio
+  Q(Omega) pela matriz Omega = A - A^dag: max |Q_tempo - Q_Omega| / max|Q| = 1.2e-15
+  memoria EM nula (potencial alpha_lm, l>=1): dif rel 7.2e-16 ; memoria gravitacional nula: dif rel 1.9e-16
+  |Delta Omega|/|Omega| = 3.7e-16 ; |Delta B|/|B| = 5.0e-16 ; sobreposicao das historias Phi x Phi_filtrado = 0.026
+  carga total irradiada int Q = 1.527128e+03 (l = 0: nao entra na memoria EM, que tem nucleo so em l = 0)
+
+(b) Radiacao eletromagnetica (peso de spin -1), 1 <= l <= 3
+  filtro aleatorio               : memoria gravitacional dif rel 3.0e-16 | memoria EM linear int a du: dif rel 1.7e+00 | sobrep. 0.767
+  filtro translacao T=137        : memoria gravitacional dif rel 4.1e-16 | memoria EM linear int a du: dif rel 2.1e-15 | sobrep. 0.063
+  filtro dualidade constante 0.6 : memoria gravitacional dif rel 6.1e-16 | memoria EM linear int a du: dif rel 5.9e-01 | sobrep. 1.000
+  (a memoria EM linear e a~(w=0): invariante se e so se e^{i phi(0)} = 1)
+
+(c) Quanta massivos (massa mu = 1): memoria l=2 = int dE(w) T_2(beta(w)), T_2 = lambda_2(beta)/lambda_2(1)
+  linha em w=1.6            : int S = 1.000000, <w> = 1.616586, <w^2> = 2.693125, memoria/E = 0.517757 (sem massa: 1)
+  duas linhas (1.15, 1.787) : int S = 1.000000, <w> = 1.616586, <w^2> = 2.693125, memoria/E = 0.509633 (sem massa: 1)
+  => mesmos momentos espectrais de ordem 0, 1, 2 e memorias diferentes: a reducao a (B, A) falha;
+     um filtro de fase nao muda S(w), logo a invariancia continua valendo para a memoria final.

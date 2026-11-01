@@ -1,0 +1,60 @@
+iota  0.0 phi' 0.0 T  todas           sigma = [1.3789 0.0288 0.0135 0.0032] ; tau = 4.6e-06 ; posto 4
+iota  0.0 phi' 0.0 T  sem phi'        sigma = [1.3789 0.0287 0.0079 0.0015] ; tau = 4.6e-06 ; posto 4
+iota  0.0 phi' 0.0 T  sem phi', iota  sigma = [1.3789e+00 8.3085e-03 1.6070e-03 4.4654e-05] ; tau = 4.6e-06 ; posto 4
+iota  0.0 phi' 0.0 T  intr            sigma = [8.0091e-01 6.7721e-03 1.0191e-03 3.4965e-05] ; tau = 4.6e-06 ; posto 4
+iota  0.0 phi' 0.0 T0 sem phi'        sigma = [1.3788 0.     0.     0.    ] ; tau = 1.4e-06 ; posto 1
+iota  0.0 phi' 0.0 T0 sem phi', iota  sigma = [1.3788 0.     0.     0.    ] ; tau = 1.4e-06 ; posto 1
+iota  0.0 phi' 0.0 T0 intr            sigma = [0.8009 0.     0.     0.    ] ; tau = 1.4e-06 ; posto 1
+iota  0.0 phi' 1.0 T  todas           sigma = [1.3789 0.0252 0.0177 0.002 ] ; tau = 2.0e-06 ; posto 4
+iota  0.0 phi' 1.0 T  sem phi'        sigma = [1.3789e+00 2.5159e-02 1.6968e-02 7.0491e-04] ; tau = 2.0e-06 ; posto 4
+iota  0.0 phi' 1.0 T  sem phi', iota  sigma = [1.3789e+00 1.7300e-02 7.4553e-04 2.1973e-04] ; tau = 2.0e-06 ; posto 4
+iota  0.0 phi' 1.0 T  intr            sigma = [8.0094e-01 1.6355e-02 5.1847e-04 2.8309e-05] ; tau = 2.0e-06 ; posto 4
+iota  0.0 phi' 1.0 T0 sem phi'        sigma = [1.3788 0.     0.     0.    ] ; tau = 1.4e-06 ; posto 1
+iota  0.0 phi' 1.0 T0 sem phi', iota  sigma = [1.3788 0.     0.     0.    ] ; tau = 1.4e-06 ; posto 1
+iota  0.0 phi' 1.0 T0 intr            sigma = [0.8009 0.     0.     0.    ] ; tau = 1.4e-06 ; posto 1
+
+iota  1.0 phi' 0.0 T  todas           sigma = [1.382  0.148  0.0127 0.0025] ; tau = 4.6e-06 ; posto 4
+iota  1.0 phi' 0.0 T  sem phi'        sigma = [1.382  0.1479 0.0083 0.0017] ; tau = 4.6e-06 ; posto 4
+iota  1.0 phi' 0.0 T  sem phi', iota  sigma = [1.3806 0.0083 0.0029 0.0015] ; tau = 4.6e-06 ; posto 4
+iota  1.0 phi' 0.0 T  intr            sigma = [0.8021 0.0069 0.0029 0.0011] ; tau = 4.6e-06 ; posto 4
+iota  1.0 phi' 0.0 T0 sem phi'        sigma = [1.3809e+00 1.2755e-01 3.2517e-04 8.1292e-05] ; tau = 1.4e-06 ; posto 4
+iota  1.0 phi' 0.0 T0 sem phi', iota  sigma = [1.3799e+00 7.9503e-04 2.0088e-04 2.5577e-05] ; tau = 1.4e-06 ; posto 4
+iota  1.0 phi' 0.0 T0 intr            sigma = [8.0154e-01 2.6069e-04 2.7490e-05 1.2185e-06] ; tau = 1.4e-06 ; posto 3
+iota  1.0 phi' 1.0 T  todas           sigma = [1.3819 0.1501 0.0162 0.0016] ; tau = 2.0e-06 ; posto 4
+iota  1.0 phi' 1.0 T  sem phi'        sigma = [1.3819e+00 1.5007e-01 1.5362e-02 8.8695e-04] ; tau = 2.0e-06 ; posto 4
+iota  1.0 phi' 1.0 T  sem phi', iota  sigma = [1.3805e+00 1.7547e-02 2.2286e-03 8.3565e-04] ; tau = 2.0e-06 ; posto 4
+iota  1.0 phi' 1.0 T  intr            sigma = [8.0203e-01 1.6392e-02 2.0712e-03 9.2868e-05] ; tau = 2.0e-06 ; posto 4
+iota  1.0 phi' 1.0 T0 sem phi'        sigma = [1.3809e+00 1.2755e-01 3.2517e-04 8.1292e-05] ; tau = 1.4e-06 ; posto 4
+iota  1.0 phi' 1.0 T0 sem phi', iota  sigma = [1.3799e+00 7.9503e-04 2.0088e-04 2.5577e-05] ; tau = 1.4e-06 ; posto 4
+iota  1.0 phi' 1.0 T0 intr            sigma = [8.0154e-01 2.6069e-04 2.7490e-05 1.2185e-06] ; tau = 1.4e-06 ; posto 3
+
+iota  5.0 phi' 0.0 T  todas           sigma = [1.4446 0.6278 0.0136 0.0061] ; tau = 4.6e-06 ; posto 4
+iota  5.0 phi' 0.0 T  sem phi'        sigma = [1.4446 0.6277 0.0105 0.0054] ; tau = 4.6e-06 ; posto 4
+iota  5.0 phi' 0.0 T  sem phi', iota  sigma = [1.4102 0.0247 0.009  0.0032] ; tau = 4.6e-06 ; posto 4
+iota  5.0 phi' 0.0 T  intr            sigma = [0.8212 0.0164 0.0087 0.0011] ; tau = 4.6e-06 ; posto 4
+iota  5.0 phi' 0.0 T0 sem phi'        sigma = [1.4385 0.6107 0.0081 0.002 ] ; tau = 1.4e-06 ; posto 4
+iota  5.0 phi' 0.0 T0 sem phi', iota  sigma = [1.4072e+00 1.9732e-02 4.9954e-03 6.3582e-04] ; tau = 1.4e-06 ; posto 4
+iota  5.0 phi' 0.0 T0 intr            sigma = [8.1894e-01 6.4284e-03 6.8643e-04 3.0201e-05] ; tau = 1.4e-06 ; posto 4
+iota  5.0 phi' 1.0 T  todas           sigma = [1.4455 0.6277 0.0198 0.0045] ; tau = 2.1e-06 ; posto 4
+iota  5.0 phi' 1.0 T  sem phi'        sigma = [1.4455 0.6277 0.0188 0.0043] ; tau = 2.1e-06 ; posto 4
+iota  5.0 phi' 1.0 T  sem phi', iota  sigma = [1.4102 0.0283 0.0132 0.0015] ; tau = 2.1e-06 ; posto 4
+iota  5.0 phi' 1.0 T  intr            sigma = [0.8216 0.0156 0.0097 0.001 ] ; tau = 2.1e-06 ; posto 4
+iota  5.0 phi' 1.0 T0 sem phi'        sigma = [1.4385 0.6107 0.0081 0.002 ] ; tau = 1.4e-06 ; posto 4
+iota  5.0 phi' 1.0 T0 sem phi', iota  sigma = [1.4072e+00 1.9732e-02 4.9954e-03 6.3582e-04] ; tau = 1.4e-06 ; posto 4
+iota  5.0 phi' 1.0 T0 intr            sigma = [8.1894e-01 6.4284e-03 6.8643e-04 3.0201e-05] ; tau = 1.4e-06 ; posto 4
+
+iota 50.0 phi' 0.0 T  todas           sigma = [4.3685 1.6838 0.6313 0.1158] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 0.0 T  sem phi'        sigma = [4.3685 1.6838 0.6313 0.1158] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 0.0 T  sem phi', iota  sigma = [4.0104 0.8074 0.3129 0.0333] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 0.0 T  intr            sigma = [3.1103 0.314  0.0348 0.0165] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 0.0 T0 sem phi'        sigma = [4.3534 1.672  0.6293 0.1108] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 0.0 T0 sem phi', iota  sigma = [3.9903 0.8057 0.3154 0.0346] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 0.0 T0 intr            sigma = [3.0936e+00 3.1661e-01 4.5298e-02 9.5002e-04] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 1.0 T  todas           sigma = [4.3687 1.6712 0.6347 0.1178] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 1.0 T  sem phi'        sigma = [4.3687 1.6712 0.6347 0.1176] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 1.0 T  sem phi', iota  sigma = [4.0145 0.8088 0.3148 0.0076] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 1.0 T  intr            sigma = [3.115  0.3169 0.0249 0.0059] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 1.0 T0 sem phi'        sigma = [4.3534 1.672  0.6293 0.1108] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 1.0 T0 sem phi', iota  sigma = [3.9903 0.8057 0.3154 0.0346] ; tau = 1.1e-05 ; posto 4
+iota 50.0 phi' 1.0 T0 intr            sigma = [3.0936e+00 3.1661e-01 4.5298e-02 9.5002e-04] ; tau = 1.1e-05 ; posto 4
+
