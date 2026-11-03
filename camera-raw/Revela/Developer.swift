@@ -401,6 +401,7 @@ enum Developer {
     static let robustWeightKernel = kernel("revelaRobustWeight")
     private static let logLumaKernel = kernel("revelaLogLuma")
     private static let skinMixKernel = kernel("revelaSkinMix")
+    private static let chromaKernel = kernel("revelaChroma")
     private static let bandKernel = kernel("revelaBand")
     private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
     private static let localToneKernel = kernel("revelaLocalTone")
@@ -434,7 +435,7 @@ enum Developer {
                                               "revelaRobustColor": robustColorKernel, "revelaRobustWeight": robustWeightKernel,
                                               "revelaLogLuma": logLumaKernel, "revelaLocalTone": localToneKernel,
                                               "revelaSkinMix": skinMixKernel, "revelaBand": bandKernel,
-                                              "revelaShadowsHighlights": shadowsHighlightsKernel]
+                                              "revelaShadowsHighlights": shadowsHighlightsKernel, "revelaChroma": chromaKernel]
         missing += more.filter { $0.value == nil }.map(\.key).sorted()
         return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
@@ -747,7 +748,14 @@ enum Developer {
         let merged: CIImage?
         switch kind {
         case .average where robust:
-            merged = robustMerge(count: frames.count, extent: extent, frame: aligned)
+            merged = robustMerge(count: frames.count, extent: extent, frame: aligned).map { night in
+                // ISO alto (pouca luz): tira o ruído colorido e um pouco do granulado; sombra levantada nos tons locais
+                let exif = reference.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
+                let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 800
+                let strength = min(1, max(0.25, log2(max(iso, 100) / 200) / 6)) / sqrt(Float(frames.count) / 8)
+                dlog(String(format: "Noite: ISO %.0f · redução de ruído %.2f", iso, strength))
+                return localTone(nightDenoise(materialize(night, extent: extent), strength: strength), strength: 0.75)
+            }
         case .average:
             var mean = average(count: frames.count, extent: extent, frame: aligned)
             if removeOutliers, let first = mean, let clipKernel {
@@ -807,11 +815,30 @@ enum Developer {
         }
         let t = observation.alignmentTransform
         let tx = t.tx / scale, ty = t.ty / scale
+        // No escuro o Vision às vezes "acha" um pulo de metade da foto: isso é erro, a mão não anda tanto
+        if abs(tx) > fullExtent.width * 0.08 || abs(ty) > fullExtent.height * 0.08 {
+            dlog(String(format: "Alinhamento absurdo (%.0f, %.0f px): quadro usado sem deslocar", tx, ty))
+            return { $0 }
+        }
         dlog(String(format: "Quadro deslocado %.0f, %.0f px", tx, ty))
         return { $0.transformed(by: CGAffineTransform(translationX: tx, y: ty)) }
     }
 
     /// Soma em lotes de 3, guardando o parcial em memória de vídeo: nunca há mais de 3 RAW abertos ao mesmo tempo.
+    /// Ruído da noite: o colorido (o pior) some tirando a cor de uma versão borrada e o brilho da original;
+    /// o granulado de brilho diminui pouco, para não virar pintura.
+    static func nightDenoise(_ scene: CIImage, strength: Float) -> CIImage {
+        guard strength > 0.01, let chromaKernel else { return scene }
+        let e = scene.extent
+        let sigma = Double(2 + 5 * strength)
+        let soft = scene.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: e)
+        let chroma = chromaKernel.apply(extent: e, arguments: [scene, soft, min(1, strength * 1.3)]) ?? scene
+        return chroma
+            .applyingFilter("CINoiseReduction", parameters: ["inputNoiseLevel": 0.005 + 0.03 * Double(strength),
+                                                           "inputSharpness": 0.5])
+            .cropped(to: e)
+    }
+
     /// NOITE sem fantasma: o primeiro quadro é a referência; os outros só somam onde batem com ela.
     /// Onde algo se mexeu (pessoa, carro, folha), fica a referência (com um pouco mais de ruído ali, sem duplicar).
     private static func robustMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {

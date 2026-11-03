@@ -234,6 +234,15 @@ namespace coreimage {
         return float4(c * exp2(ev), 1.0f);
     }
 
+    // Ruído colorido: cor da versão borrada, brilho da original (amount 0 = original, 1 = toda a cor borrada)
+    float4 revelaChroma(sample_t s, sample_t soft, float amount) {
+        float3 c = max(s.rgb, float3(0.0f));
+        float3 b = max(soft.rgb, float3(0.0f));
+        float l = dot(c, revela::kLuma), lb = dot(b, revela::kLuma);
+        float3 clean = b * (l / max(lb, 1e-5f));
+        return float4(mix(c, clean, amount), 1.0f);
+    }
+
     // Exposição longa no estilo rastros: fica o mais claro de cada ponto (luzes de carro, estrelas)
     float4 revelaMax(sample_t a, sample_t b) {
         return float4(max(a.rgb, b.rgb), 1.0f);

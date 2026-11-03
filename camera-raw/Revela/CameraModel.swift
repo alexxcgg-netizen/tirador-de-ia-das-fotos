@@ -382,16 +382,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         case off = "Sem"
         case standard = "Normal"
         case strong = "Forte"
-        case max = "Máxima"
         var id: String { rawValue }
         var mode: AVCaptureVideoStabilizationMode {
             switch self {
             case .off: return .off
             case .standard: return .standard
+            // A "aprimorada" (cinematicExtendedEnhanced) parou de entregar quadros ao trocar de lente: ficou de fora
             case .strong: return .cinematicExtended
-            case .max:
-                if #available(iOS 18.0, *) { return .cinematicExtendedEnhanced }
-                return .cinematicExtended
             }
         }
     }
@@ -833,7 +830,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     func select(lens newLens: Lens) {
-        guard newLens != lens else { return }
+        // No meio de uma rajada ou gravação a câmera não troca (trocar ali fechava o app no CONGELAR)
+        guard newLens != lens, !bursting, !actionRecording else { return }
         let old = lens
         lens = newLens
         optionsChanged()
@@ -1280,14 +1278,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func checkAutoMacro(lensPosition: Float, focusMode: AVCaptureDevice.FocusMode) {
         // Depois de um toque o foco fica em .autoFocus: também vale (é justamente quando se chega perto)
         guard autoMacro, !manualFocus, !aeafLocked, focusMode != .locked, captureMode == .photo,
-              Date().timeIntervalSince(lastAutoMacroSwitch) > 2.5, activeLens == lens else {
+              Date().timeIntervalSince(lastAutoMacroSwitch) > 5, activeLens == lens else {
             closeFocusTicks = 0
             farFocusTicks = 0
             return
         }
         if lens == .wide, zoom < 1.5, availableLenses.contains(.macro) {
-            closeFocusTicks = lensPosition <= 0.02 ? closeFocusTicks + 1 : 0
-            if closeFocusTicks >= 4 {
+            // A 1× só foca a partir de 20 cm: no limite por 1,5 s seguidos = perto demais
+            closeFocusTicks = lensPosition <= 0.01 ? closeFocusTicks + 1 : 0
+            if closeFocusTicks >= 6 {
                 closeFocusTicks = 0
                 lastAutoMacroSwitch = Date()
                 macroIsAuto = true
@@ -1297,8 +1296,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 show("Macro automático. Afaste para voltar à 1×.")
             }
         } else if lens == .macro, macroIsAuto {
-            farFocusTicks = lensPosition >= 0.5 ? farFocusTicks + 1 : 0
-            if farFocusTicks >= 6 {
+            // Volta só com o assunto bem longe (não perto dos 20 cm, onde ficava trocando) por 3 s
+            farFocusTicks = lensPosition >= 0.75 ? farFocusTicks + 1 : 0
+            if farFocusTicks >= 12 {
                 farFocusTicks = 0
                 lastAutoMacroSwitch = Date()
                 dlog("Macro automático: voltou para a 1×")
@@ -1761,8 +1761,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // Macro empilhado em 48 MP: o recorte do macro precisa do sensor inteiro
         let fullResolution = mode == .superRes || mode == .moon || macroStacking
         let nightPlan = mode == .night && !manualExposure
-        // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/15 s na mão
-        let nightSeconds = nightTime.seconds ?? (isSteady ? 0.5 : 1.0 / 15)
+        // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/10 s na mão
+        let nightSeconds = nightTime.seconds ?? (isSteady ? 0.5 : 1.0 / 10)
         sessionQueue.async {
             let run = {
                 self.shootSequence(index: 0, count: count, positions: positions, frames: [], fullResolution: fullResolution) { result in
@@ -1817,7 +1817,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     DispatchQueue.main.async { self.stackProgress = "\(index + 1)/\(count)" }
                     self.sessionQueue.async {
                         self.shootSequence(index: index + 1, count: count, positions: positions,
-                                           frames: frames + [fullResolution ? self.spilled(data) : data],
+                                           frames: frames + [self.spilled(data)],
                                            fullResolution: fullResolution, completion: completion)
                     }
                 }

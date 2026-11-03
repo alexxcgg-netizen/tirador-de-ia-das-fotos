@@ -89,7 +89,7 @@ extension Developer {
     private static func alignTransforms(frames: [CapturedFrame], refIndex: Int, reference: CIImage,
                                         region: CGRect) -> [CGAffineTransform?] {
         let alignScale: CGFloat = 0.25
-        let patch = 160, search = 5
+        let patch = 160, search = 16
         var result = [CGAffineTransform?](repeating: nil, count: frames.count)
         result[refIndex] = .identity
         guard let smallRef = image(from: frames[refIndex], scale: Float(alignScale)) else { return result }
@@ -104,9 +104,10 @@ extension Developer {
             }
         }
         let half = CGFloat(patch / 2)
-        let refPatches = centers.map { c in
-            grayPatch(reference, rect: CGRect(x: c.x - half, y: c.y - half, width: CGFloat(patch), height: CGFloat(patch)))
-        }
+        // Os 9 pedaços saem numa leitura só (um RAW aberto uma vez, em vez de nove)
+        let refPatches = grayPatches(reference, rects: centers.map { c in
+            CGRect(x: c.x - half, y: c.y - half, width: CGFloat(patch), height: CGFloat(patch))
+        })
 
         for i in frames.indices where i != refIndex {
             autoreleasepool {
@@ -120,12 +121,13 @@ extension Developer {
                 }
                 // Pares (ponto na foto, ponto na referência) com precisão de fração de pixel
                 var pairs: [(frame: CGPoint, ref: CGPoint)] = []
+                let s = CGFloat(search)
+                let imgPatches = grayPatches(img, rects: centers.map { c in
+                    CGRect(x: c.x - half - coarse.x - s, y: c.y - half - coarse.y - s,
+                           width: CGFloat(patch) + 2 * s, height: CGFloat(patch) + 2 * s)
+                })
                 for (k, c) in centers.enumerated() {
-                    guard let refPatch = refPatches[k] else { continue }
-                    let s = CGFloat(search)
-                    let rect = CGRect(x: c.x - half - coarse.x - s, y: c.y - half - coarse.y - s,
-                                      width: CGFloat(patch) + 2 * s, height: CGFloat(patch) + 2 * s)
-                    guard let imgPatch = grayPatch(img, rect: rect),
+                    guard let refPatch = refPatches[k], let imgPatch = imgPatches[k],
                           let shift = subpixelShift(ref: refPatch, img: imgPatch, size: patch, search: search) else { continue }
                     // O que está em c na referência está em c − grosso + (u, −v) nesta foto (linhas do bitmap descem)
                     pairs.append((CGPoint(x: c.x - coarse.x + shift.x, y: c.y - coarse.y - shift.y), c))
@@ -140,65 +142,107 @@ extension Developer {
         return result
     }
 
-    /// Luminância (raiz, para o escuro pesar parecido com o claro) de um pedaço, linha 0 em cima.
-    private static func grayPatch(_ image: CIImage, rect: CGRect) -> [Float]? {
-        guard let cg = context.createCGImage(image, from: rect, format: .RGBAf, colorSpace: linearP3),
-              let data = cg.dataProvider?.data, let bytes = CFDataGetBytePtr(data) else { return nil }
-        let w = Int(rect.width), h = Int(rect.height)
-        guard cg.width == w, cg.height == h else { return nil }
+    /// Luminância (raiz, para o escuro pesar parecido com o claro) de vários pedaços, linha 0 em cima.
+    /// Todos os pedaços vão lado a lado numa imagem só e saem numa leitura.
+    private static func grayPatches(_ image: CIImage, rects: [CGRect]) -> [[Float]?] {
+        guard let first = rects.first else { return [] }
+        let w = Int(first.width), h = Int(first.height)
+        let columns = 3
+        let rows = (rects.count + columns - 1) / columns
+        let atlasExtent = CGRect(x: 0, y: 0, width: w * columns, height: h * rows)
+        var atlas = CIImage(color: .black).cropped(to: atlasExtent)
+        for (k, rect) in rects.enumerated() {
+            // Célula k: coluna k % 3, linha k / 3 contando de cima (o bitmap começa em cima)
+            let cx = CGFloat((k % columns) * w), cy = CGFloat((rows - 1 - k / columns) * h)
+            let piece = image.cropped(to: rect)
+                .transformed(by: CGAffineTransform(translationX: cx - rect.minX, y: cy - rect.minY))
+            atlas = piece.composited(over: atlas)
+        }
+        guard let cg = context.createCGImage(atlas, from: atlasExtent, format: .RGBAf, colorSpace: linearP3),
+              let data = cg.dataProvider?.data, let bytes = CFDataGetBytePtr(data),
+              cg.width == w * columns, cg.height == h * rows else { return rects.map { _ in nil } }
         let rowFloats = cg.bytesPerRow / 4
-        var gray = [Float](repeating: 0, count: w * h)
-        bytes.withMemoryRebound(to: Float.self, capacity: rowFloats * h) { f in
-            for y in 0..<h {
-                for x in 0..<w {
-                    let o = y * rowFloats + x * 4
-                    gray[y * w + x] = max(0, 0.2126 * f[o] + 0.7152 * f[o + 1] + 0.0722 * f[o + 2]).squareRoot()
+        return bytes.withMemoryRebound(to: Float.self, capacity: rowFloats * h * rows) { f in
+            rects.indices.map { k -> [Float]? in
+                let ox = (k % columns) * w, oy = (k / columns) * h
+                var gray = [Float](repeating: 0, count: w * h)
+                for y in 0..<h {
+                    for x in 0..<w {
+                        let o = (oy + y) * rowFloats + (ox + x) * 4
+                        gray[y * w + x] = max(0, 0.2126 * f[o] + 0.7152 * f[o + 1] + 0.0722 * f[o + 2]).squareRoot()
+                    }
                 }
+                return gray
             }
         }
-        return gray
     }
 
-    /// Procura o deslocamento (em pixels do bitmap) que melhor encaixa o pedaço da foto no da referência,
-    /// e refina com uma parábola em volta do melhor inteiro. nil se o pedaço é liso demais ou saiu da busca.
-    private static func subpixelShift(ref: [Float], img: [Float], size n: Int, search s: Int) -> CGPoint? {
+    /// Procura o deslocamento (em pixels do bitmap) que melhor encaixa o pedaço da foto no da referência:
+    /// primeiro em meia resolução numa área grande, depois em resolução cheia perto do melhor, e refina com
+    /// uma parábola. Os pedaços são normalizados (média 0, desvio 1): a exposição pode mudar entre as fotos.
+    /// nil se o pedaço é liso demais ou se o encaixe saiu da área de busca.
+    private static func subpixelShift(ref rawRef: [Float], img rawImg: [Float], size n: Int, search s: Int) -> CGPoint? {
+        func normalized(_ a: [Float]) -> ([Float], Float) {
+            let mean = a.reduce(0, +) / Float(a.count)
+            let variance = a.reduce(0) { $0 + ($1 - mean) * ($1 - mean) } / Float(a.count)
+            let std = max(variance.squareRoot(), 1e-6)
+            return (a.map { ($0 - mean) / std }, variance)
+        }
+        let (ref, refVariance) = normalized(rawRef)
         // Pedaço liso (céu, parede) não diz nada sobre o deslocamento
-        let mean = ref.reduce(0, +) / Float(ref.count)
-        let variance = ref.reduce(0) { $0 + ($1 - mean) * ($1 - mean) } / Float(ref.count)
-        guard variance > 0.0004 else { return nil }
+        guard refVariance > 0.0004 else { return nil }
+        let (img, _) = normalized(rawImg)
         let wide = n + 2 * s
-        let side = 2 * s + 1
-        var ssd = [Float](repeating: 0, count: side * side)
-        ref.withUnsafeBufferPointer { r in
-            img.withUnsafeBufferPointer { m in
-                for v in -s...s {
-                    for u in -s...s {
-                        var sum: Float = 0
-                        for y in stride(from: 0, to: n, by: 1) {
-                            let ro = y * n
-                            let io = (y + s + v) * wide + s + u
-                            for x in 0..<n {
-                                let d = r[ro + x] - m[io + x]
-                                sum += d * d
-                            }
+
+        // Diferença entre a referência e a foto deslocada (u, v), olhando 1 de cada `step` pixels
+        func ssd(_ u: Int, _ v: Int, step: Int) -> Float {
+            var sum: Float = 0
+            ref.withUnsafeBufferPointer { r in
+                img.withUnsafeBufferPointer { m in
+                    var y = 0
+                    while y < n {
+                        let ro = y * n, io = (y + s + v) * wide + s + u
+                        var x = 0
+                        while x < n {
+                            let d = r[ro + x] - m[io + x]
+                            sum += d * d
+                            x += step
                         }
-                        ssd[(v + s) * side + (u + s)] = sum
+                        y += step
                     }
                 }
             }
+            return sum
         }
-        guard let best = ssd.indices.min(by: { ssd[$0] < ssd[$1] }) else { return nil }
-        let bu = best % side - s, bv = best / side - s
+
+        // 1) Busca larga de 2 em 2 pixels, olhando 1 de cada 2
+        var best = (u: 0, v: 0, cost: Float.greatestFiniteMagnitude)
+        for v in stride(from: -s + 2, through: s - 2, by: 2) {
+            for u in stride(from: -s + 2, through: s - 2, by: 2) {
+                let c = ssd(u, v, step: 2)
+                if c < best.cost { best = (u, v, c) }
+            }
+        }
+        // 2) Fina: todos os pixels, ±2 em volta do melhor
+        var fine = (u: best.u, v: best.v, cost: Float.greatestFiniteMagnitude)
+        var costs: [Int: Float] = [:]
+        for v in (best.v - 2)...(best.v + 2) {
+            for u in (best.u - 2)...(best.u + 2) where abs(u) < s && abs(v) < s {
+                let c = ssd(u, v, step: 1)
+                costs[v * 1000 + u] = c
+                if c < fine.cost { fine = (u, v, c) }
+            }
+        }
         // Na borda da busca: o deslocamento é maior que a busca (o grosso errou)
-        guard abs(bu) < s, abs(bv) < s else { return nil }
-        func at(_ u: Int, _ v: Int) -> Float { ssd[(v + s) * side + (u + s)] }
+        guard abs(fine.u) < s - 1, abs(fine.v) < s - 1 else { return nil }
+        func at(_ u: Int, _ v: Int) -> Float { costs[v * 1000 + u] ?? ssd(u, v, step: 1) }
         func parabola(_ a: Float, _ b: Float, _ c: Float) -> Float {
             let den = a - 2 * b + c
             return den > 1e-9 ? max(-0.5, min(0.5, (a - c) / (2 * den))) : 0
         }
-        let du = parabola(at(bu - 1, bv), at(bu, bv), at(bu + 1, bv))
-        let dv = parabola(at(bu, bv - 1), at(bu, bv), at(bu, bv + 1))
-        return CGPoint(x: CGFloat(Float(bu) + du), y: CGFloat(Float(bv) + dv))
+        let du = parabola(at(fine.u - 1, fine.v), fine.cost, at(fine.u + 1, fine.v))
+        let dv = parabola(at(fine.u, fine.v - 1), fine.cost, at(fine.u, fine.v + 1))
+        return CGPoint(x: CGFloat(Float(fine.u) + du), y: CGFloat(Float(fine.v) + dv))
     }
 
     /// Melhor deslocamento + giro + escala (mínimos quadrados) que leva os pontos da foto nos da referência.
