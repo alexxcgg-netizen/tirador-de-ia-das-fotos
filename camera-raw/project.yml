@@ -6,7 +6,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "0.19.0"
+    MARKETING_VERSION: "0.19.1"
     CURRENT_PROJECT_VERSION: "1"
 targets:
   Revela:
@@ -22,6 +22,9 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UIRequiresFullScreen: true
+        # Escaneamentos 3D, originais e LUTs aparecem no app Arquivos (No meu iPhone → Revela) e no cabo do PC
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
         UIStatusBarHidden: true
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         NSCameraUsageDescription: O Revela usa a câmera para fotografar em RAW.
