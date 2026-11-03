@@ -333,6 +333,8 @@ struct DevelopOptions {
     var skinProtection = true
     /// Exposição para RAW: a foto foi exposta mais clara de propósito; a revelação desconta (em paradas).
     var exposureOffset: Float = 0
+    /// Sem halo/brilho nas luzes (foto revelada em faixas, onde o brilho não teria a foto inteira).
+    var noGlow = false
 
     func cropRect(in extent: CGRect) -> CGRect {
         guard originalAspect else { return aspect.crop(extent, zoom: zoom) }
@@ -344,6 +346,10 @@ struct DevelopOptions {
         var p = (custom?.params ?? look.params).scaled(amount: amount, grain: grain)
         p.skinProtect = skinProtection && custom?.lutFile == nil ? (custom?.baseLook ?? look).skinProtect * amount : 0
         p.exposure += exposureOffset
+        if noGlow {
+            p.halation = 0
+            p.bloom = 0
+        }
         if hdrCompress {
             p.contrast *= 0.85
             p.exposure += 0.15
@@ -405,6 +411,11 @@ enum Developer {
     private static let bandKernel = kernel("revelaBand")
     private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
     private static let localToneKernel = kernel("revelaLocalTone")
+    static let gridWarpKernel: CIWarpKernel? = library.flatMap {
+        try? CIWarpKernel(functionName: "revelaGridWarp", fromMetalLibraryData: $0)
+    }
+    static let ratioKernel = kernel("revelaRatio")
+    static let multiplyKernel = kernel("revelaMultiply")
     static let cylinderKernel: CIWarpKernel? = library.flatMap {
         try? CIWarpKernel(functionName: "revelaCylinder", fromMetalLibraryData: $0)
     }
@@ -431,6 +442,9 @@ enum Developer {
                      "revelaMax": maxKernel, "revelaFalseColor": falseColorKernel]
         var missing = names.filter { $0.value == nil }.map(\.key).sorted()
         if cylinderKernel == nil { missing.append("revelaCylinder") }
+        if gridWarpKernel == nil { missing.append("revelaGridWarp") }
+        if ratioKernel == nil { missing.append("revelaRatio") }
+        if multiplyKernel == nil { missing.append("revelaMultiply") }
         let more: [String: CIColorKernel?] = ["revelaHDRGhostColor": hdrGhostColorKernel, "revelaHDRGhostWeight": hdrGhostWeightKernel,
                                               "revelaRobustColor": robustColorKernel, "revelaRobustWeight": robustWeightKernel,
                                               "revelaLogLuma": logLumaKernel, "revelaLocalTone": localToneKernel,

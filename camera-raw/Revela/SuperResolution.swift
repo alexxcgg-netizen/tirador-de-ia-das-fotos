@@ -12,12 +12,28 @@ extension Developer {
     /// Tamanho da foto final (pixels).
     static let superResolutionTarget: Double = 100_000_000
 
-    static func superResolution(_ frames: [CapturedFrame], options: DevelopOptions, sharpen: Double = 0.6) -> Output? {
-        let t0 = CFAbsoluteTimeGetCurrent()
-        guard frames.count >= 2 else { return frames.first.flatMap { develop($0, options: options) } }
+    /// Alinhamento de uma foto: o geral (deslocamento, giro, escala) e o que sobrou em cada um dos 9 pedaços.
+    struct Alignment {
+        var transform: CGAffineTransform
+        /// Correção por região, em pixels da foto (0 onde o pedaço não deu ou discordou).
+        var residuals: [CGPoint]
+    }
 
-        // Referência: a foto mais nítida da sequência
-        let scores = frames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
+    /// `keep`: tira mais fotos do que usa e fica com as mais nítidas. `sharpen` ≥ 0,8 desconvolui mais (Lua).
+    static func superResolution(_ allFrames: [CapturedFrame], options: DevelopOptions, sharpen: Double = 0.6,
+                                keep: Int? = nil) -> Output? {
+        let t0 = CFAbsoluteTimeGetCurrent()
+        guard allFrames.count >= 2 else { return allFrames.first.flatMap { develop($0, options: options) } }
+
+        // As mais nítidas (as tremidas só borrariam a soma); a referência é a mais nítida de todas
+        let allScores = allFrames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
+        var chosen = Array(allFrames.indices)
+        if let keep, keep < allFrames.count {
+            chosen = Array(chosen.sorted { allScores[$0] > allScores[$1] }.prefix(max(2, keep))).sorted()
+            dlog("Super resolução: usando as \(chosen.count) mais nítidas de \(allFrames.count)")
+        }
+        let frames = chosen.map { allFrames[$0] }
+        let scores = chosen.map { allScores[$0] }
         let refIndex = scores.indices.max { scores[$0] < scores[$1] } ?? 0
         guard let reference = image(from: frames[refIndex]) else { return nil }
         let full = reference.extent
@@ -29,22 +45,40 @@ extension Developer {
         dlog(String(format: "Super resolução: %d fotos (referência %d) · recorte %.0f×%.0f · ampliação %.2f× → %.0f×%.0f",
                     frames.count, refIndex + 1, region.width, region.height, factor, outExtent.width, outExtent.height))
 
-        // 1) Alinhamento: grosso pelo Vision numa versão pequena, fino (fração de pixel) em 9 pedaços da foto
-        let transforms = alignTransforms(frames: frames, refIndex: refIndex, reference: reference, region: region)
+        // 1) Alinhamento: grosso pelo Vision, fino (fração de pixel) em 9 pedaços, e o que sobra em cada região
+        let centers = tileCenters(in: region)
+        let alignments = alignTransforms(frames: frames, refIndex: refIndex, reference: reference, centers: centers)
         dlog("Super resolução: alinhado em \(Diagnostics.ms(since: t0))")
 
         // 2) Cada foto ampliada (Lanczos) e só então deslocada: o deslocamento de fração de pixel perde menos detalhe
         let toRegion = CGAffineTransform(translationX: -region.minX * factor, y: -region.minY * factor)
+        let grid = CIVector(x: (centers[0].x - region.minX) * factor, y: (centers[0].y - region.minY) * factor,
+                            z: (centers[1].x - centers[0].x) * factor, w: (centers[3].y - centers[0].y) * factor)
         func upscaled(_ i: Int) -> CIImage? {
-            guard let img = i == refIndex ? reference : image(from: frames[i]), let m = transforms[i] else { return nil }
+            guard let img = i == refIndex ? reference : image(from: frames[i]), let a = alignments[i] else { return nil }
             let inUpscaled = CGAffineTransform(scaleX: 1 / factor, y: 1 / factor)
-                .concatenating(m)
+                .concatenating(a.transform)
                 .concatenating(CGAffineTransform(scaleX: factor, y: factor))
-            return img
+            var out = img
                 .applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: factor, kCIInputAspectRatioKey: 1])
                 .transformed(by: inUpscaled)
                 .transformed(by: toRegion)
-                .cropped(to: outExtent)
+            // Alinhamento por região: cada canto se mexe um pouco diferente (obturador do sensor, mão girando)
+            let r = a.residuals.map { CGPoint(x: $0.x * factor, y: $0.y * factor) }
+            if let gridWarpKernel, r.count == 9, r.contains(where: { hypot($0.x, $0.y) > 0.25 }) {
+                let reach = (r.map { max(abs($0.x), abs($0.y)) }.max() ?? 0) + 2
+                let source = out
+                out = gridWarpKernel.apply(extent: outExtent, roiCallback: { _, rect in rect.insetBy(dx: -reach, dy: -reach) },
+                                           image: source, arguments: [
+                    CIVector(x: r[0].x, y: r[0].y, z: r[1].x, w: r[1].y),
+                    CIVector(x: r[2].x, y: r[2].y, z: r[3].x, w: r[3].y),
+                    CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y),
+                    CIVector(x: r[6].x, y: r[6].y, z: r[7].x, w: r[7].y),
+                    CIVector(x: r[8].x, y: r[8].y),
+                    grid,
+                ]) ?? source
+            }
+            return out.cropped(to: outExtent)
         }
         guard let refUp = upscaled(refIndex), let robustColorKernel, let robustWeightKernel, let divideKernel else { return nil }
 
@@ -63,39 +97,30 @@ extension Developer {
             used += 1
         }
         guard let merged = divideKernel.apply(extent: outExtent, arguments: [sumColor, sumWeight]) else { return nil }
-        let sharpened = merged
-            .applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: Double(factor) * 1.1, kCIInputIntensityKey: sharpen])
-            .cropped(to: outExtent)
 
         var opts = options
         opts.zoom = 1
         opts.originalAspect = true
-        let (graded, _) = developed(sharpened.settingProperties(reference.properties), options: opts)
+        // O brilho em volta das luzes é calculado na foto inteira e aqui ela é revelada em faixas: fica de fora
+        opts.noGlow = true
+        let properties = reference.properties
 
-        // 4) Foto gigante revelada em faixas, direto num arquivo mapeado (não cabe inteira na memória)
-        guard let heic = renderInStrips(graded, extent: outExtent, properties: reference.properties) else {
+        // 4) Foto gigante revelada em faixas, cada uma desconvoluída (desfaz o borrão da lente e da ampliação)
+        let iterations = sharpen >= 0.8 ? 7 : 5
+        let sigma = Double(0.55 * factor + 0.25)
+        guard let heic = renderInStrips(merged, extent: outExtent, properties: properties, iterations: iterations, sigma: sigma,
+                                        grade: { developed($0.settingProperties(properties), options: opts).0 }) else {
             dlog("❌ Super resolução: não consegui gravar a foto")
             return nil
         }
-        dlog(String(format: "Super resolução revelada: %d fotos · %.0f MP · %@ · %@ · memória livre %@", used,
-                    outExtent.width * outExtent.height / 1_000_000, "\(heic.count / 1_048_576) MB",
+        dlog(String(format: "Super resolução revelada: %d fotos · %.0f MP · %@ · desconvolução %d passos · %@ · memória livre %@", used,
+                    outExtent.width * outExtent.height / 1_000_000, "\(heic.count / 1_048_576) MB", iterations,
                     Diagnostics.ms(since: t0), Diagnostics.freeMemory))
         return Output(heic: heic, thumbnail: thumbnail(fromHEIC: heic), sameSizeAsRaw: false)
     }
 
-    // MARK: - Alinhamento fino
-
-    /// Para cada foto, a transformação (deslocamento, um pouco de giro e escala) que a leva em cima da referência.
-    private static func alignTransforms(frames: [CapturedFrame], refIndex: Int, reference: CIImage,
-                                        region: CGRect) -> [CGAffineTransform?] {
-        let alignScale: CGFloat = 0.25
-        let patch = 160, search = 16
-        var result = [CGAffineTransform?](repeating: nil, count: frames.count)
-        result[refIndex] = .identity
-        guard let smallRef = image(from: frames[refIndex], scale: Float(alignScale)) else { return result }
-        let refHandler = VNImageRequestHandler(ciImage: smallRef, options: [:])
-
-        // 9 pedaços espalhados pelo recorte
+    /// 9 pedaços espalhados pelo recorte (linha de baixo primeiro, como o Core Image conta).
+    private static func tileCenters(in region: CGRect) -> [CGPoint] {
         var centers: [CGPoint] = []
         for fy in [0.2, 0.5, 0.8] {
             for fx in [0.2, 0.5, 0.8] {
@@ -103,6 +128,21 @@ extension Developer {
                                        y: (region.minY + region.height * CGFloat(fy)).rounded()))
             }
         }
+        return centers
+    }
+
+    // MARK: - Alinhamento fino
+
+    /// Para cada foto, a transformação (deslocamento, um pouco de giro e escala) que a leva em cima da referência.
+    private static func alignTransforms(frames: [CapturedFrame], refIndex: Int, reference: CIImage,
+                                        centers: [CGPoint]) -> [Alignment?] {
+        let alignScale: CGFloat = 0.25
+        let patch = 160, search = 16
+        var result = [Alignment?](repeating: nil, count: frames.count)
+        result[refIndex] = Alignment(transform: .identity, residuals: [CGPoint](repeating: .zero, count: 9))
+        guard let smallRef = image(from: frames[refIndex], scale: Float(alignScale)) else { return result }
+        let refHandler = VNImageRequestHandler(ciImage: smallRef, options: [:])
+
         let half = CGFloat(patch / 2)
         // Os 9 pedaços saem numa leitura só (um RAW aberto uma vez, em vez de nove)
         let refPatches = grayPatches(reference, rects: centers.map { c in
@@ -121,6 +161,7 @@ extension Developer {
                 }
                 // Pares (ponto na foto, ponto na referência) com precisão de fração de pixel
                 var pairs: [(frame: CGPoint, ref: CGPoint)] = []
+                var pairTile: [Int] = []
                 let s = CGFloat(search)
                 let imgPatches = grayPatches(img, rects: centers.map { c in
                     CGRect(x: c.x - half - coarse.x - s, y: c.y - half - coarse.y - s,
@@ -131,12 +172,20 @@ extension Developer {
                           let shift = subpixelShift(ref: refPatch, img: imgPatch, size: patch, search: search) else { continue }
                     // O que está em c na referência está em c − grosso + (u, −v) nesta foto (linhas do bitmap descem)
                     pairs.append((CGPoint(x: c.x - coarse.x + shift.x, y: c.y - coarse.y - shift.y), c))
+                    pairTile.append(k)
                 }
-                let fitted = fitSimilarity(pairs)
-                result[i] = fitted ?? CGAffineTransform(translationX: coarse.x, y: coarse.y)
-                let t = result[i]!
-                dlog(String(format: "Super resolução: foto %d · %d/9 pedaços · desloca %.2f, %.2f px · giro %.3f°",
-                            i + 1, pairs.count, t.tx, t.ty, atan2(t.b, t.a) * 180 / .pi))
+                let t = fitSimilarity(pairs) ?? CGAffineTransform(translationX: coarse.x, y: coarse.y)
+                // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu)
+                var residuals = [CGPoint](repeating: .zero, count: 9)
+                for (n, pair) in pairs.enumerated() {
+                    let placed = pair.frame.applying(t)
+                    let r = CGPoint(x: pair.ref.x - placed.x, y: pair.ref.y - placed.y)
+                    if hypot(r.x, r.y) < 1.5 { residuals[pairTile[n]] = r }
+                }
+                result[i] = Alignment(transform: t, residuals: residuals)
+                let worst = residuals.map { hypot($0.x, $0.y) }.max() ?? 0
+                dlog(String(format: "Super resolução: foto %d · %d/9 pedaços · desloca %.2f, %.2f px · giro %.3f° · região até %.2f px",
+                            i + 1, pairs.count, t.tx, t.ty, atan2(t.b, t.a) * 180 / .pi, worst))
             }
         }
         return result
@@ -279,7 +328,8 @@ extension Developer {
     // MARK: - Gravar a foto gigante
 
     /// Revela a imagem em faixas dentro de um arquivo mapeado e grava o HEIC a partir dele.
-    private static func renderInStrips(_ image: CIImage, extent: CGRect, properties: [String: Any]) -> Data? {
+    private static func renderInStrips(_ image: CIImage, extent: CGRect, properties: [String: Any],
+                                       iterations: Int, sigma: Double, grade: (CIImage) -> CIImage) -> Data? {
         let w = Int(extent.width), h = Int(extent.height)
         let bytesPerRow = w * 4
         let size = bytesPerRow * h
@@ -302,7 +352,10 @@ extension Developer {
             let rows = min(stripHeight, h - y)
             let rect = CGRect(x: 0, y: CGFloat(y), width: CGFloat(w), height: CGFloat(rows))
             autoreleasepool {
-                if let strip = context.createCGImage(image, from: rect, format: .RGBA8, colorSpace: displayP3) {
+                let scene = deconvolved(image, strip: rect, extent: extent, iterations: iterations, sigma: sigma)
+                // A faixa vai numa tela do tamanho da foto: a vinheta do filme continua centrada na foto inteira
+                let canvas = scene.composited(over: CIImage(color: .clear).cropped(to: extent))
+                if let strip = context.createCGImage(grade(canvas), from: rect, format: .RGBA8, colorSpace: displayP3) {
                     ctx.draw(strip, in: rect)
                 }
             }
@@ -324,6 +377,23 @@ extension Developer {
         CGImageDestinationAddImage(destination, big, props as CFDictionary)
         guard CGImageDestinationFinalize(destination) else { return nil }
         return out as Data
+    }
+
+    /// Richardson–Lucy numa faixa (com margem, para a borda da faixa não mudar): a estimativa é refinada
+    /// comparando com o observado depois de borrar com o mesmo borrão da lente. Pouco ruído porque as fotos já foram somadas.
+    private static func deconvolved(_ image: CIImage, strip rect: CGRect, extent: CGRect, iterations: Int, sigma: Double) -> CIImage {
+        guard iterations > 0, let ratioKernel, let multiplyKernel else { return image.cropped(to: rect) }
+        let margin = CGFloat(ceil(sigma * 3 * 2 * Double(iterations))) + 4
+        let big = rect.insetBy(dx: 0, dy: -margin).intersection(extent).integral
+        let observed = materialize(image.cropped(to: big), extent: big)
+        var estimate = observed
+        func blur(_ x: CIImage) -> CIImage { x.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: big) }
+        for _ in 0..<iterations {
+            guard let ratio = ratioKernel.apply(extent: big, arguments: [observed, blur(estimate)]),
+                  let next = multiplyKernel.apply(extent: big, arguments: [estimate, blur(ratio)]) else { break }
+            estimate = materialize(next, extent: big)
+        }
+        return estimate.cropped(to: rect)
     }
 
     private static func thumbnail(fromHEIC data: Data) -> UIImage? {

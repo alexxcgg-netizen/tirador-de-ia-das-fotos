@@ -194,6 +194,30 @@ namespace coreimage {
         return center + float2(f * tan(theta), d.y / cos(theta));
     }
 
+    // Super resolução: alinhamento por regiões. Desloca cada ponto pelo que sobrou do alinhamento geral,
+    // misturando os 9 pedaços (grade 3×3 com centros em x0 + i·dx, y0 + j·dy).
+    float2 revelaGridWarp(float4 a, float4 b, float4 c, float4 d, float2 e, float4 grid, destination dest) {
+        float2 o[9] = { a.xy, a.zw, b.xy, b.zw, c.xy, c.zw, d.xy, d.zw, e };
+        float2 p = dest.coord();
+        float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
+        float v = clamp((p.y - grid.y) / grid.w, 0.0f, 2.0f);
+        int i = min(int(u), 1), j = min(int(v), 1);
+        float fu = u - float(i), fv = v - float(j);
+        float2 bottom = mix(o[j * 3 + i], o[j * 3 + i + 1], fu);
+        float2 top = mix(o[(j + 1) * 3 + i], o[(j + 1) * 3 + i + 1], fu);
+        return p - mix(bottom, top, fv);
+    }
+
+    // Desconvolução (Richardson–Lucy): quanto a imagem observada difere da estimativa borrada
+    float4 revelaRatio(sample_t observed, sample_t blurred) {
+        float3 r = max(observed.rgb, float3(0.0f)) / max(blurred.rgb, float3(1e-4f));
+        return float4(clamp(r, 0.6f, 1.6f), 1.0f);
+    }
+
+    float4 revelaMultiply(sample_t a, sample_t b) {
+        return float4(max(a.rgb, float3(0.0f)) * b.rgb, 1.0f);
+    }
+
     // Documento: página ÷ papel (a página sem o texto) = papel branco por igual, sem sombra.
     float4 revelaPaper(sample_t page, sample_t paper) {
         return float4(clamp(page.rgb / max(paper.rgb, float3(0.04f)), 0.0f, 1.0f), 1.0f);
