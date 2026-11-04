@@ -67,6 +67,34 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     }
 
     /// Chamado na fila de vídeo a cada quadro.
+    // Troca de lente: a última imagem fica parada (borrada se a lente nova é mais aberta) e some num esmaecer
+    private var freezeRequest: Bool?
+    private var fadeRequest = false
+    private var frozen: CIImage?
+    private var frozenAt: CFAbsoluteTime = 0
+    private var fadeStart: CFAbsoluteTime?
+    private var lastOutput: CIImage?
+
+    /// Chamado logo antes de trocar de câmera. `blur`: a lente nova mostra mais do que a atual (zoom para trás).
+    func beginLensTransition(blur: Bool) {
+        lock.lock()
+        freezeRequest = blur
+        lock.unlock()
+        DispatchQueue.main.async { self.view?.draw() }
+    }
+
+    /// A câmera nova abriu: a imagem parada esmaece para a imagem nova.
+    func endLensTransition() {
+        lock.lock()
+        fadeRequest = true
+        armedCount = enqueuedCount
+        lock.unlock()
+    }
+
+    /// Quadros que já tinham chegado quando a câmera nova abriu (o esmaecer espera os da câmera nova).
+    private var armedCount = 0
+    private var waitingNewFrames = false
+
     /// Quantos quadros chegaram ao visor (o teste de modos confere se a imagem está vindo).
     private(set) var enqueuedCount = 0
 
@@ -86,6 +114,11 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         let mask = personMask
         let depth = self.depth
         let depthFocus = self.depthFocus
+        let freeze = freezeRequest
+        freezeRequest = nil
+        let fade = fadeRequest
+        fadeRequest = false
+        let newFrames = enqueuedCount &- armedCount > 1
         lock.unlock()
         guard let frame, let drawable = view.currentDrawable, let buffer = queue.makeCommandBuffer() else { return }
 
@@ -126,6 +159,37 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         }
         image = Developer.preview(image, options: options)
             .cropped(to: CGRect(origin: .zero, size: size))
+
+        // Troca de lente sem tranco: segura a última imagem e esmaece para a nova em 0,25 s
+        let now = CFAbsoluteTimeGetCurrent()
+        if let blur = freeze, let last = lastOutput {
+            frozen = blur ? last.clampedToExtent().applyingGaussianBlur(sigma: 12).cropped(to: last.extent) : last
+            frozenAt = now
+            fadeStart = nil
+        }
+        // Sem aviso de fim em 1,5 s (troca recusada ou pulada): esmaece mesmo assim
+        if fade { waitingNewFrames = true }
+        if frozen != nil, fadeStart == nil, (waitingNewFrames && newFrames) || now - frozenAt > 1.5 {
+            fadeStart = now
+            waitingNewFrames = false
+        }
+        lastOutput = image
+        if let still = frozen {
+            if let start = fadeStart {
+                let t = (now - start) / 0.25
+                if t >= 1 {
+                    frozen = nil
+                    fadeStart = nil
+                } else {
+                    image = still.applyingFilter("CIDissolveTransition", parameters: [
+                        kCIInputTargetImageKey: image, kCIInputTimeKey: t,
+                    ]).cropped(to: CGRect(origin: .zero, size: size))
+                    DispatchQueue.main.async { self.view?.draw() }
+                }
+            } else {
+                image = still
+            }
+        }
 
         let destination = CIRenderDestination(
             width: Int(size.width), height: Int(size.height),

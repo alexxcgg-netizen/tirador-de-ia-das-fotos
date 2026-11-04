@@ -105,6 +105,8 @@ struct GuideView: View {
         ]),
         ("Dentro de Ajustes", [
             Item(symbol: "arrow.left.and.right", title: "Espelhar", text: "Salva a foto invertida, como você se vê no espelho."),
+            Item(symbol: "checklist", title: "Testar todos os modos",
+                 text: "Em Ajustes: o app entra sozinho em cada modo e em cada lente, confere se a imagem chega e anota tudo no relatório. Deixe o iPhone parado uns 2 minutos e mande o relatório."),
             Item(symbol: "link", title: "Conectar ao Claude",
                  text: "Em Ajustes, cole a chave do GitHub uma vez. O Claude passa a mandar filmes, ajustes e recados direto para o app, e o relatório vai com um toque em \"Enviar ao Claude\" (ou sozinho depois de um fechamento)."),
             Item(symbol: "location", title: "Localização", text: "Guarda onde cada foto foi tirada, para ela aparecer no mapa da galeria."),

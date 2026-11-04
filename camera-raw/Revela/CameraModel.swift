@@ -892,6 +892,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         lensRequest += 1
         let request = lensRequest
         lensRequestLock.unlock()
+        // A imagem não pula: fica parada e esmaece para a lente nova (borrada quando a nova mostra mais)
+        let widerView = newLens == .front || old == .front || newLens.baseZoom < old.baseZoom
+        renderer.beginLensTransition(blur: widerView)
         sessionQueue.async {
             self.lensRequestLock.lock()
             let stale = request != self.lensRequest
@@ -902,6 +905,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.setupSession(lens: newLens, mode: mode)
             dlog("Troca de lente \(old.rawValue) → \(newLens.rawValue): \(Diagnostics.ms(since: t0))")
             DispatchQueue.main.async {
+                self.renderer.endLensTransition()
                 self.updateExposure()
                 self.updateWhiteBalance()
                 self.updateFocus()

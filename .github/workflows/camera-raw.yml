@@ -7,6 +7,11 @@ on:
       - ".github/workflows/camera-raw.yml"
   workflow_dispatch:
 
+# Só a versão mais nova compila: um envio novo cancela o que ainda estava esperando na fila
+concurrency:
+  group: revela-ipa
+  cancel-in-progress: true
+
 defaults:
   run:
     working-directory: camera-raw
