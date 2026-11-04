@@ -272,7 +272,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Modo cinema: abertura simulada e os limites que a câmera aceita.
     @Published var cinematicAperture: Float = 2.8
     @Published var cinematicRange: ClosedRange<Float> = 2...16
-    @Published var histogramRGB: [[Float]] = []
+    /// Números que mudam o tempo todo: publicados à parte (ver LiveStats).
+    let live = LiveStats()
     @Published var falseColor = false { didSet { renderer.options.falseColor = falseColor } }
     @Published var nightFrames = 8
     /// iPhone parado (apoiado ou no tripé), pelo giroscópio.
@@ -471,11 +472,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var freezeMax = false { didSet { applySpecialFormat() } }
     @Published var lowLight = false
     /// Rosto encontrado no visor (0…1, origem no canto de cima à esquerda) e distância estimada em metros.
-    @Published var faceRect: CGRect?
-    @Published var faceDistance: Double?
+    var faceRect: CGRect? {
+        didSet {
+            if faceRect != live.face { live.face = faceRect }
+            updateAdvice()
+        }
+    }
+    var faceDistance: Double? { didSet { updateAdvice() } }
+
+    private func updateAdvice() {
+        let advice = distanceAdvice.map { LiveStats.FaceAdvice(text: $0.text, good: $0.good) }
+        if advice != live.advice { live.advice = advice }
+    }
     @Published var timerSeconds = 0
     @Published var countdown = 0
-    @Published var histogram: [Float] = []
     @Published var flash = false
     /// Ponto do último toque para focar, em coordenadas normalizadas do visor.
     @Published var focusPoint: CGPoint?
@@ -492,9 +502,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var manualFocus = false { didSet { updateFocus() } }
     @Published var lensPosition: Float = 0.5 { didSet { updateFocus() } }
 
-    @Published var readoutISO: Float = 0
-    @Published var readoutShutter: Double = 0
-    @Published var readoutLensPosition: Float = 0
+    var readoutISO: Float = 0
+    var readoutShutter: Double = 0
+    var readoutLensPosition: Float = 0
     @Published var processing = 0
     /// "3/7" enquanto uma sequência está sendo fotografada.
     @Published var stackProgress: String?
@@ -600,6 +610,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     override init() {
         super.init()
         Diagnostics.shared.startMonitoring()
+        // O teste de modos estava no meio quando o app fechou: anota em qual modo
+        if let stuck = defaults.string(forKey: "selfTestCurrent") {
+            dlog("💥 Teste de modos: o app fechou no modo \(stuck)")
+            defaults.removeObject(forKey: "selfTestCurrent")
+        }
         if let saved = defaults.string(forKey: "look").flatMap(Look.init(rawValue:)) { look = saved }
         if let id = defaults.string(forKey: "customLook").flatMap(UUID.init(uuidString:)) {
             customLook = customLooks.first { $0.id == id }
@@ -611,8 +626,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         saveDNG = defaults.bool(forKey: "saveDNG")
         optionsChanged()
         renderer.onHistogram = { [weak self] bins, rgb in
-            self?.histogram = bins
-            self?.histogramRGB = rgb
+            self?.live.histogram = bins
+            self?.live.histogramRGB = rgb
         }
     }
 
@@ -1345,6 +1360,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.readoutISO = d.iso
             self.readoutShutter = d.exposureDuration.seconds
             self.readoutLensPosition = d.lensPosition
+            // Só avisa a tela quando muda de verdade
+            if abs(self.live.iso - d.iso) > 1 { self.live.iso = d.iso }
+            if abs(self.live.shutter - d.exposureDuration.seconds) > 1e-5 { self.live.shutter = d.exposureDuration.seconds }
             self.adjustShutterPriority()
             self.checkAutoMacro(lensPosition: d.lensPosition, focusMode: d.focusMode)
         }
@@ -1996,6 +2014,67 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     @Published var showDocument = false
+
+    // MARK: - Teste de modos
+
+    /// "NOITE (12/23)" enquanto o teste roda.
+    @Published var selfTestProgress: String?
+    private var selfTestCancelled = false
+
+    /// Entra em cada modo (e em cada lente), espera, confere se a imagem chega e anota tudo no relatório.
+    /// Se o app fechar no meio, a próxima abertura anota em qual modo foi.
+    func runModeSelfTest() {
+        guard selfTestProgress == nil else { return }
+        selfTestCancelled = false
+        let modes = CaptureMode.allCases.filter { $0 != .photo }
+        let lenses = availableLenses.filter { $0 != .macro } + (hasFront ? [.front] : []) + [.wide]
+        var steps: [(name: String, action: () -> Void, waitsForFrames: Bool)] = []
+        for mode in modes {
+            let previewless = mode == .cinematic || mode == .scan || mode == .document
+            steps.append((mode.rawValue, { self.select(captureMode: mode) }, !previewless))
+            if mode == .scan { steps.append(("fechar 3D", { self.showScanner = false; self.scannerClosed() }, false)) }
+            if mode == .document { steps.append(("fechar DOC", { self.showDocument = false; self.documentClosed() }, false)) }
+            steps.append(("FOTO", { self.select(captureMode: .photo) }, true))
+        }
+        for lens in lenses {
+            steps.append(("lente \(lens.rawValue)", { self.select(lens: lens) }, true))
+        }
+        dlog("🧪 Teste de modos: \(steps.count) passos")
+        var problems: [String] = []
+        func run(_ index: Int) {
+            guard !selfTestCancelled, index < steps.count else {
+                defaults.removeObject(forKey: "selfTestCurrent")
+                selfTestProgress = nil
+                let summary = problems.isEmpty ? "tudo ok" : "sem imagem em: " + problems.joined(separator: ", ")
+                dlog("🧪 Teste de modos \(selfTestCancelled ? "cancelado" : "concluído"): \(summary)")
+                message = selfTestCancelled ? "Teste cancelado." :
+                    (problems.isEmpty ? "Teste concluído: todos os modos abriram com imagem." :
+                        "Teste concluído. Sem imagem em: \(problems.joined(separator: ", ")). Mande o relatório.")
+                return
+            }
+            let step = steps[index]
+            selfTestProgress = "\(step.name) (\(index + 1)/\(steps.count))"
+            defaults.set(step.name, forKey: "selfTestCurrent")
+            let before = renderer.enqueuedCount
+            let t0 = CFAbsoluteTimeGetCurrent()
+            step.action()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.2) {
+                let frames = self.renderer.enqueuedCount &- before
+                let running = self.session.isRunning || self.dualActiveForUI
+                let ok = !step.waitsForFrames || frames > 5
+                if !ok { problems.append(step.name) }
+                dlog(String(format: "🧪 %@: %@ · %d quadros em 3 s · sessão %@ · %@", step.name, ok ? "ok" : "SEM IMAGEM",
+                            frames, running ? "rodando" : "parada", Diagnostics.ms(since: t0)))
+                run(index + 1)
+            }
+        }
+        run(0)
+    }
+
+    func cancelModeSelfTest() { selfTestCancelled = true }
+
+    /// A câmera dupla roda numa sessão própria.
+    private var dualActiveForUI: Bool { captureMode == .dual }
 
     // MARK: - Panorama
 

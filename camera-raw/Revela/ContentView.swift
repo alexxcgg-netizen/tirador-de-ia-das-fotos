@@ -548,6 +548,15 @@ struct ContentView: View {
                         .padding(10)
                         .allowsHitTesting(false)
                 }
+                if let test = camera.selfTestProgress {
+                    VStack(spacing: 6) {
+                        Text("Testando: \(test)").font(.footnote.weight(.bold))
+                        Text("Deixe o iPhone parado. Toque para cancelar.").font(.caption2).opacity(0.8)
+                    }
+                    .padding(12)
+                    .background(.black.opacity(0.7), in: RoundedRectangle(cornerRadius: 12))
+                    .onTapGesture { camera.cancelModeSelfTest() }
+                }
                 if camera.aeafLocked {
                     Text("TRAVA AE/AF")
                         .font(.caption.weight(.bold))
@@ -578,7 +587,7 @@ struct ContentView: View {
                 }
                 VStack {
                     HStack {
-                        Histogram(bins: camera.histogram, rgb: camera.rgbHistogram ? camera.histogramRGB : [])
+                        LiveHistogram(live: camera.live, rgb: camera.rgbHistogram)
                             .frame(width: 96, height: 40)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
@@ -607,27 +616,8 @@ struct ContentView: View {
                         .frame(maxHeight: .infinity, alignment: .bottom)
                         .padding(.bottom, 10)
                 }
-                if let face = camera.faceRect, camera.stackProgress == nil {
-                    let zoom = camera.crop
-                    let advice = camera.distanceAdvice
-                    let color: Color = advice == nil ? .white.opacity(0.6) : (advice!.good ? .green : accent)
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(color, lineWidth: 1.5)
-                        .frame(width: face.width * zoom * geo.size.width, height: face.height * zoom * geo.size.height)
-                        .position(x: (0.5 + (face.midX - 0.5) * zoom) * geo.size.width,
-                                  y: (0.5 + (face.midY - 0.5) * zoom) * geo.size.height)
-                        .animation(.easeOut(duration: 0.15), value: face)
-                        .allowsHitTesting(false)
-                    if let advice {
-                        Label(advice.text, systemImage: advice.good ? "checkmark.circle.fill" : "figure.walk")
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 10).padding(.vertical, 6)
-                            .foregroundStyle(advice.good ? Color.black : Color.white)
-                            .background(advice.good ? Color.green : Color.black.opacity(0.6), in: Capsule())
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                            .padding(.bottom, 10)
-                            .allowsHitTesting(false)
-                    }
+                if camera.stackProgress == nil {
+                    FaceOverlay(live: camera.live, zoom: camera.crop, size: geo.size)
                 }
                 if camera.lens == .macro && camera.stackProgress == nil {
                     Text("Macro: aproxime até 2 cm")
@@ -867,8 +857,7 @@ struct ContentView: View {
                                     .font(.system(.footnote, design: .monospaced))
                                     .frame(width: 44, alignment: .trailing)
                             }
-                            Text("Agora: ISO \(Int(camera.readoutISO)) · \(shutterText(camera.readoutShutter))")
-                                .font(.footnote).foregroundStyle(.secondary)
+                            ReadoutText(live: camera.live)
                         }
                     }
 
@@ -918,6 +907,12 @@ struct ContentView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { showModes = true }
                         } label: {
                             Label("Escolher e ordenar os modos", systemImage: "list.bullet")
+                        }
+                        Button {
+                            showSettings = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { camera.runModeSelfTest() }
+                        } label: {
+                            Label("Testar todos os modos (uns 2 min)", systemImage: "checklist")
                         }
                         Toggle("Histograma colorido (R, G, B)", isOn: $camera.rgbHistogram)
                         Toggle("Cor falsa (exposição por cores)", isOn: $camera.falseColor)
@@ -1361,6 +1356,64 @@ private struct LevelLine: View {
             if level { UISelectionFeedbackGenerator().selectionChanged() }
         }
         .allowsHitTesting(false)
+    }
+}
+
+/// Histograma do visor: se redesenha sozinho, sem mexer no resto da tela.
+private struct LiveHistogram: View {
+    @ObservedObject var live: LiveStats
+    let rgb: Bool
+
+    var body: some View {
+        Histogram(bins: live.histogram, rgb: rgb ? live.histogramRGB : [])
+    }
+}
+
+/// ISO e obturador de agora (nos Ajustes).
+private struct ReadoutText: View {
+    @ObservedObject var live: LiveStats
+
+    var body: some View {
+        Text("Agora: ISO \(Int(live.iso)) · \(ReadoutText.shutter(live.shutter))")
+            .font(.footnote).foregroundStyle(.secondary)
+    }
+
+    static func shutter(_ seconds: Double) -> String {
+        guard seconds > 0 else { return "—" }
+        if seconds >= 1 { return String(format: "%.1f s", seconds).replacingOccurrences(of: ".", with: ",") }
+        return "1/\(Int((1 / seconds).rounded()))"
+    }
+}
+
+/// Quadro no rosto e aviso de distância (Retrato).
+private struct FaceOverlay: View {
+    @ObservedObject var live: LiveStats
+    let zoom: CGFloat
+    let size: CGSize
+
+    var body: some View {
+        if let face = live.face {
+            let advice = live.advice
+            let color: Color = advice == nil ? .white.opacity(0.6) : (advice!.good ? .green : accent)
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(color, lineWidth: 1.5)
+                    .frame(width: face.width * zoom * size.width, height: face.height * zoom * size.height)
+                    .position(x: (0.5 + (face.midX - 0.5) * zoom) * size.width,
+                              y: (0.5 + (face.midY - 0.5) * zoom) * size.height)
+                    .animation(.easeOut(duration: 0.15), value: face)
+                if let advice {
+                    Label(advice.text, systemImage: advice.good ? "checkmark.circle.fill" : "figure.walk")
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 10).padding(.vertical, 6)
+                        .foregroundStyle(advice.good ? Color.black : Color.white)
+                        .background(advice.good ? Color.green : Color.black.opacity(0.6), in: Capsule())
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, 10)
+                }
+            }
+            .allowsHitTesting(false)
+        }
     }
 }
 

@@ -67,9 +67,13 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     }
 
     /// Chamado na fila de vídeo a cada quadro.
+    /// Quantos quadros chegaram ao visor (o teste de modos confere se a imagem está vindo).
+    private(set) var enqueuedCount = 0
+
     func enqueue(_ image: CIImage) {
         lock.lock()
         frame = image
+        enqueuedCount &+= 1
         lock.unlock()
         DispatchQueue.main.async { self.view?.draw() }
     }
