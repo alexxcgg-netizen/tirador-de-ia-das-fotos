@@ -204,7 +204,7 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
 
         // Quadros por segundo do visor, para o relatório
         fpsFrames += 1
-        let now = CFAbsoluteTimeGetCurrent()
+        // (o "now" do esmaecer, logo acima, serve aqui também)
         if now - fpsWindowStart > 3 {
             let fps: Double = Double(fpsFrames) / (now - fpsWindowStart)
             let fpsText = String(format: "%.0f", fps)
