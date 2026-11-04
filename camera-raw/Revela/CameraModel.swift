@@ -261,6 +261,22 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var portraitAperture: Float = 4 { didSet { updatePortraitPreview() } }
     /// Retrato: o que você tocou no visor fica nítido (no lugar do rosto). Coordenadas do visor.
     private var portraitTap: CGPoint?
+
+    /// O que fica nítido no Retrato, no visor: o ponto tocado, senão o centro do rosto.
+    private var portraitChoice: CGPoint? {
+        if let portraitTap { return portraitTap }
+        guard let face = faceRect else { return nil }
+        return CGPoint(x: face.midX, y: face.midY)
+    }
+
+    /// Ponto do visor -> ponto da foto inteira (o visor mostra o centro ampliado pelo recorte).
+    private func photoPoint(fromView point: CGPoint?) -> CGPoint? {
+        guard let point else { return nil }
+        let c: CGFloat = crop
+        let x: CGFloat = 0.5 + (point.x - 0.5) / c
+        let y: CGFloat = 0.5 + (point.y - 0.5) / c
+        return CGPoint(x: x, y: y)
+    }
     @Published var nightTime: NightTime = .auto
     static let longSeconds: [Double] = [1, 2, 4, 8]
     @Published var longSecondsChoice: Double = 2
@@ -1809,10 +1825,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             return
         }
         // O que fica nítido no Retrato: o ponto que você tocou, senão o rosto (visor -> foto, desfazendo o recorte)
-        let c = crop
-        let portraitFocus: CGPoint? = (portraitTap ?? faceRect.map { CGPoint(x: $0.midX, y: $0.midY) }).map {
-            CGPoint(x: 0.5 + ($0.x - 0.5) / c, y: 0.5 + ($0.y - 0.5) / c)
-        }
+        let portraitFocus = photoPoint(fromView: portraitChoice)
         let aperture = portraitAperture
         // Três looks: lidos aqui (na fila principal); rajada não entra (seriam centenas de fotos)
         let extraLooks = multiLook && !mode.holdsForBurst
@@ -2998,10 +3011,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             ? depthData : depthData.converting(toDepthDataType: kCVPixelFormatType_DisparityFloat16)
         let buffer = disparity.depthDataMap
         // Ponto em foco: o rosto (no visor, que mostra o centro ampliado) ou um pouco acima do centro
-        let c = crop
-        let chosen = portraitTap ?? faceRect.map { CGPoint(x: $0.midX, y: $0.midY) }
-        let viewPoint = chosen.map { CGPoint(x: 0.5 + ($0.x - 0.5) / c, y: 0.5 + ($0.y - 0.5) / c) }
-            ?? CGPoint(x: 0.5, y: 0.45)
+        let viewPoint = photoPoint(fromView: portraitChoice) ?? CGPoint(x: 0.5, y: 0.45)
         var image = CIImage(cvPixelBuffer: buffer)
         let samplePoint: CGPoint
         if depthRotated {
