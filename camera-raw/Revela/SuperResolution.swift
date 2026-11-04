@@ -119,6 +119,35 @@ extension Developer {
         return Output(heic: heic, thumbnail: thumbnail(fromHEIC: heic), sameSizeAsRaw: false)
     }
 
+    /// Alinhamento fino para a NOITE: para cada foto, uma função que a coloca em cima da referência (a primeira).
+    static func fineWarps(_ frames: [CapturedFrame], reference: CIImage) -> [(CIImage) -> CIImage] {
+        let e = reference.extent
+        let centers = tileCenters(in: e)
+        let alignments = alignTransforms(frames: frames, refIndex: 0, reference: reference, centers: centers)
+        let grid = CIVector(x: centers[0].x, y: centers[0].y, z: centers[1].x - centers[0].x, w: centers[3].y - centers[0].y)
+        return alignments.map { alignment in
+            guard let alignment else { return { $0 } }
+            return { image in
+                var out = image.transformed(by: alignment.transform)
+                let r = alignment.residuals
+                if let gridWarpKernel, r.count == 9, r.contains(where: { hypot($0.x, $0.y) > 0.25 }) {
+                    let reach = (r.map { max(abs($0.x), abs($0.y)) }.max() ?? 0) + 2
+                    let source = out
+                    out = gridWarpKernel.apply(extent: e, roiCallback: { _, rect in rect.insetBy(dx: -reach, dy: -reach) },
+                                               image: source, arguments: [
+                        CIVector(x: r[0].x, y: r[0].y, z: r[1].x, w: r[1].y),
+                        CIVector(x: r[2].x, y: r[2].y, z: r[3].x, w: r[3].y),
+                        CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y),
+                        CIVector(x: r[6].x, y: r[6].y, z: r[7].x, w: r[7].y),
+                        CIVector(x: r[8].x, y: r[8].y),
+                        grid,
+                    ]) ?? source
+                }
+                return out.cropped(to: e)
+            }
+        }
+    }
+
     /// 9 pedaços espalhados pelo recorte (linha de baixo primeiro, como o Core Image conta).
     private static func tileCenters(in region: CGRect) -> [CGPoint] {
         var centers: [CGPoint] = []
@@ -159,6 +188,9 @@ extension Developer {
                     coarse = CGPoint(x: (observation.alignmentTransform.tx / alignScale).rounded(),
                                      y: (observation.alignmentTransform.ty / alignScale).rounded())
                 }
+                // No escuro o Vision às vezes "acha" um pulo enorme: a mão não anda tanto
+                let e = reference.extent
+                if abs(coarse.x) > e.width * 0.08 || abs(coarse.y) > e.height * 0.08 { coarse = .zero }
                 // Pares (ponto na foto, ponto na referência) com precisão de fração de pixel
                 var pairs: [(frame: CGPoint, ref: CGPoint)] = []
                 var pairTile: [Int] = []

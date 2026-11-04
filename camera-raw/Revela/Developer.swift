@@ -410,6 +410,7 @@ enum Developer {
     private static let logLumaKernel = kernel("revelaLogLuma")
     private static let skinMixKernel = kernel("revelaSkinMix")
     private static let chromaKernel = kernel("revelaChroma")
+    private static let recoverKernel = kernel("revelaRecover")
     private static let bandKernel = kernel("revelaBand")
     private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
     private static let localToneKernel = kernel("revelaLocalTone")
@@ -451,7 +452,8 @@ enum Developer {
                                               "revelaRobustColor": robustColorKernel, "revelaRobustWeight": robustWeightKernel,
                                               "revelaLogLuma": logLumaKernel, "revelaLocalTone": localToneKernel,
                                               "revelaSkinMix": skinMixKernel, "revelaBand": bandKernel,
-                                              "revelaShadowsHighlights": shadowsHighlightsKernel, "revelaChroma": chromaKernel]
+                                              "revelaShadowsHighlights": shadowsHighlightsKernel, "revelaChroma": chromaKernel,
+                                              "revelaRecover": recoverKernel]
         missing += more.filter { $0.value == nil }.map(\.key).sorted()
         return missing.isEmpty ? "todos carregados" : "FALTANDO: " + missing.joined(separator: ", ")
     }
@@ -742,10 +744,13 @@ enum Developer {
 
     /// Junta vários quadros em lotes pequenos (para não esgotar a memória):
     /// foco empilhado (pega o pedaço mais nítido de cada um) ou média (menos ruído / exposição longa).
-    static func stack(_ frames: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
-                      robust: Bool = false, options: DevelopOptions) -> Output? {
+    /// `starPoints`: NOITE, raios em volta das luzes fortes, como numa lente fechada (0 = sem).
+    static func stack(_ allFrames: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
+                      robust: Bool = false, starPoints: Int = 0, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
-        var frames = frames
+        // NOITE: a foto curta (para as luzes) fica de fora da soma
+        let shortFrame = allFrames.first { $0.exposureBias < -1 }
+        var frames = allFrames.filter { $0.exposureBias >= -1 }
         if robust, frames.count > 2 {
             // Noite: a referência (que manda onde algo se mexeu) é a foto mais nítida, não a primeira
             let scores = frames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
@@ -758,14 +763,19 @@ enum Developer {
         let extent = reference.extent
         dlog("Empilhando \(frames.count) quadros (\(kind == .focus ? "foco" : "média")) · \(Int(extent.width))×\(Int(extent.height)) · memória livre \(Diagnostics.freeMemory)")
 
-        // Alinha numa versão pequena de cada quadro (rápido e leve); aplica depois no tamanho cheio
+        // Alinha numa versão pequena de cada quadro (rápido e leve); aplica depois no tamanho cheio.
+        // NOITE: alinhamento fino (fração de pixel e por região), o mesmo da super resolução
         let alignScale: Float = 0.25
         guard let smallReference = image(from: frames[0], scale: alignScale) else { return nil }
         var warps: [(CIImage) -> CIImage] = [{ $0 }]
-        for frame in frames.dropFirst() {
-            guard let small = image(from: frame, scale: alignScale) else { warps.append({ $0 }); continue }
-            warps.append(alignment(of: small, to: smallReference, scale: CGFloat(alignScale),
-                                   fullExtent: extent, homography: kind == .focus))
+        if robust {
+            warps = fineWarps(frames, reference: reference)
+        } else {
+            for frame in frames.dropFirst() {
+                guard let small = image(from: frame, scale: alignScale) else { warps.append({ $0 }); continue }
+                warps.append(alignment(of: small, to: smallReference, scale: CGFloat(alignScale),
+                                       fullExtent: extent, homography: kind == .focus))
+            }
         }
         dlog("Alinhamento: \(Diagnostics.ms(since: t0))")
 
@@ -782,7 +792,20 @@ enum Developer {
                 let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 800
                 let strength = min(1, max(0.25, log2(max(iso, 100) / 200) / 6)) / sqrt(Float(frames.count) / 8)
                 dlog(String(format: "Noite: ISO %.0f · redução de ruído %.2f", iso, strength))
-                return localTone(nightDenoise(materialize(night, extent: extent), strength: strength), strength: 0.75)
+                var out = materialize(night, extent: extent)
+                // Postes e letreiros: a foto curta devolve a luz onde a junção estourou
+                if let shortFrame, let recoverKernel, let short = image(from: shortFrame),
+                   let smallShort = image(from: shortFrame, scale: alignScale) {
+                    let gain = Float(pow(2.0, Double(-shortFrame.exposureBias)))
+                    let warp = alignment(of: scaled(smallShort, by: gain), to: smallReference, scale: CGFloat(alignScale),
+                                         fullExtent: extent, homography: false)
+                    let alignedShort = warp(short).cropped(to: extent)
+                    out = recoverKernel.apply(extent: extent, arguments: [out, alignedShort, gain]) ?? out
+                    dlog(String(format: "Noite: luzes fortes recuperadas da foto curta (%.0f×)", gain))
+                }
+                out = localTone(nightDenoise(out, strength: strength), strength: 0.75)
+                if starPoints > 0 { out = starBurst(out, points: starPoints) }
+                return out
             }
         case .average:
             var mean = average(count: frames.count, extent: extent, frame: aligned)
@@ -853,6 +876,37 @@ enum Developer {
     }
 
     /// Soma em lotes de 3, guardando o parcial em memória de vídeo: nunca há mais de 3 RAW abertos ao mesmo tempo.
+    /// Estrela nas luzes: as luzes bem fortes ganham raios, como numa lente fechada em f/11–f/16.
+    /// Feito numa versão pequena (os raios são suaves de qualquer jeito) e somado à luz da cena.
+    static func starBurst(_ scene: CIImage, points: Int) -> CIImage {
+        guard let highlightsKernel, points >= 4 else { return scene }
+        let e = scene.extent
+        let k: CGFloat = 0.25
+        // Só o que passa bem do branco: postes, faróis, letreiros
+        guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, Float(1.5)]) else { return scene }
+        let small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
+        let length = min(e.width, e.height) * k * 0.05
+        var rays = CIImage(color: .black).cropped(to: CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k))
+        let directions = points / 2
+        for i in 0..<directions {
+            let angle = Double.pi * Double(i) / Double(directions) + 0.3
+            let streak = small.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: length, kCIInputAngleKey: angle])
+            rays = streak.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: rays])
+        }
+        let strength = CGFloat(1.6)
+        let full = rays
+            .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
+            .cropped(to: e)
+            .applyingFilter("CIColorMatrix", parameters: [
+                "inputRVector": CIVector(x: strength, y: 0, z: 0, w: 0),
+                "inputGVector": CIVector(x: 0, y: strength, z: 0, w: 0),
+                "inputBVector": CIVector(x: 0, y: 0, z: strength, w: 0),
+                "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
+            ])
+        dlog("Noite: estrela de \(points) pontas nas luzes")
+        return full.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scene]).cropped(to: e)
+    }
+
     /// Ruído da noite: o colorido (o pior) some tirando a cor de uma versão borrada e o brilho da original;
     /// o granulado de brilho diminui pouco, para não virar pintura.
     static func nightDenoise(_ scene: CIImage, strength: Float) -> CIImage {

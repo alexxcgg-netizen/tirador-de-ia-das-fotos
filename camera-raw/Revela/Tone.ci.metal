@@ -218,6 +218,16 @@ namespace coreimage {
         return float4(max(a.rgb, float3(0.0f)) * b.rgb, 1.0f);
     }
 
+    // NOITE: onde a foto curta (escura, multiplicada de volta) é mais clara que a junção, a junção estourou ali
+    // (poste, letreiro): fica a curta, com cor e forma da luz.
+    float4 revelaRecover(sample_t merged, sample_t shortFrame, float gain) {
+        float3 m = max(merged.rgb, float3(0.0f));
+        float3 s = max(shortFrame.rgb, float3(0.0f)) * gain;
+        float lm = dot(m, revela::kLuma), ls = dot(s, revela::kLuma);
+        float w = smoothstep(0.05f, 0.3f, (ls - lm) / max(lm, 1e-3f));
+        return float4(mix(m, max(m, s), w), 1.0f);
+    }
+
     // Documento: página ÷ papel (a página sem o texto) = papel branco por igual, sem sombra.
     float4 revelaPaper(sample_t page, sample_t paper) {
         return float4(clamp(page.rgb / max(paper.rgb, float3(0.04f)), 0.0f, 1.0f), 1.0f);

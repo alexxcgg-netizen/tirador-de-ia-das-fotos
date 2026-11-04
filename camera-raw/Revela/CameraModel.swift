@@ -133,7 +133,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Funciona na mão (o app alinha cada quadro); apoiado fica ainda mais nítido."
         case .superRes: return "8 fotos de 48 MP (fica com as 6 mais nítidas), alinhadas por região em fração de pixel: até 100 MP com mais detalhe real. Segure firme; leva uns segundos."
         case .superZoom: return "Zoom de 8× a 25× com 12 fotos rápidas (fica com as 8 mais nítidas), alinhadas e desconvoluídas. Espera sua mão firmar para disparar."
-        case .night: return "Várias fotos alinhadas e somadas, sem fantasma de quem se mexeu. Apoiado, cada foto fica mais longa e a noite mais limpa."
+        case .night: return "Fotos alinhadas em fração de pixel e somadas sem fantasma, mais uma curta para os postes não estourarem. Apoiado no escuro: 1 s por foto. ✦ põe estrela nas luzes."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
         case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 5 fotos de 48 MP juntadas no sub-pixel: mais detalhe nas crateras."
         case .flash: return "Uma foto RAW com o flash."
@@ -279,6 +279,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     let live = LiveStats()
     @Published var falseColor = false { didSet { renderer.options.falseColor = falseColor } }
     @Published var nightFrames = 8
+    /// NOITE: raios nas luzes fortes (0 = sem; 6 ou 8 pontas).
+    @Published var nightStarPoints = UserDefaults.standard.object(forKey: "nightStarPoints") as? Int ?? 6 {
+        didSet { defaults.set(nightStarPoints, forKey: "nightStarPoints") }
+    }
     /// iPhone parado (apoiado ou no tripé), pelo giroscópio.
     @Published var isSteady = false
     @Published var rawMode: RawMode = .proRAW
@@ -1794,7 +1798,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
         // Sequência: no foco empilhado, cada quadro com o foco um pouco mais longe
         let macroStacking = mode == .focusStack && lens == .macro
-        let count = mode == .night ? nightFrames : (macroStacking ? 6 : mode.frameCount)
+        // Escuro de verdade com o iPhone apoiado: mais fotos (cada uma de 1 s, logo abaixo)
+        let veryDark = mode == .night && isSteady && nightTime == .auto && readoutISO >= 3200
+        let normalCount = mode == .night ? (veryDark ? max(nightFrames, 12) : nightFrames) : (macroStacking ? 6 : mode.frameCount)
+        // NOITE: mais uma foto curta no fim, só para as luzes fortes (postes) não estourarem
+        let shortLast = mode == .night && !manualExposure
+        let count = normalCount + (shortLast ? 1 : 0)
         let center = manualFocus ? lensPosition : readoutLensPosition
         let span: Float = lens == .macro ? 0.1 : 0.16
         let positions: [Float]? = mode == .focusStack
@@ -1808,7 +1817,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let fullResolution = mode == .superRes || mode == .superZoom || mode == .moon || macroStacking
         let nightPlan = mode == .night && !manualExposure
         // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/10 s na mão
-        let nightSeconds = nightTime.seconds ?? (isSteady ? 0.5 : 1.0 / 10)
+        let nightSeconds = nightTime.seconds ?? (veryDark ? 1.0 : (isSteady ? 0.5 : 1.0 / 10))
         // Super resolução: obturador rápido (foto tremida não cria detalhe) — 1/60 na 1×, 1/120 na 4×, 1/240 a 8×…
         let fastPlan = (mode == .superRes || mode == .superZoom) && !manualExposure
         let fastSeconds = min(1.0 / 60, 1.0 / (30 * max(Double(zoom), 1)))
@@ -1816,7 +1825,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let waitForStill = mode == .superZoom
         sessionQueue.async {
             let run = {
-                self.shootSequence(index: 0, count: count, positions: positions, frames: [], fullResolution: fullResolution) { result in
+                self.shootSequence(index: 0, count: count, positions: positions, frames: [], fullResolution: fullResolution,
+                                   shortLast: shortLast) { result in
                     dlog("Sequência de \(count) fotografada: \(Diagnostics.ms(since: t0))")
                     DispatchQueue.main.async {
                         self.stackProgress = nil
@@ -1887,24 +1897,37 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         return copy
     }
 
+    /// `shortLast`: a última foto sai 3 paradas mais escura (1/8 do tempo), para as luzes fortes.
     private func shootSequence(index: Int, count: Int, positions: [Float]?, frames: [CapturedFrame],
-                               fullResolution: Bool = false,
+                               fullResolution: Bool = false, shortLast: Bool = false,
                                completion: @escaping (Result<[CapturedFrame], Error>) -> Void) {
         guard index < count else { return completion(.success(frames)) }
+        let isShort = shortLast && index == count - 1
         let shoot = {
             self.captureRAW(forStack: !fullResolution) { result in
                 switch result {
                 case .failure(let error):
                     completion(.failure(error))
-                case .success(let data):
+                case .success(var data):
+                    if isShort { data.exposureBias = -3 }
                     DispatchQueue.main.async { self.stackProgress = "\(index + 1)/\(count)" }
                     self.sessionQueue.async {
                         self.shootSequence(index: index + 1, count: count, positions: positions,
                                            frames: frames + [self.spilled(data)],
-                                           fullResolution: fullResolution, completion: completion)
+                                           fullResolution: fullResolution, shortLast: shortLast, completion: completion)
                     }
                 }
             }
+        }
+        if isShort, let d = device, (try? d.lockForConfiguration()) != nil {
+            // Mesmo ISO, 1/8 do tempo: espera a câmera aplicar e fotografa
+            let f = d.activeFormat
+            let duration = max(d.exposureDuration.seconds / 8, f.minExposureDuration.seconds)
+            d.setExposureModeCustom(duration: CMTime(seconds: duration, preferredTimescale: 1_000_000_000), iso: d.iso) { _ in
+                self.sessionQueue.async { shoot() }
+            }
+            d.unlockForConfiguration()
+            return
         }
         guard let positions, let d = device, d.isLockingFocusWithCustomLensPositionSupported,
               (try? d.lockForConfiguration()) != nil else { return shoot() }
@@ -2655,7 +2678,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 } else if mode == .moon {
                     output = Developer.superResolution(frames, options: options, sharpen: 0.9)
                 } else if let kind = mode.stackKind {
-                    output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, robust: mode == .night, options: options)
+                    output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, robust: mode == .night,
+                                             starPoints: mode == .night ? self.nightStarPoints : 0, options: options)
                 } else if let first = frames.first, first.hasDepth {
                     output = Developer.developPortrait(first.data, aperture: aperture, focusPoint: focusPoint, options: options)
                 } else {

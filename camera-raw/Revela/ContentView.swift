@@ -464,6 +464,18 @@ struct ContentView: View {
                     .background(Capsule().fill(camera.nightFrames == n ? accent : panelFill))
                     .buttonStyle(.plain)
                 }
+                Menu {
+                    Button("Sem estrela") { camera.nightStarPoints = 0 }
+                    Button("Estrela de 6 pontas") { camera.nightStarPoints = 6 }
+                    Button("Estrela de 8 pontas") { camera.nightStarPoints = 8 }
+                } label: {
+                    Text(camera.nightStarPoints == 0 ? "✦ Não" : "✦ \(camera.nightStarPoints)")
+                        .font(.system(size: 12, weight: .bold))
+                        .padding(.horizontal, 9).frame(height: 36)
+                        .foregroundStyle(camera.nightStarPoints == 0 ? Color.white : Color.black)
+                        .background(Capsule().fill(camera.nightStarPoints == 0 ? panelFill : accent))
+                }
+                .accessibilityLabel("Estrela nas luzes")
                 Label(camera.isSteady ? "Apoiado" : "Na mão", systemImage: camera.isSteady ? "checkmark.circle.fill" : "hand.raised.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(camera.isSteady ? Color.green : Color.white.opacity(0.7))
