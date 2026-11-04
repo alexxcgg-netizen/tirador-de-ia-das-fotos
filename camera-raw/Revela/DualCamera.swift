@@ -18,12 +18,19 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
     /// Imagem montada + horário do quadro (na fila da câmera dupla).
     var onFrame: ((CIImage, CMTime) -> Void)?
     var onAudio: ((CMSampleBuffer) -> Void)?
+    /// A dupla não abriu (no main): o app volta para a foto em vez de ficar com a tela preta.
+    var onFailure: (() -> Void)?
 
     func start(withAudio: Bool) {
         queue.async {
             if !self.configured {
                 self.configured = self.configure(withAudio: withAudio)
-                guard self.configured else { return }
+                guard self.configured else {
+                    // Uma câmera ligou e a outra não: solta tudo para a próxima tentativa começar limpa
+                    self.releaseEverything()
+                    DispatchQueue.main.async { self.onFailure?() }
+                    return
+                }
             }
             self.session.startRunning()
             dlog("Câmera dupla ligada · custo de hardware \(String(format: "%.2f", self.session.hardwareCost))")
@@ -35,14 +42,21 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
         queue.sync {
             if session.isRunning { session.stopRunning() }
             latestFront = nil
-            guard configured else { return }
+            releaseEverything()
+            configured = false
+            dlog("Câmera dupla desligada e câmeras soltas")
+        }
+    }
+
+    /// Tira ligações, entradas e saídas da sessão dupla (também depois de uma montagem pela metade).
+    private func releaseEverything() {
+        guard !session.inputs.isEmpty || !session.outputs.isEmpty else { return }
+        attempt("Soltar a câmera dupla") {
             session.beginConfiguration()
             session.connections.forEach { session.removeConnection($0) }
             session.inputs.forEach { session.removeInput($0) }
             session.outputs.forEach { session.removeOutput($0) }
             session.commitConfiguration()
-            configured = false
-            dlog("Câmera dupla desligada e câmeras soltas")
         }
     }
 

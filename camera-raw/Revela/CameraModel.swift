@@ -204,6 +204,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var inFlight: [Int64: NSObject] = [:]
     /// Lado da sessão: Retrato pede a câmera com profundidade; HDR desliga o ProRAW (bracketing é com RAW puro).
     private var depthWanted = false
+    /// O modo anterior trocou o formato do sensor: depois de reabrir, o tamanho da foto é refeito.
+    private var formatWasSpecial = false
     /// SUPER ZOOM ligado (lido na fila da sessão, para estabilizar o visor).
     private var superZoomWanted = false
     private var hdrWanted = false
@@ -858,7 +860,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     func select(lens newLens: Lens) {
         // No meio de uma rajada ou gravação a câmera não troca (trocar ali fechava o app no CONGELAR)
-        guard newLens != lens, !bursting, !actionRecording else { return }
+        guard newLens != lens, !bursting, !actionRecording, stackProgress == nil, longRemaining == nil,
+              panoramaProgress == nil, !isRecordingVideo else { return }
         let old = lens
         lens = newLens
         optionsChanged()
@@ -962,9 +965,6 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 self.applyStabilization()
             }
         }
-        if mode.fixesShutter || leavingSpecial { applySpecialFormat() }
-        if mode == .fast { prepareFastCapture() }
-
         // Câmera dupla usa uma sessão própria
         if mode == .dual || oldMode == .dual { switchDual(on: mode == .dual) }
         if mode == .video || mode == .cinematic || mode == .dual { requestMicrophone() }
@@ -975,10 +975,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let changed = wantsDepth != (oldMode == .portrait) || wantsHDR != (oldMode == .hdr)
             || wantsVideo != (oldMode == .video) || wantsCinematic != (oldMode == .cinematic)
         if changed {
-            let lens = self.lens, raw = rawMode
             let reopen = wantsDepth != (oldMode == .portrait) || wantsVideo != (oldMode == .video)
                 || wantsCinematic != (oldMode == .cinematic)
             if wantsCinematic && lens != .front && zoom != 1 { setZoom(1) }
+            let lens = self.lens, raw = rawMode
             sessionQueue.async {
                 self.depthWanted = wantsDepth
                 self.hdrWanted = wantsHDR
@@ -992,12 +992,19 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 }
             }
         }
+        // Depois da reabertura (mesma fila): senão a reabertura desfazia o sensor rápido da AÇÃO e do CONGELAR
+        if mode.fixesShutter || leavingSpecial { applySpecialFormat() }
+        if mode == .fast { prepareFastCapture() }
         updatePortraitPreview()
 
         switch mode {
         case .moon:
             setZoom(8)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 50, shutter: 1.0 / 500) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                // Saiu da LUA nesse meio segundo: não trava a exposição do modo novo
+                guard self.captureMode == .moon else { return }
+                self.applyScene(iso: 50, shutter: 1.0 / 500)
+            }
         case .portrait:
             if lens != .front { setZoom(2) }
             lookBeforePortrait = look
@@ -1007,7 +1014,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             manualExposure = false
         case .stars:
             setZoom(1)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.applyScene(iso: 2000, shutter: 10) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                guard self.captureMode == .stars else { return }
+                self.applyScene(iso: 2000, shutter: 10)
+            }
         default:
             break
         }
@@ -1064,7 +1074,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 ?? AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
               let input = try? AVCaptureDeviceInput(device: dev),
               session.canAddInput(input) else {
-            session.commitConfiguration()
+            attempt("Salvar a configuração") { session.commitConfiguration() }
             post("Não foi possível abrir a câmera.")
             dlog("❌ Não abriu a câmera \(lens.rawValue)")
             return
@@ -1130,8 +1140,27 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             attempt("Configurar a foto (RAW, profundidade, disparo rápido)") { configurePhotoOutput(mode) }
         }
         dlog("Abrindo \(dev.localizedName): salvando a configuração…")
-        session.commitConfiguration()
+        guard attempt("Salvar a configuração", { session.commitConfiguration() }) else {
+            // A câmera recusou esta combinação: volta para a foto comum em vez de ficar sem imagem
+            if depthWanted || videoWanted || cinematicWanted || hdrWanted {
+                depthWanted = false
+                videoWanted = false
+                cinematicWanted = false
+                hdrWanted = false
+                setupSession(lens: lens, mode: mode)
+                DispatchQueue.main.async {
+                    self.select(captureMode: .photo)
+                    self.message = "A câmera recusou esse modo agora. Voltei para FOTO; o relatório mostra o motivo."
+                }
+            }
+            return
+        }
         dlog("Configuração aceita")
+        if formatWasSpecial {
+            // O modo anterior (AÇÃO, CINEMÁTICO, DUPLA) mexeu no formato: o tamanho da foto é refeito agora
+            formatWasSpecial = false
+            applyRawMode(mode)
+        }
 
         loggedBufferSize = false
         if videoWanted { applyVideoFrameRate() }
@@ -1208,7 +1237,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func applyRawMode(_ mode: RawMode) {
         guard session.outputs.contains(photoOutput) else { return }
         session.beginConfiguration()
-        defer { session.commitConfiguration() }
+        defer { attempt("Salvar a foto") { session.commitConfiguration() } }
         attempt("Configurar a foto (RAW, profundidade, disparo rápido)") { configurePhotoOutput(mode) }
     }
 
@@ -1596,7 +1625,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 ? AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
                 : AVCapturePhotoSettings()
             settings.photoQualityPrioritization = .speed
-            self.photoOutput.setPreparedPhotoSettingsArray([settings], completionHandler: nil)
+            guard self.session.outputs.contains(self.photoOutput) else { return }
+            attempt("Preparar o disparo rápido") { self.photoOutput.setPreparedPhotoSettingsArray([settings], completionHandler: nil) }
         }
     }
 
@@ -1670,6 +1700,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 return
             }
             self.specialFormatActive = true
+            self.formatWasSpecial = true
             self.applyRawMode(rawMode)
             let dims = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
             dlog("Sensor em \(dims.width)×\(dims.height) a \(Int(rate)) fps (\(mode.rawValue))")
@@ -1705,17 +1736,17 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Mesma quantidade de luz que o automático estava usando, com o obturador novo
             let iso = min(max(d.iso * Float(d.exposureDuration.seconds / seconds), f.minISO), f.maxISO)
             self.shutterPriorityISO = iso
-            d.setExposureModeCustom(duration: CMTime(seconds: seconds, preferredTimescale: 1_000_000_000), iso: iso, completionHandler: nil)
+            d.safeCustomExposure(seconds: seconds, iso: iso)
             dlog(String(format: "Prioridade de obturador: 1/%.0f s · ISO %.0f", 1 / seconds, iso))
         }
     }
 
     /// A cada 1/4 s, corrige o ISO pelo brilho do visor (o obturador fica parado).
     private func adjustShutterPriority() {
-        guard captureMode.fixesShutter, !manualExposure, shutterPriorityISO > 0, histogram.count == 64 else { return }
-        let total = histogram.reduce(0, +)
+        guard captureMode.fixesShutter, !manualExposure, shutterPriorityISO > 0, live.histogram.count == 64 else { return }
+        let total = live.histogram.reduce(0, +)
         guard total > 0 else { return }
-        let mean = histogram.enumerated().reduce(Float(0)) { $0 + Float($1.offset) / 63 * $1.element } / total
+        let mean = live.histogram.enumerated().reduce(Float(0)) { $0 + Float($1.offset) / 63 * $1.element } / total
         let ratio = pow(0.42 / max(mean, 0.02), 2.2)
         guard abs(ratio - 1) > 0.08 else { return }
         let step = pow(min(max(ratio, 0.5), 2), 0.6)
@@ -1725,7 +1756,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             let f = d.activeFormat
             let iso = min(max(self.shutterPriorityISO * step, f.minISO), f.maxISO)
             self.shutterPriorityISO = iso
-            d.setExposureModeCustom(duration: AVCaptureDevice.currentExposureDuration, iso: iso, completionHandler: nil)
+            d.safeCustomExposure(seconds: nil, iso: iso)
             let dark = iso >= f.maxISO * 0.95 && ratio > 1.2
             DispatchQueue.main.async { if self.lowLight != dark { self.lowLight = dark } }
         }
@@ -1855,7 +1886,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 let iso = min(max(d.iso * Float(current / target), f.minISO), f.maxISO)
                 dlog(String(format: "%@: %.4fs ISO %.0f → %.4fs ISO %.0f · %d fotos", nightPlan ? "Noite" : "Super resolução",
                             current, d.iso, target, iso, count))
-                d.setExposureModeCustom(duration: CMTime(seconds: target, preferredTimescale: 1_000_000_000), iso: iso) { _ in
+                d.safeCustomExposure(seconds: target, iso: iso) { _ in
                     self.sessionQueue.async { run() }
                 }
                 d.unlockForConfiguration()
@@ -1923,7 +1954,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Mesmo ISO, 1/8 do tempo: espera a câmera aplicar e fotografa
             let f = d.activeFormat
             let duration = max(d.exposureDuration.seconds / 8, f.minExposureDuration.seconds)
-            d.setExposureModeCustom(duration: CMTime(seconds: duration, preferredTimescale: 1_000_000_000), iso: d.iso) { _ in
+            d.safeCustomExposure(seconds: duration, iso: d.iso) { _ in
                 self.sessionQueue.async { shoot() }
             }
             d.unlockForConfiguration()
@@ -2039,12 +2070,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             message = "O scanner 3D precisa de um iPhone com LiDAR."
             return
         }
-        if captureMode == .dual { select(captureMode: .photo) }
+        let fromDual = captureMode == .dual
+        if fromDual { select(captureMode: .photo) }
         if isRecordingVideo { stopRecording() }
         dlog("Scanner 3D aberto")
         sessionQueue.async {
             if self.session.isRunning { self.session.stopRunning() }
-            DispatchQueue.main.async { self.showScanner = true }
+            // Saindo da DUPLA as câmeras ainda estão sendo soltas: o ARKit falhava ("Required sensor failed")
+            DispatchQueue.main.asyncAfter(deadline: .now() + (fromDual ? 0.8 : 0)) { self.showScanner = true }
         }
     }
 
@@ -2155,7 +2188,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Quadros em resolução cheia enquanto gira
             self.session.beginConfiguration()
             self.setPreviewSized(false)
-            self.session.commitConfiguration()
+            attempt("Salvar a configuração") { self.session.commitConfiguration() }
             self.panorama.start(step: step)
         }
     }
@@ -2175,7 +2208,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.sessionQueue.async {
                 self.session.beginConfiguration()
                 self.setPreviewSized(true)
-                self.session.commitConfiguration()
+                attempt("Salvar a configuração") { self.session.commitConfiguration() }
             }
             DispatchQueue.main.async {
                 self.updateExposure()
@@ -2208,12 +2241,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func openDocumentScanner() {
-        if captureMode == .dual { select(captureMode: .photo) }
+        let fromDual = captureMode == .dual
+        if fromDual { select(captureMode: .photo) }
         if isRecordingVideo { stopRecording() }
         dlog("Scanner de documentos aberto")
         sessionQueue.async {
             if self.session.isRunning { self.session.stopRunning() }
-            DispatchQueue.main.async { self.showDocument = true }
+            DispatchQueue.main.asyncAfter(deadline: .now() + (fromDual ? 0.8 : 0)) { self.showDocument = true }
         }
     }
 
@@ -2268,8 +2302,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             return
         }
         let duration = CMTime(value: 1, timescale: CMTimeScale(fps))
-        d.activeVideoMinFrameDuration = duration
-        d.activeVideoMaxFrameDuration = duration
+        attempt("Quadros do vídeo") {
+            // Primeiro solta o máximo (senão o mínimo novo pode ficar acima do máximo antigo)
+            d.activeVideoMaxFrameDuration = .invalid
+            d.activeVideoMinFrameDuration = duration
+            d.activeVideoMaxFrameDuration = duration
+        }
         d.unlockForConfiguration()
     }
 
@@ -2313,6 +2351,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Cinema: escolhe um formato 1080p que suporta o modo e liga o desfoque simulado.
     private func configureCinematic(device dev: AVCaptureDevice, input: AVCaptureDeviceInput) {
+        formatWasSpecial = true
         guard #available(iOS 26.0, *) else {
             post("O vídeo com fundo desfocado precisa do iOS 26 ou mais novo.")
             return
@@ -2428,6 +2467,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // O arquivo pode estar bom mesmo com erro (ex.: parou por falta de espaço)
         let finished = (error as NSError?)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool ?? (error == nil)
         dlog("Cinema: gravação terminou\(finished ? "" : " com erro: \(error?.localizedDescription ?? "")")")
+        DispatchQueue.main.async {
+            self.isRecordingVideo = false
+            self.recordingStarted = nil
+        }
         guard finished else {
             DispatchQueue.main.async { self.message = "O vídeo no modo cinema não foi gravado." }
             return
@@ -2479,8 +2522,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 if self.recorder.isRecording { self.recorder.append(self.recordingImage(image), at: time) }
             }
             dual.onAudio = { [weak self] buffer in self?.recorder.appendAudio(buffer) }
+            dual.onFailure = { [weak self] in
+                guard let self else { return }
+                self.message = "A câmera dupla não abriu agora. Voltei para FOTO."
+                self.select(captureMode: .photo)
+            }
             sessionQueue.async {
                 self.dualActive = true
+                self.formatWasSpecial = true
                 if self.session.isRunning { self.session.stopRunning() }
                 self.dual.start(withAudio: AVCaptureDevice.authorizationStatus(for: .audio) == .authorized)
             }
@@ -2544,12 +2593,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Vídeo em resolução cheia durante a exposição, e cada quadro exposto o quadro inteiro (sem buracos no movimento)
             self.session.beginConfiguration()
             self.setPreviewSized(false)
-            self.session.commitConfiguration()
+            attempt("Salvar a configuração") { self.session.commitConfiguration() }
             if !manual, let d = self.device, (try? d.lockForConfiguration()) != nil {
                 let f = d.activeFormat
                 let target = min(1.0 / 30, f.maxExposureDuration.seconds)
                 let iso = min(max(d.iso * Float(d.exposureDuration.seconds / target), f.minISO), f.maxISO)
-                d.setExposureModeCustom(duration: CMTime(seconds: target, preferredTimescale: 1_000_000_000), iso: iso, completionHandler: nil)
+                d.safeCustomExposure(seconds: target, iso: iso)
                 d.unlockForConfiguration()
             }
             self.videoQueue.async {
@@ -2574,7 +2623,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             self.session.beginConfiguration()
             self.setPreviewSized(true)
-            self.session.commitConfiguration()
+            attempt("Salvar a configuração") { self.session.commitConfiguration() }
         }
         DispatchQueue.main.async {
             self.longRemaining = nil
@@ -3226,5 +3275,31 @@ enum Library {
                 saveSeparately()
             })
         }
+    }
+}
+
+extension AVCaptureDevice {
+    /// Exposição manual sem fechar o app: tempo e ISO presos ao que o formato aceita, e a câmera pode recusar.
+    /// Se recusar, chama `completion` mesmo assim (a sequência continua com a exposição que estiver).
+    @discardableResult
+    func safeCustomExposure(seconds: Double?, iso: Float, completion: ((CMTime) -> Void)? = nil) -> Bool {
+        let f = activeFormat
+        guard isExposureModeSupported(.custom), iso.isFinite else {
+            completion?(.invalid)
+            return false
+        }
+        let duration: CMTime
+        if let seconds, seconds.isFinite, seconds > 0 {
+            duration = CMTimeClampToRange(CMTime(seconds: seconds, preferredTimescale: 1_000_000_000),
+                                          range: CMTimeRange(start: f.minExposureDuration, end: f.maxExposureDuration))
+        } else {
+            duration = AVCaptureDevice.currentExposureDuration
+        }
+        let clampedISO = min(max(iso, f.minISO), f.maxISO)
+        let ok = attempt("Exposição manual") {
+            setExposureModeCustom(duration: duration, iso: clampedISO, completionHandler: completion)
+        }
+        if !ok { completion?(.invalid) }
+        return ok
     }
 }

@@ -171,7 +171,12 @@ struct ContentView: View {
 
     private var lensPicker: some View {
         HStack(spacing: 12) {
-            if camera.lens == .front {
+            if camera.captureMode == .cinematic || camera.captureMode == .dual {
+                // Esses modos usam câmeras fixas: trocar o zoom só reabria a câmera (tela preta) sem mudar nada
+                Text(camera.captureMode == .dual ? "Câmera de trás e da frente" : "Câmera dupla do modo cinema")
+                    .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    .frame(height: 52)
+            } else if camera.lens == .front {
                 ForEach([CGFloat(1), 2], id: \.self) { z in zoomButton(z) }
             } else {
                 ForEach(zoomPresets, id: \.self) { z in zoomButton(z) }

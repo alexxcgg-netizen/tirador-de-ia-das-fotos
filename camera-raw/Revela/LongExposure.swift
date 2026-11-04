@@ -41,6 +41,8 @@ final class LongExposure {
 
     func add(_ frame: CIImage) {
         guard isRunning else { return }
+        // O tempo acabou: termina mesmo que este quadro não sirva (antes a LONGA podia nunca acabar)
+        if accumulated != nil, CFAbsoluteTimeGetCurrent() >= endTime { return stop() }
         // Logo depois de ligar ainda podem chegar quadros no tamanho do visor: recomeça no tamanho novo
         if accumulated != nil, frame.extent.size != extent.size {
             guard count < 20 else { return }
