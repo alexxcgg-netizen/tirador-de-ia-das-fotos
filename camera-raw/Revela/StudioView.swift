@@ -104,14 +104,37 @@ final class StudioModel: ObservableObject {
         suspendRefresh = false
     }
 
-    func loadLatest() {
-        loading = true
-        queue.async {
-            let latest = SourceStore.latest()
-            DispatchQueue.main.async {
-                if let latest { self.use(entry: latest.0, data: latest.1) } else { self.loading = false }
+    /// A última foto ainda está revelando: mostra a prévia do clique na hora e troca pela de verdade quando ficar pronta.
+    func showPending(_ image: UIImage) {
+        preview = image
+        title = "Revelando a última foto…"
+    }
+
+    /// Abre a última foto guardada. Com `newerThan`, espera (até 90 s) uma foto desse instante para frente;
+    /// se a câmera terminou e ela não veio (modo que não guarda original), abre a última que houver.
+    func loadLatest(newerThan date: Date? = nil, stillProcessing: @escaping () -> Bool = { false }) {
+        loading = preview == nil
+        let deadline = Date().addingTimeInterval(90)
+        var idleSince: Date?
+        func check() {
+            queue.async {
+                let latest = SourceStore.latest()
+                DispatchQueue.main.async {
+                    if let date, Date() < deadline, latest.map({ $0.0.date < date.addingTimeInterval(-1) }) ?? true {
+                        // Ainda não chegou: confere de novo daqui a meio segundo (desiste 2 s depois que a câmera terminar)
+                        if stillProcessing() { idleSince = nil } else if idleSince == nil { idleSince = Date() }
+                        if let idleSince, Date().timeIntervalSince(idleSince) > 2 {
+                            if let latest { self.use(entry: latest.0, data: latest.1) } else { self.loading = false }
+                            return
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { check() }
+                        return
+                    }
+                    if let latest { self.use(entry: latest.0, data: latest.1) } else { self.loading = false }
+                }
             }
         }
+        check()
     }
 
     private func use(entry: SourceStore.Entry, data: Data) {
@@ -368,7 +391,13 @@ struct StudioView: View {
         .tint(accent)
         .onAppear {
             model.start(from: camera)
-            model.loadLatest()
+            if camera.processing > 0, let quick = camera.lastQuickPhoto {
+                // Acabou de tirar: abre já com a prévia e troca pela foto revelada quando ela ficar pronta
+                model.showPending(quick)
+                model.loadLatest(newerThan: camera.lastShotDate) { camera.processing > 0 }
+            } else {
+                model.loadLatest()
+            }
         }
         .onChange(of: pickerItem) { _, item in
             if let item { model.load(item) }

@@ -505,7 +505,7 @@ enum Developer {
             dlog("❌ Não abriu o \(frame.isRaw ? "DNG" : "HEIC") (\(frame.data.count / 1024) KB)")
             return nil
         }
-        let output = finish(image, options: options)
+        let output = finish(enhanced(image), options: options)
         dlog("Revelação \(options.lookName) \(Int(image.extent.width))×\(Int(image.extent.height)) · \(frame.isRaw ? "DNG" : "HEIC") \(frame.data.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
     }
@@ -616,7 +616,19 @@ enum Developer {
         if frame.hasDepth, let aperture {
             return portraitScene(frame.data, aperture: aperture, focusPoint: focusPoint, scale: CGFloat(scale))
         }
-        return image(from: frame, scale: scale)
+        return image(from: frame, scale: scale).map(enhanced)
+    }
+
+    /// Foto de um quadro só: tons locais suaves (céu e sombra equilibrados) e, com ISO alto, menos ruído colorido.
+    /// O ProRAW já vem de várias fotos juntadas pela Apple; isto só acerta o que a curva do filme não faz.
+    static func enhanced(_ scene: CIImage) -> CIImage {
+        let exif = scene.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
+        let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 100
+        var out = localTone(scene, strength: 0.85)
+        if iso >= 800 {
+            out = nightDenoise(out, strength: min(0.8, log2(iso / 400) / 6))
+        }
+        return out.settingProperties(scene.properties)
     }
 
     /// Halation/bloom + o kernel do look.
@@ -1097,6 +1109,10 @@ enum Developer {
                 matte = maxKernel.apply(extent: extent, arguments: [matte, extra]) ?? matte
             }
         }
+        // Qualquer coisa em primeiro plano (roupa, objeto, planta, bicho), não só pessoa: o recorte do iOS protege o assunto
+        if let subject = subjectMask(image, focus: focusPoint ?? CGPoint(x: 0.5, y: 0.5)), let maxKernel {
+            matte = maxKernel.apply(extent: extent, arguments: [matte, subject]) ?? matte
+        }
 
         // Profundidade do plano em foco: média num quadradinho em volta do rosto (ou do centro)
         let p = focusPoint ?? CGPoint(x: 0.5, y: 0.45)
@@ -1116,6 +1132,40 @@ enum Developer {
         let scene = bokeh(sharp, map: map, radius: radius, extent: extent)
         if scale >= 1 { dlog(String(format: "Retrato: f/%.1f · foco na disparidade %.2f · bokeh até %.0f px", aperture, focus, radius)) }
         return scene.settingProperties(properties)
+    }
+
+    /// Recorte do assunto pelo iOS (VNGenerateForegroundInstanceMaskRequest). Com um ponto escolhido,
+    /// fica só o objeto que está nele; sem ponto, tudo o que está em primeiro plano.
+    static func subjectMask(_ image: CIImage, focus: CGPoint?) -> CIImage? {
+        let e = image.extent
+        let s = min(1, 1024 / max(e.width, e.height))
+        let small = image
+            .transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY))
+            .transformed(by: CGAffineTransform(scaleX: s, y: s))
+        let request = VNGenerateForegroundInstanceMaskRequest()
+        let handler = VNImageRequestHandler(ciImage: small, options: [:])
+        guard (try? handler.perform([request])) != nil, let result = request.results?.first,
+              !result.allInstances.isEmpty else { return nil }
+        var instances = result.allInstances
+        if let focus {
+            // Qual objeto está no ponto (o mapa de rótulos começa em cima à esquerda)
+            let labels = result.instanceMask
+            CVPixelBufferLockBaseAddress(labels, .readOnly)
+            if let base = CVPixelBufferGetBaseAddress(labels) {
+                let w = CVPixelBufferGetWidth(labels), h = CVPixelBufferGetHeight(labels)
+                let x = min(max(Int(focus.x * CGFloat(w)), 0), w - 1), y = min(max(Int(focus.y * CGFloat(h)), 0), h - 1)
+                let label = Int((base + y * CVPixelBufferGetBytesPerRow(labels)).assumingMemoryBound(to: UInt8.self)[x])
+                if label != 0, result.allInstances.contains(label) { instances = IndexSet(integer: label) }
+            }
+            CVPixelBufferUnlockBaseAddress(labels, .readOnly)
+        }
+        guard let buffer = try? result.generateScaledMaskForImage(forInstances: instances, from: handler) else { return nil }
+        let mask = CIImage(cvPixelBuffer: buffer)
+        dlog("Retrato: assunto recortado pelo iOS (\(instances.count) objeto(s))")
+        return mask
+            .transformed(by: CGAffineTransform(scaleX: e.width / mask.extent.width, y: e.height / mask.extent.height))
+            .transformed(by: CGAffineTransform(translationX: e.minX, y: e.minY))
+            .cropped(to: e)
     }
 
     /// Mapa de quanto borrar, para o visor (mesma conta da foto final).

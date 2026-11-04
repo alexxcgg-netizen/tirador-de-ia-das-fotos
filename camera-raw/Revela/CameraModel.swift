@@ -255,7 +255,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published private(set) var zoom: CGFloat = 1
     /// Retrato: abertura simulada (f/1.4 borra muito, f/16 quase nada).
     static let apertures: [Float] = [1.4, 2, 2.8, 4, 8, 16]
-    @Published var portraitAperture: Float = 2.8 { didSet { updatePortraitPreview() } }
+    /// f/4 de começo: desfoque bonito sem "recortado" (f/1,4 continua a um toque).
+    @Published var portraitAperture: Float = 4 { didSet { updatePortraitPreview() } }
+    /// Retrato: o que você tocou no visor fica nítido (no lugar do rosto). Coordenadas do visor.
+    private var portraitTap: CGPoint?
     @Published var nightTime: NightTime = .auto
     static let longSeconds: [Double] = [1, 2, 4, 8]
     @Published var longSecondsChoice: Double = 2
@@ -942,6 +945,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let leavingSpecial = captureMode == .action || captureMode == .freeze
         let oldMode = captureMode
         captureMode = mode
+        portraitTap = nil
         dlog("Modo: \(mode.rawValue)")
         // A exposição para RAW vale só nos modos de foto: liga ou desliga conforme o modo
         if ettr { updateExposure() }
@@ -1389,6 +1393,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     func focus(at point: CGPoint) {
         userInteracted()
         aeafLocked = false
+        if captureMode == .portrait {
+            portraitTap = point
+            show("Isto fica nítido no Retrato")
+        }
         focusPoint = point
         // O visor mostra o centro ampliado pelo zoom digital
         let zoom = crop
@@ -1724,7 +1732,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func capture() {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         // A miniatura aparece na hora (o quadro do visor); a foto revelada troca por ela quando ficar pronta
-        if let quick = renderer.snapshot() { thumbnail = quick }
+        if let quick = renderer.snapshot(maxSide: 1600) {
+            thumbnail = quick
+            lastQuickPhoto = quick
+        }
+        lastShotDate = Date()
         processing += 1
         flash = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { self.flash = false }
@@ -1757,10 +1769,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             saveDualPhoto(options: options, started: t0)
             return
         }
-        let portraitFocus: CGPoint? = faceRect.map {
-            // Rosto no visor -> posição na foto (o visor mostra o centro ampliado pelo recorte)
-            let c = crop
-            return CGPoint(x: 0.5 + ($0.midX - 0.5) / c, y: 0.5 + ($0.midY - 0.5) / c)
+        // O que fica nítido no Retrato: o ponto que você tocou, senão o rosto (visor -> foto, desfazendo o recorte)
+        let c = crop
+        let portraitFocus: CGPoint? = (portraitTap ?? faceRect.map { CGPoint(x: $0.midX, y: $0.midY) }).map {
+            CGPoint(x: 0.5 + ($0.x - 0.5) / c, y: 0.5 + ($0.y - 0.5) / c)
         }
         let aperture = portraitAperture
         // Três looks: lidos aqui (na fila principal); rajada não entra (seriam centenas de fotos)
@@ -2017,6 +2029,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     // MARK: - Teste de modos
 
+    /// Prévia da última foto (o visor no instante do clique), para o Revelar de novo abrir na hora.
+    var lastQuickPhoto: UIImage?
+    var lastShotDate = Date.distantPast
+
     /// "NOITE (12/23)" enquanto o teste roda.
     @Published var selfTestProgress: String?
     private var selfTestCancelled = false
@@ -2180,7 +2196,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Revelar de novo aberto: a câmera descansa (bateria e GPU livres para revelar).
     func pauseSession() {
-        guard !isRecordingVideo, panoramaProgress == nil else { return }
+        // Com foto ainda saindo da câmera, parar a sessão perderia a foto
+        guard !isRecordingVideo, panoramaProgress == nil, processing == 0 else { return }
         sessionQueue.async {
             if self.session.isRunning { self.session.stopRunning() }
         }
@@ -2905,7 +2922,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let buffer = disparity.depthDataMap
         // Ponto em foco: o rosto (no visor, que mostra o centro ampliado) ou um pouco acima do centro
         let c = crop
-        let viewPoint = faceRect.map { CGPoint(x: 0.5 + ($0.midX - 0.5) / c, y: 0.5 + ($0.midY - 0.5) / c) }
+        let chosen = portraitTap ?? faceRect.map { CGPoint(x: $0.midX, y: $0.midY) }
+        let viewPoint = chosen.map { CGPoint(x: 0.5 + ($0.x - 0.5) / c, y: 0.5 + ($0.y - 0.5) / c) }
             ?? CGPoint(x: 0.5, y: 0.45)
         var image = CIImage(cvPixelBuffer: buffer)
         let samplePoint: CGPoint
@@ -2972,7 +2990,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// No Retrato, mantém o foco e a luz no rosto.
     private func focusOnFaceIfNeeded(_ rect: CGRect) {
-        guard captureMode == .portrait, !manualFocus, !aeafLocked, Date().timeIntervalSince(lastFaceFocus) > 1 else { return }
+        guard captureMode == .portrait, !manualFocus, !aeafLocked, portraitTap == nil,
+              Date().timeIntervalSince(lastFaceFocus) > 1 else { return }
         lastFaceFocus = Date()
         let devicePoint = sensorPoint(fromView: CGPoint(x: rect.midX, y: rect.midY))
         let manualExposure = self.manualExposure
