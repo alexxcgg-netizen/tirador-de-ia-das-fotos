@@ -378,6 +378,8 @@ enum Developer {
         .workingColorSpace: linearP3,
         .workingFormat: CIFormat.RGBAh,
         .cacheIntermediates: false,
+        // Revelar em segundo plano no processador gráfico: o visor (que tem prioridade) não engasga
+        .priorityRequestLow: true,
     ])
 
     private static let library: Data? = {

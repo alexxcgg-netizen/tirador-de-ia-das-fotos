@@ -1705,6 +1705,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     private func capture() {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        // A miniatura aparece na hora (o quadro do visor); a foto revelada troca por ela quando ficar pronta
+        if let quick = renderer.snapshot() { thumbnail = quick }
         processing += 1
         flash = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { self.flash = false }
@@ -2605,13 +2607,22 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// para o Revelar de novo abrir a última foto qualquer que seja o modo. Roda na fila de revelação.
     private func keepNeutral(_ output: Developer.Output?, options: DevelopOptions, mode: String) -> ((String) -> Void)? {
         guard let scene = output?.scene else { return nil }
+        // Depois que a foto principal já está salva: a versão neutra não atrasa a foto
+        return { id in
+            self.processingQueue.async {
+                self.storeNeutral(scene: scene, options: options, mode: mode, assetID: id)
+            }
+        }
+    }
+
+    private func storeNeutral(scene: CIImage, options: DevelopOptions, mode: String, assetID id: String) {
         var neutral = options
         neutral.look = .neutro
         neutral.custom = nil
         neutral.amount = 0
         neutral.grain = 0
         neutral.hdrCompress = false
-        guard let plain = Developer.finish(scene, options: neutral) else { return nil }
+        guard let plain = Developer.finish(scene, options: neutral) else { return }
         // Já recortada e espelhada: guardada sem recorte nem espelho extra
         var stored = options
         stored.zoom = 1
@@ -2620,7 +2631,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // A versão neutra já saiu com a exposição descontada (ETTR): não desconta de novo ao reabrir
         stored.exposureOffset = 0
         let frame = CapturedFrame(data: plain.heic, isRaw: false)
-        return { id in SourceStore.keep(frame, options: stored, assetID: id, mode: mode, aperture: 2.8, focusPoint: nil) }
+        SourceStore.keep(frame, options: stored, assetID: id, mode: mode, aperture: 2.8, focusPoint: nil)
     }
 
     /// Tudo que a câmera deste iPhone oferece, para o relatório.

@@ -49,6 +49,23 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     /// Luminância e, separados, vermelho, verde e azul (64 faixas cada, de 0 a 1).
     var onHistogram: (([Float], [[Float]]) -> Void)?
 
+    /// Miniatura na hora do disparo: o último quadro do visor, já com o look (a foto de verdade chega depois).
+    func snapshot(maxSide: CGFloat = 400) -> UIImage? {
+        lock.lock()
+        let frame = self.frame
+        lock.unlock()
+        guard let frame else { return nil }
+        let scale = maxSide / max(frame.extent.width, frame.extent.height)
+        let small = frame.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        var options = self.options
+        options.zebra = false
+        options.peaking = false
+        options.falseColor = false
+        let image = Developer.preview(small, options: options)
+        guard let cg = context.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: Developer.displayP3) else { return nil }
+        return UIImage(cgImage: cg)
+    }
+
     /// Chamado na fila de vídeo a cada quadro.
     func enqueue(_ image: CIImage) {
         lock.lock()
