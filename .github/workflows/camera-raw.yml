@@ -18,7 +18,13 @@ defaults:
 
 jobs:
   build:
-    runs-on: macos-26
+    # Duas máquinas ao mesmo tempo: as Mac com chip Apple às vezes ficam sem vaga no GitHub;
+    # a Intel costuma ter fila menor. O app gerado é o mesmo — vale o que terminar.
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-26, macos-15-intel]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +34,8 @@ jobs:
           XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
           if [ -n "$XC" ]; then sudo xcode-select -s "$XC"; fi
           xcodebuild -version
+          # Sem o Xcode 26 (SDK do iOS 26) o app não compila: avisa claro em vez de dar erro estranho
+          xcodebuild -version | grep -q "Xcode 26" || { echo "::error::Esta máquina não tem o Xcode 26"; exit 1; }
           # Desde o Xcode 26 o compilador Metal é um componente separado
           xcodebuild -downloadComponent MetalToolchain || true
 
@@ -75,6 +83,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Revela-ipa
+          name: Revela-ipa-${{ matrix.runner }}
           path: camera-raw/Revela.ipa
           retention-days: 14
