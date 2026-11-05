@@ -1184,7 +1184,8 @@ enum Developer {
         context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         guard pixel[0].isFinite else { return 0 }
-        let lift = min(3, max(0, -4.2 - pixel[0]))
+        // −3,95 EV (era −4,2): no laboratório a noite saía com luz média 0,16–0,18; o Night Sight fica um pouco mais claro
+        let lift = min(3, max(0, -3.95 - pixel[0]))
         dlog(String(format: "Noite: luz média %.1f EV · clareia %.1f paradas", pixel[0], lift))
         return lift
     }
