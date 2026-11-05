@@ -5,6 +5,9 @@ import UIKit
 import Vision
 import simd
 
+/// Só para achar o pacote onde está o metallib.
+private final class BundleToken {}
+
 /// Tudo que um look faz com a imagem. Os valores neutros não mudam nada.
 struct LookParams {
     var exposure: Float = 0
@@ -539,7 +542,9 @@ enum Developer {
     ])
 
     private static let library: Data? = {
-        guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib") else { return nil }
+        // No app vem no pacote principal; no laboratório de testes, no pacote dos testes
+        guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib")
+                ?? Bundle(for: BundleToken.self).url(forResource: "default", withExtension: "metallib") else { return nil }
         return try? Data(contentsOf: url)
     }()
 
@@ -962,11 +967,8 @@ enum Developer {
         switch kind {
         case .average where robust:
             merged = robustMerge(count: frames.count, extent: extent, frame: aligned).map { night in
-                // ISO alto (pouca luz): tira o ruído colorido e um pouco do granulado; sombra levantada nos tons locais
                 let exif = reference.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
                 let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 800
-                let strength = min(1, max(0.25, log2(max(iso, 100) / 200) / 6)) / sqrt(Float(frames.count) / 8)
-                dlog(String(format: "Noite: ISO %.0f · redução de ruído %.2f", iso, strength))
                 var out = materialize(night, extent: extent)
                 // Postes e letreiros: a foto curta devolve a luz onde a junção estourou
                 if let shortFrame, let recoverKernel, let short = image(from: shortFrame),
@@ -978,14 +980,7 @@ enum Developer {
                     out = recoverKernel.apply(extent: extent, arguments: [out, alignedShort, gain]) ?? out
                     dlog(String(format: "Noite: luzes fortes recuperadas da foto curta (%.0f×)", gain))
                 }
-                // O iPhone mede o breu escuro demais: clareia até uma luz de noite (não de dia), até 3 paradas
-                let lift = nightLift(out)
-                if lift > 0.1 { out = scaled(out, by: exp2(lift)).cropped(to: extent) }
-                // Mais claro = mais ruído aparente: a redução acompanha
-                let cleanup = min(1, strength + lift * 0.12)
-                out = localTone(nightDenoise(out, strength: cleanup), strength: 0.75)
-                if starPoints > 0 { out = starBurst(out, points: starPoints, threshold: 1.5 * exp2(lift)) }
-                return out
+                return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints)
             }
         case .average:
             var mean = average(count: frames.count, extent: extent, frame: aligned)
@@ -1058,6 +1053,23 @@ enum Developer {
     /// Soma em lotes de 3, guardando o parcial em memória de vídeo: nunca há mais de 3 RAW abertos ao mesmo tempo.
     /// Estrela nas luzes: as luzes bem fortes ganham raios, como numa lente fechada em f/11–f/16.
     /// Feito numa versão pequena (os raios são suaves de qualquer jeito) e somado à luz da cena.
+    /// NOITE depois de juntar: clareia, tira ruído, tons locais e estrelas nas luzes.
+    static func nightFinish(_ merged: CIImage, iso: Float, frameCount: Int, starPoints: Int) -> CIImage {
+        let extent = merged.extent
+        // ISO alto (pouca luz): tira o ruído colorido e um pouco do granulado; sombra levantada nos tons locais
+        let strength = min(1, max(0.25, log2(max(iso, 100) / 200) / 6)) / sqrt(Float(max(frameCount, 1)) / 8)
+        dlog(String(format: "Noite: ISO %.0f · redução de ruído %.2f", iso, strength))
+        var out = merged
+        // O iPhone mede o breu escuro demais: clareia até uma luz de noite (não de dia), até 3 paradas
+        let lift = nightLift(out)
+        if lift > 0.1 { out = scaled(out, by: exp2(lift)).cropped(to: extent) }
+        // Mais claro = mais ruído aparente: a redução acompanha
+        let cleanup = min(1, strength + lift * 0.12)
+        out = localTone(nightDenoise(out, strength: cleanup), strength: 0.75)
+        if starPoints > 0 { out = starBurst(out, points: starPoints, threshold: 1.5 * exp2(lift)) }
+        return out
+    }
+
     /// Quantas paradas clarear a NOITE: leva a luz média (em log, então um poste não engana) até uns −4 EV.
     static func nightLift(_ scene: CIImage) -> Float {
         guard let logLumaKernel else { return 0 }

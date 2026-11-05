@@ -1,0 +1,88 @@
+name: Revela (laboratório)
+
+# Revela RAWs de exemplo com o código do app no simulador do iPhone e guarda as imagens no ramo revela-lab,
+# para o Claude olhar o resultado de cada filme, da FOTO e da NOITE sem precisar do iPhone.
+on:
+  push:
+    paths:
+      - "camera-raw/Revela/Developer.swift"
+      - "camera-raw/Revela/SuperResolution.swift"
+      - "camera-raw/Revela/Tone.ci.metal"
+      - "camera-raw/RevelaLab/**"
+      - ".github/workflows/revela-lab.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: revela-lab
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: camera-raw
+
+jobs:
+  lab:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Selecionar Xcode
+        run: |
+          XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XC" ]; then sudo xcode-select -s "$XC"; fi
+          xcodebuild -version
+          xcodebuild -downloadComponent MetalToolchain || true
+
+      - name: RAWs de exemplo
+        run: |
+          mkdir -p "$RUNNER_TEMP/lab/in" "$RUNNER_TEMP/lab/out"
+          cd "$RUNNER_TEMP/lab/in"
+          curl -sSL -o iphone12pro.dng "https://raw.pixls.us/data/Apple/iPhone%2012%20Pro/IMG_1361.DNG"
+          curl -sSL -o iphonexs.dng "https://raw.pixls.us/data/Apple/iPhone%20XS/IMG_1105.dng"
+          curl -sSL -o pixel8pro.dng "https://raw.pixls.us/data/Google/Pixel%208%20Pro/PXL_20240415_103400204.RAW-02.ORIGINAL.dng"
+          ls -la
+
+      - name: Gerar projeto
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Revelar no simulador
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)['devices']
+          ios=[k for k in d if 'iOS' in k]
+          ios.sort(key=lambda k:[int(x) for x in k.split('iOS-')[-1].split('-')])
+          for k in reversed(ios):
+              for dev in d[k]:
+                  if dev['name'].startswith('iPhone'): print(dev['udid']); sys.exit()
+          ")
+          echo "Simulador: $UDID"
+          set +e
+          TEST_RUNNER_LAB_IN="$RUNNER_TEMP/lab/in" TEST_RUNNER_LAB_OUT="$RUNNER_TEMP/lab/out" \
+          xcodebuild test -project Revela.xcodeproj -scheme RevelaLab -destination "id=$UDID" \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO > test.log 2>&1
+          status=$?
+          set -e
+          grep -E "error:|\[revela\]|Test Case|TEST (SUCCEEDED|FAILED)|\*\* TEST" test.log | tail -200 || true
+          cp test.log "$RUNNER_TEMP/lab/out/xcodebuild.log"
+          if [ $status -ne 0 ]; then tail -60 test.log; fi
+          ls -R "$RUNNER_TEMP/lab/out" | head -80
+
+      - name: Guardar no ramo revela-lab
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP/lab/out"
+          git init -q
+          git checkout -q -b revela-lab
+          git config user.name "Revela lab"
+          git config user.email "revela-lab@users.noreply.github.com"
+          echo "Resultado de ${GITHUB_SHA}" > LEIA-ME.md
+          git add -A
+          git commit -qm "Laboratório: ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" revela-lab
