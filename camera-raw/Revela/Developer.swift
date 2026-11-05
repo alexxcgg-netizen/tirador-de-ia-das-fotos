@@ -1120,9 +1120,9 @@ enum Developer {
         let blackPoint = max(0.0035, min(0.03, floor * 0.85))
         dlog(String(format: "Noite: preto em %.4f (chão %.4f)", blackPoint, floor))
         out = out.applyingFilter("CIColorMatrix", parameters: [
-            "inputRVector": CIVector(x: CGFloat(1 + blackPoint * 10), y: 0, z: 0, w: 0),
-            "inputGVector": CIVector(x: 0, y: CGFloat(1 + blackPoint * 10), z: 0, w: 0),
-            "inputBVector": CIVector(x: 0, y: 0, z: CGFloat(1 + blackPoint * 10), w: 0),
+            "inputRVector": CIVector(x: CGFloat(1 + blackPoint * 2), y: 0, z: 0, w: 0),
+            "inputGVector": CIVector(x: 0, y: CGFloat(1 + blackPoint * 2), z: 0, w: 0),
+            "inputBVector": CIVector(x: 0, y: 0, z: CGFloat(1 + blackPoint * 2), w: 0),
             "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
             "inputBiasVector": CIVector(x: CGFloat(-blackPoint), y: CGFloat(-blackPoint), z: CGFloat(-blackPoint), w: 0),
         ]).cropped(to: extent)
