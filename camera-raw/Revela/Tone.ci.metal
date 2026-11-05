@@ -43,8 +43,9 @@ namespace revela {
 extern "C" {
 namespace coreimage {
     // Vídeo do visor ou HEIC da Apple -> luz linear de cena (aproximada)
-    float4 revelaToScene(sample_t s) {
-        return float4(revela::inverseFilmic(s.rgb) / 0.8f, 1.0f);
+    // gain: o mesmo da curva fílmica do filme (ida e volta dá a mesma imagem)
+    float4 revelaToScene(sample_t s, float gain) {
+        return float4(revela::inverseFilmic(s.rgb) / gain, 1.0f);
     }
 
     // Altas luzes da cena, para o halation e o bloom
@@ -79,7 +80,7 @@ namespace coreimage {
         // Contraste em escala logarítmica, ancorado no cinza médio (18%)
         c = 0.18f * pow(c / 0.18f, float3(contrast));
 
-        float3 t = revela::filmic(c * 0.8f);
+        float3 t = revela::filmic(c * film.z);
         t = toe + (1.0f - toe) * t;
         t = pow(max(t * slope + offset, float3(0.0f)), power);
 
@@ -183,11 +184,15 @@ namespace coreimage {
     }
 
     // Tons locais: aproxima a luz de fundo de cada região da média (strength < 1) e mantém o detalhe.
-    float4 revelaLocalTone(sample_t s, sample_t base, float mean, float strength) {
+    // shape: x = força nas sombras, y = força nas altas luzes, z = detalhe, w = deslocamento global (EV).
+    // Sombras sobem mais do que as luzes descem: o céu não fica cinza
+    float4 revelaLocalTone(sample_t s, sample_t base, float mean, float4 shape) {
         float3 c = max(s.rgb, float3(0.0f));
         float lg = log2(max(dot(c, revela::kLuma), 1e-5f));
         float b = base.r;
-        float target = mean + (b - mean) * strength + (lg - b) * 1.08f;
+        float d = b - mean;
+        float k = d < 0.0f ? shape.x : shape.y;
+        float target = mean + d * k + (lg - b) * shape.z + shape.w;
         return float4(c * exp2(clamp(target - lg, -3.0f, 3.0f)), 1.0f);
     }
 

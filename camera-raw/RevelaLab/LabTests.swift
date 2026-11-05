@@ -143,4 +143,29 @@ final class LabTests: XCTestCase {
             }
         }
     }
+
+    /// Calibragens do tom lado a lado (o app usa a padrão; as outras são para comparar).
+    func test4Tuning() throws {
+        let variants: [(String, ToneTuning)] = [
+            ("a_antiga", ToneTuning(filmicGain: 0.8, toeScale: 1, offsetScale: 1, saturation: 1, shadowRatio: 1, highlightRatio: 1, keyPull: 0)),
+            ("b_padrao", ToneTuning()),
+            ("c_mais_clara", ToneTuning(filmicGain: 1.12, keyPull: 0.45)),
+            ("d_mais_cor", ToneTuning(saturation: 1.22, shadowRatio: 2.0, highlightRatio: 0.3)),
+        ]
+        let looks: [Look] = [.neutro, .portra, .classicChrome, .superia, .velvia, .trix]
+        for url in raws() {
+            let name = url.deletingPathExtension().lastPathComponent
+            let f = try frame(url)
+            for (label, tuning) in variants {
+                Developer.tuning = tuning
+                guard let scene = Developer.scene(for: f, scale: 0.5) else { continue }
+                let small = Developer.materialize(reduced(scene, to: 1000), extent: reduced(scene, to: 1000).extent)
+                for look in looks {
+                    let (graded, _) = Developer.developed(small, options: options(look))
+                    save(graded, "tom/\(name)/\(look.rawValue)/\(label)", maxSide: 1000)
+                }
+            }
+        }
+        Developer.tuning = ToneTuning()
+    }
 }

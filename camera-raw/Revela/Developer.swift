@@ -5,6 +5,22 @@ import UIKit
 import Vision
 import simd
 
+/// Calibragem do tom (o laboratório testa variações; o app usa os valores padrão).
+struct ToneTuning {
+    /// Quanto a cena entra na curva fílmica (antes 0,8: a foto saía apagada, branco em 0,7).
+    var filmicGain: Float = 1.0
+    /// Quanto do "preto levantado" e do deslocamento de cada filme vale (antes 1: névoa nos filmes suaves).
+    var toeScale: Float = 0.5
+    var offsetScale: Float = 0.6
+    /// Saturação de base de todos os filmes (o Neutro tinha 30% menos cor que a Apple).
+    var saturation: Float = 1.12
+    /// Tons locais: as sombras sobem mais (× na força) e as luzes descem menos.
+    var shadowRatio: Float = 1.6
+    var highlightRatio: Float = 0.4
+    /// Puxa a luz média da foto de um quadro só até perto de −3 EV (0 = não mexe).
+    var keyPull: Float = 0.35
+}
+
 /// Só para achar o pacote onde está o metallib.
 private final class BundleToken {}
 
@@ -523,6 +539,8 @@ struct DevelopOptions {
 
 /// Revela o DNG com a nossa própria curva, sem o processamento de "aparência" da Apple.
 enum Developer {
+    static var tuning = ToneTuning()
+
     struct Output {
         let heic: Data
         let thumbnail: UIImage?
@@ -591,11 +609,11 @@ enum Developer {
     private static let noise = CIFilter.randomGenerator().outputImage!
 
     /// Valor de cena em que o vídeo do iPhone já chega estourado (0,97 na tela), para a zebra.
-    private static let zebraThreshold: Float = {
+    private static var zebraThreshold: Float {
         let x: Float = 0.97, a: Float = 2.51, b: Float = 0.03, c: Float = 2.43, d: Float = 0.59, e: Float = 0.14
         let A = x * c - a, B = x * d - b, C = x * e
-        return (-B - (B * B - 4 * A * C).squareRoot()) / (2 * A) / 0.8
-    }()
+        return (-B - (B * B - 4 * A * C).squareRoot()) / (2 * A) / tuning.filmicGain
+    }
 
     /// Diz se os kernels de Metal carregaram (sem eles a revelação sai sem look).
     static var kernelStatus: String {
@@ -652,7 +670,7 @@ enum Developer {
         var properties = image.properties
         properties[kCGImagePropertyOrientation as String] = nil
         if scale < 1 { image = image.transformed(by: CGAffineTransform(scaleX: CGFloat(scale), y: CGFloat(scale))) }
-        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image, tuning.filmicGain]) ?? image
         return scene.settingProperties(properties)
     }
 
@@ -804,7 +822,7 @@ enum Developer {
     static func enhanced(_ scene: CIImage, preview: CIImage? = nil) -> CIImage {
         let exif = scene.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
         let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 100
-        var out = localTone(scene, strength: 0.85, preview: preview)
+        var out = localTone(scene, strength: 0.85, preview: preview, keyPull: tuning.keyPull)
         if iso >= 800 {
             out = nightDenoise(out, strength: min(0.8, log2(iso / 400) / 6))
         }
@@ -822,19 +840,19 @@ enum Developer {
         let e = scene.extent
         let arguments: [Any] = [
             glowing, grainNoise,
-            p.exposure, p.saturation, p.mono, p.toe, p.contrast, p.grain,
+            p.exposure, p.saturation * tuning.saturation, p.mono, p.toe * tuning.toeScale, p.contrast, p.grain,
             vector(p.matR), vector(p.matG), vector(p.matB),
-            vector(p.slope), vector(p.offset), vector(p.power),
+            vector(p.slope), vector(p.offset * tuning.offsetScale), vector(p.power),
             vector(p.shadowTint), vector(p.highTint),
             p.vignette, CIVector(x: e.minX, y: e.minY, z: e.width, w: e.height),
             zebra ? zebraThreshold : Float(0),
-            CIVector(x: CGFloat(p.density), y: CGFloat(p.grainColor), z: 0, w: 0),
+            CIVector(x: CGFloat(p.density), y: CGFloat(p.grainColor), z: CGFloat(tuning.filmicGain), w: 0),
         ]
         var toned = toneKernel.apply(extent: e, arguments: arguments) ?? scene
         if p.skinProtect > 0.01, p.mono < 0.5, let skinMixKernel {
             // Mesma luz e textura do look, sem a cor dele: é para essa versão que a pele puxa
             var neutral = arguments
-            neutral[3] = min(p.saturation, 1.05)
+            neutral[3] = min(p.saturation, 1.05) * tuning.saturation
             neutral[8] = vector(SIMD3(1, 0, 0)); neutral[9] = vector(SIMD3(0, 1, 0)); neutral[10] = vector(SIMD3(0, 0, 1))
             neutral[11] = vector(SIMD3(1, 1, 1)); neutral[12] = vector(SIMD3(0, 0, 0)); neutral[13] = vector(SIMD3(1, 1, 1))
             neutral[14] = vector(SIMD3(0, 0, 0)); neutral[15] = vector(SIMD3(0, 0, 0))
@@ -890,13 +908,13 @@ enum Developer {
     /// Quadro de vídeo (já com a curva da Apple) -> look e HEIC.
     static func developVideoFrame(_ frame: CGImage, options: DevelopOptions) -> Output? {
         let image = CIImage(cgImage: frame)
-        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image, tuning.filmicGain]) ?? image
         return finish(scene, options: options)
     }
 
     /// Imagem de vídeo (exposição longa) -> look e HEIC.
     static func developVideoImage(_ image: CIImage, options: DevelopOptions) -> Output? {
-        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image, tuning.filmicGain]) ?? image
         return finish(scene, options: options)
     }
 
@@ -1294,7 +1312,7 @@ enum Developer {
     /// e o detalhe fica. Calculado numa versão pequena: a luz de fundo é borrada de qualquer jeito.
     /// `preview`: a mesma foto já pequena (RAW aberto em 1/8, rápido). Sem ela, a cena é reduzida aqui; com ela,
     /// o RAW grande é aberto uma vez só (antes abria três vezes e a foto levava 7 s para revelar).
-    static func localTone(_ scene: CIImage, strength: Float, preview: CIImage? = nil) -> CIImage {
+    static func localTone(_ scene: CIImage, strength: Float, preview: CIImage? = nil, keyPull: Float = 0) -> CIImage {
         guard let logLumaKernel, let localToneKernel else { return scene }
         let e = scene.extent
         let source = preview ?? scene.transformed(by: CGAffineTransform(scaleX: 0.125, y: 0.125))
@@ -1319,7 +1337,14 @@ enum Developer {
         context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         dlog(String(format: "Tons locais: luz média %.2f EV · força %.2f", pixel[0], 1 - strength))
-        return localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], strength]) ?? scene
+        let t = tuning
+        let shadow = max(0.3, 1 - (1 - strength) * t.shadowRatio)
+        let high = min(1, 1 - (1 - strength) * t.highlightRatio)
+        // Foto de um quadro: aproxima a luz média de −3 EV (a medição do iPhone deixa a foto escura demais)
+        let shift = keyPull > 0 ? min(0.8, max(-0.5, (-3.0 - pixel[0]) * keyPull)) : 0
+        if shift != 0 { dlog(String(format: "Tons locais: ajuste de luz %+.2f EV", shift)) }
+        let shape = CIVector(x: CGFloat(shadow), y: CGFloat(high), z: 1.08, w: CGFloat(shift))
+        return localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], shape]) ?? scene
     }
 
     private static func hdrImage(_ frame: CapturedFrame, scale: Float = 1) -> CIImage? {
@@ -1366,7 +1391,7 @@ enum Developer {
 
         guard let disparityRaw = CIImage(data: data, options: [.auxiliaryDisparity: true]), let blurMapKernel else {
             dlog("Retrato: a foto veio sem profundidade; revelando sem desfoque")
-            let scene = toSceneKernel?.apply(extent: extent, arguments: [image]) ?? image
+            let scene = toSceneKernel?.apply(extent: extent, arguments: [image, tuning.filmicGain]) ?? image
             return scene.settingProperties(properties)
         }
         func fit(_ aux: CIImage) -> CIImage {
@@ -1402,7 +1427,7 @@ enum Developer {
         let strength = Float(2.8 / max(aperture, 0.7)) * 3
         let radius = min(extent.width, extent.height) * 0.014 * CGFloat(2.8 / max(aperture, 0.7))
         guard let map = blurMapKernel.apply(extent: extent, arguments: [disparity, matte, focus, strength]) else { return nil }
-        let sharp = toSceneKernel?.apply(extent: extent, arguments: [image]) ?? image
+        let sharp = toSceneKernel?.apply(extent: extent, arguments: [image, tuning.filmicGain]) ?? image
         let scene = bokeh(sharp, map: map, radius: radius, extent: extent)
         if scale >= 1 { dlog(String(format: "Retrato: f/%.1f · foco na disparidade %.2f · bokeh até %.0f px", aperture, focus, radius)) }
         return scene.settingProperties(properties)
@@ -1513,7 +1538,7 @@ enum Developer {
 
     /// Aplica o look ao vídeo do visor, para ver o resultado antes de fotografar.
     static func preview(_ image: CIImage, options: PreviewOptions) -> CIImage {
-        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image]) ?? image
+        let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image, tuning.filmicGain]) ?? image
         var out = grade(scene, look: options.develop.params, zebra: options.zebra)
         if options.falseColor, let falseColorKernel {
             out = falseColorKernel.apply(extent: out.extent, arguments: [out]) ?? out
