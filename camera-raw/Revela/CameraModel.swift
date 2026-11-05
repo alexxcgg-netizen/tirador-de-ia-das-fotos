@@ -530,7 +530,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var readoutISO: Float = 0
     var readoutShutter: Double = 0
     var readoutLensPosition: Float = 0
-    @Published var processing = 0
+    @Published var processing = 0 {
+        // Revelar de novo pediu para a câmera descansar enquanto a foto ainda saía: descansa agora
+        didSet { if processing == 0, oldValue > 0, pauseWanted { pauseSession() } }
+    }
+    private var pauseWanted = false
     /// "3/7" enquanto uma sequência está sendo fotografada.
     @Published var stackProgress: String?
     @Published var message: String?
@@ -1171,6 +1175,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 hdrWanted = false
                 setupSession(lens: lens, mode: mode)
                 DispatchQueue.main.async {
+                    // Só força FOTO se o modo pedido ainda é um desses (você pode já ter trocado)
+                    guard [.portrait, .video, .cinematic, .hdr].contains(self.captureMode) else { return }
                     self.select(captureMode: .photo)
                     self.message = "A câmera recusou esse modo agora. Voltei para FOTO; o relatório mostra o motivo."
                 }
@@ -1789,11 +1795,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func capture() {
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         // A miniatura aparece na hora (o quadro do visor); a foto revelada troca por ela quando ficar pronta
-        if let quick = renderer.snapshot(maxSide: 1600) {
-            thumbnail = quick
-            lastQuickPhoto = quick
+        // (feita fora da fila principal: renderizar 1600 px ali travava o toque)
+        let shotDate = Date()
+        lastQuickPhoto = nil
+        let previewOptions = renderer.options
+        renderer.snapshotQueue.async { [renderer] in
+            guard let quick = renderer.snapshot(maxSide: 1600, options: previewOptions) else { return }
+            DispatchQueue.main.async {
+                // Se a foto revelada já chegou, não troca a de verdade pela prévia
+                guard self.lastShotDate == shotDate, self.processing > 0 else { return }
+                self.thumbnail = quick
+                self.lastQuickPhoto = quick
+            }
         }
-        lastShotDate = Date()
+        lastShotDate = shotDate
         processing += 1
         flash = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { self.flash = false }
@@ -1907,9 +1922,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 let iso = min(max(d.iso * Float(current / target), f.minISO), f.maxISO)
                 dlog(String(format: "%@: %.4fs ISO %.0f → %.4fs ISO %.0f · %d fotos", nightPlan ? "Noite" : "Super resolução",
                             current, d.iso, target, iso, count))
-                d.safeCustomExposure(seconds: target, iso: iso) { _ in
-                    self.sessionQueue.async { run() }
-                }
+                // Se a câmera parar no meio (ligação, Central de Controle), a resposta pode nunca vir: segue sozinho
+                let go = self.onceOnSessionQueue(timeout: 2 + target * 2, run)
+                d.safeCustomExposure(seconds: target, iso: iso) { _ in go() }
                 d.unlockForConfiguration()
             }
             if waitForStill { self.waitUntilStill(then: begin) } else { begin() }
@@ -1976,19 +1991,32 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Mesmo ISO, 1/8 do tempo: espera a câmera aplicar e fotografa
             let f = d.activeFormat
             let duration = max(d.exposureDuration.seconds / 8, f.minExposureDuration.seconds)
-            d.safeCustomExposure(seconds: duration, iso: d.iso) { _ in
-                self.sessionQueue.async { shoot() }
-            }
+            let go = onceOnSessionQueue(timeout: 2 + duration * 2, shoot)
+            d.safeCustomExposure(seconds: duration, iso: d.iso) { _ in go() }
             d.unlockForConfiguration()
             return
         }
         guard let positions, let d = device, d.isLockingFocusWithCustomLensPositionSupported,
               (try? d.lockForConfiguration()) != nil else { return shoot() }
         // Espera a lente chegar na posição antes de fotografar
-        d.setFocusModeLocked(lensPosition: positions[index]) { _ in
-            self.sessionQueue.async { shoot() }
-        }
+        let go = onceOnSessionQueue(timeout: 2, shoot)
+        d.setFocusModeLocked(lensPosition: positions[index]) { _ in go() }
         d.unlockForConfiguration()
+    }
+
+    /// Gatilho que roda `action` uma vez só na fila da câmera: quando a câmera responder ou, se ela não responder, após `timeout` s.
+    private func onceOnSessionQueue(timeout: Double, _ action: @escaping () -> Void) -> () -> Void {
+        let lock = NSLock()
+        var done = false
+        let fire: () -> Void = {
+            lock.lock()
+            let first = !done
+            done = true
+            lock.unlock()
+            if first { self.sessionQueue.async(execute: action) }
+        }
+        sessionQueue.asyncAfter(deadline: .now() + timeout, execute: fire)
+        return fire
     }
 
     /// Fotografa um RAW e devolve o DNG. Em sequências usa 12 MP para caber na memória.
@@ -2275,14 +2303,17 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Revelar de novo aberto: a câmera descansa (bateria e GPU livres para revelar).
     func pauseSession() {
-        // Com foto ainda saindo da câmera, parar a sessão perderia a foto
+        pauseWanted = true
+        // Com foto ainda saindo da câmera, parar a sessão perderia a foto (para quando ela terminar)
         guard !isRecordingVideo, panoramaProgress == nil, processing == 0 else { return }
+        pauseWanted = false
         sessionQueue.async {
             if self.session.isRunning { self.session.stopRunning() }
         }
     }
 
     func resumeSession() {
+        pauseWanted = false
         sessionQueue.async {
             if !self.session.isRunning, !self.dualActive { self.session.startRunning() }
         }
@@ -2545,7 +2576,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
             dual.onAudio = { [weak self] buffer in self?.recorder.appendAudio(buffer) }
             dual.onFailure = { [weak self] in
-                guard let self else { return }
+                // Só volta se ainda estiver na DUPLA (você pode já ter trocado de modo)
+                guard let self, self.captureMode == .dual else { return }
                 self.message = "A câmera dupla não abriu agora. Voltei para FOTO."
                 self.select(captureMode: .photo)
             }
@@ -2821,7 +2853,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         stored.originalAspect = true
         // A versão neutra já saiu com a exposição descontada (ETTR): não desconta de novo ao reabrir
         stored.exposureOffset = 0
-        let frame = CapturedFrame(data: plain.heic, isRaw: false)
+        var frame = CapturedFrame(data: plain.heic, isRaw: false)
+        frame.toned = true
         SourceStore.keep(frame, options: stored, assetID: id, mode: mode, aperture: 2.8, focusPoint: nil)
     }
 

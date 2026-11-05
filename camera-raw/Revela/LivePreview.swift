@@ -12,6 +12,12 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         .cacheIntermediates: false,
     ])
     private let histogramQueue = DispatchQueue(label: "revela.histogram")
+    /// Miniatura do disparo: fila e contexto próprios (não disputa com o visor na fila principal)
+    let snapshotQueue = DispatchQueue(label: "revela.snapshot", qos: .userInitiated)
+    private lazy var snapshotContext = CIContext(mtlDevice: device, options: [
+        .workingColorSpace: Developer.linearP3,
+        .cacheIntermediates: false,
+    ])
     private let lock = NSLock()
     private var frame: CIImage?
     private var frameCount = 0
@@ -50,19 +56,20 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     var onHistogram: (([Float], [[Float]]) -> Void)?
 
     /// Miniatura na hora do disparo: o último quadro do visor, já com o look (a foto de verdade chega depois).
-    func snapshot(maxSide: CGFloat = 400) -> UIImage? {
+    /// Pode rodar fora da fila principal: passe `options` lido na principal.
+    func snapshot(maxSide: CGFloat = 400, options base: Developer.PreviewOptions? = nil) -> UIImage? {
         lock.lock()
         let frame = self.frame
         lock.unlock()
-        guard let frame else { return nil }
+        guard let frame, frame.extent.width > 0, frame.extent.height > 0 else { return nil }
         let scale = maxSide / max(frame.extent.width, frame.extent.height)
         let small = frame.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-        var options = self.options
+        var options = base ?? self.options
         options.zebra = false
         options.peaking = false
         options.falseColor = false
         let image = Developer.preview(small, options: options)
-        guard let cg = context.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: Developer.displayP3) else { return nil }
+        guard let cg = snapshotContext.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: Developer.displayP3) else { return nil }
         return UIImage(cgImage: cg)
     }
 
@@ -102,9 +109,13 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         lock.lock()
         frame = image
         enqueuedCount &+= 1
+        // Um desenho por vez na fila principal: se o anterior ainda não saiu, ele já pega este quadro
+        let post = !drawPending
+        drawPending = true
         lock.unlock()
-        DispatchQueue.main.async { self.view?.draw() }
+        if post { DispatchQueue.main.async { self.view?.draw() } }
     }
+    private var drawPending = false
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
@@ -119,6 +130,7 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         let fade = fadeRequest
         fadeRequest = false
         let newFrames = enqueuedCount &- armedCount > 1
+        drawPending = false
         lock.unlock()
         guard let frame, let drawable = view.currentDrawable, let buffer = queue.makeCommandBuffer() else { return }
 

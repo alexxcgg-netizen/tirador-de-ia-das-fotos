@@ -312,6 +312,8 @@ struct CapturedFrame {
     var hasDepth = false
     /// Desvio de exposição do quadro no HDR (−2, 0, +2).
     var exposureBias: Float = 0
+    /// Versão neutra já revelada (NOITE, HDR, LONGA, PANORAMA): os tons locais já foram aplicados.
+    var toned = false
 }
 
 /// Tudo que define como a foto é revelada.
@@ -618,7 +620,10 @@ enum Developer {
         if frame.hasDepth, let aperture {
             return portraitScene(frame.data, aperture: aperture, focusPoint: focusPoint, scale: CGFloat(scale))
         }
-        return image(from: frame, scale: scale).map { enhanced($0, preview: scale < 0.5 ? nil : image(from: frame, scale: 0.125)) }
+        guard let opened = image(from: frame, scale: scale) else { return nil }
+        // A versão neutra guardada já tem os tons locais: aplicar de novo deixaria a foto lavada
+        if frame.toned { return opened }
+        return enhanced(opened, preview: scale < 0.5 ? nil : image(from: frame, scale: 0.125))
     }
 
     /// Foto de um quadro só: tons locais suaves (céu e sombra equilibrados) e, com ISO alto, menos ruído colorido.

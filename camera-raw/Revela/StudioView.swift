@@ -116,21 +116,31 @@ final class StudioModel: ObservableObject {
         loading = preview == nil
         let deadline = Date().addingTimeInterval(90)
         var idleSince: Date?
-        func check() {
+        func finish() {
             queue.async {
                 let latest = SourceStore.latest()
                 DispatchQueue.main.async {
-                    if let date, Date() < deadline, latest.map({ $0.0.date < date.addingTimeInterval(-1) }) ?? true {
+                    if let latest { self.use(entry: latest.0, data: latest.1) } else { self.loading = false }
+                }
+            }
+        }
+        func check() {
+            queue.async {
+                // Confere só o índice; o original (que pode ter 100 MB) é lido uma vez só, quando chegar
+                let entry = SourceStore.latestEntry()
+                let waiting = date.map { d in Date() < deadline && (entry.map { $0.date < d.addingTimeInterval(-1) } ?? true) } ?? false
+                DispatchQueue.main.async {
+                    if waiting {
                         // Ainda não chegou: confere de novo daqui a meio segundo (desiste 2 s depois que a câmera terminar)
                         if stillProcessing() { idleSince = nil } else if idleSince == nil { idleSince = Date() }
                         if let idleSince, Date().timeIntervalSince(idleSince) > 2 {
-                            if let latest { self.use(entry: latest.0, data: latest.1) } else { self.loading = false }
+                            finish()
                             return
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { check() }
                         return
                     }
-                    if let latest { self.use(entry: latest.0, data: latest.1) } else { self.loading = false }
+                    finish()
                 }
             }
         }
@@ -149,7 +159,9 @@ final class StudioModel: ObservableObject {
         // Foto com ETTR: o original veio mais claro; começa com a mesma exposição da foto salva
         var start = Developer.Adjust()
         start.exposure = entry.exposureOffset ?? 0
-        open(CapturedFrame(data: data, isRaw: entry.isRaw, hasDepth: entry.hasDepth), adjust: start)
+        var frame = CapturedFrame(data: data, isRaw: entry.isRaw, hasDepth: entry.hasDepth)
+        frame.toned = entry.toned ?? false
+        open(frame, adjust: start)
     }
 
     func load(_ item: PhotosPickerItem) {
@@ -391,9 +403,9 @@ struct StudioView: View {
         .tint(accent)
         .onAppear {
             model.start(from: camera)
-            if camera.processing > 0, let quick = camera.lastQuickPhoto {
+            if camera.processing > 0 {
                 // Acabou de tirar: abre já com a prévia e troca pela foto revelada quando ela ficar pronta
-                model.showPending(quick)
+                if let quick = camera.lastQuickPhoto { model.showPending(quick) }
                 model.loadLatest(newerThan: camera.lastShotDate) { camera.processing > 0 }
             } else {
                 model.loadLatest()

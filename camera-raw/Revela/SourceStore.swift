@@ -19,6 +19,8 @@ enum SourceStore {
         var mode: String
         /// ETTR: quanto a revelação descontou (a foto foi exposta mais clara). Opcional: originais antigos não têm.
         var exposureOffset: Float?
+        /// Versão neutra já revelada (não aplica os tons locais de novo). Opcional: originais antigos não têm.
+        var toned: Bool?
 
         var focusPoint: CGPoint? { focusX.flatMap { x in focusY.map { CGPoint(x: x, y: $0) } } }
     }
@@ -61,7 +63,8 @@ enum SourceStore {
                                  mirror: options.mirror,
                                  aperture: aperture, focusX: focusPoint.map { Double($0.x) }, focusY: focusPoint.map { Double($0.y) },
                                  date: Date(), mode: mode,
-                                 exposureOffset: options.exposureOffset == 0 ? nil : options.exposureOffset), at: 0)
+                                 exposureOffset: options.exposureOffset == 0 ? nil : options.exposureOffset,
+                                 toned: frame.toned ? true : nil), at: 0)
             // No máximo `limit` fotos e uns 700 MB (um ProRAW de 48 MP passa de 70 MB)
             func size(_ e: Entry) -> Int {
                 (try? directory.appendingPathComponent(e.file).resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
@@ -83,6 +86,11 @@ enum SourceStore {
                   let data = try? Data(contentsOf: directory.appendingPathComponent(entry.file)) else { return nil }
             return (entry, data)
         }
+    }
+
+    /// Só o índice (sem ler o arquivo, que pode ter 100 MB): para conferir se a foto nova já chegou.
+    static func latestEntry() -> Entry? {
+        queue.sync { readIndex().first }
     }
 
     static func latest() -> (Entry, Data)? {
