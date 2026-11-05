@@ -8,17 +8,17 @@ import simd
 /// Calibragem do tom (o laboratório testa variações; o app usa os valores padrão).
 struct ToneTuning {
     /// Quanto a cena entra na curva fílmica (antes 0,8: a foto saía apagada, branco em 0,7).
-    var filmicGain: Float = 1.0
+    var filmicGain: Float = 1.05
     /// Quanto do "preto levantado" e do deslocamento de cada filme vale (antes 1: névoa nos filmes suaves).
     var toeScale: Float = 0.5
     var offsetScale: Float = 0.6
     /// Saturação de base de todos os filmes (o Neutro tinha 30% menos cor que a Apple).
-    var saturation: Float = 1.12
+    var saturation: Float = 1.2
     /// Tons locais: as sombras sobem mais (× na força) e as luzes descem menos.
-    var shadowRatio: Float = 1.6
-    var highlightRatio: Float = 0.4
+    var shadowRatio: Float = 1.8
+    var highlightRatio: Float = 0.35
     /// Puxa a luz média da foto de um quadro só até perto de −3 EV (0 = não mexe).
-    var keyPull: Float = 0.35
+    var keyPull: Float = 0.4
     /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
     var hueKeep: Float = 0.5
 }
@@ -591,6 +591,8 @@ enum Developer {
     private static let logLumaKernel = kernel("revelaLogLuma")
     private static let skinMixKernel = kernel("revelaSkinMix")
     private static let chromaKernel = kernel("revelaChroma")
+    private static let peakKernel = kernel("revelaPeak")
+    private static let shrinkKernel = kernel("revelaShrink")
     private static let recoverKernel = kernel("revelaRecover")
     private static let bandKernel = kernel("revelaBand")
     private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
@@ -1109,7 +1111,18 @@ enum Developer {
         if lift > 0.1 { out = scaled(out, by: exp2(lift)).cropped(to: extent) }
         // Mais claro = mais ruído aparente: a redução acompanha
         let cleanup = min(1, strength + lift * 0.12)
-        out = localTone(nightDenoise(out, strength: cleanup), strength: 0.75)
+        out = nightDenoise(out, strength: cleanup)
+        out = lumaDenoise(out, strength: cleanup)
+        // Noite com cara de noite: preto de verdade (sem véu cinza) e as sombras sobem pouco
+        out = localTone(out, strength: 0.86)
+        let blackPoint: Float = 0.0035
+        out = out.applyingFilter("CIColorMatrix", parameters: [
+            "inputRVector": CIVector(x: CGFloat(1 + blackPoint * 10), y: 0, z: 0, w: 0),
+            "inputGVector": CIVector(x: 0, y: CGFloat(1 + blackPoint * 10), z: 0, w: 0),
+            "inputBVector": CIVector(x: 0, y: 0, z: CGFloat(1 + blackPoint * 10), w: 0),
+            "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
+            "inputBiasVector": CIVector(x: CGFloat(-blackPoint), y: CGFloat(-blackPoint), z: CGFloat(-blackPoint), w: 0),
+        ]).cropped(to: extent)
         if starPoints > 0 { out = starBurst(out, points: starPoints, threshold: 1.5 * exp2(lift)) }
         return out
     }
@@ -1132,6 +1145,10 @@ enum Developer {
         return lift
     }
 
+    private static func smallExtentFor(_ e: CGRect, _ k: CGFloat) -> CGRect {
+        CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k)
+    }
+
     static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5) -> CIImage {
         guard let highlightsKernel, points >= 4 else { return scene }
         let e = scene.extent
@@ -1139,7 +1156,16 @@ enum Developer {
         let k: CGFloat = 0.5
         // Só o que passa bem do branco: postes, faróis, letreiros
         guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, threshold * 1.3]) else { return scene }
-        let small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
+        var small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
+        // Raios finos: cada luz vira um ponto (o centro dela) com a energia toda; os raios saem desse ponto
+        if let peakKernel {
+            let r: CGFloat = 6
+            let soft = small.applyingGaussianBlur(sigma: Double(r / 2))
+            let maxed = soft.applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: r])
+            let area = Float(CGFloat.pi * r * r * 0.5)
+            small = (peakKernel.apply(extent: smallExtentFor(e, k), arguments: [soft, maxed, area]) ?? small)
+                .applyingGaussianBlur(sigma: 0.7).clampedToExtent()
+        }
         let side = min(e.width, e.height) * k
         let smallRect = CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k)
         var rays = CIImage(color: .black).cropped(to: smallRect)
@@ -1160,6 +1186,18 @@ enum Developer {
             .cropped(to: e)
         dlog("Noite: estrela de \(points) pontas nas luzes (pequena)")
         return full.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scene]).cropped(to: e)
+    }
+
+    /// Ruído de brilho em duas faixas (fina e média): tira o chuvisco sem borrar as bordas fortes.
+    static func lumaDenoise(_ scene: CIImage, strength: Float) -> CIImage {
+        guard strength > 0.05, let shrinkKernel else { return scene }
+        let e = scene.extent
+        var out = scene
+        for (sigma, k) in [(1.0, 0.05), (2.5, 0.03)] as [(Double, Float)] {
+            let blur = out.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: e)
+            out = shrinkKernel.apply(extent: e, arguments: [out, blur, k * strength]) ?? out
+        }
+        return out
     }
 
     /// Ruído da noite: o colorido (o pior) some tirando a cor de uma versão borrada e o brilho da original;

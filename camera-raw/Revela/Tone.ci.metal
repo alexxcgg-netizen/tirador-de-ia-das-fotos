@@ -286,6 +286,25 @@ namespace coreimage {
         return float4(c * exp2(ev), 1.0f);
     }
 
+    // Centro das luzes fortes: só o pixel mais alto de cada luz (borrada) fica, com a energia dela toda.
+    // Os raios saem dele e ficam finos, como a difração de verdade (antes saíam da luz inteira e ficavam grossos)
+    float4 revelaPeak(sample_t b, sample_t m, float gain) {
+        float l = dot(b.rgb, revela::kLuma), lm = dot(m.rgb, revela::kLuma);
+        return (l > 1e-4f && l >= lm * 0.999f) ? float4(b.rgb * gain, 1.0f) : float4(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+
+    // Ruído de brilho por faixa (ondaletas): o detalhe menor que o ruído some, o maior fica.
+    // O limite cresce com a raiz da luz, como o ruído do sensor
+    float4 revelaShrink(sample_t s, sample_t blur, float threshold) {
+        float3 d = s.rgb - blur.rgb;
+        float dl = dot(d, revela::kLuma);
+        float t = threshold * sqrt(max(dot(max(blur.rgb, float3(0.0f)), revela::kLuma), 0.0004f));
+        float k = abs(dl) > 1e-6f ? max(abs(dl) - t, 0.0f) / abs(dl) : 0.0f;
+        // Um pouco do ruído volta (15%): sem isso vira pintura
+        k = mix(0.15f, 1.0f, k);
+        return float4(blur.rgb + d * k, 1.0f);
+    }
+
     // Ruído colorido: cor da versão borrada, brilho da original (amount 0 = original, 1 = toda a cor borrada)
     float4 revelaChroma(sample_t s, sample_t soft, float amount) {
         float3 c = max(s.rgb, float3(0.0f));
