@@ -150,11 +150,11 @@ final class LabTests: XCTestCase {
     func test4Tuning() throws {
         let variants: [(String, ToneTuning)] = [
             ("a_antiga", ToneTuning(filmicGain: 0.8, toeScale: 1, offsetScale: 1, saturation: 1, shadowRatio: 1, highlightRatio: 1,
-                                    keyPull: 0, keyedSaturation: 0, highlightBoost: 0, hueKeep: 0)),
+                                    keyPull: 0, keyedSaturation: 0, highlightBoost: 0, whiteScale: 1, hueKeep: 0)),
             ("b_padrao", ToneTuning()),
-            // Quanto subir o céu e as nuvens (branco p99 vs Apple)
-            ("c_ceu_0_2", ToneTuning(highlightBoost: 0.2)),
-            ("d_ceu_0_55", ToneTuning(highlightBoost: 0.55)),
+            // Ombro da curva mais aberto (branco p99 vs Apple), com o ganho de entrada menor para o meio ficar
+            ("c_ombro_1_07", ToneTuning(filmicGain: 1.03, whiteScale: 1.07)),
+            ("d_ombro_1_12", ToneTuning(filmicGain: 0.98, whiteScale: 1.12)),
         ]
         let looks: [Look] = [.neutro, .portra, .classicChrome, .superia, .velvia, .trix]
         for url in raws() {

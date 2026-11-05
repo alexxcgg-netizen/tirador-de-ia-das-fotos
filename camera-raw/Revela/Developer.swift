@@ -24,6 +24,8 @@ struct ToneTuning {
     var keyedSaturation: Float = 0.18
     /// Quanto o céu e as nuvens sobem (EV): o branco (p99) ficava 0,05–0,08 abaixo da Apple.
     var highlightBoost: Float = 0.35
+    /// Estica a saída da curva fílmica (1 = como era): sobe o branco; o ganho de entrada desce junto para o meio ficar.
+    var whiteScale: Float = 1.0
     /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
     var hueKeep: Float = 0.5
 }
@@ -343,9 +345,9 @@ enum Look: String, CaseIterable, Identifiable {
             }
         case .velvia:
             return .make {
-                $0.saturation = 1.6; $0.contrast = 1.22
+                $0.saturation = 1.6; $0.contrast = 1.18
                 $0.matR = SIMD3(1.12, -0.08, -0.04); $0.matG = SIMD3(-0.06, 1.12, -0.06); $0.matB = SIMD3(-0.02, -0.08, 1.1)
-                $0.slope = SIMD3(1.04, 0.96, 1.06); $0.power = SIMD3(1.06, 1.06, 1.0)
+                $0.slope = SIMD3(1.04, 0.96, 1.06); $0.power = SIMD3(1.02, 1.02, 1.0)
                 $0.shadowTint = SIMD3(0.002, -0.002, 0.006)
                 $0.grain = 0.012; $0.grainSize = 1.0; $0.vignette = 0.18
             }
@@ -911,6 +913,7 @@ enum Developer {
             p.vignette, CIVector(x: e.minX, y: e.minY, z: e.width, w: e.height),
             zebra ? zebraThreshold : Float(0),
             CIVector(x: CGFloat(p.density), y: CGFloat(p.grainColor), z: CGFloat(tuning.filmicGain), w: CGFloat(tuning.hueKeep)),
+            tuning.whiteScale,
         ]
         var toned = toneKernel.apply(extent: e, arguments: arguments) ?? scene
         if p.skinProtect > 0.01, p.mono < 0.5, let skinMixKernel {
@@ -1169,19 +1172,28 @@ enum Developer {
     }
 
     /// Luz do canto mais escuro (versão pequena e borrada, para um pixel solto não contar).
+    /// O "chão" de luz: os 2% mais escuros de uma versão pequena (antes era o mínimo de uma versão borrada, que
+    /// apagava galhos e árvores finas e deixava o preto cinza: p1 0,12 no laboratório).
     static func darkFloor(_ scene: CIImage) -> Float {
         let e = scene.extent
+        let k = min(1, 256 / max(e.width, e.height))
         let small = scene.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY))
-            .transformed(by: CGAffineTransform(scaleX: 1.0 / 24, y: 1.0 / 24))
+            .transformed(by: CGAffineTransform(scaleX: k, y: k))
         let se = small.extent.integral
-        guard se.width >= 4, se.height >= 4 else { return 0 }
-        let soft = small.clampedToExtent().applyingGaussianBlur(sigma: 1.5).cropped(to: se)
-        let minimum = soft.applyingFilter("CIAreaMinimum", parameters: [kCIInputExtentKey: CIVector(cgRect: se)])
-        var pixel = [Float](repeating: 0, count: 4)
-        context.render(minimum, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+        let w = Int(se.width), h = Int(se.height)
+        guard w >= 4, h >= 4 else { return 0 }
+        var pixels = [Float](repeating: 0, count: w * h * 4)
+        context.render(small, toBitmap: &pixels, rowBytes: w * 16, bounds: CGRect(x: 0, y: 0, width: w, height: h),
                        format: .RGBAf, colorSpace: nil)
-        let l = 0.2126 * pixel[0] + 0.7152 * pixel[1] + 0.0722 * pixel[2]
-        return l.isFinite ? max(0, l) : 0
+        var lumas = [Float]()
+        lumas.reserveCapacity(w * h)
+        for i in stride(from: 0, to: pixels.count, by: 4) {
+            let l = 0.2126 * pixels[i] + 0.7152 * pixels[i + 1] + 0.0722 * pixels[i + 2]
+            if l.isFinite { lumas.append(max(0, l)) }
+        }
+        guard !lumas.isEmpty else { return 0 }
+        lumas.sort()
+        return lumas[lumas.count / 50]
     }
 
     /// Quantas paradas clarear a NOITE: leva a luz média (em log, então um poste não engana) até uns −4 EV.

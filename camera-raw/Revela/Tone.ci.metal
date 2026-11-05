@@ -65,7 +65,7 @@ namespace coreimage {
                       float3 matR, float3 matG, float3 matB,
                       float3 slope, float3 offset, float3 power,
                       float3 shadowTint, float3 highTint,
-                      float vignette, float4 frame, float zebraThreshold, float4 film,
+                      float vignette, float4 frame, float zebraThreshold, float4 film, float white,
                       destination dest) {
         float3 scene = max(s.rgb, float3(0.0f)) * exp2(exposure);
         float peak = max(scene.r, max(scene.g, scene.b));
@@ -86,6 +86,9 @@ namespace coreimage {
         float cm = max(c.r, max(c.g, c.b)) * film.z;
         float3 hueKeep = c * film.z * (revela::filmic(float3(cm)).r / max(cm, 1e-5f));
         t = mix(t, hueKeep, film.w * smoothstep(0.35f, 1.4f, cm));
+        // Ombro mais aberto: a curva ACES segura as luzes mais que a da Apple (branco p99 0,05–0,08 abaixo).
+        // Esticar a saída (com o ganho de entrada menor) sobe o branco mais que o meio
+        t = min(t * white, float3(1.0f));
         t = toe + (1.0f - toe) * t;
         t = pow(max(t * slope + offset, float3(0.0f)), power);
 

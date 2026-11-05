@@ -65,3 +65,6 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Rodada a1bdf0c: placar **28/34**. Comprimir menos as luzes não mudou o branco (limite é a curva) → céu/nuvem sobem
   0,35 EV nos tons locais; nitidez 0,32 → 0,26 (halo 1,4× na foto de 48 MP); preto da NOITE até 0,06 (chão 0,044);
   Velvia contraste 1,28 → 1,22 (esmagava a sombra na foto do Pixel).
+- Rodada 6589f48: **29/34**. Subir o céu mexeu só +0,01 no branco: o limite é o ombro da curva ACES. Testando esticar a
+  saída (ombro mais aberto) com ganho menor. Preto da NOITE agora pelos 2% mais escuros (o mínimo borrado apagava
+  árvores finas). Velvia contraste 1,18.
