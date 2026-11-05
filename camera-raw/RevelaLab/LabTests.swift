@@ -212,11 +212,12 @@ final class LabTests: XCTestCase {
             guard let truthRaw = Developer.image(from: try frame(url), scale: 0.5) else { continue }
             let truth = Developer.materialize(truthRaw.cropped(to: truthRaw.extent.integral), extent: truthRaw.extent.integral)
             let e = truth.extent
-            var generator = SystemRandomNumberGenerator()
+            // Deslocamentos fixos (como uma mão tremendo, frações de pixel variadas): cada rodada mede o mesmo
+            let fixed: [(CGFloat, CGFloat)] = [(0, 0), (1.3, -0.7), (-2.1, 1.6), (0.4, 2.7), (-1.6, -2.4),
+                                               (2.6, 0.9), (-0.8, -1.2), (1.9, 2.2), (-2.7, 0.3), (0.7, -2.9)]
             var lows: [CIImage] = []
             for i in 0..<10 {
-                let dx = i == 0 ? 0 : CGFloat.random(in: -3...3, using: &generator)
-                let dy = i == 0 ? 0 : CGFloat.random(in: -3...3, using: &generator)
+                let (dx, dy) = fixed[i]
                 let shifted = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: e)
                 // Como o sensor: cada pixel soma a luz de um quadrado 2×2 (sem filtro antes: tem serrilhado, que é
                 // justamente o que a super resolução recupera)

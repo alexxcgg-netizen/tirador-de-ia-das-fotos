@@ -75,3 +75,5 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Rodada d74840d: **32/33**. Branco resolvido (XS 0,85 → 0,88; 12 Pro 0,89). SUPER ZOOM +1,6/+1,9/+1,7 dB (todas OK).
   Falta só a borda do Pixel 48 MP (1,31): a nitidez menor não mudou → realce de detalhe dos tons locais 1,08 → 1,04
   nas fotos acima de 5000 px.
+- Rodada a938fa0: borda do Pixel 1,31 → 1,26 (OK). SUPER ZOOM do 12 Pro oscilou +1,64 → +1,25 sem mudança nele: o teste
+  sorteava os deslocamentos a cada rodada. Agora são fixos (a medida não varia mais sozinha).
