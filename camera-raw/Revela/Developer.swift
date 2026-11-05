@@ -1228,20 +1228,24 @@ enum Developer {
             let soft = small.applyingGaussianBlur(sigma: Double(r / 2))
             let maxed = soft.applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: r])
             let area = Float(CGFloat.pi * r * r * 0.15)
+            // Largura do raio: no iPhone 18 em f/4 o raio é suave e largo (~0,5% da foto); em f/1.8, fino
+            let width: Double = points > 8 ? 1.0 : 2.0
             small = (peakKernel.apply(extent: smallRect, arguments: [soft, maxed, area]) ?? small)
-                .applyingGaussianBlur(sigma: 1.1).clampedToExtent()
+                .applyingGaussianBlur(sigma: width).clampedToExtent()
         }
         let side = min(e.width, e.height) * k
         let many = points > 8
         let directions = points / 2
         // Comprimentos dobrando e pesos caindo pela metade: o brilho ao longo do raio cai ~1/r², como na difração
-        let base: CGFloat = many ? 0.004 : 0.007
-        let fade: Float = many ? 0.45 : 1
+        // Os raios do iPhone 18 vão longe, cada vez mais transparentes: comprimentos dobrando, peso caindo 40%
+        let base: CGFloat = many ? 0.007 : 0.009
+        let fade: Float = many ? 0.3 : 0.8
         var layers: [(length: CGFloat, weight: Float, warm: Bool)] = []
+        var weight: Float = 0.5 * fade
         for i in 0..<4 {
             let length: CGFloat = side * base * CGFloat(1 << i)
-            let weight: Float = 0.55 / Float(1 << i) * fade
             layers.append((length, weight, i >= 2))
+            weight *= 0.6
         }
         var neutral = CIImage(color: .black).cropped(to: smallRect)
         var warm = CIImage(color: .black).cropped(to: smallRect)
@@ -1265,7 +1269,10 @@ enum Developer {
             "inputBVector": CIVector(x: 0, y: 0, z: 0.66, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
         ])
         // Brilho suave em volta da luz (a lente nunca é perfeita)
-        let glow = scaled(small.applyingGaussianBlur(sigma: Double(side * 0.012)).cropped(to: smallRect), by: 0.6)
+        // Brilho em volta da luz: largo e suave (no iPhone 18 o sol tem um halo grande e claro)
+        let glow = scaled(small.applyingGaussianBlur(sigma: Double(side * 0.03)).cropped(to: smallRect), by: 0.5)
+            .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey:
+                scaled(small.applyingGaussianBlur(sigma: Double(side * 0.008)).cropped(to: smallRect), by: 0.3)])
         let rays = warmed.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: neutral])
             .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: glow])
         let full = rays
