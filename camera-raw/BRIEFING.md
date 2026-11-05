@@ -22,7 +22,7 @@ velocidade é parte da qualidade; toda escolha de imagem com referência (Apple/
 | Área | Medida | Meta |
 |---|---|---|
 | FOTO — tom | luz média, ponto 50% e 99% vs Apple no mesmo RAW | dentro de ±0,04; branco (p99) ≥ Apple − 0,03 |
-| FOTO — cor | saturação média vs Apple | 0,9×–1,15× da Apple |
+| FOTO — cor | saturação média vs Apple (só nos RAWs de iPhone; o Pixel é informação) | 0,9×–1,15× da Apple |
 | FOTO — detalhe | bordas no recorte 100% | ≥ Apple, sem halo de nitidez (pico de borda ≤ 1,3× a Apple) |
 | FOTO — preto | p1 | ≤ Apple + 0,03 (sem névoa) |
 | Filmes | sem esmagar sombra nem apagar o branco (vs o Neutro da mesma foto; Noir e Bleach são de propósito) | p5 ≥ mín(0,02; 0,6 × Neutro) e p99 ≥ mín(0,7; Neutro − 0,12) |
@@ -68,3 +68,5 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Rodada 6589f48: **29/34**. Subir o céu mexeu só +0,01 no branco: o limite é o ombro da curva ACES. Testando esticar a
   saída (ombro mais aberto) com ganho menor. Preto da NOITE agora pelos 2% mais escuros (o mínimo borrado apagava
   árvores finas). Velvia contraste 1,18.
+- Rodada a0c9ce1: **31/34**. Preto da NOITE (Pixel) 0,12 → OK; Velvia OK. Ombro 1,12 / ganho 0,98: branco
+  0,83 → 0,85 com o meio igual — virou padrão. Testando ombro 1,2 e céu +0,7 para o iPhone XS (0,85 vs meta 0,87).

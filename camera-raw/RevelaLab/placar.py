@@ -86,7 +86,11 @@ def main(root):
         check(f"FOTO {n}", "branco (p99) vs Apple", f"{pn[2]:.2f} / {pa[2]:.2f}", pn[2] >= pa[2] - 0.03, "≥ Apple − 0,03")
         check(f"FOTO {n}", "preto (p1) vs Apple", f"{pn[0]:.2f} / {pa[0]:.2f}", pn[0] <= pa[0] + 0.03, "≤ Apple + 0,03")
         r = sat(ne) / max(sat(ap), 1e-6)
-        check(f"FOTO {n}", "saturação ÷ Apple", f"{r:.2f}", 0.9 <= r <= 1.15, "0,9–1,15")
+        if n.startswith("iphone"):
+            check(f"FOTO {n}", "saturação ÷ Apple", f"{r:.2f}", 0.9 <= r <= 1.15, "0,9–1,15")
+        else:
+            # A Apple revelando RAW de outra marca não é a câmera nativa de ninguém: só informação
+            rows.append((f"FOTO {n}", "saturação ÷ Apple (só informação)", f"{r:.2f}", "", ""))
         if os.path.exists(f("apple_100pct")):
             (ea, pka), (en, pkn) = edges(f("apple_100pct")), edges(f("Neutro_100pct"))
             check(f"FOTO {n}", "detalhe 100% vs Apple", f"{en:.1f} / {ea:.1f}", en >= ea, "≥ Apple")

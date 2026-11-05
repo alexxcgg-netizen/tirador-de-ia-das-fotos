@@ -8,7 +8,7 @@ import simd
 /// Calibragem do tom (o laboratório testa variações; o app usa os valores padrão).
 struct ToneTuning {
     /// Quanto a cena entra na curva fílmica (antes 0,8: a foto saía apagada, branco em 0,7).
-    var filmicGain: Float = 1.1
+    var filmicGain: Float = 0.98
     /// Quanto do "preto levantado" e do deslocamento de cada filme vale (antes 1: névoa nos filmes suaves).
     var toeScale: Float = 0.5
     var offsetScale: Float = 0.6
@@ -25,7 +25,8 @@ struct ToneTuning {
     /// Quanto o céu e as nuvens sobem (EV): o branco (p99) ficava 0,05–0,08 abaixo da Apple.
     var highlightBoost: Float = 0.35
     /// Estica a saída da curva fílmica (1 = como era): sobe o branco; o ganho de entrada desce junto para o meio ficar.
-    var whiteScale: Float = 1.0
+    // 1,12 com o ganho de entrada 0,98: branco p99 0,83 → 0,85 sem mexer no meio (laboratório a0c9ce1)
+    var whiteScale: Float = 1.12
     /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
     var hueKeep: Float = 0.5
 }
