@@ -16,7 +16,7 @@ struct ToneTuning {
     var saturation: Float = 1.2
     /// Tons locais: as sombras sobem mais (× na força) e as luzes descem menos.
     var shadowRatio: Float = 1.8
-    var highlightRatio: Float = 0.35
+    var highlightRatio: Float = 0.25
     /// Puxa a luz média da foto de um quadro só até perto de −3 EV (0 = não mexe).
     var keyPull: Float = 0.4
     /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
@@ -868,6 +868,14 @@ enum Developer {
         var out = localTone(scene, strength: 0.85, preview: preview, keyPull: tuning.keyPull)
         if iso >= 800 {
             out = nightDenoise(out, strength: min(0.8, log2(iso / 400) / 6))
+        }
+        // Nitidez fina, leve (a Apple tem um pouco mais de "mordida" nas folhas): raio pelo tamanho da foto,
+        // menos com ISO alto (para não afiar o ruído)
+        let e = scene.extent
+        if max(e.width, e.height) >= 1500 {
+            let radius = 0.9 * max(1, max(e.width, e.height) / 4032)
+            let amount = iso >= 1600 ? 0.15 : 0.32
+            out = out.applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: radius, kCIInputIntensityKey: amount]).cropped(to: e)
         }
         return out.settingProperties(scene.properties)
     }
