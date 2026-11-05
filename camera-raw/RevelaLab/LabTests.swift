@@ -199,4 +199,57 @@ final class LabTests: XCTestCase {
             dlog("\(name) retrato: \(Diagnostics.ms(since: t0))")
         }
     }
+
+    /// SUPER ZOOM: 10 fotos geradas do RAW (cada uma deslocada uma fração de pixel, com metade da resolução e ruído).
+    /// Compara uma foto ampliada, a super resolução e o original de verdade.
+    func test6SuperResolution() throws {
+        for url in raws() {
+            let name = url.deletingPathExtension().lastPathComponent
+            guard let truthRaw = Developer.image(from: try frame(url), scale: 0.5) else { continue }
+            let truth = Developer.materialize(truthRaw.cropped(to: truthRaw.extent.integral), extent: truthRaw.extent.integral)
+            let e = truth.extent
+            var generator = SystemRandomNumberGenerator()
+            var lows: [CIImage] = []
+            for i in 0..<10 {
+                let dx = i == 0 ? 0 : CGFloat.random(in: -3...3, using: &generator)
+                let dy = i == 0 ? 0 : CGFloat.random(in: -3...3, using: &generator)
+                let shifted = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: e)
+                let low = shifted.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: 0.5, kCIInputAspectRatioKey: 1])
+                let le = CGRect(x: 0, y: 0, width: (e.width / 2).rounded(.down), height: (e.height / 2).rounded(.down))
+                let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
+                    .transformed(by: CGAffineTransform(translationX: CGFloat(i * 97), y: CGFloat(i * 53))).cropped(to: le)
+                    .applyingFilter("CIColorMatrix", parameters: [
+                        "inputRVector": CIVector(x: 0.01, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.01, z: 0, w: 0),
+                        "inputBVector": CIVector(x: 0, y: 0, z: 0.01, w: 0), "inputBiasVector": CIVector(x: -0.005, y: -0.005, z: -0.005, w: 0),
+                    ])
+                let noisy = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: low.cropped(to: le)]).cropped(to: le)
+                lows.append(Developer.materialize(noisy, extent: le))
+            }
+            Developer.decodeOverride = { frame, scale in
+                let i = Int(frame.data.first ?? 0)
+                guard lows.indices.contains(i) else { return nil }
+                let img = lows[i]
+                guard scale < 0.999 else { return img }
+                return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
+                    .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
+                                        height: (img.extent.height * CGFloat(scale)).rounded(.down)))
+            }
+            defer { Developer.decodeOverride = nil }
+            let frames = (0..<10).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            let t0 = CFAbsoluteTimeGetCurrent()
+            let out = Developer.superResolution(frames, options: options(.neutro), keep: 8)
+            dlog("\(name) super resolução: \(Diagnostics.ms(since: t0))")
+            let opts = options(.neutro)
+            let crop = CGRect(x: e.midX - 300, y: e.midY - 300, width: 600, height: 600)
+            save(Developer.developed(truth, options: opts).0.cropped(to: crop), "superres/\(name)_0_original", maxSide: 600)
+            let single = lows[0].applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: 2, kCIInputAspectRatioKey: 1])
+            save(Developer.developed(single, options: opts).0.cropped(to: crop), "superres/\(name)_1_uma_ampliada", maxSide: 600)
+            if let heic = out?.heic, let sr = CIImage(data: heic) {
+                let se = sr.extent
+                dlog("\(name) super resolução: \(Int(se.width))×\(Int(se.height)) (original \(Int(e.width))×\(Int(e.height)))")
+                let c = CGRect(x: se.midX - 300, y: se.midY - 300, width: 600, height: 600)
+                save(sr.cropped(to: c), "superres/\(name)_2_super", maxSide: 600)
+            }
+        }
+    }
 }

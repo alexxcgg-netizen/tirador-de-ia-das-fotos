@@ -309,7 +309,7 @@ enum Look: String, CaseIterable, Identifiable {
             }
         case .delta3200:
             return .make {
-                $0.mono = 1; $0.contrast = 1.18; $0.toe = 0.02
+                $0.mono = 1; $0.contrast = 1.1; $0.toe = 0.02
                 $0.matR = SIMD3(1.05, -0.03, -0.02)
                 $0.grain = 0.16; $0.grainSize = 2.2; $0.vignette = 0.15
             }
@@ -384,8 +384,8 @@ enum Look: String, CaseIterable, Identifiable {
             }
         case .bleach:
             return .make {
-                $0.saturation = 0.32; $0.contrast = 1.42
-                $0.power = SIMD3(1.12, 1.12, 1.1); $0.highTint = SIMD3(0.012, 0.012, 0.01)
+                $0.saturation = 0.32; $0.contrast = 1.3
+                $0.power = SIMD3(1.06, 1.06, 1.05); $0.highTint = SIMD3(0.012, 0.012, 0.01)
                 $0.grain = 0.055; $0.grainSize = 1.5; $0.vignette = 0.28
             }
         case .matrix:
@@ -426,7 +426,7 @@ enum Look: String, CaseIterable, Identifiable {
             }
         case .trix:
             return .make {
-                $0.mono = 1; $0.contrast = 1.32; $0.toe = 0.002
+                $0.mono = 1; $0.contrast = 1.22; $0.toe = 0.002
                 $0.matR = SIMD3(1.15, -0.1, -0.05)  // como um filtro amarelo: céu mais escuro
                 $0.grain = 0.1; $0.grainSize = 1.8; $0.vignette = 0.15
             }
@@ -437,7 +437,7 @@ enum Look: String, CaseIterable, Identifiable {
             }
         case .noir:
             return .make {
-                $0.mono = 1; $0.contrast = 1.6; $0.power = SIMD3(1.12, 1.12, 1.12)
+                $0.mono = 1; $0.contrast = 1.42; $0.power = SIMD3(1.08, 1.08, 1.08)
                 $0.grain = 0.045; $0.vignette = 0.5; $0.bloom = 0.1
             }
         case .sepia:
@@ -703,8 +703,12 @@ enum Developer {
         return scene.settingProperties(properties)
     }
 
+    /// Só o laboratório usa: troca a abertura do arquivo por imagens geradas (ex.: fotos deslocadas para a super resolução).
+    static var decodeOverride: ((CapturedFrame, Float) -> CIImage?)?
+
     static func image(from frame: CapturedFrame, scale: Float = 1) -> CIImage? {
-        frame.isRaw ? linear(dng: frame.data, scale: scale) : processed(frame.data, scale: scale)
+        if let decodeOverride, let image = decodeOverride(frame, scale) { return image }
+        return frame.isRaw ? linear(dng: frame.data, scale: scale) : processed(frame.data, scale: scale)
     }
 
     // MARK: - Foto
