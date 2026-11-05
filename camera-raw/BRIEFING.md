@@ -77,3 +77,6 @@ laboratório: o que aparecer lá entra no topo da fila.
   nas fotos acima de 5000 px.
 - Rodada a938fa0: borda do Pixel 1,31 → 1,26 (OK). SUPER ZOOM do 12 Pro oscilou +1,64 → +1,25 sem mudança nele: o teste
   sorteava os deslocamentos a cada rodada. Agora são fixos (a medida não varia mais sozinha).
+- Rodada b22822c: **33/33 metas**. Variações do SUPER ZOOM: desconvolução 0,45 × 3 ganhou nas três fotos
+  (+1,85/+2,67/+1,84 dB vs +1,66/+1,98/+1,73) → virou padrão. Sem desconvolução: +0,3 a +1,2 (ela é essencial);
+  núcleo 0,75: pior (+1,2). Rodada de confirmação antes da versão final.

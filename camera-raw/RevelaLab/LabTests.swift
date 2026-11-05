@@ -268,9 +268,7 @@ final class LabTests: XCTestCase {
             // Variações da calibragem (para escolher a melhor no placar)
             let variants: [(String, Developer.SRTuning)] = [
                 ("nucleo_0_5", .init(splatSigma: 0.5)),
-                ("nucleo_0_75", .init(splatSigma: 0.75)),
-                ("desconv_forte", .init(deconvScale: 0.45, deconvIterations: 3)),
-                ("sem_desconv", .init(deconvIterations: 0)),
+                ("desconv_mais_forte", .init(deconvScale: 0.55, deconvIterations: 4)),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning

@@ -18,8 +18,9 @@ extension Developer {
         /// Tamanho do núcleo de cada pixel na grade grande (em pixels grandes).
         var splatSigma: Double = 0.6
         /// Borrão da desconvolução final, × o fator de ampliação.
-        var deconvScale: Double = 0.35
-        var deconvIterations = 2
+        // 0,45 × fator com 3 passos (laboratório b22822c: +1,85/+2,67/+1,84 dB contra +1,66/+1,98/+1,73 com 0,35 × 2)
+        var deconvScale: Double = 0.45
+        var deconvIterations = 3
     }
     static var srTuning = SRTuning()
 
