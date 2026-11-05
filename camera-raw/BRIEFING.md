@@ -80,3 +80,5 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Rodada b22822c: **33/33 metas**. Variações do SUPER ZOOM: desconvolução 0,45 × 3 ganhou nas três fotos
   (+1,85/+2,67/+1,84 dB vs +1,66/+1,98/+1,73) → virou padrão. Sem desconvolução: +0,3 a +1,2 (ela é essencial);
   núcleo 0,75: pior (+1,2). Rodada de confirmação antes da versão final.
+- Rodada 22b8d65 (confirmação): **33/33 metas**. SUPER ZOOM +1,85/+2,67/+1,84 dB. → **Versão final 0.26.**
+  Próximas melhorias quando houver fotos reais do Alex: relatório + análise do Claude Opus 5.5 no app.
