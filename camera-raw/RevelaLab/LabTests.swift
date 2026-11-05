@@ -151,8 +151,9 @@ final class LabTests: XCTestCase {
         let variants: [(String, ToneTuning)] = [
             ("a_antiga", ToneTuning(filmicGain: 0.8, toeScale: 1, offsetScale: 1, saturation: 1, shadowRatio: 1, highlightRatio: 1, keyPull: 0, hueKeep: 0)),
             ("b_padrao", ToneTuning()),
-            ("c_mais_clara", ToneTuning(filmicGain: 1.12, keyPull: 0.45)),
-            ("d_mais_cor", ToneTuning(saturation: 1.22, shadowRatio: 2.0, highlightRatio: 0.3)),
+            // Apple: cena clara fica mais clara, cena escura (entardecer) continua escura — testa puxar menos a luz média
+            ("c_puxa_menos", ToneTuning(filmicGain: 1.1, keyPull: 0.15)),
+            ("d_puxa_menos_mais_curva", ToneTuning(filmicGain: 1.16, keyPull: 0.1)),
         ]
         let looks: [Look] = [.neutro, .portra, .classicChrome, .superia, .velvia, .trix]
         for url in raws() {

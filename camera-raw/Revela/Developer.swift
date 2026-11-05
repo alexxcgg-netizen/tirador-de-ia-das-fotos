@@ -603,6 +603,7 @@ enum Developer {
     private static let bandKernel = kernel("revelaBand")
     private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
     private static let localToneKernel = kernel("revelaLocalTone")
+    static let splatKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplat", fromMetalLibraryData: $0) }
     static let gridWarpKernel: CIWarpKernel? = library.flatMap {
         try? CIWarpKernel(functionName: "revelaGridWarp", fromMetalLibraryData: $0)
     }

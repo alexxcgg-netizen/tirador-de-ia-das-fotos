@@ -57,9 +57,14 @@ extension Developer {
         let pad = 0.1 * max(full.width, full.height)
         let source = region.insetBy(dx: -pad, dy: -pad).intersection(full).integral
         let prepare = Double(source.width * source.height) * 8 * Double(frames.count) < 700_000_000
+        // Guardado: a junção nova e a antiga (reserva) pedem a mesma foto, e ela é aberta uma vez só
+        var cache: [Int: CIImage] = [:]
         func decoded(_ i: Int) -> CIImage? {
+            if let hit = cache[i] { return hit }
             guard let img = i == refIndex ? reference : image(from: frames[i]) else { return nil }
-            return prepare ? materialize(img.cropped(to: source), extent: source) : img
+            let ready = prepare ? materialize(img.cropped(to: source), extent: source) : img
+            cache[i] = ready
+            return ready
         }
         let grid = CIVector(x: (centers[0].x - region.minX) * factor, y: (centers[0].y - region.minY) * factor,
                             z: (centers[1].x - centers[0].x) * factor, w: (centers[3].y - centers[0].y) * factor)
@@ -105,7 +110,16 @@ extension Developer {
             sumWeight = add(sumWeight, weight)
             used += 1
         }
-        guard let merged = divideKernel.apply(extent: outExtent, arguments: [sumColor, sumWeight]) else { return nil }
+        guard var merged = divideKernel.apply(extent: outExtent, arguments: [sumColor, sumWeight]) else { return nil }
+        // Regressão de núcleo (como o Google no Pixel): cada pixel de cada foto no lugar exato da grade grande.
+        // No protótipo com RAWs de verdade: +4 dB sobre uma foto ampliada (o jeito antigo dava +0,5)
+        var splatted = false
+        if let splat = splatMerge(frames: frames, decoded: decoded, alignments: alignments, refUp: refUp,
+                                  region: region, factor: factor, outExtent: outExtent, grid: grid) {
+            merged = splat.image
+            used = splat.used
+            splatted = true
+        }
 
         var opts = options
         opts.zoom = 1
@@ -116,8 +130,10 @@ extension Developer {
 
         // 4) Foto gigante revelada em faixas, cada uma desconvoluída (desfaz o borrão da lente e da ampliação)
         // Do 5º passo em diante quase não muda nada e cada passo custa o mesmo: 4 bastam (Lua: 6)
-        let iterations = sharpen >= 0.8 ? 6 : 4
-        let sigma = Double(0.55 * factor + 0.25)
+        // Depois da regressão de núcleo só falta um pouco: 2 passos com borrão de 0,35 × o fator (protótipo:
+        // o borrão antigo de 1,35 px com 4 passos tirava 1,5 dB). Lua um passo a mais
+        let iterations = splatted ? (sharpen >= 0.8 ? 3 : 2) : (sharpen >= 0.8 ? 6 : 4)
+        let sigma = splatted ? Double(0.35 * factor) : Double(0.55 * factor + 0.25)
         guard let heic = renderInStrips(merged, extent: outExtent, properties: properties, iterations: iterations, sigma: sigma,
                                         grade: { developed($0.settingProperties(properties), options: opts).0 }) else {
             dlog("❌ Super resolução: não consegui gravar a foto")
@@ -127,6 +143,52 @@ extension Developer {
                     outExtent.width * outExtent.height / 1_000_000, "\(heic.count / 1_048_576) MB", iterations,
                     Diagnostics.ms(since: t0), Diagnostics.freeMemory))
         return Output(heic: heic, thumbnail: thumbnail(fromHEIC: heic), sameSizeAsRaw: false)
+    }
+
+    /// Junta as fotos por regressão de núcleo: para cada pixel da foto grande, os 16 pixels mais perto de cada foto
+    /// (já no lugar pelo alinhamento) entram com peso pela distância; fotos que não batem (movimento) quase não contam.
+    private static func splatMerge(frames: [CapturedFrame], decoded: (Int) -> CIImage?, alignments: [Alignment?],
+                                   refUp: CIImage, region: CGRect, factor: CGFloat, outExtent: CGRect,
+                                   grid: CIVector) -> (image: CIImage, used: Int)? {
+        guard let splatKernel, let divideKernel else { return nil }
+        var colorSum: CIImage?, weightSum: CIImage?
+        var used = 0
+        for i in frames.indices {
+            guard let a = alignments[i], let src = decoded(i) else { continue }
+            let inv = a.transform.inverted()
+            var r = a.residuals.map { CGPoint(x: $0.x * factor, y: $0.y * factor) }
+            if r.count != 9 { r = Array(repeating: .zero, count: 9) }
+            let reach = (r.map { max(abs($0.x), abs($0.y)) }.max() ?? 0) / factor + 4
+            let roi: CIKernelROICallback = { index, rect in
+                if index == 1 { return rect.insetBy(dx: -2, dy: -2) }
+                let corners = [CGPoint(x: rect.minX, y: rect.minY), CGPoint(x: rect.maxX, y: rect.minY),
+                               CGPoint(x: rect.minX, y: rect.maxY), CGPoint(x: rect.maxX, y: rect.maxY)]
+                    .map { CGPoint(x: $0.x / factor + region.minX, y: $0.y / factor + region.minY).applying(inv) }
+                let xs = corners.map(\.x), ys = corners.map(\.y)
+                return CGRect(x: xs.min()!, y: ys.min()!, width: xs.max()! - xs.min()!, height: ys.max()! - ys.min()!)
+                    .insetBy(dx: -reach, dy: -reach)
+            }
+            let common: [Any] = [
+                src, refUp,
+                CIVector(x: inv.a, y: inv.c, z: inv.tx), CIVector(x: inv.b, y: inv.d, z: inv.ty),
+                CIVector(x: factor, y: region.minX, z: region.minY, w: 0.6),
+                CIVector(x: r[0].x, y: r[0].y, z: r[1].x, w: r[1].y),
+                CIVector(x: r[2].x, y: r[2].y, z: r[3].x, w: r[3].y),
+                CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y),
+                CIVector(x: r[6].x, y: r[6].y, z: r[7].x, w: r[7].y),
+                CIVector(x: r[8].x, y: r[8].y),
+                grid, Float(0.1),
+            ]
+            guard let color = splatKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(0)]),
+                  let weight = splatKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(1)]) else { continue }
+            colorSum = colorSum.map { add($0, color) } ?? color
+            weightSum = weightSum.map { add($0, weight) } ?? weight
+            used += 1
+        }
+        guard used >= 2, let colorSum, let weightSum,
+              let merged = divideKernel.apply(extent: outExtent, arguments: [colorSum, weightSum]) else { return nil }
+        dlog("Super resolução: \(used) fotos juntadas por regressão de núcleo (cada pixel no lugar exato)")
+        return (merged, used)
     }
 
     /// Alinhamento fino para a NOITE: para cada foto, uma função que a coloca em cima da referência (a primeira).
