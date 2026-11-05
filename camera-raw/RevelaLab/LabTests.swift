@@ -168,4 +168,35 @@ final class LabTests: XCTestCase {
         }
         Developer.tuning = ToneTuning()
     }
+
+    /// RETRATO sem profundidade de verdade: um mapa que vai de nítido (embaixo) a bem borrado (em cima),
+    /// com luzes no fundo, para ver bolinhas de luz e se a cor do que está nítido vaza para o borrão.
+    func test5Portrait() throws {
+        for url in raws() {
+            let name = url.deletingPathExtension().lastPathComponent
+            guard let scene = Developer.scene(for: try frame(url), scale: 0.5) else { continue }
+            let e = scene.extent
+            var lit = scene
+            for (fx, fy) in [(0.2, 0.8), (0.45, 0.85), (0.7, 0.78), (0.85, 0.9)] {
+                let c = CGPoint(x: e.minX + e.width * fx, y: e.minY + e.height * fy)
+                let lamp = CIFilter(name: "CIRadialGradient", parameters: [
+                    "inputCenter": CIVector(cgPoint: c), "inputRadius0": 3, "inputRadius1": 6,
+                    "inputColor0": CIColor(red: 6, green: 5, blue: 3.5, colorSpace: Developer.linearP3)!,
+                    "inputColor1": CIColor(red: 0, green: 0, blue: 0, alpha: 0),
+                ])!.outputImage!.cropped(to: e)
+                lit = lamp.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: lit]).cropped(to: e)
+            }
+            // Embaixo nítido (sujeito), em cima borrado (fundo): degrau no meio para ver a borda
+            let map = CIFilter(name: "CISmoothLinearGradient", parameters: [
+                "inputPoint0": CIVector(x: e.midX, y: e.minY + e.height * 0.45),
+                "inputPoint1": CIVector(x: e.midX, y: e.minY + e.height * 0.5),
+                "inputColor0": CIColor(red: 0, green: 0, blue: 0), "inputColor1": CIColor(red: 1, green: 1, blue: 1),
+            ])!.outputImage!.cropped(to: e)
+            let t0 = CFAbsoluteTimeGetCurrent()
+            let blurred = Developer.bokeh(Developer.materialize(lit, extent: e), map: map, radius: e.width * 0.025, extent: e)
+            let out = Developer.developed(blurred, options: options(.neutro)).0
+            save(out, "retrato/\(name)", maxSide: 1200)
+            dlog("\(name) retrato: \(Diagnostics.ms(since: t0))")
+        }
+    }
 }

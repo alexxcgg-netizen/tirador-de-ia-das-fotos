@@ -592,6 +592,7 @@ enum Developer {
     private static let skinMixKernel = kernel("revelaSkinMix")
     private static let chromaKernel = kernel("revelaChroma")
     private static let peakKernel = kernel("revelaPeak")
+    private static let bokehSourceKernel = kernel("revelaBokehSource")
     private static let shrinkKernel = kernel("revelaShrink")
     private static let recoverKernel = kernel("revelaRecover")
     private static let bandKernel = kernel("revelaBand")
@@ -1560,7 +1561,7 @@ enum Developer {
 
     /// Bokeh de lente: o fundo borrado com o formato da abertura (disco), em luz de cena, então cada
     /// pontinho de luz vira uma bolinha clara. Quatro camadas de desfoque misturadas pelo mapa de profundidade.
-    private static func bokeh(_ scene: CIImage, map: CIImage, radius: CGFloat, extent: CGRect) -> CIImage {
+    static func bokeh(_ scene: CIImage, map: CIImage, radius: CGFloat, extent: CGRect) -> CIImage {
         guard let bandKernel, radius > 1 else { return scene }
         var result = scene
         var lower: Float = 0
@@ -1569,7 +1570,11 @@ enum Developer {
             // Desfoques grandes em meia resolução: o resultado é borrado de qualquer jeito
             let k: CGFloat = r > 14 ? 0.5 : 1
             let smallExtent = CGRect(x: 0, y: 0, width: extent.width * k, height: extent.height * k)
-            let layer = scene
+            // Só o que é fundo entra no borrão (com alfa), e depois divide pelo alfa borrado: a cor da pessoa
+            // não vaza para o fundo (antes ficava um halo da roupa/pele em volta do recorte)
+            // (a primeira camada, quase nítida, usa a cena inteira: ela cobre também a borda da pessoa)
+            let weighted = lower > 0.01 ? bokehSourceKernel?.apply(extent: extent, arguments: [scene, map, lower * 0.5]) : nil
+            let layer = (weighted ?? scene)
                 .transformed(by: CGAffineTransform(scaleX: k, y: k))
                 .clampedToExtent()
                 .cropped(to: smallExtent.insetBy(dx: -r * k * 2, dy: -r * k * 2))
@@ -1579,6 +1584,8 @@ enum Developer {
                     "inputRingSize": 0.08,
                     "inputSoftness": 1.0,
                 ])
+                .applyingFilter("CIUnpremultiply")
+                .settingAlphaOne(in: smallExtent.insetBy(dx: -r * k * 2, dy: -r * k * 2))
                 .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
                 .cropped(to: extent)
             guard let mask = bandKernel.apply(extent: extent, arguments: [map, lower, level]) else { continue }

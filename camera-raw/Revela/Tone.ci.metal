@@ -286,6 +286,16 @@ namespace coreimage {
         return float4(c * exp2(ev), 1.0f);
     }
 
+    // Retrato: o fundo entra no desfoque pesado pelo quanto é fundo (alfa) e com as luzes mais fortes,
+    // para virarem bolinhas de luz como numa lente aberta (a média borrada apagaria as luzes)
+    float4 revelaBokehSource(sample_t s, sample_t map, float threshold) {
+        float3 c = max(s.rgb, float3(0.0f));
+        float y = dot(c, revela::kLuma);
+        c *= 1.0f + 2.5f * smoothstep(0.75f, 1.0f, y);
+        float w = smoothstep(threshold * 0.5f, threshold, map.r);
+        return float4(c * w, w);
+    }
+
     // Centro das luzes fortes: só o pixel mais alto de cada luz (borrada) fica, com a energia dela toda.
     // Os raios saem dele e ficam finos, como a difração de verdade (antes saíam da luz inteira e ficavam grossos)
     float4 revelaPeak(sample_t b, sample_t m, float gain) {

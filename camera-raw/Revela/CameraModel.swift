@@ -922,6 +922,18 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         startSteadyMonitor()
     }
 
+    /// NOITE na mão, como o Night Sight: o tempo de cada foto vem do quanto a mão está mexendo agora.
+    /// Borrão aceito ≈ 6 px (o estabilizador da lente tira a maior parte); mão firme vai até 1/3 s, tremendo fica em 1/10 s.
+    private var handheldNightSeconds: Double {
+        let sorted = recentRotation.sorted()
+        guard !sorted.isEmpty else { return 1.0 / 8 }
+        let typical = max(sorted[sorted.count / 2], 0.004)  // rad/s
+        let focalPixels = 2628 * Double(max(zoom, 1))
+        let seconds = min(1.0 / 3, max(1.0 / 10, 6 / (typical * focalPixels)))
+        dlog(String(format: "Noite na mão: mão a %.3f rad/s → %.3f s por foto", typical, seconds))
+        return seconds
+    }
+
     /// Giroscópio: o iPhone está parado (apoiado ou no tripé)?
     private func startSteadyMonitor() {
         guard motion.isDeviceMotionAvailable, !motion.isDeviceMotionActive else { return }
@@ -1944,7 +1956,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let fullResolution = mode == .superRes || mode == .moon || macroStacking
         let nightPlan = mode == .night && !manualExposure
         // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/8 s na mão
-        let nightSeconds = nightTime.seconds ?? (veryDark ? 1.0 : (isSteady ? 0.5 : 1.0 / 8))
+        let nightSeconds = nightTime.seconds ?? (veryDark ? 1.0 : (isSteady ? 0.5 : handheldNightSeconds))
         let nightAuto = nightTime == .auto
         // Super resolução: obturador rápido (foto tremida não cria detalhe) — 1/60 na 1×, 1/120 na 4×, 1/240 a 8×…
         let fastPlan = (mode == .superRes || mode == .superZoom) && !manualExposure
