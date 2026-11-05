@@ -97,7 +97,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan,
              .document, .panorama: return 1
         case .superRes: return 8
-        case .superZoom: return 12
+        case .superZoom: return 16
         case .night, .average: return 8
         case .moon: return 5
         case .stars: return 16
@@ -132,7 +132,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
         case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Funciona na mão (o app alinha cada quadro); apoiado fica ainda mais nítido."
         case .superRes: return "8 fotos de 48 MP (fica com as 6 mais nítidas), alinhadas por região em fração de pixel: até 100 MP com mais detalhe real. Segure firme; leva uns segundos."
-        case .superZoom: return "Zoom de 8× a 25× com 12 fotos rápidas (fica com as 8 mais nítidas), alinhadas e desconvoluídas. Espera sua mão firmar para disparar."
+        case .superZoom: return "Zoom de 8× a 25× na mão: 16 fotos rápidas e sem tremido (fica com as 10 mais nítidas), alinhadas e desconvoluídas."
         case .night: return "Fotos alinhadas em fração de pixel e somadas sem fantasma, mais uma curta para os postes não estourarem. Apoiado no escuro: 1 s por foto. ✦ põe estrela nas luzes."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
         case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 5 fotos de 48 MP juntadas no sub-pixel: mais detalhe nas crateras."
@@ -833,6 +833,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     private func configure() {
         angleLayer.session = session
+        // Logo ao abrir o foco ainda não assentou: o macro automático espera uns segundos
+        lastAutoMacroSwitch = Date()
         availableLenses = Lens.allCases.filter {
             $0 != .front && AVCaptureDevice.default($0.deviceType, for: .video, position: $0.position) != nil
         }
@@ -1862,7 +1864,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             : nil
         stackProgress = "0/\(count)"
         // Macro empilhado em 48 MP: o recorte do macro precisa do sensor inteiro
-        let fullResolution = mode == .superRes || mode == .superZoom || mode == .moon || macroStacking
+        // SUPER ZOOM em 12 MP: nas fotos de 48 MP o iPhone ignora o obturador rápido (o relatório mostrou 1/30 s
+        // pedido 1/170) e cada uma leva 1,6 s; em 12 MP o obturador vale e saem 3 por segundo, quase sem tremido
+        let fullResolution = mode == .superRes || mode == .moon || macroStacking
         let nightPlan = mode == .night && !manualExposure
         // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/10 s na mão
         let nightSeconds = nightTime.seconds ?? (veryDark ? 1.0 : (isSteady ? 0.5 : 1.0 / 10))
@@ -1913,19 +1917,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// SUPER ZOOM: espera a mão firmar (giroscópio quase parado por 0,4 s), no máximo 2,5 s, e então dispara.
-    private func waitUntilStill(timeout: Double = 2.5, then action: @escaping () -> Void) {
+    /// Na mão não precisa ficar 100% parado: espera no máximo 1 s um momento mais calmo da mão.
+    private func waitUntilStill(timeout: Double = 1, then action: @escaping () -> Void) {
         let deadline = Date().addingTimeInterval(timeout)
         func check() {
             let recent = recentRotation.suffix(4)
-            if (recent.count == 4 && (recent.max() ?? 1) < 0.06) || Date() > deadline {
-                dlog(Date() > deadline ? "Super zoom: disparou sem a mão firmar (2,5 s)" : "Super zoom: mão firme, disparando")
+            if (recent.count == 4 && (recent.max() ?? 1) < 0.12) || Date() > deadline {
+                dlog(Date() > deadline ? "Super zoom: disparou com a mão mexendo (1 s)" : "Super zoom: mão calma, disparando")
                 sessionQueue.async(execute: action)
                 return
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { check() }
         }
         DispatchQueue.main.async {
-            self.show("Segure firme…")
+            self.show("Segure o melhor que der…")
             check()
         }
     }
@@ -2740,7 +2745,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 } else if mode == .superRes {
                     output = Developer.superResolution(frames, options: options, keep: 6)
                 } else if mode == .superZoom {
-                    output = Developer.superResolution(frames, options: options, keep: 8)
+                    output = Developer.superResolution(frames, options: options, keep: 10)
                 } else if mode == .moon {
                     output = Developer.superResolution(frames, options: options, sharpen: 0.9)
                 } else if let kind = mode.stackKind {

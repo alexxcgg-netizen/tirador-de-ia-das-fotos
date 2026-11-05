@@ -98,7 +98,7 @@ struct GuideView: View {
             Item(symbol: "square.resize.up", title: "Super res",
                  text: "8 fotos de 48 MP (as 6 mais nítidas), obturador rápido e alinhamento por região em fração de pixel: foto de até 100 MP com mais detalhe real (e menos ruído) para ampliar depois. Segure firme; leva uns segundos para revelar."),
             Item(symbol: "scope", title: "Super zoom",
-                 text: "De 8× a 25×: 12 fotos rápidas com cor, foco e exposição travados; fica com as 8 mais nítidas, alinha por região e desconvolui. O visor fica estabilizado e ele espera sua mão firmar para disparar."),
+                 text: "De 8× a 25×, na mão: 16 fotos rápidas de 12 MP (obturador curto, sem tremido) com cor e foco travados; fica com as 10 mais nítidas, alinha por região e desconvolui. O visor fica estabilizado."),
             Item(symbol: "square.stack.3d.up", title: "Média", text: "8 fotos somadas: menos ruído, ou água lisa com obturador lento."),
             Item(symbol: "pano", title: "Panorama", text: "Toque e gire o iPhone devagar para um lado, sem subir nem descer. Toque de novo para terminar (ou ele para sozinho em 240°)."),
             Item(symbol: "doc.viewfinder", title: "DOC", text: "Documentos de várias páginas: acha a folha sozinho, deixa o papel branco e junta tudo num PDF, sem marca d'água."),

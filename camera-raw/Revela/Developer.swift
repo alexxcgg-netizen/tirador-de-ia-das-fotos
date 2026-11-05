@@ -378,8 +378,6 @@ enum Developer {
         .workingColorSpace: linearP3,
         .workingFormat: CIFormat.RGBAh,
         .cacheIntermediates: false,
-        // Revelar em segundo plano no processador gráfico: o visor (que tem prioridade) não engasga
-        .priorityRequestLow: true,
     ])
 
     private static let library: Data? = {
@@ -507,7 +505,9 @@ enum Developer {
             dlog("❌ Não abriu o \(frame.isRaw ? "DNG" : "HEIC") (\(frame.data.count / 1024) KB)")
             return nil
         }
-        let output = finish(enhanced(image), options: options)
+        // O RAW pequeno (rápido) serve para os tons locais: o grande é aberto uma vez só, na revelação
+        let preview = frame.isRaw ? self.image(from: frame, scale: 0.125) : nil
+        let output = finish(enhanced(image, preview: preview), options: options)
         dlog("Revelação \(options.lookName) \(Int(image.extent.width))×\(Int(image.extent.height)) · \(frame.isRaw ? "DNG" : "HEIC") \(frame.data.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
     }
@@ -618,15 +618,15 @@ enum Developer {
         if frame.hasDepth, let aperture {
             return portraitScene(frame.data, aperture: aperture, focusPoint: focusPoint, scale: CGFloat(scale))
         }
-        return image(from: frame, scale: scale).map(enhanced)
+        return image(from: frame, scale: scale).map { enhanced($0, preview: scale < 0.5 ? nil : image(from: frame, scale: 0.125)) }
     }
 
     /// Foto de um quadro só: tons locais suaves (céu e sombra equilibrados) e, com ISO alto, menos ruído colorido.
     /// O ProRAW já vem de várias fotos juntadas pela Apple; isto só acerta o que a curva do filme não faz.
-    static func enhanced(_ scene: CIImage) -> CIImage {
+    static func enhanced(_ scene: CIImage, preview: CIImage? = nil) -> CIImage {
         let exif = scene.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
         let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 100
-        var out = localTone(scene, strength: 0.85)
+        var out = localTone(scene, strength: 0.85, preview: preview)
         if iso >= 800 {
             out = nightDenoise(out, strength: min(0.8, log2(iso / 400) / 6))
         }
@@ -1079,20 +1079,27 @@ enum Developer {
 
     /// Tons locais: cada região tem a "luz de fundo" puxada para perto da média (céu desce, sombra sobe)
     /// e o detalhe fica. Calculado numa versão pequena: a luz de fundo é borrada de qualquer jeito.
-    static func localTone(_ scene: CIImage, strength: Float) -> CIImage {
+    /// `preview`: a mesma foto já pequena (RAW aberto em 1/8, rápido). Sem ela, a cena é reduzida aqui; com ela,
+    /// o RAW grande é aberto uma vez só (antes abria três vezes e a foto levava 7 s para revelar).
+    static func localTone(_ scene: CIImage, strength: Float, preview: CIImage? = nil) -> CIImage {
         guard let logLumaKernel, let localToneKernel else { return scene }
         let e = scene.extent
-        let s: CGFloat = 0.125
-        guard let logL = logLumaKernel.apply(extent: e, arguments: [scene]) else { return scene }
-        let small = logL.transformed(by: CGAffineTransform(scaleX: s, y: s))
-        let smallExtent = small.extent
+        let source = preview ?? scene.transformed(by: CGAffineTransform(scaleX: 0.125, y: 0.125))
+        let se = source.extent
+        guard se.width >= 8, se.height >= 8,
+              let logL = logLumaKernel.apply(extent: se, arguments: [source]) else { return scene }
+        // Guardado pequeno na memória: o borrão e a média leem daqui, sem abrir a foto de novo
+        let small = materialize(logL, extent: se)
+            .transformed(by: CGAffineTransform(translationX: -se.minX, y: -se.minY))
+        let smallExtent = CGRect(origin: .zero, size: se.size)
         // Duas larguras de borrão misturadas: menos auréola nas bordas fortes
         let short = min(smallExtent.width, smallExtent.height)
         let wide = small.clampedToExtent().applyingGaussianBlur(sigma: Double(short * 0.06)).cropped(to: smallExtent)
         let tight = small.clampedToExtent().applyingGaussianBlur(sigma: Double(short * 0.015)).cropped(to: smallExtent)
         let mixedSmall = tight.applyingFilter("CIDissolveTransition", parameters: [kCIInputTargetImageKey: wide, kCIInputTimeKey: 0.5])
         let base = materialize(mixedSmall, extent: smallExtent).clampedToExtent()
-            .transformed(by: CGAffineTransform(scaleX: 1 / s, y: 1 / s))
+            .transformed(by: CGAffineTransform(scaleX: e.width / smallExtent.width, y: e.height / smallExtent.height))
+            .transformed(by: CGAffineTransform(translationX: e.minX, y: e.minY))
             .cropped(to: e)
         let average = small.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: smallExtent)])
         var pixel = [Float](repeating: 0, count: 4)
