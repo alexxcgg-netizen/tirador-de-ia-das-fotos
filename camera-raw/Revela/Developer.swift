@@ -592,6 +592,9 @@ enum Developer {
     private static let skinMixKernel = kernel("revelaSkinMix")
     private static let chromaKernel = kernel("revelaChroma")
     private static let peakKernel = kernel("revelaPeak")
+    private static let highColorKernel = kernel("revelaHighColor")
+    private static let subKernel = kernel("revelaSub")
+    private static let divideAddKernel = kernel("revelaDivideAdd")
     private static let bokehSourceKernel = kernel("revelaBokehSource")
     private static let shrinkKernel = kernel("revelaShrink")
     private static let recoverKernel = kernel("revelaRecover")
@@ -1246,6 +1249,7 @@ enum Developer {
         guard let robustColorKernel, let robustWeightKernel, let divideKernel, count > 1 else {
             return average(count: count, extent: extent, frame: frame)
         }
+        if let merged = twoBandMerge(count: count, extent: extent, reference: reference, frame: frame) { return merged }
         let refBlur = materialize(blurred(reference, extent: extent), extent: extent)
         var sumColor = materialize(reference, extent: extent)
         var sumWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: extent)
@@ -1262,6 +1266,41 @@ enum Developer {
         }
         dlog("Noite: quadros juntados só onde nada se mexeu")
         guard let merged = divideKernel.apply(extent: extent, arguments: [sumColor, sumWeight]) else { return nil }
+        return materialize(merged, extent: extent)
+    }
+
+    /// Junção em duas faixas, como o HDR+ do Google: a parte lisa de cada foto entra quase sempre (tolerância larga),
+    /// e o detalhe fino só onde a foto bate com a referência. Onde alguém se mexeu, só o detalhe é recusado:
+    /// a região fica com o ruído baixo das 12 fotos, em vez de uma mancha com o ruído de uma foto só.
+    private static func twoBandMerge(count: Int, extent: CGRect, reference: CIImage, frame: (Int) -> CIImage?) -> CIImage? {
+        guard let robustColorKernel, let robustWeightKernel, let highColorKernel, let subKernel, let divideAddKernel else { return nil }
+        let k: Float = 0.1
+        func low(_ image: CIImage) -> CIImage {
+            image.clampedToExtent().applyingGaussianBlur(sigma: 6).cropped(to: extent)
+        }
+        let ref = materialize(reference, extent: extent)
+        let refBlur = materialize(blurred(ref, extent: extent), extent: extent)
+        let refLow = materialize(low(ref), extent: extent)
+        guard let refHigh = subKernel.apply(extent: extent, arguments: [ref, refLow]) else { return nil }
+        let one = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: extent)
+        var lowSum = refLow, lowWeight = one
+        var highSum = materialize(refHigh, extent: extent), highWeight = one
+        for i in 1..<count {
+            guard let opened = frame(i) else { continue }
+            let image = materialize(opened, extent: extent)
+            let imageBlur = materialize(blurred(image, extent: extent), extent: extent)
+            let imageLow = materialize(low(image), extent: extent)
+            guard let lc = robustColorKernel.apply(extent: extent, arguments: [imageLow, imageLow, refLow, k * 2.5]),
+                  let lw = robustWeightKernel.apply(extent: extent, arguments: [imageLow, refLow, k * 2.5]),
+                  let hc = highColorKernel.apply(extent: extent, arguments: [image, imageLow, imageBlur, refBlur, k]),
+                  let hw = robustWeightKernel.apply(extent: extent, arguments: [imageBlur, refBlur, k]) else { continue }
+            lowSum = materialize(add(lowSum, lc), extent: extent)
+            lowWeight = materialize(add(lowWeight, lw), extent: extent)
+            highSum = materialize(add(highSum, hc), extent: extent)
+            highWeight = materialize(add(highWeight, hw), extent: extent)
+        }
+        dlog("Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu)")
+        guard let merged = divideAddKernel.apply(extent: extent, arguments: [lowSum, lowWeight, highSum, highWeight]) else { return nil }
         return materialize(merged, extent: extent)
     }
 

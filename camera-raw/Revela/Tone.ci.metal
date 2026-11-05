@@ -177,6 +177,23 @@ namespace coreimage {
         return float4(max(s.rgb, float3(0.0f)) * g, 1.0f);
     }
 
+    // Junção em duas faixas (como o HDR+): o detalhe (s − parte lisa) entra só onde o quadro bate com a referência.
+    // A parte lisa usa os kernels de sempre com tolerância maior. Sem limitar em zero: o detalhe tem sinal
+    float4 revelaHighColor(sample_t s, sample_t low, sample_t sBlur, sample_t refBlur, float k) {
+        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
+        return float4((s.rgb - low.rgb) * g, 1.0f);
+    }
+
+    float4 revelaSub(sample_t a, sample_t b) {
+        return float4(a.rgb - b.rgb, 1.0f);
+    }
+
+    float4 revelaDivideAdd(sample_t lowSum, sample_t lowWeight, sample_t highSum, sample_t highWeight) {
+        float3 lo = lowSum.rgb / max(lowWeight.r, 1e-4f);
+        float3 hi = highSum.rgb / max(highWeight.r, 1e-4f);
+        return float4(max(lo + hi, float3(0.0f)), 1.0f);
+    }
+
     float4 revelaRobustWeight(sample_t sBlur, sample_t refBlur, float k) {
         float g = revela::ghost(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
         return float4(g, g, g, 1.0f);

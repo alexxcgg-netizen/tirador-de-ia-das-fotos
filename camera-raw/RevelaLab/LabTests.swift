@@ -99,6 +99,8 @@ final class LabTests: XCTestCase {
             // Como a Apple revela o mesmo RAW (com o "boost" e os tons locais dela), para comparar
             if let raw = CIRAWFilter(imageData: f.data, identifierHint: "com.adobe.raw-image"), let apple = raw.outputImage {
                 save(apple, "foto/\(name)_apple", maxSide: 1600)
+                let ae = apple.extent
+                save(apple.cropped(to: CGRect(x: ae.midX - 512, y: ae.midY - 512, width: 1024, height: 1024)), "foto/\(name)_apple_100pct", maxSide: 1024)
             }
         }
     }
@@ -249,6 +251,59 @@ final class LabTests: XCTestCase {
                 dlog("\(name) super resolução: \(Int(se.width))×\(Int(se.height)) (original \(Int(e.width))×\(Int(e.height)))")
                 let c = CGRect(x: se.midX - 300, y: se.midY - 300, width: 600, height: 600)
                 save(sr.cropped(to: c), "superres/\(name)_2_super", maxSide: 600)
+            }
+        }
+    }
+
+    /// NOITE de verdade (empilhamento): 8 fotos escuras, cada uma com o seu ruído e um tremidinho,
+    /// e um "carro" (retângulo claro) passando em 3 delas. Mostra se some o ruído e se aparece fantasma.
+    func test7NightStack() throws {
+        for url in raws() {
+            let name = url.deletingPathExtension().lastPathComponent
+            guard let truthRaw = Developer.image(from: try frame(url), scale: 0.5) else { continue }
+            let e = truthRaw.extent.integral
+            let dark = Developer.materialize(Developer.scaled(truthRaw, by: 1.0 / 16).cropped(to: e), extent: e)
+            var frames: [CIImage] = []
+            for i in 0..<8 {
+                var img = dark.clampedToExtent()
+                    .transformed(by: CGAffineTransform(translationX: CGFloat(i % 3) * 0.7, y: CGFloat(i % 2) * 0.6)).cropped(to: e)
+                if (2...4).contains(i) {
+                    let car = CIImage(color: CIColor(red: 0.08, green: 0.05, blue: 0.03))
+                        .cropped(to: CGRect(x: e.minX + e.width * (0.2 + 0.15 * CGFloat(i - 2)), y: e.minY + e.height * 0.3,
+                                            width: e.width * 0.12, height: e.height * 0.07))
+                    img = car.composited(over: img).cropped(to: e)
+                }
+                let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
+                    .transformed(by: CGAffineTransform(translationX: CGFloat(i * 131), y: CGFloat(i * 71))).cropped(to: e)
+                    .applyingFilter("CIColorMatrix", parameters: [
+                        "inputRVector": CIVector(x: 0.03, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.03, z: 0, w: 0),
+                        "inputBVector": CIVector(x: 0, y: 0, z: 0.03, w: 0), "inputBiasVector": CIVector(x: -0.015, y: -0.015, z: -0.015, w: 0),
+                    ])
+                let noisy = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: img]).cropped(to: e)
+                frames.append(Developer.materialize(noisy, extent: e))
+            }
+            Developer.decodeOverride = { frame, scale in
+                let i = Int(frame.data.first ?? 0)
+                guard frames.indices.contains(i) else { return nil }
+                let img = frames[i]
+                guard scale < 0.999 else { return img }
+                return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
+                    .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
+                                        height: (img.extent.height * CGFloat(scale)).rounded(.down)))
+            }
+            defer { Developer.decodeOverride = nil }
+            let captured = (0..<8).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            var o = options(.neutro)
+            o.originalAspect = true
+            let single = Developer.developed(Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0), options: o).0
+            save(single, "noite_pilha/\(name)_0_uma_foto", maxSide: 1200)
+            let t0 = CFAbsoluteTimeGetCurrent()
+            if let out = Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: o), let img = CIImage(data: out.heic) {
+                dlog("\(name) noite empilhada: \(Diagnostics.ms(since: t0))")
+                save(img, "noite_pilha/\(name)_1_oito_fotos", maxSide: 1200)
+                let ie = img.extent
+                save(img.cropped(to: CGRect(x: ie.minX + ie.width * 0.15, y: ie.minY + ie.height * 0.2, width: ie.width * 0.5, height: ie.height * 0.3)),
+                     "noite_pilha/\(name)_2_zoom_carro", maxSide: 900)
             }
         }
     }
