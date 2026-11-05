@@ -1551,7 +1551,8 @@ enum Developer {
     }
 
     private static func hdrImage(_ frame: CapturedFrame, scale: Float = 1) -> CIImage? {
-        frame.isRaw ? linear(dng: frame.data, scale: scale, neutralExposure: true) : processed(frame.data, scale: scale)
+        if let decodeOverride, let image = decodeOverride(frame, scale) { return image }
+        return frame.isRaw ? linear(dng: frame.data, scale: scale, neutralExposure: true) : processed(frame.data, scale: scale)
     }
 
     static func scaled(_ image: CIImage, by k: Float) -> CIImage {

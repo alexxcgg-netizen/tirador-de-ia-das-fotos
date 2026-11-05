@@ -333,4 +333,55 @@ final class LabTests: XCTestCase {
             save(out.cropped(to: CGRect(x: c.x - s, y: c.y - s, width: 2 * s, height: 2 * s)), "sol/estrela_\(points)_zoom", maxSide: 700)
         }
     }
+
+    /// HDR: a mesma cena com o dobro do contraste, fotografada em −2, 0 e +2 (cada uma cortada no branco do sensor,
+    /// com o ruído que cada exposição teria). Compara a foto normal sozinha com o HDR juntado.
+    func test9HDR() throws {
+        for url in raws() {
+            let name = url.deletingPathExtension().lastPathComponent
+            guard let base = Developer.image(from: try frame(url), scale: 0.5) else { continue }
+            let e = base.extent.integral
+            let scene = Developer.scaled(base, by: 2.5).cropped(to: e)
+            var frames: [CIImage] = []
+            for (i, bias) in [-2, 0, 2].enumerated() {
+                let gain = Float(pow(2.0, Double(bias)))
+                let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
+                    .transformed(by: CGAffineTransform(translationX: CGFloat(i * 211), y: CGFloat(i * 97))).cropped(to: e)
+                    .applyingFilter("CIColorMatrix", parameters: [
+                        "inputRVector": CIVector(x: 0.01, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.01, z: 0, w: 0),
+                        "inputBVector": CIVector(x: 0, y: 0, z: 0.01, w: 0), "inputBiasVector": CIVector(x: -0.005, y: -0.005, z: -0.005, w: 0),
+                    ])
+                let exposed = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: Developer.scaled(scene, by: gain)])
+                    .applyingFilter("CIColorClamp", parameters: ["inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
+                                                                 "inputMaxComponents": CIVector(x: 1, y: 1, z: 1, w: 1)])
+                    .cropped(to: e)
+                frames.append(Developer.materialize(exposed, extent: e))
+            }
+            Developer.decodeOverride = { frame, scale in
+                let i = Int(frame.data.first ?? 0)
+                guard frames.indices.contains(i) else { return nil }
+                let img = frames[i]
+                guard scale < 0.999 else { return img }
+                return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
+                    .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
+                                        height: (img.extent.height * CGFloat(scale)).rounded(.down)))
+            }
+            defer { Developer.decodeOverride = nil }
+            let captured: [CapturedFrame] = [-2, 0, 2].enumerated().map { i, bias in
+                var f = CapturedFrame(data: Data([UInt8(i)]), isRaw: true)
+                f.exposureBias = Float(bias)
+                return f
+            }
+            var o = options(.neutro)
+            o.originalAspect = true
+            save(Developer.developed(Developer.enhanced(frames[1]), options: o).0, "hdr/\(name)_0_foto_normal", maxSide: 1200)
+            let t0 = CFAbsoluteTimeGetCurrent()
+            var ho = o
+            ho.hdrCompress = true
+            if let out = Developer.hdr(captured, options: ho), let img = CIImage(data: out.heic) {
+                dlog("\(name) HDR: \(Diagnostics.ms(since: t0))")
+                save(img, "hdr/\(name)_1_hdr", maxSide: 1200)
+            }
+        }
+    }
 }
