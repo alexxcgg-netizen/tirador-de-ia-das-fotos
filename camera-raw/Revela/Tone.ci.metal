@@ -81,6 +81,11 @@ namespace coreimage {
         c = 0.18f * pow(c / 0.18f, float3(contrast));
 
         float3 t = revela::filmic(c * film.z);
+        // Luz forte colorida (poste de sódio, letreiro, pôr do sol): a curva por canal vira laranja → amarelo → branco.
+        // Parte da curva aplicada pelo canal mais forte mantém a cor da luz
+        float cm = max(c.r, max(c.g, c.b)) * film.z;
+        float3 hueKeep = c * film.z * (revela::filmic(float3(cm)).r / max(cm, 1e-5f));
+        t = mix(t, hueKeep, film.w * smoothstep(0.35f, 1.4f, cm));
         t = toe + (1.0f - toe) * t;
         t = pow(max(t * slope + offset, float3(0.0f)), power);
 

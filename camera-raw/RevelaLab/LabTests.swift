@@ -147,7 +147,7 @@ final class LabTests: XCTestCase {
     /// Calibragens do tom lado a lado (o app usa a padrão; as outras são para comparar).
     func test4Tuning() throws {
         let variants: [(String, ToneTuning)] = [
-            ("a_antiga", ToneTuning(filmicGain: 0.8, toeScale: 1, offsetScale: 1, saturation: 1, shadowRatio: 1, highlightRatio: 1, keyPull: 0)),
+            ("a_antiga", ToneTuning(filmicGain: 0.8, toeScale: 1, offsetScale: 1, saturation: 1, shadowRatio: 1, highlightRatio: 1, keyPull: 0, hueKeep: 0)),
             ("b_padrao", ToneTuning()),
             ("c_mais_clara", ToneTuning(filmicGain: 1.12, keyPull: 0.45)),
             ("d_mais_cor", ToneTuning(saturation: 1.22, shadowRatio: 2.0, highlightRatio: 0.3)),

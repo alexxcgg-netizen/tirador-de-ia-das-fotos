@@ -19,6 +19,8 @@ struct ToneTuning {
     var highlightRatio: Float = 0.4
     /// Puxa a luz média da foto de um quadro só até perto de −3 EV (0 = não mexe).
     var keyPull: Float = 0.35
+    /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
+    var hueKeep: Float = 0.5
 }
 
 /// Só para achar o pacote onde está o metallib.
@@ -608,6 +610,30 @@ enum Developer {
 
     private static let noise = CIFilter.randomGenerator().outputImage!
 
+    /// Grão de filme: ruído em três tamanhos somados (0,6, 1,2 e 2,4 px, pesos 1, ½, ¼), como os grãos de prata
+    /// de vários tamanhos. Antes era ruído de 1 pixel ampliado, que vira um quadriculado. Feito uma vez (1024 px)
+    /// e repetido lado a lado; cada foto pega um pedaço diferente.
+    private static let grainTexture: CIImage = {
+        let side: CGFloat = 1024, pad: CGFloat = 16
+        let source = noise.cropped(to: CGRect(x: 0, y: 0, width: side + 2 * pad, height: side + 2 * pad))
+        // Desvio do ruído uniforme (0,289) cai com o borrão (≈ 0,28/σ): cada camada volta ao mesmo desvio total
+        var sum = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5)).cropped(to: source.extent)
+        for (sigma, weight) in [(0.6, 1.0), (1.2, 0.5), (2.4, 0.25)] as [(Double, Double)] {
+            let k = CGFloat(weight * 2.08)
+            let layer = source.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: source.extent)
+                .applyingFilter("CIColorMatrix", parameters: [
+                    "inputRVector": CIVector(x: k, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: k, z: 0, w: 0),
+                    "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 0),
+                    "inputBiasVector": CIVector(x: -0.5 * k, y: -0.5 * k, z: -0.5 * k, w: 0),
+                ])
+            sum = layer.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: sum]).cropped(to: source.extent)
+        }
+        let tile = materialize(sum.cropped(to: CGRect(x: pad, y: pad, width: side, height: side)),
+                               extent: CGRect(x: pad, y: pad, width: side, height: side))
+            .transformed(by: CGAffineTransform(translationX: -pad, y: -pad))
+        return tile.applyingFilter("CIAffineTile", parameters: [kCIInputTransformKey: NSValue(cgAffineTransform: .identity)])
+    }()
+
     /// Valor de cena em que o vídeo do iPhone já chega estourado (0,97 na tela), para a zebra.
     private static var zebraThreshold: Float {
         let x: Float = 0.97, a: Float = 2.51, b: Float = 0.03, c: Float = 2.43, d: Float = 0.59, e: Float = 0.14
@@ -834,8 +860,8 @@ enum Developer {
         guard let toneKernel else { return scene }
         let glowing = addGlow(to: scene, look: p)
         let size = CGFloat(p.grainSize)
-        let grainNoise = noise
-            .transformed(by: CGAffineTransform(translationX: .random(in: 0...512), y: .random(in: 0...512)))
+        let grainNoise = grainTexture
+            .transformed(by: CGAffineTransform(translationX: .random(in: 0...1024), y: .random(in: 0...1024)))
             .transformed(by: CGAffineTransform(scaleX: size, y: size))
         let e = scene.extent
         let arguments: [Any] = [
@@ -846,7 +872,7 @@ enum Developer {
             vector(p.shadowTint), vector(p.highTint),
             p.vignette, CIVector(x: e.minX, y: e.minY, z: e.width, w: e.height),
             zebra ? zebraThreshold : Float(0),
-            CIVector(x: CGFloat(p.density), y: CGFloat(p.grainColor), z: CGFloat(tuning.filmicGain), w: 0),
+            CIVector(x: CGFloat(p.density), y: CGFloat(p.grainColor), z: CGFloat(tuning.filmicGain), w: CGFloat(tuning.hueKeep)),
         ]
         var toned = toneKernel.apply(extent: e, arguments: arguments) ?? scene
         if p.skinProtect > 0.01, p.mono < 0.5, let skinMixKernel {
