@@ -1114,9 +1114,11 @@ enum Developer {
         let cleanup = min(1, strength + lift * 0.12)
         out = nightDenoise(out, strength: cleanup)
         out = lumaDenoise(out, strength: cleanup)
-        // Noite com cara de noite: preto de verdade (sem véu cinza) e as sombras sobem pouco
-        out = localTone(out, strength: 0.86)
-        let blackPoint: Float = 0.0035
+        // Noite com cara de noite: preto de verdade (sem véu cinza). O "chão" de luz que o ruído e o céu
+        // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
+        let floor = darkFloor(out)
+        let blackPoint = max(0.0035, min(0.03, floor * 0.85))
+        dlog(String(format: "Noite: preto em %.4f (chão %.4f)", blackPoint, floor))
         out = out.applyingFilter("CIColorMatrix", parameters: [
             "inputRVector": CIVector(x: CGFloat(1 + blackPoint * 10), y: 0, z: 0, w: 0),
             "inputGVector": CIVector(x: 0, y: CGFloat(1 + blackPoint * 10), z: 0, w: 0),
@@ -1124,8 +1126,26 @@ enum Developer {
             "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
             "inputBiasVector": CIVector(x: CGFloat(-blackPoint), y: CGFloat(-blackPoint), z: CGFloat(-blackPoint), w: 0),
         ]).cropped(to: extent)
+        // As sombras sobem pouco
+        out = localTone(out, strength: 0.86)
         if starPoints > 0 { out = starBurst(out, points: starPoints, threshold: 1.5 * exp2(lift)) }
         return out
+    }
+
+    /// Luz do canto mais escuro (versão pequena e borrada, para um pixel solto não contar).
+    static func darkFloor(_ scene: CIImage) -> Float {
+        let e = scene.extent
+        let small = scene.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY))
+            .transformed(by: CGAffineTransform(scaleX: 1.0 / 24, y: 1.0 / 24))
+        let se = small.extent.integral
+        guard se.width >= 4, se.height >= 4 else { return 0 }
+        let soft = small.clampedToExtent().applyingGaussianBlur(sigma: 1.5).cropped(to: se)
+        let minimum = soft.applyingFilter("CIAreaMinimum", parameters: [kCIInputExtentKey: CIVector(cgRect: se)])
+        var pixel = [Float](repeating: 0, count: 4)
+        context.render(minimum, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+        let l = 0.2126 * pixel[0] + 0.7152 * pixel[1] + 0.0722 * pixel[2]
+        return l.isFinite ? max(0, l) : 0
     }
 
     /// Quantas paradas clarear a NOITE: leva a luz média (em log, então um poste não engana) até uns −4 EV.
@@ -1163,7 +1183,7 @@ enum Developer {
             let r: CGFloat = 6
             let soft = small.applyingGaussianBlur(sigma: Double(r / 2))
             let maxed = soft.applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: r])
-            let area = Float(CGFloat.pi * r * r * 0.5)
+            let area = Float(CGFloat.pi * r * r * 0.15)
             small = (peakKernel.apply(extent: smallExtentFor(e, k), arguments: [soft, maxed, area]) ?? small)
                 .applyingGaussianBlur(sigma: 0.7).clampedToExtent()
         }
@@ -1172,7 +1192,7 @@ enum Developer {
         var rays = CIImage(color: .black).cropped(to: smallRect)
         let directions = points / 2
         // Dois comprimentos somados: forte perto da luz e sumindo devagar (antes era um risco comprido e igual)
-        let layers: [(length: CGFloat, weight: CGFloat)] = [(side * 0.012, 0.6), (side * 0.03, 0.25)]
+        let layers: [(length: CGFloat, weight: CGFloat)] = [(side * 0.008, 0.6), (side * 0.022, 0.22)]
         for i in 0..<directions {
             let angle = Double.pi * Double(i) / Double(directions) + 0.3
             for layer in layers {
