@@ -1203,8 +1203,12 @@ enum Developer {
         let directions = points / 2
         // Comprimentos dobrando e pesos caindo pela metade: o brilho ao longo do raio cai ~1/r², como na difração
         let base: CGFloat = many ? 0.004 : 0.007
-        let layers: [(length: CGFloat, weight: Float, warm: Bool)] = (0..<4).map { i in
-            (side * base * pow(2, CGFloat(i)), 0.55 * pow(0.5, Float(i)) * (many ? 0.45 : 1), i >= 2)
+        let fade: Float = many ? 0.45 : 1
+        var layers: [(length: CGFloat, weight: Float, warm: Bool)] = []
+        for i in 0..<4 {
+            let length: CGFloat = side * base * CGFloat(1 << i)
+            let weight: Float = 0.55 / Float(1 << i) * fade
+            layers.append((length, weight, i >= 2))
         }
         var neutral = CIImage(color: .black).cropped(to: smallRect)
         var warm = CIImage(color: .black).cropped(to: smallRect)
