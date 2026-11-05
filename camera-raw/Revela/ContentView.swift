@@ -27,6 +27,8 @@ struct ContentView: View {
     @State private var locationOn = Locator.shared.enabled
     @ObservedObject private var sync = ClaudeSync.shared
     @State private var githubToken = ""
+    @State private var anthropicKey = ""
+    @ObservedObject private var critic = PhotoCritic.shared
     @State private var originalsSize = "…"
     @State private var showReport = false
     @State private var showGuide = false
@@ -991,6 +993,30 @@ struct ContentView: View {
                                 .font(.footnote).foregroundStyle(.secondary)
                         }
                         if !sync.status.isEmpty { Text(sync.status).font(.footnote).foregroundStyle(.secondary) }
+                    }
+
+                    settingsSection("Claude analisa as fotos") {
+                        if critic.hasKey {
+                            Button(critic.running ? "Analisando…" : "Analisar as últimas 6 fotos") {
+                                Task { await critic.analyzeRecent(count: 6) }
+                            }
+                            .disabled(critic.running)
+                            Text("O Claude Opus 5.5 olha cada foto inteira e um recorte 100% do centro, e escreve o que a revelação precisa melhorar. A análise vai junto no relatório. Cada análise custa uns US$ 0,20–0,40.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                            Button("Remover a chave", role: .destructive) { critic.disconnect() }
+                        } else {
+                            SecureField("Cole aqui a chave da API do Claude (sk-ant-…)", text: $anthropicKey)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled()
+                            Button("Conectar") {
+                                let key = anthropicKey
+                                Task { if await critic.connect(key: key) { anthropicKey = "" } }
+                            }
+                            .disabled(anthropicKey.trimmingCharacters(in: .whitespaces).isEmpty)
+                            Text("Chave do console.anthropic.com. Fica guardada no Keychain do iPhone e só é usada quando você pede uma análise.")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                        if !critic.status.isEmpty { Text(critic.status).font(.footnote).foregroundStyle(.secondary) }
                     }
 
                     settingsSection("Instalação") {

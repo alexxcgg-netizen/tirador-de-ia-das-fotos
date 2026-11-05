@@ -10,6 +10,7 @@ struct ReportView: View {
     @State private var fileURL: URL?
     @State private var copied = false
     @ObservedObject private var sync = ClaudeSync.shared
+    @ObservedObject private var critic = PhotoCritic.shared
     @State private var sent = false
 
     var body: some View {
@@ -24,6 +25,21 @@ struct ReportView: View {
                         .padding(12)
                         .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.08)))
 
+                    if critic.hasKey {
+                        Button {
+                            Task {
+                                await critic.analyzeRecent(count: 6)
+                                build()
+                            }
+                        } label: {
+                            Label(critic.running ? "O Claude está olhando as fotos…" : "Claude analisa as últimas 6 fotos",
+                                  systemImage: "eye")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(critic.running)
+                        if !critic.status.isEmpty { Text(critic.status).font(.footnote).foregroundStyle(.secondary) }
+                    }
                     if sync.connected {
                         Button {
                             Task { sent = await sync.sendReport(report) }

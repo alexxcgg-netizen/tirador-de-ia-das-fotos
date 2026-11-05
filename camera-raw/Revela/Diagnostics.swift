@@ -116,6 +116,10 @@ final class Diagnostics: NSObject, MXMetricManagerSubscriber {
             out += "## Agora\n"
             for (key, value) in self.stats.sorted(by: { $0.key < $1.key }) { out += "- \(key): \(value)\n" }
             out += "\n## Câmera\n\(camera)\n"
+            // O que o Claude (Opus 5.5) viu nas últimas fotos, se a análise foi feita
+            if let analysis = PhotoCritic.lastAnalysis {
+                out += "## Análise das fotos pelo Claude (Opus 5.5)\n\(analysis)\n\n"
+            }
 
             let crashes = (try? FileManager.default.contentsOfDirectory(at: self.crashDir, includingPropertiesForKeys: nil)) ?? []
             if !crashes.isEmpty {

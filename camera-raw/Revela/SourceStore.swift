@@ -93,6 +93,11 @@ enum SourceStore {
         queue.sync { readIndex().first }
     }
 
+    /// As últimas fotos guardadas (só o índice), da mais nova para a mais velha.
+    static func recentEntries(limit: Int) -> [Entry] {
+        queue.sync { Array(readIndex().prefix(limit)) }
+    }
+
     static func latest() -> (Entry, Data)? {
         queue.sync {
             guard let entry = readIndex().first,

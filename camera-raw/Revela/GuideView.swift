@@ -111,6 +111,8 @@ struct GuideView: View {
                  text: "Em Ajustes: o app entra sozinho em cada modo e em cada lente, confere se a imagem chega e anota tudo no relatório. Deixe o iPhone parado uns 2 minutos e mande o relatório."),
             Item(symbol: "link", title: "Conectar ao Claude",
                  text: "Em Ajustes, cole a chave do GitHub uma vez. O Claude passa a mandar filmes, ajustes e recados direto para o app, e o relatório vai com um toque em \"Enviar ao Claude\" (ou sozinho depois de um fechamento)."),
+            Item(symbol: "eye", title: "Claude analisa as fotos",
+                 text: "Em Ajustes, cole a chave da API do Claude uma vez. \"Analisar as últimas 6 fotos\" (ou o botão no Relatório) manda cada foto inteira e um recorte 100% para o Claude Opus 5.5, que escreve nos mínimos detalhes o que a revelação precisa melhorar. A análise vai junto no relatório."),
             Item(symbol: "location", title: "Localização", text: "Guarda onde cada foto foi tirada, para ela aparecer no mapa da galeria."),
             Item(symbol: "doc.badge.plus", title: "Guardar DNG",
                  text: "Guarda também o arquivo RAW original (uns 50 MB) para revelar depois no Lightroom."),
