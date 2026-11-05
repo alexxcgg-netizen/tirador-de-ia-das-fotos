@@ -265,6 +265,22 @@ final class LabTests: XCTestCase {
                 let c = CGRect(x: se.midX - 300, y: se.midY - 300, width: 600, height: 600)
                 save(sr.cropped(to: c), "superres/\(name)_2_super", maxSide: 600)
             }
+            // Variações da calibragem (para escolher a melhor no placar)
+            let variants: [(String, Developer.SRTuning)] = [
+                ("nucleo_0_5", .init(splatSigma: 0.5)),
+                ("nucleo_0_75", .init(splatSigma: 0.75)),
+                ("desconv_forte", .init(deconvScale: 0.45, deconvIterations: 3)),
+                ("sem_desconv", .init(deconvIterations: 0)),
+            ]
+            for (label, tuning) in variants {
+                Developer.srTuning = tuning
+                if let heic = Developer.superResolution(frames, options: options(.neutro), keep: 8)?.heic, let sr = CIImage(data: heic) {
+                    let se = sr.extent
+                    save(sr.cropped(to: CGRect(x: se.midX - 300, y: se.midY - 300, width: 600, height: 600)),
+                         "superres_var/\(name)_\(label)", maxSide: 600)
+                }
+            }
+            Developer.srTuning = .init()
         }
     }
 

@@ -142,6 +142,17 @@ def main(root):
             gain = psnr(load(p("2_super")), t) - psnr(load(p("1_uma_ampliada")), t)
             check(f"SUPER ZOOM {n}", "ganho de PSNR sobre uma ampliada", f"{gain:+.2f} dB", gain >= 1.5, "≥ +1,5 dB")
 
+    var = os.path.join(root, "superres_var")
+    if os.path.isdir(var):
+        for fl in sorted(os.listdir(var)):
+            n, label = fl[:-4].split("_", 1)
+            p = lambda s: os.path.join(sr, f"{n}_{s}.jpg")
+            if not os.path.exists(p("0_original")):
+                continue
+            t = load(p("0_original"))
+            gain = psnr(load(os.path.join(var, fl)), t) - psnr(load(p("1_uma_ampliada")), t)
+            rows.append((f"SUPER ZOOM {n}", f"variação {label} (só informação)", f"{gain:+.2f} dB", "", ""))
+
     width = max(len(r[1]) for r in rows) if rows else 10
     ok = sum(1 for r in rows if r[4] == "OK")
     total = sum(1 for r in rows if r[4])

@@ -13,6 +13,16 @@ extension Developer {
     static let superResolutionTarget: Double = 100_000_000
 
     /// Alinhamento de uma foto: o geral (deslocamento, giro, escala) e o que sobrou em cada um dos 9 pedaços.
+    /// Calibragem da super resolução (o laboratório testa variações; o app usa a padrão).
+    struct SRTuning {
+        /// Tamanho do núcleo de cada pixel na grade grande (em pixels grandes).
+        var splatSigma: Double = 0.6
+        /// Borrão da desconvolução final, × o fator de ampliação.
+        var deconvScale: Double = 0.35
+        var deconvIterations = 2
+    }
+    static var srTuning = SRTuning()
+
     struct Alignment {
         var transform: CGAffineTransform
         /// Correção por região, em pixels da foto (0 onde o pedaço não deu ou discordou).
@@ -134,8 +144,8 @@ extension Developer {
         // Do 5º passo em diante quase não muda nada e cada passo custa o mesmo: 4 bastam (Lua: 6)
         // Depois da regressão de núcleo só falta um pouco: 2 passos com borrão de 0,35 × o fator (protótipo:
         // o borrão antigo de 1,35 px com 4 passos tirava 1,5 dB). Lua um passo a mais
-        let iterations = splatted ? (sharpen >= 0.8 ? 3 : 2) : (sharpen >= 0.8 ? 6 : 4)
-        let sigma = splatted ? Double(0.35 * factor) : Double(0.55 * factor + 0.25)
+        let iterations = splatted ? srTuning.deconvIterations + (sharpen >= 0.8 ? 1 : 0) : (sharpen >= 0.8 ? 6 : 4)
+        let sigma = splatted ? srTuning.deconvScale * Double(factor) : Double(0.55 * factor + 0.25)
         guard let heic = renderInStrips(merged, extent: outExtent, properties: properties, iterations: iterations, sigma: sigma,
                                         grade: { developed($0.settingProperties(properties), options: opts).0 }) else {
             dlog("❌ Super resolução: não consegui gravar a foto")
@@ -173,7 +183,7 @@ extension Developer {
             let common: [Any] = [
                 src, refUp,
                 CIVector(x: inv.a, y: inv.c, z: inv.tx), CIVector(x: inv.b, y: inv.d, z: inv.ty),
-                CIVector(x: factor, y: region.minX, z: region.minY, w: 0.6),
+                CIVector(x: factor, y: region.minX, z: region.minY, w: CGFloat(srTuning.splatSigma)),
                 CIVector(x: r[0].x, y: r[0].y, z: r[1].x, w: r[1].y),
                 CIVector(x: r[2].x, y: r[2].y, z: r[3].x, w: r[3].y),
                 CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y),
