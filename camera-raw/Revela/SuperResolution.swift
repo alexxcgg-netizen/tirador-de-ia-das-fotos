@@ -300,7 +300,7 @@ extension Developer {
 
     /// Luminância (raiz, para o escuro pesar parecido com o claro) de vários pedaços, linha 0 em cima.
     /// Todos os pedaços vão lado a lado numa imagem só e saem numa leitura.
-    private static func grayPatches(_ image raw: CIImage, rects: [CGRect]) -> [[Float]?] {
+    private static func grayPatches(_ raw: CIImage, rects: [CGRect]) -> [[Float]?] {
         guard let first = rects.first else { return [] }
         // Um leve borrão antes de comparar: no escuro o ruído enganava a busca (o laboratório mostrou "deslocamentos"
         // de 13 px e giros de 0,5° em fotos que andaram menos de 1,5 px). O deslocamento continua o mesmo
