@@ -40,15 +40,29 @@ def local_noise(a):
     return float(np.abs(l - blur)[flat].mean())
 
 
+def _fourier_shift(img, dx, dy):
+    """Desloca por fração de pixel (fase na FFT), canal por canal."""
+    h, w = img.shape[:2]
+    fy = np.fft.fftfreq(h)[:, None]
+    fx = np.fft.fftfreq(w)[None, :]
+    phase = np.exp(-2j * np.pi * (fx * dx + fy * dy))
+    return np.stack([np.real(np.fft.ifft2(np.fft.fft2(img[..., c]) * phase)) for c in range(img.shape[2])], -1)
+
+
 def psnr(a, b, reach=16):
-    """PSNR depois de achar o melhor encaixe (os recortes podem sair alguns pixels deslocados)."""
+    """PSNR depois do melhor encaixe, inteiro e depois em fração de pixel (a super resolução sai na posição da
+    foto de referência que ela escolheu, que pode estar meio pixel deslocada da original)."""
     h, w = min(a.shape[0], b.shape[0]), min(a.shape[1], b.shape[1])
     a, b = a[:h, :w], b[:h, :w]
     m = reach
     core = a[m:h - m, m:w - m]
-    best = min(((core - b[m + dy:h - m + dy, m + dx:w - m + dx]) ** 2).mean()
+    best = min((((core - b[m + dy:h - m + dy, m + dx:w - m + dx]) ** 2).mean(), dx, dy)
                for dy in range(-m, m + 1) for dx in range(-m, m + 1))
-    return 10 * np.log10(1 / max(best, 1e-12))
+    _, bx, by = best
+    window = b[m + by:h - m + by, m + bx:w - m + bx]
+    fine = min(((core - _fourier_shift(window, fx, fy))[4:-4, 4:-4] ** 2).mean()
+               for fy in np.arange(-0.75, 0.76, 0.25) for fx in np.arange(-0.75, 0.76, 0.25))
+    return 10 * np.log10(1 / max(min(best[0], fine), 1e-12))
 
 
 rows = []
@@ -81,12 +95,22 @@ def main(root):
     looks = os.path.join(root, "looks")
     if os.path.isdir(looks):
         bad = []
+        # Comparado com o Neutro da mesma foto (cena escura de verdade não é defeito); Noir e Bleach esmagam de propósito
         for n in sorted(os.listdir(looks)):
-            for fl in sorted(os.listdir(os.path.join(looks, n))):
+            files = sorted(os.listdir(os.path.join(looks, n)))
+            neutral = [fl for fl in files if fl[3:-4] == "Neutro"]
+            if not neutral:
+                continue
+            ln = luma(load(os.path.join(looks, n, neutral[0])))
+            n5, n99 = np.percentile(ln, [5, 99])
+            for fl in files:
+                name = fl[3:-4]
+                if name in ("Neutro", "Noir", "Bleach Bypass"):
+                    continue
                 l = luma(load(os.path.join(looks, n, fl)))
                 p5, p99 = np.percentile(l, [5, 99])
-                if p5 < 0.02 or p99 < 0.7:
-                    bad.append(f"{n}/{fl[3:-4]} (p5 {p5:.2f}, p99 {p99:.2f})")
+                if p5 < min(0.02, n5 * 0.6) or p99 < min(0.7, n99 - 0.12):
+                    bad.append(f"{n}/{name} (p5 {p5:.2f} vs {n5:.2f}, p99 {p99:.2f} vs {n99:.2f})")
         check("Filmes", "filmes com sombra esmagada ou branco apagado", f"{len(bad)}", not bad, "0")
         for b in bad[:12]:
             rows.append(("", "  " + b, "", "", ""))

@@ -25,7 +25,7 @@ velocidade é parte da qualidade; toda escolha de imagem com referência (Apple/
 | FOTO — cor | saturação média vs Apple | 0,9×–1,15× da Apple |
 | FOTO — detalhe | bordas no recorte 100% | ≥ Apple, sem halo de nitidez (pico de borda ≤ 1,3× a Apple) |
 | FOTO — preto | p1 | ≤ Apple + 0,03 (sem névoa) |
-| Filmes | cada filme distinguível e sem esmagar sombra | p5 ≥ 0,02 e p99 ≥ 0,7 em todos os 31 |
+| Filmes | sem esmagar sombra nem apagar o branco (vs o Neutro da mesma foto; Noir e Bleach são de propósito) | p5 ≥ mín(0,02; 0,6 × Neutro) e p99 ≥ mín(0,7; Neutro − 0,12) |
 | NOITE | ruído em área lisa (desvio local) | ≤ 50% da foto única |
 | NOITE | preto (p1) / cara de noite | p1 ≤ 0,06; luz média 0,18–0,32 |
 | NOITE | fantasma do carro | diferença no lugar do carro ≤ 2% |
