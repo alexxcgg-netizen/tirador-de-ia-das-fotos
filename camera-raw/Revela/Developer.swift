@@ -22,6 +22,8 @@ struct ToneTuning {
     var keyPull: Float = 0.15
     /// Cor que acompanha a luz da cena (efeito Hunt): dia claro com mais cor, cena escura com menos.
     var keyedSaturation: Float = 0.18
+    /// Quanto o céu e as nuvens sobem (EV): o branco (p99) ficava 0,05–0,08 abaixo da Apple.
+    var highlightBoost: Float = 0.35
     /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
     var hueKeep: Float = 0.5
 }
@@ -341,7 +343,7 @@ enum Look: String, CaseIterable, Identifiable {
             }
         case .velvia:
             return .make {
-                $0.saturation = 1.6; $0.contrast = 1.28
+                $0.saturation = 1.6; $0.contrast = 1.22
                 $0.matR = SIMD3(1.12, -0.08, -0.04); $0.matG = SIMD3(-0.06, 1.12, -0.06); $0.matB = SIMD3(-0.02, -0.08, 1.1)
                 $0.slope = SIMD3(1.04, 0.96, 1.06); $0.power = SIMD3(1.06, 1.06, 1.0)
                 $0.shadowTint = SIMD3(0.002, -0.002, 0.006)
@@ -869,7 +871,8 @@ enum Developer {
     static func enhanced(_ scene: CIImage, preview: CIImage? = nil) -> CIImage {
         let exif = scene.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
         let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 100
-        var out = localTone(scene, strength: 0.85, preview: preview, keyPull: tuning.keyPull)
+        var out = localTone(scene, strength: 0.85, preview: preview, keyPull: tuning.keyPull,
+                            highlightBoost: tuning.highlightBoost)
         // Cor pela luz da cena, como a Apple: dia claro (−3,3 EV) ganha ~12% de cor, entardecer (−4,7 EV) perde ~12%
         let saturation = min(1.15, max(0.85, 1 + tuning.keyedSaturation * (lastKey + 4)))
         if abs(saturation - 1) > 0.01 {
@@ -882,8 +885,9 @@ enum Developer {
         // menos com ISO alto (para não afiar o ruído)
         let e = scene.extent
         if max(e.width, e.height) >= 1500 {
-            let radius = 0.9 * max(1, max(e.width, e.height) / 4032)
-            let amount = iso >= 1600 ? 0.15 : 0.32
+            // Raio pelo tamanho, até 1,35 px; força 0,26 (0,32 dava borda 1,4× a da Apple na foto de 48 MP)
+            let radius = 0.9 * min(1.5, max(1, max(e.width, e.height) / 4032))
+            let amount = iso >= 1600 ? 0.13 : 0.26
             out = out.applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: radius, kCIInputIntensityKey: amount]).cropped(to: e)
         }
         return out.settingProperties(scene.properties)
@@ -1148,7 +1152,8 @@ enum Developer {
         // Noite com cara de noite: preto de verdade (sem véu cinza). O "chão" de luz que o ruído e o céu
         // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
         let floor = darkFloor(out)
-        let blackPoint = max(0.0035, min(0.03, floor * 0.85))
+        // Até 0,06 (era 0,03: no laboratório o chão chegava a 0,044 e o preto ficava cinza)
+        let blackPoint = max(0.0035, min(0.06, floor * 0.9))
         dlog(String(format: "Noite: preto em %.4f (chão %.4f)", blackPoint, floor))
         out = out.applyingFilter("CIColorMatrix", parameters: [
             "inputRVector": CIVector(x: CGFloat(1 + blackPoint * 2), y: 0, z: 0, w: 0),
@@ -1528,7 +1533,8 @@ enum Developer {
     /// Luz média (log2) da última cena que passou pelos tons locais (para a cor acompanhar a luz).
     private static var lastKey: Float = -4
 
-    static func localTone(_ scene: CIImage, strength: Float, preview: CIImage? = nil, keyPull: Float = 0) -> CIImage {
+    static func localTone(_ scene: CIImage, strength: Float, preview: CIImage? = nil, keyPull: Float = 0,
+                          highlightBoost: Float = 0) -> CIImage {
         guard let logLumaKernel, let localToneKernel else { return scene }
         let e = scene.extent
         let source = preview ?? scene.transformed(by: CGAffineTransform(scaleX: 0.125, y: 0.125))
@@ -1561,7 +1567,7 @@ enum Developer {
         let shift = keyPull > 0 ? min(0.8, max(-0.5, (-3.0 - pixel[0]) * keyPull)) : 0
         if shift != 0 { dlog(String(format: "Tons locais: ajuste de luz %+.2f EV", shift)) }
         let shape = CIVector(x: CGFloat(shadow), y: CGFloat(high), z: 1.08, w: CGFloat(shift))
-        return localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], shape]) ?? scene
+        return localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], shape, highlightBoost]) ?? scene
     }
 
     private static func hdrImage(_ frame: CapturedFrame, scale: Float = 1) -> CIImage? {

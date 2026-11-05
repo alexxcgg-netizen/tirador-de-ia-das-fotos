@@ -62,3 +62,6 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Tom: puxar menos a luz média (0,4 → 0,15) e curva 1,1 deixou o iPhone XS igual à Apple (média 0,35/0,35, meio
   0,39/0,39). Virou padrão, com cor que acompanha a luz da cena. Testando comprimir menos as luzes (branco p99).
 - NOITE: alvo de brilho −4,2 → −3,95 EV (luz média 0,16–0,18 estava no limite).
+- Rodada a1bdf0c: placar **28/34**. Comprimir menos as luzes não mudou o branco (limite é a curva) → céu/nuvem sobem
+  0,35 EV nos tons locais; nitidez 0,32 → 0,26 (halo 1,4× na foto de 48 MP); preto da NOITE até 0,06 (chão 0,044);
+  Velvia contraste 1,28 → 1,22 (esmagava a sombra na foto do Pixel).

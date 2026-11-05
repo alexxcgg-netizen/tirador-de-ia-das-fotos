@@ -208,13 +208,14 @@ namespace coreimage {
     // Tons locais: aproxima a luz de fundo de cada região da média (strength < 1) e mantém o detalhe.
     // shape: x = força nas sombras, y = força nas altas luzes, z = detalhe, w = deslocamento global (EV).
     // Sombras sobem mais do que as luzes descem: o céu não fica cinza
-    float4 revelaLocalTone(sample_t s, sample_t base, float mean, float4 shape) {
+    // high: quanto as regiões claras (céu, nuvem; 1 a 3 EV acima da média) sobem, em EV — o branco da Apple é mais alto
+    float4 revelaLocalTone(sample_t s, sample_t base, float mean, float4 shape, float high) {
         float3 c = max(s.rgb, float3(0.0f));
         float lg = log2(max(dot(c, revela::kLuma), 1e-5f));
         float b = base.r;
         float d = b - mean;
         float k = d < 0.0f ? shape.x : shape.y;
-        float target = mean + d * k + (lg - b) * shape.z + shape.w;
+        float target = mean + d * k + (lg - b) * shape.z + shape.w + high * smoothstep(1.0f, 3.0f, d);
         return float4(c * exp2(clamp(target - lg, -3.0f, 3.0f)), 1.0f);
     }
 
