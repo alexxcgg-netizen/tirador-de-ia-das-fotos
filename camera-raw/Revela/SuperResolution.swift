@@ -128,7 +128,8 @@ extension Developer {
         return alignments.map { alignment in
             guard let alignment else { return { $0 } }
             return { image in
-                var out = image.transformed(by: alignment.transform)
+                // Borda repetida: o quadro deslocado não deixa faixa vazia (escura ou colorida) na beirada
+                var out = image.clampedToExtent().transformed(by: alignment.transform)
                 let r = alignment.residuals
                 if let gridWarpKernel, r.count == 9, r.contains(where: { hypot($0.x, $0.y) > 0.25 }) {
                     let reach = (r.map { max(abs($0.x), abs($0.y)) }.max() ?? 0) + 2

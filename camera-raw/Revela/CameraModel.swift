@@ -1883,8 +1883,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // pedido 1/170) e cada uma leva 1,6 s; em 12 MP o obturador vale e saem 3 por segundo, quase sem tremido
         let fullResolution = mode == .superRes || mode == .moon || macroStacking
         let nightPlan = mode == .night && !manualExposure
-        // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/10 s na mão
-        let nightSeconds = nightTime.seconds ?? (veryDark ? 1.0 : (isSteady ? 0.5 : 1.0 / 10))
+        // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/8 s na mão
+        let nightSeconds = nightTime.seconds ?? (veryDark ? 1.0 : (isSteady ? 0.5 : 1.0 / 8))
+        let nightAuto = nightTime == .auto
         // Super resolução: obturador rápido (foto tremida não cria detalhe) — 1/60 na 1×, 1/120 na 4×, 1/240 a 8×…
         let fastPlan = (mode == .superRes || mode == .superZoom) && !manualExposure
         let fastSeconds = min(1.0 / 60, 1.0 / (30 * max(Double(zoom), 1)))
@@ -1919,9 +1920,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 // Sem passar do ISO máximo: se falta luz, fica no mais rápido que ainda expõe certo
                 if fastPlan { target = max(target, current * Double(d.iso) / Double(f.maxISO)) }
                 target = min(max(target, f.minExposureDuration.seconds), f.maxExposureDuration.seconds)
-                let iso = min(max(d.iso * Float(current / target), f.minISO), f.maxISO)
-                dlog(String(format: "%@: %.4fs ISO %.0f → %.4fs ISO %.0f · %d fotos", nightPlan ? "Noite" : "Super resolução",
-                            current, d.iso, target, iso, count))
+                // NOITE no breu: o automático do iPhone fica abaixo do que ele mesmo queria (falta de ISO no visor).
+                // O que faltava (até 2 paradas) entra no ISO, que nas fotos longas ainda tem folga
+                let deficit = nightPlan && nightAuto ? min(2, max(0, -d.exposureTargetOffset)) : 0
+                let iso = min(max(d.iso * Float(current / target) * exp2(deficit), f.minISO), f.maxISO)
+                dlog(String(format: "%@: %.4fs ISO %.0f → %.4fs ISO %.0f · %d fotos%@", nightPlan ? "Noite" : "Super resolução",
+                            current, d.iso, target, iso, count, deficit > 0.1 ? String(format: " · +%.1f EV", deficit) : ""))
                 // Se a câmera parar no meio (ligação, Central de Controle), a resposta pode nunca vir: segue sozinho
                 let go = self.onceOnSessionQueue(timeout: 2 + target * 2, run)
                 d.safeCustomExposure(seconds: target, iso: iso) { _ in go() }

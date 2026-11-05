@@ -808,8 +808,13 @@ enum Developer {
                     out = recoverKernel.apply(extent: extent, arguments: [out, alignedShort, gain]) ?? out
                     dlog(String(format: "Noite: luzes fortes recuperadas da foto curta (%.0f×)", gain))
                 }
-                out = localTone(nightDenoise(out, strength: strength), strength: 0.75)
-                if starPoints > 0 { out = starBurst(out, points: starPoints) }
+                // O iPhone mede o breu escuro demais: clareia até uma luz de noite (não de dia), até 3 paradas
+                let lift = nightLift(out)
+                if lift > 0.1 { out = scaled(out, by: exp2(lift)).cropped(to: extent) }
+                // Mais claro = mais ruído aparente: a redução acompanha
+                let cleanup = min(1, strength + lift * 0.12)
+                out = localTone(nightDenoise(out, strength: cleanup), strength: 0.75)
+                if starPoints > 0 { out = starBurst(out, points: starPoints, threshold: 1.5 * exp2(lift)) }
                 return out
             }
         case .average:
@@ -883,12 +888,30 @@ enum Developer {
     /// Soma em lotes de 3, guardando o parcial em memória de vídeo: nunca há mais de 3 RAW abertos ao mesmo tempo.
     /// Estrela nas luzes: as luzes bem fortes ganham raios, como numa lente fechada em f/11–f/16.
     /// Feito numa versão pequena (os raios são suaves de qualquer jeito) e somado à luz da cena.
-    static func starBurst(_ scene: CIImage, points: Int) -> CIImage {
+    /// Quantas paradas clarear a NOITE: leva a luz média (em log, então um poste não engana) até uns −4 EV.
+    static func nightLift(_ scene: CIImage) -> Float {
+        guard let logLumaKernel else { return 0 }
+        let e = scene.extent
+        let small = scene.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY))
+            .transformed(by: CGAffineTransform(scaleX: 1.0 / 16, y: 1.0 / 16))
+        let se = small.extent
+        guard se.width >= 4, se.height >= 4, let logL = logLumaKernel.apply(extent: se, arguments: [small]) else { return 0 }
+        let average = logL.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: se)])
+        var pixel = [Float](repeating: 0, count: 4)
+        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+        guard pixel[0].isFinite else { return 0 }
+        let lift = min(3, max(0, -4.2 - pixel[0]))
+        dlog(String(format: "Noite: luz média %.1f EV · clareia %.1f paradas", pixel[0], lift))
+        return lift
+    }
+
+    static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5) -> CIImage {
         guard let highlightsKernel, points >= 4 else { return scene }
         let e = scene.extent
         let k: CGFloat = 0.25
         // Só o que passa bem do branco: postes, faróis, letreiros
-        guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, Float(1.5)]) else { return scene }
+        guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, threshold]) else { return scene }
         let small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
         let length = min(e.width, e.height) * k * 0.05
         var rays = CIImage(color: .black).cropped(to: CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k))
