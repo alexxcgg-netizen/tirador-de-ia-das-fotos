@@ -1211,7 +1211,7 @@ enum Developer {
         let white = max(pixel[0], max(pixel[1], pixel[2]))
         // Sem nada estourado (nem sol nem lâmpada): sem estrela
         guard white.isFinite, white > 0.6 else { return scene }
-        return starBurst(scene, points: points, threshold: white * 0.82 / 1.3, compactOnly: true, boost: 14)
+        return starBurst(scene, points: points, threshold: white * 0.82 / 1.3, compactOnly: true, boost: 26)
     }
 
     static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5,
@@ -1247,10 +1247,11 @@ enum Developer {
         // Comprimentos dobrando e pesos caindo pela metade: o brilho ao longo do raio cai ~1/r², como na difração
         // Os raios do iPhone 18 vão longe, cada vez mais transparentes: comprimentos dobrando, peso caindo 40%
         let base: CGFloat = many ? 0.007 : 0.009
-        let fade: Float = many ? 0.3 : 0.8
+        let fade: Float = many ? 0.2 : 0.8
         var layers: [(length: CGFloat, weight: Float, warm: Bool)] = []
         var weight: Float = 0.5 * fade
-        for i in 0..<4 {
+        // De dia (sol) um quinto comprimento: no iPhone 18 os raios do sol chegam a ~14% da foto
+        for i in 0..<(compactOnly ? 5 : 4) {
             let length: CGFloat = side * base * CGFloat(1 << i)
             layers.append((length, weight, i >= 2))
             weight *= 0.6
@@ -1278,7 +1279,7 @@ enum Developer {
         ])
         // Brilho suave em volta da luz (a lente nunca é perfeita)
         // Brilho em volta da luz: largo e suave (no iPhone 18 o sol tem um halo grande e claro)
-        let glow = scaled(small.applyingGaussianBlur(sigma: Double(side * 0.03)).cropped(to: smallRect), by: 0.5)
+        let glow = scaled(small.applyingGaussianBlur(sigma: Double(side * 0.03)).cropped(to: smallRect), by: compactOnly ? 1.4 : 0.5)
             .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey:
                 scaled(small.applyingGaussianBlur(sigma: Double(side * 0.008)).cropped(to: smallRect), by: 0.3)])
         let rays = warmed.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: neutral])
