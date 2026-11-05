@@ -909,29 +909,30 @@ enum Developer {
     static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5) -> CIImage {
         guard let highlightsKernel, points >= 4 else { return scene }
         let e = scene.extent
-        let k: CGFloat = 0.25
+        // Metade do tamanho (era 1/4): raios mais finos e nítidos, como os de uma lente fechada de verdade
+        let k: CGFloat = 0.5
         // Só o que passa bem do branco: postes, faróis, letreiros
-        guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, threshold]) else { return scene }
+        guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, threshold * 1.3]) else { return scene }
         let small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
-        let length = min(e.width, e.height) * k * 0.05
-        var rays = CIImage(color: .black).cropped(to: CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k))
+        let side = min(e.width, e.height) * k
+        let smallRect = CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k)
+        var rays = CIImage(color: .black).cropped(to: smallRect)
         let directions = points / 2
+        // Dois comprimentos somados: forte perto da luz e sumindo devagar (antes era um risco comprido e igual)
+        let layers: [(length: CGFloat, weight: CGFloat)] = [(side * 0.012, 0.6), (side * 0.03, 0.25)]
         for i in 0..<directions {
             let angle = Double.pi * Double(i) / Double(directions) + 0.3
-            let streak = small.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: length, kCIInputAngleKey: angle])
-            rays = streak.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: rays])
+            for layer in layers {
+                let streak = small.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: layer.length, kCIInputAngleKey: angle])
+                    .cropped(to: smallRect)
+                rays = scaled(streak, by: Float(layer.weight))
+                    .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: rays])
+            }
         }
-        let strength = CGFloat(1.6)
         let full = rays
             .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
             .cropped(to: e)
-            .applyingFilter("CIColorMatrix", parameters: [
-                "inputRVector": CIVector(x: strength, y: 0, z: 0, w: 0),
-                "inputGVector": CIVector(x: 0, y: strength, z: 0, w: 0),
-                "inputBVector": CIVector(x: 0, y: 0, z: strength, w: 0),
-                "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
-            ])
-        dlog("Noite: estrela de \(points) pontas nas luzes")
+        dlog("Noite: estrela de \(points) pontas nas luzes (pequena)")
         return full.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scene]).cropped(to: e)
     }
 

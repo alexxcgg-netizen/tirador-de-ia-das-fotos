@@ -86,7 +86,7 @@ struct GuideView: View {
             Item(symbol: "moon.stars", title: "Noite, Estrelas, Lua",
                  text: "Várias fotos alinhadas e somadas: muito menos ruído no escuro. Na Noite você escolhe o tempo de cada foto e quantas; no Auto, se o iPhone estiver apoiado, cada foto fica mais longa."),
             Item(symbol: "sparkle", title: "Noite na cidade",
-                 text: "A NOITE tira uma foto curta a mais só para as luzes: postes e letreiros não viram bolas brancas. ✦ põe raios nas luzes fortes (6 ou 8 pontas), como numa lente bem fechada. Apoiado no escuro, cada foto vai a 1 s. No breu ela clareia sozinha (até 3 paradas), sem virar dia."),
+                 text: "A NOITE tira uma foto curta a mais só para as luzes: postes e letreiros não viram bolas brancas. ✦ põe estrelinhas nas luzes fortes (6 ou 8 pontas), curtas e finas como numa lente bem fechada. Apoiado no escuro, cada foto vai a 1 s. No breu ela clareia sozinha (até 3 paradas), sem virar dia."),
             Item(symbol: "camera.macro", title: "Macro e Foco empilhado",
                  text: "A flor liga o macro (foca a 2 cm); chegando perto com a 1× ele liga sozinho. No macro: 2× e 3× (super resolução), Empilhar (6 fotos, tudo nítido) e Luz (lanterna fraca, média ou forte)."),
             Item(symbol: "square.and.arrow.down", title: "LUT e cor copiada",
