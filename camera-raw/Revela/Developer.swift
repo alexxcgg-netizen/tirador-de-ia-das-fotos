@@ -514,6 +514,8 @@ struct DevelopOptions {
     var exposureOffset: Float = 0
     /// Sem halo/brilho nas luzes (foto revelada em faixas, onde o brilho não teria a foto inteira).
     var noGlow = false
+    /// Estrela no sol e nas luzes fortes das fotos de dia (0 = sem).
+    var starPoints = 0
 
     func cropRect(in extent: CGRect) -> CGRect {
         guard originalAspect else { return aspect.crop(extent, zoom: zoom) }
@@ -764,6 +766,11 @@ enum Developer {
             .transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY))
         if options.mirror {
             cropped = cropped.transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -rect.width, y: 0))
+        }
+        // Estrela de dia: só nas luzes pequenas e estouradas (sol, poste, reflexo), nunca em nuvem ou céu claro.
+        // Fica de fora na foto revelada em faixas (a estrela precisa da foto inteira)
+        if options.starPoints > 0, !options.noGlow {
+            cropped = dayStar(cropped, points: options.starPoints)
         }
         return (grade(cropped, look: options.params, zebra: false).settingProperties(scene.properties), rect)
     }
@@ -1182,13 +1189,39 @@ enum Developer {
     ///   difração de verdade (a luz cai com o quadrado da distância); o sol chega a ~14% da largura da foto;
     ///   as pontas puxam para o quente (o vermelho se espalha mais); brilho suave em volta da luz.
     /// - f/1.8 (`points` 18): muitos raios curtos e finos, quase um sol.
-    static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5) -> CIImage {
+    /// Estrela nas fotos de dia: o estourado (perto do branco máximo da foto) e pequeno vira estrela.
+    static func dayStar(_ scene: CIImage, points: Int) -> CIImage {
+        let e = scene.extent
+        let small = scene.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY))
+            .transformed(by: CGAffineTransform(scaleX: 1.0 / 8, y: 1.0 / 8))
+        let se = small.extent.integral
+        guard se.width >= 4, se.height >= 4 else { return scene }
+        let maximum = small.applyingFilter("CIAreaMaximum", parameters: [kCIInputExtentKey: CIVector(cgRect: se)])
+        var pixel = [Float](repeating: 0, count: 4)
+        context.render(maximum, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+        let white = max(pixel[0], max(pixel[1], pixel[2]))
+        // Sem nada estourado (nem sol nem lâmpada): sem estrela
+        guard white.isFinite, white > 0.6 else { return scene }
+        return starBurst(scene, points: points, threshold: white * 0.82 / 1.3, compactOnly: true, boost: 14)
+    }
+
+    static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5,
+                          compactOnly: Bool = false, boost: Float = 1) -> CIImage {
         guard let highlightsKernel, points >= 4 else { return scene }
         let e = scene.extent
         let k: CGFloat = 0.5
         guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, threshold * 1.3]) else { return scene }
         var small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
         let smallRect = smallExtentFor(e, k)
+        if compactOnly {
+            // Só o que é pequeno: tira o que sobrevive a uma "abertura" de 14 px (nuvem, céu, parede clara)
+            let opened = small.applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 14])
+                .applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 14])
+            small = (subKernel?.apply(extent: smallRect, arguments: [small, opened]) ?? small).clampedToExtent()
+        }
+        // De dia o sol chega estourado (a energia de verdade foi cortada): o reforço devolve a força dos raios
+        if boost != 1 { small = scaled(small, by: boost).clampedToExtent() }
         // Cada luz vira o ponto do centro dela, com a energia toda: os raios saem desse ponto, finos
         if let peakKernel {
             let r: CGFloat = 6

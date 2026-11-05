@@ -292,6 +292,13 @@ struct ContentView: View {
             if camera.captureMode == .portrait { apertureControls }
             if camera.lens == .macro && camera.captureMode == .photo { macroControls }
             if camera.captureMode == .night { nightControls }
+            if CameraModel.dayStarModes.contains(camera.captureMode), camera.lens != .macro {
+                HStack(spacing: 8) {
+                    starMenu
+                    Text("Estrela no sol e nas luzes fortes, como o iPhone 18 com a lente fechada")
+                        .font(.caption2).opacity(0.6)
+                }
+            }
             if camera.captureMode == .longExposure { longControls }
             if camera.captureMode == .video { videoControls }
             if camera.captureMode == .cinematic { cinematicControls }
@@ -302,6 +309,23 @@ struct ContentView: View {
                     .transition(.opacity)
             }
         }
+    }
+
+    /// Estrela nas luzes (NOITE e fotos de dia): 6 ou 8 pontas, o sol de raios finos ou nada.
+    private var starMenu: some View {
+        Menu {
+            Button("Sem estrela") { camera.nightStarPoints = 0 }
+            Button("6 pontas (iPhone 18 em f/4)") { camera.nightStarPoints = 6 }
+            Button("8 pontas") { camera.nightStarPoints = 8 }
+            Button("Sol de raios finos (iPhone 18 em f/1.8)") { camera.nightStarPoints = 18 }
+        } label: {
+            Text(camera.nightStarPoints == 0 ? "✦ Não" : camera.nightStarPoints == 18 ? "✦ Sol" : "✦ \(camera.nightStarPoints)")
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 9).frame(height: 36)
+                .foregroundStyle(camera.nightStarPoints == 0 ? Color.white : Color.black)
+                .background(Capsule().fill(camera.nightStarPoints == 0 ? panelFill : accent))
+        }
+        .accessibilityLabel("Estrela nas luzes")
     }
 
     /// Retrato: quanto borrar o fundo, como a abertura de uma lente.
@@ -480,19 +504,7 @@ struct ContentView: View {
                     .background(Capsule().fill(camera.nightFrames == n ? accent : panelFill))
                     .buttonStyle(.plain)
                 }
-                Menu {
-                    Button("Sem estrela") { camera.nightStarPoints = 0 }
-                    Button("6 pontas (iPhone 18 em f/4)") { camera.nightStarPoints = 6 }
-                    Button("8 pontas") { camera.nightStarPoints = 8 }
-                    Button("Sol de raios finos (iPhone 18 em f/1.8)") { camera.nightStarPoints = 18 }
-                } label: {
-                    Text(camera.nightStarPoints == 0 ? "✦ Não" : camera.nightStarPoints == 18 ? "✦ Sol" : "✦ \(camera.nightStarPoints)")
-                        .font(.system(size: 12, weight: .bold))
-                        .padding(.horizontal, 9).frame(height: 36)
-                        .foregroundStyle(camera.nightStarPoints == 0 ? Color.white : Color.black)
-                        .background(Capsule().fill(camera.nightStarPoints == 0 ? panelFill : accent))
-                }
-                .accessibilityLabel("Estrela nas luzes")
+                starMenu
                 Label(camera.isSteady ? "Apoiado" : "Na mão", systemImage: camera.isSteady ? "checkmark.circle.fill" : "hand.raised.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(camera.isSteady ? Color.green : Color.white.opacity(0.7))

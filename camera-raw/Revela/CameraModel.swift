@@ -625,8 +625,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         o.skinProtection = skinProtection
         // ETTR: a câmera expôs mais claro; a revelação volta para a exposição que você escolheu
         if ettrActive { o.exposureOffset = evBias - ettrBias }
+        // Estrela de dia: sol e luzes fortes (a NOITE põe a dela depois de juntar as fotos)
+        if Self.dayStarModes.contains(captureMode), lens != .macro { o.starPoints = nightStarPoints }
         return o
     }
+
+    /// Modos de uma foto só que ganham a estrela nas luzes fortes.
+    static let dayStarModes: Set<CaptureMode> = [.photo, .fast, .freeze, .hdr, .flash]
 
     /// Pinça e botões. `settle` escolhe a melhor câmera física para esse zoom (no fim do gesto, para não piscar no meio).
     func setZoom(_ value: CGFloat, settle: Bool = true) {
@@ -2924,6 +2929,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         neutral.amount = 0
         neutral.grain = 0
         neutral.hdrCompress = false
+        neutral.starPoints = 0
         guard let plain = Developer.finish(scene, options: neutral) else { return }
         // Já recortada e espelhada: guardada sem recorte nem espelho extra
         var stored = options

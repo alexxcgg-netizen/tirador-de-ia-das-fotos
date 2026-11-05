@@ -319,9 +319,15 @@ final class LabTests: XCTestCase {
             "inputColor0": CIColor(red: 400, green: 380, blue: 340, colorSpace: Developer.linearP3)!,
             "inputColor1": CIColor(red: 0, green: 0, blue: 0, alpha: 0),
         ])!.outputImage!.cropped(to: e)
-        let lit = Developer.materialize(sun.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scene]).cropped(to: e), extent: e)
+        // Como no RAW de verdade: o sol chega estourado (cortado no branco do sensor)
+        let lit = Developer.materialize(sun.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scene])
+            .applyingFilter("CIColorClamp", parameters: ["inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
+                                                         "inputMaxComponents": CIVector(x: 1.2, y: 1.2, z: 1.2, w: 1)])
+            .cropped(to: e), extent: e)
         for points in [6, 18] {
-            let out = Developer.developed(Developer.starBurst(lit, points: points, threshold: 1.5), options: options(.neutro)).0
+            var o = options(.neutro)
+            o.starPoints = points
+            let out = Developer.developed(lit, options: o).0
             save(out, "sol/estrela_\(points)", maxSide: 1600)
             let s = min(e.width, e.height) * 0.3
             save(out.cropped(to: CGRect(x: c.x - s, y: c.y - s, width: 2 * s, height: 2 * s)), "sol/estrela_\(points)_zoom", maxSide: 700)
