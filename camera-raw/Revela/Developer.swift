@@ -1581,7 +1581,9 @@ enum Developer {
         // Foto de um quadro: aproxima a luz média de −3 EV (a medição do iPhone deixa a foto escura demais)
         let shift = keyPull > 0 ? min(0.8, max(-0.5, (-3.0 - pixel[0]) * keyPull)) : 0
         if shift != 0 { dlog(String(format: "Tons locais: ajuste de luz %+.2f EV", shift)) }
-        let shape = CIVector(x: CGFloat(shadow), y: CGFloat(high), z: 1.08, w: CGFloat(shift))
+        // Detalhe ×1,08; nas fotos bem grandes (48 MP) ×1,04: lá o realce já é mais fino e dava borda 1,31× a da Apple
+        let detail: CGFloat = max(e.width, e.height) > 5000 ? 1.04 : 1.08
+        let shape = CIVector(x: CGFloat(shadow), y: CGFloat(high), z: detail, w: CGFloat(shift))
         return localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], shape, highlightBoost]) ?? scene
     }
 

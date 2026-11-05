@@ -72,3 +72,6 @@ laboratório: o que aparecer lá entra no topo da fila.
   0,83 → 0,85 com o meio igual — virou padrão. Testando ombro 1,2 e céu +0,7 para o iPhone XS (0,85 vs meta 0,87).
 - Rodada 2f641bc: **31/33** (saturação do Pixel virou informação). Ombro 1,2 e céu +0,7 juntos viram padrão (cada um
   dava +0,01 no XS); nitidez 0,21 nas fotos acima de 5000 px (borda 1,31× no Pixel).
+- Rodada d74840d: **32/33**. Branco resolvido (XS 0,85 → 0,88; 12 Pro 0,89). SUPER ZOOM +1,6/+1,9/+1,7 dB (todas OK).
+  Falta só a borda do Pixel 48 MP (1,31): a nitidez menor não mudou → realce de detalhe dos tons locais 1,08 → 1,04
+  nas fotos acima de 5000 px.
