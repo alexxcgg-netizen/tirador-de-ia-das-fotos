@@ -13,8 +13,10 @@ struct GuideView: View {
 
     private let sections: [(String, [Item])] = [
         ("Topo", [
-            Item(symbol: "camera.filters", title: "Botão do look",
-                 text: "Mostra o look atual (ex.: Portra 400). Toque para escolher outro e ajustar intensidade e grão; o visor muda na hora."),
+            Item(symbol: "camera.filters", title: "Botão do filme",
+                 text: "Mostra o filme atual (ex.: Portra 400). Toque e abre a faixa de filmes em cima do visor: cada miniatura já mostra o que a câmera vê naquele filme. Um toque troca e o visor muda na hora. Os chips separam por tipo (Cor, Fuji, Cinema, Slide, Criativo, P&B); ⋯ abre grão, pele, filmes próprios e LUT."),
+            Item(symbol: "square.grid.2x2", title: "Botão do modo",
+                 text: "Embaixo das lentes: mostra o modo atual. Toque e abre a telinha com todos os modos; um toque escolhe."),
             Item(symbol: "slider.horizontal.3", title: "Ajustes",
                  text: "Tudo o que é técnico mora aqui: formato RAW, luz, foco, cor, timer, peaking, zebra, espelhar e o relatório. Abre pela metade, com o visor visível."),
             Item(symbol: "camera.aperture", title: "ProRAW",

@@ -64,7 +64,7 @@ namespace coreimage {
                       float3 matR, float3 matG, float3 matB,
                       float3 slope, float3 offset, float3 power,
                       float3 shadowTint, float3 highTint,
-                      float vignette, float4 frame, float zebraThreshold,
+                      float vignette, float4 frame, float zebraThreshold, float4 film,
                       destination dest) {
         float3 scene = max(s.rgb, float3(0.0f)) * exp2(exposure);
         float peak = max(scene.r, max(scene.g, scene.b));
@@ -83,6 +83,11 @@ namespace coreimage {
         t = toe + (1.0f - toe) * t;
         t = pow(max(t * slope + offset, float3(0.0f)), power);
 
+        // Cor densa: no negativo, cor forte é mais corante, então fica mais escura (não vira neon)
+        float mx = max(t.r, max(t.g, t.b)), mn = min(t.r, min(t.g, t.b));
+        float sat = (mx - mn) / max(mx, 1e-4f);
+        t *= 1.0f - film.x * 0.28f * sat * sat * smoothstep(0.05f, 0.5f, mx);
+
         // Split toning: uma cor nas sombras, outra nas altas luzes
         float tl = dot(t, revela::kLuma);
         float sw = (1.0f - tl) * (1.0f - tl);
@@ -94,9 +99,12 @@ namespace coreimage {
         float r = length(p) / 1.4142f;
         t *= 1.0f - vignette * smoothstep(0.35f, 1.0f, r);
 
-        // Grão mais forte nos meios-tons, como em filme
+        // Grão como no filme: forte nas sombras e meios-tons, quase nada no preto e no branco.
+        // No colorido cada cor tem um pouco do seu próprio grão
         tl = dot(t, revela::kLuma);
-        t += (n.r - 0.5f) * grain * 4.0f * tl * (1.0f - tl);
+        float response = smoothstep(0.0f, 0.12f, tl) * pow(max(1.0f - tl, 0.0f), 1.4f) * 1.6f;
+        float3 g = float3(n.r) + film.y * (float3(n.g, n.b, 0.5f * (n.g + n.b)) - float3(n.r));
+        t += (g - 0.5f) * grain * response;
         t = clamp(t, 0.0f, 1.0f);
 
         // Zebra (só no visor): listras onde a luz estourou

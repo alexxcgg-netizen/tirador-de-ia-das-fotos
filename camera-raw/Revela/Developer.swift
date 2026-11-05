@@ -36,6 +36,10 @@ struct LookParams {
     var lutAmount: Float = 1
     /// Quanto a pele fica de fora do look (0 = nada, 1 = pele neutra).
     var skinProtect: Float = 0
+    /// Cor densa: as cores fortes escurecem um pouco, como os corantes do negativo (em vez de ficarem neon).
+    var density: Float = 0
+    /// Grão colorido (0 = só de brilho, 1 = cada cor com o seu), como no filme colorido de verdade.
+    var grainColor: Float = 0
 
     static func make(_ build: (inout LookParams) -> Void) -> LookParams {
         var p = LookParams()
@@ -67,33 +71,77 @@ struct LookParams {
         p.halation = halation * a
         p.bloom = bloom * a
         p.lutAmount = lutAmount * a
+        p.density = density * a
         return p
     }
 }
 
+/// Tipos de filme, para a lista não virar uma fileira enorme.
+enum LookFamily: String, CaseIterable, Identifiable {
+    case neutro = "Neutro"
+    case cor = "Cor"
+    case fuji = "Fuji"
+    case cinema = "Cinema"
+    case slide = "Slide"
+    case criativo = "Criativo"
+    case pb = "P&B"
+
+    var id: String { rawValue }
+    var looks: [Look] { Look.allCases.filter { $0.family == self } }
+}
+
 enum Look: String, CaseIterable, Identifiable {
     case neutro = "Neutro"
+    // Negativos coloridos
     case portra = "Portra 400"
     case gold = "Gold 200"
+    case ultramax = "Ultramax 400"
     case ektar = "Ektar 100"
-    case velvia = "Velvia 50"
-    case kodachrome = "Kodachrome"
+    case agfaVista = "Agfa Vista 200"
+    case lomo = "Lomo 800"
+    // Fuji
+    case superia = "Superia 400"
     case pro400h = "Pro 400H"
+    case classicChrome = "Classic Chrome"
+    case classicNeg = "Classic Neg"
+    case eterna = "Eterna"
+    // Cinema
+    case vision250d = "Vision3 250D"
+    case vision500t = "Vision3 500T"
     case cinestill = "CineStill 800T"
     case blockbuster = "Blockbuster"
     case technicolor = "Technicolor"
     case bleach = "Bleach Bypass"
     case matrix = "Matrix"
+    // Cromos (slide)
+    case velvia = "Velvia 50"
+    case kodachrome = "Kodachrome"
+    case ektachrome = "Ektachrome E100"
+    // Criativos
     case pastel = "Pastel"
     case cross = "Cross-process"
     case polaroid = "Polaroid"
     case super8 = "Super 8"
+    // Preto e branco
     case trix = "Tri-X 400"
     case hp5 = "HP5"
+    case delta3200 = "Delta 3200"
     case noir = "Noir"
     case sepia = "Sépia"
 
     var id: String { rawValue }
+
+    var family: LookFamily {
+        switch self {
+        case .neutro: return .neutro
+        case .portra, .gold, .ultramax, .ektar, .agfaVista, .lomo: return .cor
+        case .superia, .pro400h, .classicChrome, .classicNeg, .eterna: return .fuji
+        case .vision250d, .vision500t, .cinestill, .blockbuster, .technicolor, .bleach, .matrix: return .cinema
+        case .velvia, .kodachrome, .ektachrome: return .slide
+        case .pastel, .cross, .polaroid, .super8: return .criativo
+        case .trix, .hp5, .delta3200, .noir, .sepia: return .pb
+        }
+    }
 
     var subtitle: String {
         switch self {
@@ -117,6 +165,17 @@ enum Look: String, CaseIterable, Identifiable {
         case .hp5: return "P&B suave, grão médio"
         case .noir: return "P&B de cinema, preto profundo"
         case .sepia: return "Monocromático marrom antigo"
+        case .ultramax: return "Quente e barato, cara de férias"
+        case .agfaVista: return "Vermelho forte, sombra verde-azulada"
+        case .lomo: return "Saturado, cantos escuros"
+        case .superia: return "Verde nas sombras, foto de família"
+        case .classicChrome: return "Cor seca e documental, céu ciano"
+        case .classicNeg: return "Contraste firme, sombra verde-azulada"
+        case .eterna: return "Cinema: pouca cor, verde suave"
+        case .vision250d: return "Filme de cinema de dia, suave"
+        case .vision500t: return "Cinema de noite: frio com luz quente"
+        case .ektachrome: return "Cromo de azul limpo"
+        case .delta3200: return "P&B de noite, grão grosso"
         }
     }
 
@@ -127,15 +186,112 @@ enum Look: String, CaseIterable, Identifiable {
         case .cross: return 0.6
         case .bleach: return 0.5
         case .technicolor, .velvia, .cinestill: return 0.4
-        case .gold, .ektar, .kodachrome, .pastel, .polaroid, .super8: return 0.3
-        case .neutro, .portra, .pro400h, .trix, .hp5, .noir, .sepia: return 0
+        case .lomo, .agfaVista: return 0.35
+        case .gold, .ektar, .kodachrome, .pastel, .polaroid, .super8, .ultramax, .classicNeg, .vision500t, .ektachrome: return 0.3
+        case .classicChrome, .eterna: return 0.2
+        case .vision250d, .superia: return 0.1
+        case .neutro, .portra, .pro400h, .trix, .hp5, .delta3200, .noir, .sepia: return 0
         }
     }
 
+    /// O look com o que todo filme de verdade tem: cor densa e grão colorido (o Neutro fica intocado).
     var params: LookParams {
+        var p = baseParams
+        guard self != .neutro else { return p }
+        if p.mono < 0.5 {
+            if p.density == 0 { p.density = family == .slide ? 0.55 : 0.4 }
+            if p.grainColor == 0 { p.grainColor = 0.35 }
+        }
+        return p
+    }
+
+    private var baseParams: LookParams {
         switch self {
         case .neutro:
             return LookParams()
+        case .ultramax:
+            return .make {
+                $0.saturation = 1.15; $0.contrast = 1.08; $0.toe = 0.006
+                $0.slope = SIMD3(1.08, 1.02, 0.86); $0.offset = SIMD3(0.006, 0.004, 0.0)
+                $0.shadowTint = SIMD3(0.002, 0.002, -0.002); $0.highTint = SIMD3(0.035, 0.02, -0.03)
+                $0.grain = 0.05; $0.grainSize = 1.6; $0.vignette = 0.18; $0.halation = 0.1
+            }
+        case .agfaVista:
+            return .make {
+                $0.saturation = 1.25; $0.contrast = 1.12
+                $0.matR = SIMD3(1.12, -0.08, -0.04); $0.matG = SIMD3(-0.02, 1.02, 0.0)
+                $0.slope = SIMD3(1.04, 0.98, 1.02)
+                $0.shadowTint = SIMD3(-0.004, 0.006, 0.01); $0.highTint = SIMD3(0.02, 0.004, -0.01)
+                $0.grain = 0.04; $0.grainSize = 1.5; $0.vignette = 0.2
+            }
+        case .lomo:
+            return .make {
+                $0.saturation = 1.4; $0.contrast = 1.25; $0.toe = 0.01
+                $0.slope = SIMD3(1.06, 1.0, 0.9); $0.power = SIMD3(1.0, 1.0, 1.06)
+                $0.shadowTint = SIMD3(0.0, 0.004, 0.012); $0.highTint = SIMD3(0.03, 0.02, -0.02)
+                $0.grain = 0.07; $0.grainSize = 1.8; $0.vignette = 0.5; $0.halation = 0.15; $0.bloom = 0.06
+            }
+        case .superia:
+            return .make {
+                $0.saturation = 1.08; $0.contrast = 1.05; $0.toe = 0.006
+                $0.matG = SIMD3(0.02, 1.0, 0.0)
+                $0.slope = SIMD3(0.97, 1.03, 0.98); $0.offset = SIMD3(0.0, 0.006, 0.004)
+                $0.shadowTint = SIMD3(-0.004, 0.01, 0.004); $0.highTint = SIMD3(0.012, 0.01, -0.008)
+                $0.grain = 0.04; $0.grainSize = 1.5; $0.vignette = 0.1; $0.halation = 0.06
+            }
+        case .classicChrome:
+            return .make {
+                $0.saturation = 0.72; $0.contrast = 1.12; $0.toe = 0.006
+                $0.matR = SIMD3(1.02, -0.02, 0.0); $0.matB = SIMD3(0.0, 0.04, 0.96)
+                $0.slope = SIMD3(1.0, 0.99, 0.97); $0.power = SIMD3(1.04, 1.02, 1.0)
+                $0.shadowTint = SIMD3(-0.002, 0.002, 0.006); $0.highTint = SIMD3(0.01, 0.006, -0.004)
+                $0.grain = 0.02; $0.grainSize = 1.2; $0.vignette = 0.08
+            }
+        case .classicNeg:
+            return .make {
+                $0.saturation = 0.95; $0.contrast = 1.2
+                $0.slope = SIMD3(1.03, 0.98, 0.95); $0.offset = SIMD3(0.0, 0.004, 0.006); $0.power = SIMD3(1.06, 1.0, 0.98)
+                $0.shadowTint = SIMD3(-0.006, 0.008, 0.012); $0.highTint = SIMD3(0.02, 0.006, -0.004)
+                $0.grain = 0.03; $0.grainSize = 1.3; $0.vignette = 0.12
+            }
+        case .eterna:
+            return .make {
+                $0.saturation = 0.7; $0.contrast = 0.85; $0.toe = 0.01
+                $0.slope = SIMD3(0.98, 1.02, 1.0); $0.offset = SIMD3(0.002, 0.006, 0.006)
+                $0.shadowTint = SIMD3(-0.002, 0.006, 0.008); $0.highTint = SIMD3(0.006, 0.004, -0.002)
+                $0.grain = 0.02; $0.grainSize = 1.2; $0.vignette = 0.1; $0.density = 0.25
+            }
+        case .vision250d:
+            return .make {
+                $0.saturation = 0.92; $0.contrast = 0.95; $0.toe = 0.004
+                $0.matR = SIMD3(1.03, -0.02, -0.01)
+                $0.slope = SIMD3(1.02, 1.0, 0.97); $0.offset = SIMD3(0.002, 0.002, 0.003)
+                $0.highTint = SIMD3(0.012, 0.006, -0.004)
+                $0.halation = 0.15; $0.halationColor = SIMD3(1.0, 0.35, 0.15)
+                $0.grain = 0.025; $0.grainSize = 1.3; $0.vignette = 0.1
+            }
+        case .vision500t:
+            return .make {
+                $0.saturation = 0.95; $0.contrast = 1.05; $0.toe = 0.006
+                $0.slope = SIMD3(0.88, 0.97, 1.12); $0.offset = SIMD3(0.0, 0.003, 0.008)
+                $0.shadowTint = SIMD3(-0.004, 0.004, 0.012); $0.highTint = SIMD3(0.03, 0.012, -0.01)
+                $0.halation = 0.35; $0.halationColor = SIMD3(1.0, 0.3, 0.1); $0.bloom = 0.08
+                $0.grain = 0.05; $0.grainSize = 1.6; $0.vignette = 0.12
+            }
+        case .ektachrome:
+            return .make {
+                $0.saturation = 1.2; $0.contrast = 1.2
+                $0.matB = SIMD3(-0.02, -0.02, 1.06)
+                $0.slope = SIMD3(0.98, 1.0, 1.05); $0.power = SIMD3(1.02, 1.02, 1.0)
+                $0.shadowTint = SIMD3(-0.002, 0.0, 0.008)
+                $0.grain = 0.012; $0.grainSize = 1.0; $0.vignette = 0.12
+            }
+        case .delta3200:
+            return .make {
+                $0.mono = 1; $0.contrast = 1.18; $0.toe = 0.02
+                $0.matR = SIMD3(1.05, -0.03, -0.02)
+                $0.grain = 0.16; $0.grainSize = 2.2; $0.vignette = 0.15
+            }
         case .portra:
             return .make {
                 $0.saturation = 0.82; $0.contrast = 0.9; $0.toe = 0.008
@@ -514,6 +670,18 @@ enum Developer {
         return output
     }
 
+    /// Revela uma imagem minúscula com o caminho inteiro (tons locais, ruído, filme, HEIC): o Metal monta os filtros
+    /// e o codificador de HEIC acorda antes da primeira foto de verdade.
+    static func warmUp(options: DevelopOptions) {
+        let t0 = CFAbsoluteTimeGetCurrent()
+        let tiny = CIImage(color: CIColor(red: 0.2, green: 0.18, blue: 0.15)).cropped(to: CGRect(x: 0, y: 0, width: 256, height: 192))
+        var opts = options
+        opts.zoom = 1
+        _ = finish(enhanced(tiny), options: opts)
+        _ = finish(nightDenoise(tiny, strength: 0.5), options: opts)
+        dlog("Revelação aquecida: \(Diagnostics.ms(since: t0))")
+    }
+
     /// Luz de cena -> recorte, look e HEIC de 10 bits.
     static func finish(_ scene: CIImage, options: DevelopOptions) -> Output? {
         let (graded, rect) = developed(scene, options: options)
@@ -655,6 +823,7 @@ enum Developer {
             vector(p.shadowTint), vector(p.highTint),
             p.vignette, CIVector(x: e.minX, y: e.minY, z: e.width, w: e.height),
             zebra ? zebraThreshold : Float(0),
+            CIVector(x: CGFloat(p.density), y: CGFloat(p.grainColor), z: 0, w: 0),
         ]
         var toned = toneKernel.apply(extent: e, arguments: arguments) ?? scene
         if p.skinProtect > 0.01, p.mono < 0.5, let skinMixKernel {
@@ -690,8 +859,9 @@ enum Developer {
         let e = scene.extent
         let small: CGFloat = 0.25
         let shortSide = min(e.width, e.height) * small
-        let highlights = highlightsKernel.apply(extent: e, arguments: [scene, Float(0.9)]) ?? scene
-        let reduced = highlights.transformed(by: CGAffineTransform(scaleX: small, y: small)).clampedToExtent()
+        // Reduz primeiro e só então separa as luzes: o filtro roda em 1/16 dos pixels (no 48 MP fazia diferença)
+        let shrunk = scene.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: small, kCIInputAspectRatioKey: 1])
+        let reduced = (highlightsKernel.apply(extent: shrunk.extent, arguments: [shrunk, Float(0.9)]) ?? shrunk).clampedToExtent()
         var out = scene
         func glow(sigma: CGFloat, color: SIMD3<Float>, amount: Float) {
             let blurred = reduced.applyingGaussianBlur(sigma: Double(sigma))
@@ -962,8 +1132,10 @@ enum Developer {
         var sumWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: extent)
         let k: Float = 0.1
         for i in 1..<count {
-            guard let image = frame(i) else { continue }
-            let imageBlur = blurred(image, extent: extent)
+            // Aberto e alinhado uma vez só: a cor e o peso leem daqui (antes cada um abria o RAW de novo)
+            guard let opened = frame(i) else { continue }
+            let image = materialize(opened, extent: extent)
+            let imageBlur = materialize(blurred(image, extent: extent), extent: extent)
             guard let color = robustColorKernel.apply(extent: extent, arguments: [image, imageBlur, refBlur, k]),
                   let weight = robustWeightKernel.apply(extent: extent, arguments: [imageBlur, refBlur, k]) else { continue }
             sumColor = materialize(add(sumColor, color), extent: extent)

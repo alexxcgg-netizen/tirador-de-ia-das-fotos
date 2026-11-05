@@ -92,6 +92,33 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Ícone na telinha de modos.
+    var symbol: String {
+        switch self {
+        case .photo: return "camera"
+        case .fast: return "bolt"
+        case .action: return "figure.run"
+        case .freeze: return "stopwatch"
+        case .portrait: return "person.crop.circle"
+        case .panorama: return "pano"
+        case .video: return "video"
+        case .cinematic: return "film"
+        case .dual: return "rectangle.on.rectangle"
+        case .scan: return "cube.transparent"
+        case .document: return "doc.viewfinder"
+        case .hdr: return "circle.lefthalf.filled"
+        case .longExposure: return "timer"
+        case .superRes: return "square.grid.3x3"
+        case .superZoom: return "plus.magnifyingglass"
+        case .night: return "moon.stars"
+        case .stars: return "sparkles"
+        case .moon: return "moon"
+        case .flash: return "bolt.circle"
+        case .focusStack: return "square.stack.3d.down.right"
+        case .average: return "square.stack.3d.up"
+        }
+    }
+
     var frameCount: Int {
         switch self {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan,
@@ -193,6 +220,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Look de antes do Retrato, para devolver ao sair dele.
     private var lookBeforePortrait: Look?
     private let processingQueue = DispatchQueue(label: "revela.processing", qos: .userInitiated)
+    /// Fotos de um quadro só e leves (12 MP): revelam aqui e não esperam uma NOITE ou SUPER ZOOM na frente
+    private let quickQueue = DispatchQueue(label: "revela.quick", qos: .userInitiated)
     private let actionRecorder = ActionRecorder()
     /// Formato especial do sensor (120/240 fps) ligado agora.
     private var specialFormatActive = false
@@ -342,6 +371,34 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var lookChoices: [LookChoice] {
         customLooks.map { LookChoice(id: "c:" + $0.id.uuidString, name: $0.name) }
             + Look.allCases.map { LookChoice(id: "b:" + $0.rawValue, name: $0.rawValue) }
+    }
+
+    /// Escolha em uso, no mesmo formato de `lookChoices`.
+    var currentLookID: String { customLook.map { "c:" + $0.id.uuidString } ?? "b:" + look.rawValue }
+
+    func chooseLook(id: String) {
+        if id.hasPrefix("c:") {
+            if let custom = customLooks.first(where: { "c:" + $0.id.uuidString == id }) { customLook = custom }
+        } else if let base = Look(rawValue: String(id.dropFirst(2))) {
+            choose(look: base)
+        }
+    }
+
+    /// Miniaturas da faixa de filmes: o que o visor mostra agora, em cada look.
+    func lookThumbnails(ids: [String], maxSide: CGFloat = 120, completion: @escaping ([String: UIImage]) -> Void) {
+        let base = developOptions
+        var preview = renderer.options
+        let pairs: [(String, Developer.PreviewOptions)] = ids.compactMap { id in
+            guard let o = options(swappingLookTo: id, from: base) else { return nil }
+            preview.develop = o
+            return (id, preview)
+        }
+        renderer.snapshotQueue.async { [renderer] in
+            let images = renderer.lookSnapshots(pairs.map(\.1), maxSide: maxSide)
+            var out: [String: UIImage] = [:]
+            for (pair, image) in zip(pairs, images) { if let image { out[pair.0] = image } }
+            DispatchQueue.main.async { completion(out) }
+        }
     }
 
     /// As opções de revelação da foto, trocando só o look.
@@ -845,6 +902,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         hasFront = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) != nil
         let lens = self.lens
         let mode = self.rawMode
+        // A primeira foto era a mais lenta (o Metal monta os filtros na primeira vez): monta agora, enquanto você enquadra
+        let warmOptions = developOptions
+        quickQueue.asyncAfter(deadline: .now() + 1.5) { Developer.warmUp(options: warmOptions) }
         sessionQueue.async {
             // O delegate precisa existir antes de qualquer controle ser adicionado
             if #available(iOS 18.0, *) {
@@ -2773,8 +2833,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         case .failure(let error):
             done(.failure(error))
         case .success(let frames):
-            // Uma revelação por vez: na rajada as fotos entram numa fila em vez de lotar a memória
-            processingQueue.async {
+            // Uma revelação pesada por vez: na rajada as fotos entram numa fila em vez de lotar a memória.
+            // A foto simples e leve vai por outra fila e sai na frente
+            let light = frames.count == 1 && (frames.first?.data.count ?? .max) < 40_000_000 && mode.stackKind == nil
+                && mode != .hdr && mode != .superRes && mode != .superZoom && mode != .moon
+            (light ? quickQueue : processingQueue).async {
                 let output: Developer.Output?
                 if mode == .hdr {
                     output = Developer.hdr(frames, options: options)

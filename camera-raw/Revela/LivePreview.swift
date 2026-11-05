@@ -56,6 +56,29 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     var onHistogram: (([Float], [[Float]]) -> Void)?
 
     /// Miniatura na hora do disparo: o último quadro do visor, já com o look (a foto de verdade chega depois).
+    /// Faixa de filmes: o quadro atual reduzido uma vez e revelado em cada look (miniaturas ao vivo).
+    func lookSnapshots(_ looks: [Developer.PreviewOptions], maxSide: CGFloat) -> [UIImage?] {
+        lock.lock()
+        let frame = self.frame
+        lock.unlock()
+        guard let frame, frame.extent.width > 0, frame.extent.height > 0 else { return looks.map { _ in nil } }
+        let scale = maxSide / max(frame.extent.width, frame.extent.height)
+        let shrunk = frame.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        // Uma cópia pequena na memória: os looks leem dela, sem voltar ao quadro grande da câmera
+        guard let small = snapshotContext.createCGImage(shrunk, from: shrunk.extent.integral, format: .RGBAh,
+                                                        colorSpace: Developer.displayP3)
+            .map({ CIImage(cgImage: $0) }) else { return looks.map { _ in nil } }
+        return looks.map { base in
+            var options = base
+            options.zebra = false
+            options.peaking = false
+            options.falseColor = false
+            let image = Developer.preview(small, options: options)
+            return snapshotContext.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: Developer.displayP3)
+                .map { UIImage(cgImage: $0) }
+        }
+    }
+
     /// Pode rodar fora da fila principal: passe `options` lido na principal.
     func snapshot(maxSide: CGFloat = 400, options base: Developer.PreviewOptions? = nil) -> UIImage? {
         lock.lock()

@@ -12,6 +12,9 @@ struct ContentView: View {
     @StateObject private var camera = CameraModel()
     @State private var showSettings = false
     @State private var showLooks = false
+    /// Faixa de filmes ao vivo em cima do visor.
+    @State private var showLookStrip = false
+    @State private var showModeGrid = false
     @State private var editingLook: CustomLook?
     @State private var importingLUT = false
     @State private var showModes = false
@@ -38,6 +41,13 @@ struct ContentView: View {
                 VStack(spacing: 14) {
                     topBar
                     viewfinder
+                        .overlay(alignment: .bottom) {
+                            if showLookStrip {
+                                LookStrip(camera: camera) { showLooks = true }
+                                    .padding(8)
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                            }
+                        }
                     lensPicker
                     modePicker
                     Spacer(minLength: 0)
@@ -90,6 +100,7 @@ struct ContentView: View {
             StudioView(camera: camera).onAppear { camera.pauseSession() }
         }
         .sheet(isPresented: $showModes) { ModesEditor(camera: camera) }
+        .sheet(isPresented: $showModeGrid) { ModeGrid(camera: camera) { showModes = true } }
         .fullScreenCover(isPresented: $camera.showDocument, onDismiss: { camera.documentClosed() }) { DocumentScanView() }
         .alert("Revela", isPresented: Binding(
             get: { camera.message != nil },
@@ -109,17 +120,23 @@ struct ContentView: View {
 
     private var topBar: some View {
         HStack(spacing: 10) {
-            Button { showLooks = true } label: {
+            // Toque: abre/fecha a faixa de filmes ao vivo no visor
+            Button {
+                withAnimation(.snappy(duration: 0.22)) { showLookStrip.toggle() }
+                UISelectionFeedbackGenerator().selectionChanged()
+            } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "camera.filters").foregroundStyle(accent)
                     Text(camera.lookName).font(.body.weight(.semibold)).lineLimit(1)
+                    Image(systemName: showLookStrip ? "chevron.up" : "chevron.down")
+                        .font(.caption.weight(.bold)).opacity(0.6)
                 }
                 .padding(.horizontal, 18)
                 .frame(height: 48)
-                .background(Capsule().fill(panelFill))
+                .background(Capsule().fill(showLookStrip ? panelOn : panelFill))
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Look: \(camera.lookName)")
+            .accessibilityLabel("Filme: \(camera.lookName). Toque para escolher outro")
 
             Spacer(minLength: 0)
 
@@ -255,28 +272,22 @@ struct ContentView: View {
 
     private var modePicker: some View {
         VStack(spacing: 6) {
-            ScrollViewReader { proxy in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 22) {
-                        ForEach(camera.visibleModes) { mode in
-                            Button(mode.rawValue) {
-                                withAnimation(.snappy(duration: 0.2)) {
-                                    camera.select(captureMode: mode)
-                                    proxy.scrollTo(mode, anchor: .center)
-                                }
-                                UISelectionFeedbackGenerator().selectionChanged()
-                            }
-                            .font(.system(size: 15, weight: .bold)).tracking(0.6)
-                            .foregroundStyle(camera.captureMode == mode ? accent : Color.white.opacity(0.7))
-                            .frame(minHeight: 36)
-                            .buttonStyle(.plain)
-                            .id(mode)
-                        }
-                    }
-                    .padding(.horizontal, 20)
+            // Modos numa telinha: um botão com o modo atual abre a grade com todos
+            Button {
+                showModeGrid = true
+                UISelectionFeedbackGenerator().selectionChanged()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: camera.captureMode.symbol).foregroundStyle(accent)
+                    Text(camera.captureMode.rawValue).font(.system(size: 15, weight: .bold)).tracking(0.6)
+                    Image(systemName: "square.grid.2x2").font(.caption.weight(.bold)).opacity(0.6)
                 }
-                .onAppear { proxy.scrollTo(camera.captureMode, anchor: .center) }
+                .padding(.horizontal, 18)
+                .frame(height: 40)
+                .background(Capsule().fill(panelFill))
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Modo \(camera.captureMode.rawValue). Toque para ver todos os modos")
             if camera.captureMode == .freeze { freezeControls }
             if camera.captureMode == .portrait { apertureControls }
             if camera.lens == .macro && camera.captureMode == .photo { macroControls }
@@ -1137,21 +1148,23 @@ struct ContentView: View {
                         Text("Segure um filme seu para editar ou apagar.").font(.caption).opacity(0.5)
                     }
 
-                    HStack {
-                        Text("Filmes").font(.footnote.weight(.semibold)).opacity(0.7)
-                        Spacer()
-                    }
-                    .padding(.top, 8)
-                    ForEach(Look.allCases) { look in
-                        lookRow(title: look.rawValue, subtitle: look.subtitle,
-                                selected: camera.customLook == nil && camera.look == look) {
-                            camera.choose(look: look)
+                    ForEach(LookFamily.allCases) { family in
+                        HStack {
+                            Text(family == .neutro ? "Filmes" : family.rawValue).font(.footnote.weight(.semibold)).opacity(0.7)
+                            Spacer()
+                        }
+                        .padding(.top, 8)
+                        ForEach(family.looks) { look in
+                            lookRow(title: look.rawValue, subtitle: look.subtitle,
+                                    selected: camera.customLook == nil && camera.look == look) {
+                                camera.choose(look: look)
+                            }
                         }
                     }
                 }
                 .padding(16)
             }
-            .navigationTitle("Looks")
+            .navigationTitle("Filmes")
             .sheet(item: $editingLook) { draft in
                 LookEditorView(camera: camera, draft: draft)
             }

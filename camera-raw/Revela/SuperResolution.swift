@@ -52,10 +52,19 @@ extension Developer {
 
         // 2) Cada foto ampliada (Lanczos) e só então deslocada: o deslocamento de fração de pixel perde menos detalhe
         let toRegion = CGAffineTransform(translationX: -region.minX * factor, y: -region.minY * factor)
+        // Cada RAW aberto uma vez só: o pedaço que interessa vai para a memória de vídeo. Sem isso, cada faixa da
+        // foto gigante abria as 10 fotos de novo. Só quando cabe (no SUPER ZOOM o recorte é pequeno)
+        let pad = 0.1 * max(full.width, full.height)
+        let source = region.insetBy(dx: -pad, dy: -pad).intersection(full).integral
+        let prepare = Double(source.width * source.height) * 8 * Double(frames.count) < 700_000_000
+        func decoded(_ i: Int) -> CIImage? {
+            guard let img = i == refIndex ? reference : image(from: frames[i]) else { return nil }
+            return prepare ? materialize(img.cropped(to: source), extent: source) : img
+        }
         let grid = CIVector(x: (centers[0].x - region.minX) * factor, y: (centers[0].y - region.minY) * factor,
                             z: (centers[1].x - centers[0].x) * factor, w: (centers[3].y - centers[0].y) * factor)
         func upscaled(_ i: Int) -> CIImage? {
-            guard let img = i == refIndex ? reference : image(from: frames[i]), let a = alignments[i] else { return nil }
+            guard let a = alignments[i], let img = decoded(i) else { return nil }
             let inUpscaled = CGAffineTransform(scaleX: 1 / factor, y: 1 / factor)
                 .concatenating(a.transform)
                 .concatenating(CGAffineTransform(scaleX: factor, y: factor))
@@ -106,7 +115,8 @@ extension Developer {
         let properties = reference.properties
 
         // 4) Foto gigante revelada em faixas, cada uma desconvoluída (desfaz o borrão da lente e da ampliação)
-        let iterations = sharpen >= 0.8 ? 7 : 5
+        // Do 5º passo em diante quase não muda nada e cada passo custa o mesmo: 4 bastam (Lua: 6)
+        let iterations = sharpen >= 0.8 ? 6 : 4
         let sigma = Double(0.55 * factor + 0.25)
         guard let heic = renderInStrips(merged, extent: outExtent, properties: properties, iterations: iterations, sigma: sigma,
                                         grade: { developed($0.settingProperties(properties), options: opts).0 }) else {

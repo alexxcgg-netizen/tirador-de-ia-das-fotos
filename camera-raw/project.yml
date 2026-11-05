@@ -6,7 +6,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "0.22.4"
+    MARKETING_VERSION: "0.23"
     CURRENT_PROJECT_VERSION: "1"
 targets:
   Revela:
