@@ -149,11 +149,12 @@ final class LabTests: XCTestCase {
     /// Calibragens do tom lado a lado (o app usa a padrão; as outras são para comparar).
     func test4Tuning() throws {
         let variants: [(String, ToneTuning)] = [
-            ("a_antiga", ToneTuning(filmicGain: 0.8, toeScale: 1, offsetScale: 1, saturation: 1, shadowRatio: 1, highlightRatio: 1, keyPull: 0, hueKeep: 0)),
+            ("a_antiga", ToneTuning(filmicGain: 0.8, toeScale: 1, offsetScale: 1, saturation: 1, shadowRatio: 1, highlightRatio: 1,
+                                    keyPull: 0, keyedSaturation: 0, hueKeep: 0)),
             ("b_padrao", ToneTuning()),
-            // Apple: cena clara fica mais clara, cena escura (entardecer) continua escura — testa puxar menos a luz média
-            ("c_puxa_menos", ToneTuning(filmicGain: 1.1, keyPull: 0.15)),
-            ("d_puxa_menos_mais_curva", ToneTuning(filmicGain: 1.16, keyPull: 0.1)),
+            // O branco ainda fica abaixo da Apple: testa comprimir menos as luzes nos tons locais
+            ("c_luzes_menos", ToneTuning(highlightRatio: 0.1)),
+            ("d_luzes_soltas", ToneTuning(highlightRatio: 0)),
         ]
         let looks: [Look] = [.neutro, .portra, .classicChrome, .superia, .velvia, .trix]
         for url in raws() {

@@ -8,7 +8,7 @@ import simd
 /// Calibragem do tom (o laboratório testa variações; o app usa os valores padrão).
 struct ToneTuning {
     /// Quanto a cena entra na curva fílmica (antes 0,8: a foto saía apagada, branco em 0,7).
-    var filmicGain: Float = 1.05
+    var filmicGain: Float = 1.1
     /// Quanto do "preto levantado" e do deslocamento de cada filme vale (antes 1: névoa nos filmes suaves).
     var toeScale: Float = 0.5
     var offsetScale: Float = 0.6
@@ -18,7 +18,10 @@ struct ToneTuning {
     var shadowRatio: Float = 1.8
     var highlightRatio: Float = 0.25
     /// Puxa a luz média da foto de um quadro só até perto de −3 EV (0 = não mexe).
-    var keyPull: Float = 0.4
+    // 0,15 (era 0,4): como a Apple, entardecer continua entardecer (laboratório: iPhone XS ficou igual à Apple)
+    var keyPull: Float = 0.15
+    /// Cor que acompanha a luz da cena (efeito Hunt): dia claro com mais cor, cena escura com menos.
+    var keyedSaturation: Float = 0.18
     /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
     var hueKeep: Float = 0.5
 }
@@ -867,6 +870,11 @@ enum Developer {
         let exif = scene.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
         let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 100
         var out = localTone(scene, strength: 0.85, preview: preview, keyPull: tuning.keyPull)
+        // Cor pela luz da cena, como a Apple: dia claro (−3,3 EV) ganha ~12% de cor, entardecer (−4,7 EV) perde ~12%
+        let saturation = min(1.15, max(0.85, 1 + tuning.keyedSaturation * (lastKey + 4)))
+        if abs(saturation - 1) > 0.01 {
+            out = out.applyingFilter("CIColorControls", parameters: [kCIInputSaturationKey: saturation]).cropped(to: out.extent)
+        }
         if iso >= 800 {
             out = nightDenoise(out, strength: min(0.8, log2(iso / 400) / 6))
         }
@@ -1517,6 +1525,9 @@ enum Developer {
     /// e o detalhe fica. Calculado numa versão pequena: a luz de fundo é borrada de qualquer jeito.
     /// `preview`: a mesma foto já pequena (RAW aberto em 1/8, rápido). Sem ela, a cena é reduzida aqui; com ela,
     /// o RAW grande é aberto uma vez só (antes abria três vezes e a foto levava 7 s para revelar).
+    /// Luz média (log2) da última cena que passou pelos tons locais (para a cor acompanhar a luz).
+    private static var lastKey: Float = -4
+
     static func localTone(_ scene: CIImage, strength: Float, preview: CIImage? = nil, keyPull: Float = 0) -> CIImage {
         guard let logLumaKernel, let localToneKernel else { return scene }
         let e = scene.extent
@@ -1542,6 +1553,7 @@ enum Developer {
         context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         dlog(String(format: "Tons locais: luz média %.2f EV · força %.2f", pixel[0], 1 - strength))
+        if pixel[0].isFinite { lastKey = pixel[0] }
         let t = tuning
         let shadow = max(0.3, 1 - (1 - strength) * t.shadowRatio)
         let high = min(1, 1 - (1 - strength) * t.highlightRatio)

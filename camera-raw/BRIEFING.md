@@ -56,4 +56,9 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Protótipo em Python com RAWs reais (iPhone 12 Pro, Pixel 8 Pro): o jeito antigo (ampliar cada foto + média +
   desconvolução forte 1,35 px × 4) dá 36,9/36,6 dB; regressão de núcleo (Wronski 2019) σ 0,6 + desconvolução leve
   (0,7 px × 2) dá 40,6/42,5 dB — **+4 dB**. Implementado no app (`revelaSplat`), aguardando o laboratório.
-- Próximo no laboratório: tom com menos "puxada" da luz média (Apple deixa entardecer escuro e dia claro mais claro).
+- Laboratório de verdade com sensor realista (soma 2×2 + ruído): SUPER ZOOM +1,38/+1,48/+1,69 dB (antes
+  +0,6/+0,8/+0,3) e 13–18 s (antes 19–50 s). Placar 17 → 20/34.
+- Alinhamento à prova de ruído: na NOITE os "deslocamentos" inventados (até 13 px, 0,5°) sumiram (< 2 px, como o real).
+- Tom: puxar menos a luz média (0,4 → 0,15) e curva 1,1 deixou o iPhone XS igual à Apple (média 0,35/0,35, meio
+  0,39/0,39). Virou padrão, com cor que acompanha a luz da cena. Testando comprimir menos as luzes (branco p99).
+- NOITE: alvo de brilho −4,2 → −3,95 EV (luz média 0,16–0,18 estava no limite).
