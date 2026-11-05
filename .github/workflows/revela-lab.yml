@@ -2,14 +2,8 @@ name: Revela (laboratório)
 
 # Revela RAWs de exemplo com o código do app no simulador do iPhone e guarda as imagens no ramo revela-lab,
 # para o Claude olhar o resultado de cada filme, da FOTO e da NOITE sem precisar do iPhone.
+# Só quando chamado (cada rodada gasta uns 8 min de Mac, que contam 10× na cota do GitHub)
 on:
-  push:
-    paths:
-      - "camera-raw/Revela/Developer.swift"
-      - "camera-raw/Revela/SuperResolution.swift"
-      - "camera-raw/Revela/Tone.ci.metal"
-      - "camera-raw/RevelaLab/**"
-      - ".github/workflows/revela-lab.yml"
   workflow_dispatch:
 
 concurrency:
