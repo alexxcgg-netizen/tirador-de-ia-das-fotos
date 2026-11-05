@@ -132,15 +132,15 @@ final class LabTests: XCTestCase {
             var o = options(.neutro)
             o.originalAspect = true
             save(Developer.developed(night, options: o).0, "noite/\(name)_0_antes")
-            for points in [0, 6] {
+            for points in [0, 6, 18] {
                 let t0 = CFAbsoluteTimeGetCurrent()
                 let finished = Developer.nightFinish(night, iso: 3200, frameCount: 12, starPoints: points)
                 let out = Developer.developed(finished, options: o).0
                 save(out, "noite/\(name)_1_noite_\(points)pontas")
                 dlog("\(name) noite (\(points) pontas): \(Diagnostics.ms(since: t0))")
-                if points == 6 {
+                if points > 0 {
                     let c = CGPoint(x: e.minX + e.width * 0.62, y: e.minY + e.height * 0.55)
-                    save(out.cropped(to: CGRect(x: c.x - 300, y: c.y - 300, width: 600, height: 600)), "noite/\(name)_2_estrela_zoom", maxSide: 600)
+                    save(out.cropped(to: CGRect(x: c.x - 300, y: c.y - 300, width: 600, height: 600)), "noite/\(name)_2_estrela_zoom_\(points)", maxSide: 600)
                 }
             }
         }
@@ -305,6 +305,26 @@ final class LabTests: XCTestCase {
                 save(img.cropped(to: CGRect(x: ie.minX + ie.width * 0.15, y: ie.minY + ie.height * 0.2, width: ie.width * 0.5, height: ie.height * 0.3)),
                      "noite_pilha/\(name)_2_zoom_carro", maxSide: 900)
             }
+        }
+    }
+
+    /// Estrela no sol de dia, para comparar com as fotos do iPhone 18 Pro em f/1.8 e f/4.
+    func test8SunStar() throws {
+        guard let url = raws().first(where: { $0.lastPathComponent.hasPrefix("iphone12") }) ?? raws().first,
+              let scene = Developer.scene(for: try frame(url), scale: 0.5) else { return }
+        let e = scene.extent
+        let c = CGPoint(x: e.midX, y: e.minY + e.height * 0.8)
+        let sun = CIFilter(name: "CIRadialGradient", parameters: [
+            "inputCenter": CIVector(cgPoint: c), "inputRadius0": 10, "inputRadius1": 26,
+            "inputColor0": CIColor(red: 400, green: 380, blue: 340, colorSpace: Developer.linearP3)!,
+            "inputColor1": CIColor(red: 0, green: 0, blue: 0, alpha: 0),
+        ])!.outputImage!.cropped(to: e)
+        let lit = Developer.materialize(sun.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scene]).cropped(to: e), extent: e)
+        for points in [6, 18] {
+            let out = Developer.developed(Developer.starBurst(lit, points: points, threshold: 1.5), options: options(.neutro)).0
+            save(out, "sol/estrela_\(points)", maxSide: 1600)
+            let s = min(e.width, e.height) * 0.3
+            save(out.cropped(to: CGRect(x: c.x - s, y: c.y - s, width: 2 * s, height: 2 * s)), "sol/estrela_\(points)_zoom", maxSide: 700)
         }
     }
 }

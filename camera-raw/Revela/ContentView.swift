@@ -482,10 +482,11 @@ struct ContentView: View {
                 }
                 Menu {
                     Button("Sem estrela") { camera.nightStarPoints = 0 }
-                    Button("Estrela de 6 pontas") { camera.nightStarPoints = 6 }
-                    Button("Estrela de 8 pontas") { camera.nightStarPoints = 8 }
+                    Button("6 pontas (iPhone 18 em f/4)") { camera.nightStarPoints = 6 }
+                    Button("8 pontas") { camera.nightStarPoints = 8 }
+                    Button("Sol de raios finos (iPhone 18 em f/1.8)") { camera.nightStarPoints = 18 }
                 } label: {
-                    Text(camera.nightStarPoints == 0 ? "✦ Não" : "✦ \(camera.nightStarPoints)")
+                    Text(camera.nightStarPoints == 0 ? "✦ Não" : camera.nightStarPoints == 18 ? "✦ Sol" : "✦ \(camera.nightStarPoints)")
                         .font(.system(size: 12, weight: .bold))
                         .padding(.horizontal, 9).frame(height: 36)
                         .foregroundStyle(camera.nightStarPoints == 0 ? Color.white : Color.black)

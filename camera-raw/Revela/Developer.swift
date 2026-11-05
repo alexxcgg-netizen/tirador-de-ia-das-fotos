@@ -1177,42 +1177,64 @@ enum Developer {
         CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k)
     }
 
+    /// Estrela nas luzes, medida nas fotos do iPhone 18 Pro (lente de abertura variável, Austin Mann, Dunton):
+    /// - f/2.8–f/4 (6 pontas): um raio em pé e dois a ±60°; raios suaves, fortes no centro e sumindo como a
+    ///   difração de verdade (a luz cai com o quadrado da distância); o sol chega a ~14% da largura da foto;
+    ///   as pontas puxam para o quente (o vermelho se espalha mais); brilho suave em volta da luz.
+    /// - f/1.8 (`points` 18): muitos raios curtos e finos, quase um sol.
     static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5) -> CIImage {
         guard let highlightsKernel, points >= 4 else { return scene }
         let e = scene.extent
-        // Metade do tamanho (era 1/4): raios mais finos e nítidos, como os de uma lente fechada de verdade
         let k: CGFloat = 0.5
-        // Só o que passa bem do branco: postes, faróis, letreiros
         guard let bright = highlightsKernel.apply(extent: e, arguments: [scene, threshold * 1.3]) else { return scene }
         var small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
-        // Raios finos: cada luz vira um ponto (o centro dela) com a energia toda; os raios saem desse ponto
+        let smallRect = smallExtentFor(e, k)
+        // Cada luz vira o ponto do centro dela, com a energia toda: os raios saem desse ponto, finos
         if let peakKernel {
             let r: CGFloat = 6
             let soft = small.applyingGaussianBlur(sigma: Double(r / 2))
             let maxed = soft.applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: r])
             let area = Float(CGFloat.pi * r * r * 0.15)
-            small = (peakKernel.apply(extent: smallExtentFor(e, k), arguments: [soft, maxed, area]) ?? small)
-                .applyingGaussianBlur(sigma: 0.7).clampedToExtent()
+            small = (peakKernel.apply(extent: smallRect, arguments: [soft, maxed, area]) ?? small)
+                .applyingGaussianBlur(sigma: 1.1).clampedToExtent()
         }
         let side = min(e.width, e.height) * k
-        let smallRect = CGRect(x: e.minX * k, y: e.minY * k, width: e.width * k, height: e.height * k)
-        var rays = CIImage(color: .black).cropped(to: smallRect)
+        let many = points > 8
         let directions = points / 2
-        // Dois comprimentos somados: forte perto da luz e sumindo devagar (antes era um risco comprido e igual)
-        let layers: [(length: CGFloat, weight: CGFloat)] = [(side * 0.008, 0.6), (side * 0.022, 0.22)]
+        // Comprimentos dobrando e pesos caindo pela metade: o brilho ao longo do raio cai ~1/r², como na difração
+        let base: CGFloat = many ? 0.004 : 0.007
+        let layers: [(length: CGFloat, weight: Float, warm: Bool)] = (0..<4).map { i in
+            (side * base * pow(2, CGFloat(i)), 0.55 * pow(0.5, Float(i)) * (many ? 0.45 : 1), i >= 2)
+        }
+        var neutral = CIImage(color: .black).cropped(to: smallRect)
+        var warm = CIImage(color: .black).cropped(to: smallRect)
         for i in 0..<directions {
-            let angle = Double.pi * Double(i) / Double(directions) + 0.3
+            // Um raio em pé (como no iPhone 18); na de 18 pontas, um pouco girada para não ficar em grade
+            let angle = Double.pi / 2 + Double.pi * Double(i) / Double(directions) + (many ? 0.08 : 0)
             for layer in layers {
-                let streak = small.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: layer.length, kCIInputAngleKey: angle])
-                    .cropped(to: smallRect)
-                rays = scaled(streak, by: Float(layer.weight))
-                    .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: rays])
+                let streak = scaled(small.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: layer.length,
+                                                                                         kCIInputAngleKey: angle])
+                    .cropped(to: smallRect), by: layer.weight)
+                if layer.warm {
+                    warm = streak.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: warm])
+                } else {
+                    neutral = streak.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: neutral])
+                }
             }
         }
+        // As pontas longe da luz puxam para o pêssego, como nas fotos do iPhone 18
+        let warmed = warm.applyingFilter("CIColorMatrix", parameters: [
+            "inputRVector": CIVector(x: 1.0, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.84, z: 0, w: 0),
+            "inputBVector": CIVector(x: 0, y: 0, z: 0.66, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
+        ])
+        // Brilho suave em volta da luz (a lente nunca é perfeita)
+        let glow = scaled(small.applyingGaussianBlur(sigma: Double(side * 0.012)).cropped(to: smallRect), by: 0.6)
+        let rays = warmed.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: neutral])
+            .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: glow])
         let full = rays
             .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
             .cropped(to: e)
-        dlog("Noite: estrela de \(points) pontas nas luzes (pequena)")
+        dlog("Noite: estrela de \(points) pontas (como o iPhone 18 em \(many ? "f/1.8" : "f/2.8–f/4"))")
         return full.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: scene]).cropped(to: e)
     }
 
