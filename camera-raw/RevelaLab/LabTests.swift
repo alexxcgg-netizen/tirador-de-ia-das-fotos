@@ -153,8 +153,8 @@ final class LabTests: XCTestCase {
                                     keyPull: 0, keyedSaturation: 0, highlightBoost: 0, whiteScale: 1, hueKeep: 0)),
             ("b_padrao", ToneTuning()),
             // Ombro da curva mais aberto (branco p99 vs Apple), com o ganho de entrada menor para o meio ficar
-            ("c_ombro_1_2", ToneTuning(filmicGain: 0.93, whiteScale: 1.2)),
-            ("d_ombro_1_12_ceu_0_7", ToneTuning(highlightBoost: 0.7)),
+            ("c_ombro_1_25", ToneTuning(filmicGain: 0.9, highlightBoost: 0.7, whiteScale: 1.25)),
+            ("d_ceu_1_0", ToneTuning(highlightBoost: 1.0)),
         ]
         let looks: [Look] = [.neutro, .portra, .classicChrome, .superia, .velvia, .trix]
         for url in raws() {

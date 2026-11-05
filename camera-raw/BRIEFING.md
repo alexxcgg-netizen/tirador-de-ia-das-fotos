@@ -70,3 +70,5 @@ laboratório: o que aparecer lá entra no topo da fila.
   árvores finas). Velvia contraste 1,18.
 - Rodada a0c9ce1: **31/34**. Preto da NOITE (Pixel) 0,12 → OK; Velvia OK. Ombro 1,12 / ganho 0,98: branco
   0,83 → 0,85 com o meio igual — virou padrão. Testando ombro 1,2 e céu +0,7 para o iPhone XS (0,85 vs meta 0,87).
+- Rodada 2f641bc: **31/33** (saturação do Pixel virou informação). Ombro 1,2 e céu +0,7 juntos viram padrão (cada um
+  dava +0,01 no XS); nitidez 0,21 nas fotos acima de 5000 px (borda 1,31× no Pixel).

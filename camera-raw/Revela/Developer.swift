@@ -8,7 +8,7 @@ import simd
 /// Calibragem do tom (o laboratório testa variações; o app usa os valores padrão).
 struct ToneTuning {
     /// Quanto a cena entra na curva fílmica (antes 0,8: a foto saía apagada, branco em 0,7).
-    var filmicGain: Float = 0.98
+    var filmicGain: Float = 0.93
     /// Quanto do "preto levantado" e do deslocamento de cada filme vale (antes 1: névoa nos filmes suaves).
     var toeScale: Float = 0.5
     var offsetScale: Float = 0.6
@@ -23,10 +23,10 @@ struct ToneTuning {
     /// Cor que acompanha a luz da cena (efeito Hunt): dia claro com mais cor, cena escura com menos.
     var keyedSaturation: Float = 0.18
     /// Quanto o céu e as nuvens sobem (EV): o branco (p99) ficava 0,05–0,08 abaixo da Apple.
-    var highlightBoost: Float = 0.35
+    var highlightBoost: Float = 0.7
     /// Estica a saída da curva fílmica (1 = como era): sobe o branco; o ganho de entrada desce junto para o meio ficar.
-    // 1,12 com o ganho de entrada 0,98: branco p99 0,83 → 0,85 sem mexer no meio (laboratório a0c9ce1)
-    var whiteScale: Float = 1.12
+    // 1,2 com o ganho de entrada 0,93: branco p99 0,83 → 0,86–0,87 sem mexer no meio (laboratórios a0c9ce1 e 2f641bc)
+    var whiteScale: Float = 1.2
     /// Nas luzes fortes, quanto da curva segue o canal mais forte (mantém poste laranja laranja).
     var hueKeep: Float = 0.5
 }
@@ -890,7 +890,9 @@ enum Developer {
         if max(e.width, e.height) >= 1500 {
             // Raio pelo tamanho, até 1,35 px; força 0,26 (0,32 dava borda 1,4× a da Apple na foto de 48 MP)
             let radius = 0.9 * min(1.5, max(1, max(e.width, e.height) / 4032))
-            let amount = iso >= 1600 ? 0.13 : 0.26
+            // Foto bem grande (48 MP): um pouco menos (borda 1,31× a da Apple no laboratório)
+            let big = max(e.width, e.height) > 5000
+            let amount = iso >= 1600 ? 0.13 : (big ? 0.21 : 0.26)
             out = out.applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: radius, kCIInputIntensityKey: amount]).cropped(to: e)
         }
         return out.settingProperties(scene.properties)
