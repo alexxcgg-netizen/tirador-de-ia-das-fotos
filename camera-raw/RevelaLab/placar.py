@@ -40,7 +40,7 @@ def local_noise(a):
     return float(np.abs(l - blur)[flat].mean())
 
 
-def psnr(a, b, reach=10):
+def psnr(a, b, reach=16):
     """PSNR depois de achar o melhor encaixe (os recortes podem sair alguns pixels deslocados)."""
     h, w = min(a.shape[0], b.shape[0]), min(a.shape[1], b.shape[1])
     a, b = a[:h, :w], b[:h, :w]

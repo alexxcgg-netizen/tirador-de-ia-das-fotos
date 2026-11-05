@@ -217,13 +217,23 @@ final class LabTests: XCTestCase {
                 let dx = i == 0 ? 0 : CGFloat.random(in: -3...3, using: &generator)
                 let dy = i == 0 ? 0 : CGFloat.random(in: -3...3, using: &generator)
                 let shifted = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: e)
-                let low = shifted.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: 0.5, kCIInputAspectRatioKey: 1])
+                // Como o sensor: cada pixel soma a luz de um quadrado 2×2 (sem filtro antes: tem serrilhado, que é
+                // justamente o que a super resolução recupera)
+                let quarter = { (x: CGFloat, y: CGFloat) in
+                    Developer.scaled(shifted.clampedToExtent().transformed(by: CGAffineTransform(translationX: -x, y: -y)), by: 0.25)
+                }
+                var box = quarter(0, 0)
+                for (x, y) in [(1, 0), (0, 1), (1, 1)] as [(CGFloat, CGFloat)] {
+                    box = quarter(x, y).applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: box])
+                }
+                let low = box.samplingNearest().transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
                 let le = CGRect(x: 0, y: 0, width: (e.width / 2).rounded(.down), height: (e.height / 2).rounded(.down))
+                // Ruído de sensor de foto com pouca luz (desvio ~0,6%)
                 let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
                     .transformed(by: CGAffineTransform(translationX: CGFloat(i * 97), y: CGFloat(i * 53))).cropped(to: le)
                     .applyingFilter("CIColorMatrix", parameters: [
-                        "inputRVector": CIVector(x: 0.01, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.01, z: 0, w: 0),
-                        "inputBVector": CIVector(x: 0, y: 0, z: 0.01, w: 0), "inputBiasVector": CIVector(x: -0.005, y: -0.005, z: -0.005, w: 0),
+                        "inputRVector": CIVector(x: 0.02, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.02, z: 0, w: 0),
+                        "inputBVector": CIVector(x: 0, y: 0, z: 0.02, w: 0), "inputBiasVector": CIVector(x: -0.01, y: -0.01, z: -0.01, w: 0),
                     ])
                 let noisy = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: low.cropped(to: le)]).cropped(to: le)
                 lows.append(Developer.materialize(noisy, extent: le))

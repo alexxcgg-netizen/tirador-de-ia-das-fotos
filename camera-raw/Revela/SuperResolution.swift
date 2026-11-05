@@ -114,7 +114,9 @@ extension Developer {
         // Regressão de núcleo (como o Google no Pixel): cada pixel de cada foto no lugar exato da grade grande.
         // No protótipo com RAWs de verdade: +4 dB sobre uma foto ampliada (o jeito antigo dava +0,5)
         var splatted = false
-        if let splat = splatMerge(frames: frames, decoded: decoded, alignments: alignments, refUp: refUp,
+        // A referência ampliada é lida 16 vezes por foto (cor e peso): guardada pronta quando cabe na memória
+        let refReady = Double(outExtent.width * outExtent.height) * 8 < 450_000_000 ? materialize(refUp, extent: outExtent) : refUp
+        if let splat = splatMerge(frames: frames, decoded: decoded, alignments: alignments, refUp: refReady,
                                   region: region, factor: factor, outExtent: outExtent, grid: grid) {
             merged = splat.image
             used = splat.used
@@ -298,8 +300,11 @@ extension Developer {
 
     /// Luminância (raiz, para o escuro pesar parecido com o claro) de vários pedaços, linha 0 em cima.
     /// Todos os pedaços vão lado a lado numa imagem só e saem numa leitura.
-    private static func grayPatches(_ image: CIImage, rects: [CGRect]) -> [[Float]?] {
+    private static func grayPatches(_ image raw: CIImage, rects: [CGRect]) -> [[Float]?] {
         guard let first = rects.first else { return [] }
+        // Um leve borrão antes de comparar: no escuro o ruído enganava a busca (o laboratório mostrou "deslocamentos"
+        // de 13 px e giros de 0,5° em fotos que andaram menos de 1,5 px). O deslocamento continua o mesmo
+        let image = raw.clampedToExtent().applyingGaussianBlur(sigma: 1.2)
         let w = Int(first.width), h = Int(first.height)
         let columns = 3
         let rows = (rects.count + columns - 1) / columns
@@ -371,12 +376,17 @@ extension Developer {
 
         // 1) Busca larga de 2 em 2 pixels, olhando 1 de cada 2
         var best = (u: 0, v: 0, cost: Float.greatestFiniteMagnitude)
+        var costSum: Float = 0, costCount: Float = 0
         for v in stride(from: -s + 2, through: s - 2, by: 2) {
             for u in stride(from: -s + 2, through: s - 2, by: 2) {
                 let c = ssd(u, v, step: 2)
+                costSum += c
+                costCount += 1
                 if c < best.cost { best = (u, v, c) }
             }
         }
+        // Encaixe ambíguo (o melhor quase igual à média, típico de pedaço liso com ruído): não serve
+        guard best.cost < 0.8 * costSum / max(costCount, 1) else { return nil }
         // 2) Fina: todos os pixels, ±2 em volta do melhor
         var fine = (u: best.u, v: best.v, cost: Float.greatestFiniteMagnitude)
         var costs: [Int: Float] = [:]
