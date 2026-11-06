@@ -1,0 +1,971 @@
+GPU: Apple iOS simulator GPU
+Kernels: todos carregados
+RAWs: ["iphone12pro.dng", "iphonexs.dng", "pixel8pro.dng"]
+ALINHAMENTO dia: esperado (-12.4, 7.3) (18.6, -15.2) (-25.1, -22.7) (9.8, 26.4) (-5.3, -3.1) (140.6, -96.2)
+PEDACO foto 2 · 0 · em 211, 282 · grosso -12, 7 · fino 0.397, 0.299 · desloca -12.397, 7.299
+PEDACO foto 2 · 1 · em 574, 282 · grosso -12, 7 · fino 0.399, 0.295 · desloca -12.399, 7.295
+PEDACO foto 2 · 2 · em 938, 282 · grosso -12, 7 · fino 0.397, 0.300 · desloca -12.397, 7.300
+PEDACO foto 2 · 3 · em 1301, 282 · grosso -12, 7 · fino 0.398, 0.302 · desloca -12.398, 7.302
+PEDACO foto 2 · 4 · em 211, 766 · grosso -12, 7 · fino 0.396, 0.293 · desloca -12.396, 7.293
+PEDACO foto 2 · 5 · em 574, 766 · grosso -12, 7 · fino 0.407, 0.320 · desloca -12.407, 7.320
+PEDACO foto 2 · 6 · em 938, 766 · grosso -12, 7 · fino 0.401, 0.317 · desloca -12.401, 7.317
+PEDACO foto 2 · 7 · em 1301, 766 · grosso -12, 7 · fino 0.402, 0.298 · desloca -12.402, 7.298
+PEDACO foto 2 · 8 · em 211, 1250 · grosso -12, 7 · fino 0.405, 0.308 · desloca -12.405, 7.308
+PEDACO foto 2 · 9 · em 574, 1250 · grosso -12, 7 · fino 0.466, 0.331 · desloca -12.466, 7.331
+PEDACO foto 2 · 10 · em 938, 1250 · grosso -12, 7 · fino 0.432, 0.325 · desloca -12.432, 7.325
+PEDACO foto 2 · 11 · em 1301, 1250 · grosso -12, 7 · fino 0.421, 0.305 · desloca -12.421, 7.305
+PEDACO foto 2 · 12 · em 211, 1734 · grosso -12, 7 · fino 0.408, 0.304 · desloca -12.408, 7.304
+PEDACO foto 2 · 13 · em 574, 1734 · grosso -12, 7 · fino 0.400, 0.302 · desloca -12.400, 7.302
+PEDACO foto 2 · 14 · em 938, 1734 · grosso -12, 7 · fino 0.056, 0.181 · desloca -12.056, 7.181
+PEDACO foto 2 · 15 · em 1301, 1734 · grosso -12, 7 · fino 0.215, 0.362 · desloca -12.215, 7.362
+Super resolução: foto 2 · 16/16 pedaços · desloca -12.40, 7.30 px · giro 0.001° · região até 0.09 px · sobra 0.01 px
+PEDACO foto 3 · 0 · em 211, 282 · grosso 19, -15 · fino 0.398, -0.201 · desloca 18.602, -15.201
+PEDACO foto 3 · 1 · em 574, 282 · grosso 19, -15 · fino 0.399, -0.204 · desloca 18.601, -15.204
+PEDACO foto 3 · 2 · em 938, 282 · grosso 19, -15 · fino 0.397, -0.200 · desloca 18.603, -15.200
+PEDACO foto 3 · 3 · em 1301, 282 · grosso 19, -15 · fino 0.397, -0.199 · desloca 18.603, -15.199
+PEDACO foto 3 · 4 · em 211, 766 · grosso 19, -15 · fino 0.396, -0.207 · desloca 18.604, -15.207
+PEDACO foto 3 · 5 · em 574, 766 · grosso 19, -15 · fino 0.408, -0.180 · desloca 18.592, -15.180
+PEDACO foto 3 · 6 · em 938, 766 · grosso 19, -15 · fino 0.399, -0.184 · desloca 18.601, -15.184
+PEDACO foto 3 · 7 · em 1301, 766 · grosso 19, -15 · fino 0.401, -0.204 · desloca 18.599, -15.204
+PEDACO foto 3 · 8 · em 211, 1250 · grosso 19, -15 · fino 0.404, -0.192 · desloca 18.596, -15.192
+PEDACO foto 3 · 9 · em 574, 1250 · grosso 19, -15 · fino 0.466, -0.169 · desloca 18.534, -15.169
+PEDACO foto 3 · 10 · em 938, 1250 · grosso 19, -15 · fino 0.433, -0.175 · desloca 18.567, -15.175
+PEDACO foto 3 · 11 · em 1301, 1250 · grosso 19, -15 · fino 0.423, -0.197 · desloca 18.577, -15.197
+PEDACO foto 3 · 12 · em 211, 1734 · grosso 19, -15 · fino 0.405, -0.197 · desloca 18.595, -15.197
+PEDACO foto 3 · 13 · em 574, 1734 · grosso 19, -15 · fino 0.395, -0.199 · desloca 18.605, -15.199
+PEDACO foto 3 · 14 · em 938, 1734 · grosso 19, -15 · fino 0.054, -0.324 · desloca 18.946, -15.324
+PEDACO foto 3 · 15 · em 1301, 1734 · grosso 19, -15 · fino 0.219, -0.138 · desloca 18.781, -15.138
+Super resolução: foto 3 · 16/16 pedaços · desloca 18.60, -15.20 px · giro 0.001° · região até 0.08 px · sobra 0.02 px
+PEDACO foto 4 · 0 · em 211, 282 · grosso -25, -23 · fino 0.101, 0.299 · desloca -25.101, -22.701
+PEDACO foto 4 · 1 · em 574, 282 · grosso -25, -23 · fino 0.103, 0.296 · desloca -25.103, -22.704
+PEDACO foto 4 · 2 · em 938, 282 · grosso -25, -23 · fino 0.101, 0.301 · desloca -25.101, -22.699
+PEDACO foto 4 · 3 · em 1301, 282 · grosso -25, -23 · fino 0.102, 0.301 · desloca -25.102, -22.699
+PEDACO foto 4 · 4 · em 211, 766 · grosso -25, -23 · fino 0.100, 0.290 · desloca -25.100, -22.710
+PEDACO foto 4 · 5 · em 574, 766 · grosso -25, -23 · fino 0.108, 0.318 · desloca -25.108, -22.682
+PEDACO foto 4 · 6 · em 938, 766 · grosso -25, -23 · fino 0.103, 0.313 · desloca -25.103, -22.687
+PEDACO foto 4 · 7 · em 1301, 766 · grosso -25, -23 · fino 0.104, 0.297 · desloca -25.104, -22.703
+PEDACO foto 4 · 8 · em 211, 1250 · grosso -25, -23 · fino 0.107, 0.307 · desloca -25.107, -22.693
+PEDACO foto 4 · 9 · em 574, 1250 · grosso -25, -23 · fino 0.169, 0.330 · desloca -25.169, -22.670
+PEDACO foto 4 · 10 · em 938, 1250 · grosso -25, -23 · fino 0.136, 0.325 · desloca -25.136, -22.675
+PEDACO foto 4 · 11 · em 1301, 1250 · grosso -25, -23 · fino 0.125, 0.305 · desloca -25.125, -22.695
+PEDACO foto 4 · 12 · em 211, 1734 · grosso -25, -23 · fino 0.108, 0.303 · desloca -25.108, -22.697
+PEDACO foto 4 · 13 · em 574, 1734 · grosso -25, -23 · fino 0.099, 0.299 · desloca -25.099, -22.701
+PEDACO foto 4 · 14 · em 938, 1734 · grosso -25, -23 · fino -0.248, 0.177 · desloca -24.752, -22.823
+PEDACO foto 4 · 15 · em 1301, 1734 · grosso -25, -23 · fino -0.084, 0.360 · desloca -24.916, -22.640
+Super resolução: foto 4 · 16/16 pedaços · desloca -25.11, -22.70 px · giro 0.001° · região até 0.09 px · sobra 0.01 px
+PEDACO foto 5 · 0 · em 211, 282 · grosso 10, 26 · fino 0.198, 0.397 · desloca 9.802, 26.397
+PEDACO foto 5 · 1 · em 574, 282 · grosso 10, 26 · fino 0.201, 0.393 · desloca 9.799, 26.393
+PEDACO foto 5 · 2 · em 938, 282 · grosso 10, 26 · fino 0.198, 0.398 · desloca 9.802, 26.398
+PEDACO foto 5 · 3 · em 1301, 282 · grosso 10, 26 · fino 0.200, 0.399 · desloca 9.800, 26.399
+PEDACO foto 5 · 4 · em 211, 766 · grosso 10, 26 · fino 0.197, 0.389 · desloca 9.803, 26.389
+PEDACO foto 5 · 5 · em 574, 766 · grosso 10, 26 · fino 0.207, 0.417 · desloca 9.793, 26.417
+PEDACO foto 5 · 6 · em 938, 766 · grosso 10, 26 · fino 0.201, 0.413 · desloca 9.799, 26.413
+PEDACO foto 5 · 7 · em 1301, 766 · grosso 10, 26 · fino 0.202, 0.395 · desloca 9.798, 26.395
+PEDACO foto 5 · 8 · em 211, 1250 · grosso 10, 26 · fino 0.205, 0.405 · desloca 9.795, 26.405
+PEDACO foto 5 · 9 · em 574, 1250 · grosso 10, 26 · fino 0.266, 0.428 · desloca 9.734, 26.428
+PEDACO foto 5 · 10 · em 938, 1250 · grosso 10, 26 · fino 0.233, 0.422 · desloca 9.767, 26.422
+PEDACO foto 5 · 11 · em 1301, 1250 · grosso 10, 26 · fino 0.221, 0.404 · desloca 9.779, 26.404
+PEDACO foto 5 · 12 · em 211, 1734 · grosso 10, 26 · fino 0.207, 0.402 · desloca 9.793, 26.402
+PEDACO foto 5 · 13 · em 574, 1734 · grosso 10, 26 · fino 0.198, 0.399 · desloca 9.802, 26.399
+PEDACO foto 5 · 14 · em 938, 1734 · grosso 10, 26 · fino -0.154, 0.271 · desloca 10.154, 26.271
+PEDACO foto 5 · 15 · em 1301, 1734 · grosso 10, 26 · fino 0.014, 0.458 · desloca 9.986, 26.458
+Super resolução: foto 5 · 16/16 pedaços · desloca 9.80, 26.39 px · giro 0.001° · região até 0.09 px · sobra 0.01 px
+PEDACO foto 6 · 0 · em 211, 282 · grosso -5, -3 · fino 0.301, -0.103 · desloca -5.301, -3.103
+PEDACO foto 6 · 1 · em 574, 282 · grosso -5, -3 · fino 0.301, -0.106 · desloca -5.301, -3.106
+PEDACO foto 6 · 2 · em 938, 282 · grosso -5, -3 · fino 0.299, -0.102 · desloca -5.299, -3.102
+PEDACO foto 6 · 3 · em 1301, 282 · grosso -5, -3 · fino 0.300, -0.102 · desloca -5.300, -3.102
+PEDACO foto 6 · 4 · em 211, 766 · grosso -5, -3 · fino 0.299, -0.108 · desloca -5.299, -3.108
+PEDACO foto 6 · 5 · em 574, 766 · grosso -5, -3 · fino 0.309, -0.082 · desloca -5.309, -3.082
+PEDACO foto 6 · 6 · em 938, 766 · grosso -5, -3 · fino 0.302, -0.086 · desloca -5.302, -3.086
+PEDACO foto 6 · 7 · em 1301, 766 · grosso -5, -3 · fino 0.301, -0.106 · desloca -5.301, -3.106
+PEDACO foto 6 · 8 · em 211, 1250 · grosso -5, -3 · fino 0.306, -0.094 · desloca -5.306, -3.094
+PEDACO foto 6 · 9 · em 574, 1250 · grosso -5, -3 · fino 0.370, -0.072 · desloca -5.370, -3.072
+PEDACO foto 6 · 10 · em 938, 1250 · grosso -5, -3 · fino 0.335, -0.077 · desloca -5.335, -3.077
+PEDACO foto 6 · 11 · em 1301, 1250 · grosso -5, -3 · fino 0.325, -0.102 · desloca -5.325, -3.102
+PEDACO foto 6 · 12 · em 211, 1734 · grosso -5, -3 · fino 0.306, -0.100 · desloca -5.306, -3.100
+PEDACO foto 6 · 13 · em 574, 1734 · grosso -5, -3 · fino 0.298, -0.103 · desloca -5.298, -3.103
+PEDACO foto 6 · 14 · em 938, 1734 · grosso -5, -3 · fino -0.041, -0.222 · desloca -4.959, -3.222
+PEDACO foto 6 · 15 · em 1301, 1734 · grosso -5, -3 · fino 0.122, -0.040 · desloca -5.122, -3.040
+Super resolução: foto 6 · 16/16 pedaços · desloca -5.30, -3.10 px · giro 0.000° · região até 0.08 px · sobra 0.02 px
+PEDACO foto 7 · 0 · em 211, 282 · grosso 141, -96 · fino 0.399, -0.217 · desloca 140.601, -96.217
+PEDACO foto 7 · 1 · em 574, 282 · grosso 141, -96 · fino 0.399, -0.204 · desloca 140.601, -96.204
+PEDACO foto 7 · 2 · em 938, 282 · grosso 141, -96 · fino 0.397, -0.200 · desloca 140.603, -96.200
+PEDACO foto 7 · 3 · em 1301, 282 · grosso 141, -96 · fino 0.397, -0.199 · desloca 140.603, -96.199
+PEDACO foto 7 · 4 · em 211, 766 · grosso 141, -96 · fino 0.397, -0.181 · desloca 140.603, -96.181
+PEDACO foto 7 · 5 · em 574, 766 · grosso 141, -96 · fino 0.408, -0.180 · desloca 140.592, -96.180
+PEDACO foto 7 · 6 · em 938, 766 · grosso 141, -96 · fino 0.399, -0.184 · desloca 140.601, -96.184
+PEDACO foto 7 · 7 · em 1301, 766 · grosso 141, -96 · fino 0.401, -0.204 · desloca 140.599, -96.204
+PEDACO foto 7 · 8 · em 211, 1250 · grosso 141, -96 · fino 0.407, -0.210 · desloca 140.593, -96.210
+PEDACO foto 7 · 9 · em 574, 1250 · grosso 141, -96 · fino 0.466, -0.169 · desloca 140.534, -96.169
+PEDACO foto 7 · 10 · em 938, 1250 · grosso 141, -96 · fino 0.433, -0.175 · desloca 140.567, -96.175
+PEDACO foto 7 · 11 · em 1301, 1250 · grosso 141, -96 · fino 0.423, -0.197 · desloca 140.577, -96.197
+PEDACO foto 7 · 12 · em 211, 1734 · grosso 141, -96 · fino 0.417, -0.172 · desloca 140.583, -96.172
+PEDACO foto 7 · 13 · em 574, 1734 · grosso 141, -96 · fino 0.395, -0.199 · desloca 140.605, -96.199
+PEDACO foto 7 · 14 · em 938, 1734 · grosso 141, -96 · fino 0.054, -0.324 · desloca 140.946, -96.324
+PEDACO foto 7 · 15 · em 1301, 1734 · grosso 141, -96 · fino 0.219, -0.138 · desloca 140.781, -96.138
+Super resolução: foto 7 · 16/16 pedaços · desloca 140.59, -96.21 px · giro 0.001° · região até 0.08 px · sobra 0.02 px
+ALINHAMENTO dia: fim
+ALINHAMENTO escuro: esperado (-12.4, 7.3) (18.6, -15.2) (-25.1, -22.7) (9.8, 26.4) (-5.3, -3.1) (140.6, -96.2)
+Super resolução: foto 2 · poucos pedaços (0.21 px): só deslocamento pelo centro
+Super resolução: foto 2 · 8/16 pedaços · desloca -12.04, 7.15 px · giro 0.000° · região até 0.00 px · sobra 0.21 px
+Super resolução: foto 3 · poucos pedaços (0.14 px): só deslocamento pelo centro
+Super resolução: foto 3 · 7/16 pedaços · desloca 18.28, -15.28 px · giro 0.000° · região até 0.00 px · sobra 0.14 px
+Super resolução: foto 4 · poucos pedaços (0.21 px): só deslocamento pelo centro
+Super resolução: foto 4 · 8/16 pedaços · desloca -25.03, -22.82 px · giro 0.000° · região até 0.00 px · sobra 0.21 px
+Super resolução: foto 5 · poucos pedaços (0.38 px): só deslocamento pelo centro
+Super resolução: foto 5 · 8/16 pedaços · desloca 10.22, 26.30 px · giro 0.000° · região até 0.00 px · sobra 0.38 px
+Super resolução: foto 6 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 6 · 7/16 pedaços · desloca -5.48, -3.12 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 7 · poucos pedaços (0.20 px): só deslocamento pelo centro
+Super resolução: foto 7 · 7/16 pedaços · desloca 140.80, -96.24 px · giro 0.000° · região até 0.00 px · sobra 0.20 px
+ALINHAMENTO escuro: fim
+Noite: referência é a foto 2 (a mais nítida)
+Empilhando 12 quadros (média) · 1512×2016 · memória livre 0 MB
+Super resolução: foto 2 · 15/16 pedaços · desloca -0.01, -0.01 px · giro 0.000° · região até 0.07 px · sobra 0.01 px
+Super resolução: foto 3 · 15/16 pedaços · desloca -0.01, -0.00 px · giro 0.000° · região até 0.08 px · sobra 0.02 px
+Super resolução: foto 4 · 15/16 pedaços · desloca -0.01, -0.01 px · giro 0.000° · região até 0.06 px · sobra 0.02 px
+Super resolução: foto 5 · 15/16 pedaços · desloca -0.01, -0.01 px · giro 0.000° · região até 0.09 px · sobra 0.01 px
+Super resolução: foto 6 · 15/16 pedaços · desloca -0.01, -0.02 px · giro 0.001° · região até 0.08 px · sobra 0.02 px
+Super resolução: foto 7 · 15/16 pedaços · desloca -0.01, -0.01 px · giro 0.000° · região até 0.09 px · sobra 0.02 px
+Super resolução: foto 8 · 15/16 pedaços · desloca -0.01, -0.01 px · giro 0.000° · região até 0.09 px · sobra 0.02 px
+Super resolução: foto 9 · 15/16 pedaços · desloca -0.01, -0.01 px · giro 0.001° · região até 0.07 px · sobra 0.02 px
+Super resolução: foto 10 · 15/16 pedaços · desloca -0.01, -0.00 px · giro 0.000° · região até 0.08 px · sobra 0.01 px
+Super resolução: foto 11 · 15/16 pedaços · desloca -0.00, -0.00 px · giro 0.000° · região até 0.08 px · sobra 0.02 px
+Super resolução: foto 12 · 15/16 pedaços · desloca -0.01, -0.01 px · giro 0.000° · região até 0.10 px · sobra 0.01 px
+Alinhamento: 19267 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -5.4 EV · clareia 1.3 paradas
+Noite: ruído medido 0.0004
+Noite: preto em 0.0100 (chão 0.0111)
+Tons locais: luz média -4.46 EV · força 0.14
+Empilhamento + revelação: 26050 ms · memória livre 0 MB
+NOITE tripe: 12 fotos em 26223 ms
+Noite: referência é a foto 9 (a mais nítida)
+Noite: 2 de 12 fotos tremidas ficaram de fora
+Empilhando 10 quadros (média) · 1512×2016 · memória livre 0 MB
+Super resolução: foto 2 · 14/16 pedaços · desloca 9.99, 23.00 px · giro -0.000° · região até 0.04 px · sobra 0.02 px
+Super resolução: foto 3 · 14/16 pedaços · desloca 10.99, 24.01 px · giro -0.001° · região até 0.07 px · sobra 0.02 px
+Super resolução: foto 4 · 14/16 pedaços · desloca 15.98, 3.00 px · giro -0.000° · região até 0.04 px · sobra 0.02 px
+Super resolução: foto 5 · 14/16 pedaços · desloca 5.99, 2.00 px · giro -0.000° · região até 0.07 px · sobra 0.02 px
+Super resolução: foto 6 · 14/16 pedaços · desloca 7.99, -4.01 px · giro 0.000° · região até 0.05 px · sobra 0.01 px
+Super resolução: foto 7 · 14/16 pedaços · desloca 2.99, 8.00 px · giro 0.001° · região até 0.07 px · sobra 0.02 px
+Super resolução: foto 8 · 14/16 pedaços · desloca -3.03, 12.01 px · giro -0.001° · região até 0.05 px · sobra 0.02 px
+Super resolução: foto 9 · 14/16 pedaços · desloca -7.01, 5.99 px · giro 0.000° · região até 0.06 px · sobra 0.01 px
+Super resolução: foto 10 · 14/16 pedaços · desloca -11.02, -0.99 px · giro -0.001° · região até 0.04 px · sobra 0.02 px
+Alinhamento: 15018 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.60
+Noite: luz média -5.4 EV · clareia 1.3 paradas
+Noite: ruído medido 0.0004
+Noite: preto em 0.0100 (chão 0.0111)
+Tons locais: luz média -4.48 EV · força 0.14
+Empilhamento + revelação: 19969 ms · memória livre 0 MB
+NOITE mao: 12 fotos em 20107 ms
+Empilhando 8 quadros (média) · 1512×2016 · memória livre 0 MB
+Super resolução: foto 2 · 16/16 pedaços · desloca -0.78, 0.51 px · giro 0.002° · região até 0.09 px · sobra 0.05 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 1.28, -0.93 px · giro 0.003° · região até 0.08 px · sobra 0.09 px
+Super resolução: foto 4 · 16/16 pedaços · desloca -1.67, -1.21 px · giro 0.002° · região até 0.08 px · sobra 0.08 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 0.58, 1.80 px · giro 0.001° · região até 0.08 px · sobra 0.06 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -2.19, 0.29 px · giro 0.002° · região até 0.05 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 1.92, -1.60 px · giro 0.002° · região até 0.08 px · sobra 0.06 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -0.39, -2.09 px · giro 0.001° · região até 0.09 px · sobra 0.05 px
+Alinhamento: 19262 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+FOTO juntada: 8 fotos · ISO 800 · limpeza 0.35
+Empilhamento + revelação: 23567 ms · memória livre 0 MB
+iphone12pro FOTO juntada (8 fotos): 23694 ms
+Empilhando 8 quadros (média) · 2016×1512 · memória livre 0 MB
+Super resolução: foto 2 · 15/16 pedaços · desloca -0.74, 0.57 px · giro -0.001° · região até 0.06 px · sobra 0.08 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 1.32, -0.89 px · giro 0.001° · região até 0.10 px · sobra 0.13 px
+Super resolução: foto 4 · 14/16 pedaços · desloca -1.64, -1.23 px · giro 0.001° · região até 0.03 px · sobra 0.06 px
+Super resolução: foto 5 · 14/16 pedaços · desloca 0.59, 1.77 px · giro -0.001° · região até 0.06 px · sobra 0.10 px
+Super resolução: foto 6 · 14/16 pedaços · desloca -2.15, 0.28 px · giro 0.002° · região até 0.06 px · sobra 0.09 px
+Super resolução: foto 7 · 15/16 pedaços · desloca 1.92, -1.63 px · giro 0.001° · região até 0.12 px · sobra 0.07 px
+Super resolução: foto 8 · 14/16 pedaços · desloca -0.14, -1.67 px · giro -0.006° · região até 0.12 px · sobra 0.21 px
+Alinhamento: 22293 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+FOTO juntada: 8 fotos · ISO 800 · limpeza 0.35
+Empilhamento + revelação: 25832 ms · memória livre 0 MB
+iphonexs FOTO juntada (8 fotos): 25934 ms
+Empilhando 8 quadros (média) · 4072×3064 · memória livre 0 MB
+Super resolução: foto 2 · 11/16 pedaços · desloca -1.04, 0.26 px · giro 0.001° · região até 0.10 px · sobra 0.08 px
+Super resolução: foto 3 · 11/16 pedaços · desloca 1.30, -0.89 px · giro -0.000° · região até 0.10 px · sobra 0.03 px
+Super resolução: foto 4 · 11/16 pedaços · desloca -1.63, -1.12 px · giro -0.001° · região até 0.06 px · sobra 0.09 px
+Super resolução: foto 5 · 11/16 pedaços · desloca 0.60, 1.71 px · giro 0.002° · região até 0.07 px · sobra 0.05 px
+Super resolução: foto 6 · 11/16 pedaços · desloca -2.14, 0.31 px · giro 0.001° · região até 0.14 px · sobra 0.06 px
+Super resolução: foto 7 · 11/16 pedaços · desloca 1.94, -1.53 px · giro -0.001° · região até 0.08 px · sobra 0.04 px
+Super resolução: foto 8 · 11/16 pedaços · desloca -0.47, -2.21 px · giro 0.001° · região até 0.04 px · sobra 0.05 px
+Alinhamento: 31218 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+FOTO juntada: 8 fotos · ISO 800 · limpeza 0.35
+Empilhamento + revelação: 66342 ms · memória livre 0 MB
+pixel8pro FOTO juntada (8 fotos): 66801 ms
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+Filmes de iphone12pro gravados
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: ajuste de luz +0.25 EV
+Filmes de iphonexs gravados
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: ajuste de luz +0.17 EV
+Filmes de pixel8pro gravados
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+Revelação Neutro 3024×4032 · DNG 27 MB: 44131 ms
+iphone12pro Neutro: revelação inteira 48789 ms
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+Revelação Portra 400 3024×4032 · DNG 27 MB: 74571 ms
+iphone12pro Portra 400: revelação inteira 83705 ms
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: ajuste de luz +0.25 EV
+Revelação Neutro 4032×3024 · DNG 9 MB: 27325 ms
+iphonexs Neutro: revelação inteira 28104 ms
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: ajuste de luz +0.25 EV
+Revelação Portra 400 4032×3024 · DNG 9 MB: 13363 ms
+iphonexs Portra 400: revelação inteira 15982 ms
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: ajuste de luz +0.17 EV
+Revelação Neutro 8144×6128 · DNG 43 MB: 29207 ms
+pixel8pro Neutro: revelação inteira 29436 ms
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: ajuste de luz +0.17 EV
+Revelação Portra 400 8144×6128 · DNG 43 MB: 30211 ms
+pixel8pro Portra 400: revelação inteira 30398 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -7.4 EV · clareia 3.4 paradas
+Noite: ruído medido 0.0147
+Noite: preto em 0.0223 (chão 0.0248)
+Tons locais: luz média -4.38 EV · força 0.14
+iphone12pro noite (0 pontas): 8149 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -7.4 EV · clareia 3.4 paradas
+Noite: ruído medido 0.0147
+Noite: preto em 0.0223 (chão 0.0248)
+Tons locais: luz média -4.38 EV · força 0.14
+Noite: estrela de 6 pontas (como o iPhone 18 em f/2.8–f/4)
+iphone12pro noite (6 pontas): 7544 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -7.4 EV · clareia 3.4 paradas
+Noite: ruído medido 0.0147
+Noite: preto em 0.0223 (chão 0.0248)
+Tons locais: luz média -4.38 EV · força 0.14
+Noite: estrela de 18 pontas (como o iPhone 18 em f/1.8)
+iphone12pro noite (18 pontas): 8167 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -8.6 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0116
+Noite: preto em 0.0167 (chão 0.0186)
+Tons locais: luz média -4.97 EV · força 0.14
+iphonexs noite (0 pontas): 3666 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -8.6 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0116
+Noite: preto em 0.0167 (chão 0.0186)
+Tons locais: luz média -4.97 EV · força 0.14
+Noite: estrela de 6 pontas (como o iPhone 18 em f/2.8–f/4)
+iphonexs noite (6 pontas): 2067 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -8.6 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0116
+Noite: preto em 0.0167 (chão 0.0186)
+Tons locais: luz média -4.97 EV · força 0.14
+Noite: estrela de 18 pontas (como o iPhone 18 em f/1.8)
+iphonexs noite (18 pontas): 2482 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -8.2 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0209
+Noite: preto em 0.0202 (chão 0.0225)
+Tons locais: luz média -4.95 EV · força 0.14
+pixel8pro noite (0 pontas): 2804 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -8.2 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0209
+Noite: preto em 0.0202 (chão 0.0225)
+Tons locais: luz média -4.95 EV · força 0.14
+Noite: estrela de 6 pontas (como o iPhone 18 em f/2.8–f/4)
+pixel8pro noite (6 pontas): 8489 ms
+Noite: ISO 3200 · redução de ruído 0.54
+Noite: luz média -8.2 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0209
+Noite: preto em 0.0202 (chão 0.0225)
+Tons locais: luz média -4.95 EV · força 0.14
+Noite: estrela de 18 pontas (como o iPhone 18 em f/1.8)
+❌ não gravou noite/pixel8pro_1_noite_18pontas: Error Domain=CINonLocalizedDescriptionKey Code=3 "(null)" UserInfo={CINonLocalizedDescriptionKey=failed to write JPEG data to file., NSUnderlyingError=0x115b17570 {Error Domain=CINonLocalizedDescriptionKey Code=7 "(null)" UserInfo={CINonLocalizedDescriptionKey=failed to render image., NSUnderlyingError=0x115b175a0 {Error Domain=CIRenderTaskWaitUntilCompleted Code=1 "(null)" UserInfo={CINonLocalizedDescriptionKey=Unexpected error in the backing renderer., NSUnderlyingError=0x11851bf00 {Error Domain=MTLCommandBufferErrorDomain Code=8 "(null)"}}}}}}
+pixel8pro noite (18 pontas): 18878 ms
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: ajuste de luz +0.25 EV
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: ajuste de luz +0.25 EV
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: ajuste de luz +0.25 EV
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: ajuste de luz +0.17 EV
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: ajuste de luz +0.17 EV
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: ajuste de luz +0.17 EV
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+RETRATO iphone12pro: vazamento nosso 0.00124 · desfoque comum 0.00709
+iphone12pro retrato: 4650 ms
+Tons locais: luz média -4.67 EV · força 0.15
+Tons locais: ajuste de luz +0.25 EV
+RETRATO iphonexs: vazamento nosso 0.00095 · desfoque comum 0.01846
+iphonexs retrato: 2540 ms
+Tons locais: luz média -4.11 EV · força 0.15
+Tons locais: ajuste de luz +0.17 EV
+RETRATO pixel8pro: vazamento nosso 0.00085 · desfoque comum 0.01950
+pixel8pro retrato: 11255 ms
+SUPER ZOOM cru: deslocamentos (0.0, 0.0) (1.3, -0.7) (-2.1, 1.6) (0.4, 2.7) (-1.6, -2.4) (2.6, 0.9) (-0.8, -1.2) (1.9, 2.2) (-2.7, 0.3) (0.7, -2.9) (0.7, 0.0) (-0.6, 0.6) (0.1, -1.0) (0.7, 0.9) (-1.3, -0.2) (1.3, -0.8) (-0.4, 1.6) (-0.8, -1.6) (1.9, 0.7) (-2.0, 0.8) (1.0, -2.1) (0.7, 2.4) (-2.3, -1.3) (2.8, -0.6)
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 22) · recorte 756×1008 · ampliação 2.00× → 1512×2016
+Super resolução: foto 1 · 16/16 pedaços · desloca 0.38, 1.19 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -0.29, 1.53 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 1.43, 0.38 px · giro 0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca 0.18, -0.18 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 1.17, 2.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -0.92, 0.72 px · giro 0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.76, 1.77 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -0.58, 0.08 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 1.71, 1.03 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 10 · 16/16 pedaços · desloca 0.02, 2.62 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 11 · 16/16 pedaços · desloca 0.03, 1.19 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 12 · 16/16 pedaços · desloca 0.67, 0.88 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca 0.33, 1.67 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 14 · 16/16 pedaços · desloca 0.01, 0.71 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 1.03, 1.30 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -0.27, 1.58 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 17 · 16/16 pedaços · desloca 0.58, 0.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 18 · 16/16 pedaços · desloca 0.78, 1.99 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -0.57, 0.83 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 1.37, 0.75 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.13, 2.24 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 1.52, 1.84 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.01, 1.48 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: alinhado em 52125 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 0 MB · desconvolução 3 passos · 60813 ms · memória livre 0 MB
+iphone12pro super resolução: 60960 ms
+iphone12pro super resolução: 1512×2016 (original 1512×2016)
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 22) · recorte 756×1008 · ampliação 2.00× → 1512×2016
+Super resolução: foto 1 · 16/16 pedaços · desloca 0.38, 1.19 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -0.29, 1.53 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 1.43, 0.38 px · giro 0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca 0.18, -0.18 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 1.17, 2.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -0.92, 0.72 px · giro 0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.76, 1.77 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -0.58, 0.08 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 1.71, 1.03 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 10 · 16/16 pedaços · desloca 0.02, 2.62 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 11 · 16/16 pedaços · desloca 0.03, 1.19 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 12 · 16/16 pedaços · desloca 0.67, 0.88 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca 0.33, 1.67 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 14 · 16/16 pedaços · desloca 0.01, 0.71 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 1.03, 1.30 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -0.27, 1.58 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 17 · 16/16 pedaços · desloca 0.58, 0.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 18 · 16/16 pedaços · desloca 0.78, 1.99 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -0.57, 0.83 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 1.37, 0.75 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.13, 2.24 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 1.52, 1.84 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.01, 1.48 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: alinhado em 33251 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 1 MB · desconvolução 3 passos · 40618 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 22) · recorte 756×1008 · ampliação 2.00× → 1512×2016
+Super resolução: foto 1 · 16/16 pedaços · desloca 0.38, 1.19 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -0.29, 1.53 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 1.43, 0.38 px · giro 0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca 0.18, -0.18 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 1.17, 2.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -0.92, 0.72 px · giro 0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.76, 1.77 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -0.58, 0.08 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 1.71, 1.03 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 10 · 16/16 pedaços · desloca 0.02, 2.62 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 11 · 16/16 pedaços · desloca 0.03, 1.19 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 12 · 16/16 pedaços · desloca 0.67, 0.88 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca 0.33, 1.67 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 14 · 16/16 pedaços · desloca 0.01, 0.71 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 1.03, 1.30 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -0.27, 1.58 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 17 · 16/16 pedaços · desloca 0.58, 0.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 18 · 16/16 pedaços · desloca 0.78, 1.99 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -0.57, 0.83 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 1.37, 0.75 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.13, 2.24 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 1.52, 1.84 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.01, 1.48 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: alinhado em 41687 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 1 MB · desconvolução 2 passos · 49243 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 22) · recorte 756×1008 · ampliação 2.00× → 1512×2016
+Super resolução: foto 1 · 16/16 pedaços · desloca 0.38, 1.19 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -0.29, 1.53 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 1.43, 0.38 px · giro 0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca 0.18, -0.18 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 1.17, 2.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -0.92, 0.72 px · giro 0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.76, 1.77 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -0.58, 0.08 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 1.71, 1.03 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 10 · 16/16 pedaços · desloca 0.02, 2.62 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 11 · 16/16 pedaços · desloca 0.03, 1.19 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 12 · 16/16 pedaços · desloca 0.67, 0.88 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca 0.33, 1.67 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 14 · 16/16 pedaços · desloca 0.01, 0.71 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 1.03, 1.30 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -0.27, 1.58 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 17 · 16/16 pedaços · desloca 0.58, 0.38 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 18 · 16/16 pedaços · desloca 0.78, 1.99 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -0.57, 0.83 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 1.37, 0.75 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.13, 2.24 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 1.52, 1.84 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.01, 1.48 px · giro -0.001° · região até 0.03 px · sobra 0.03 px
+Super resolução: alinhado em 32938 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 1 MB · desconvolução 3 passos · 38824 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 15) · recorte 1008×756 · ampliação 2.00× → 2016×1512
+Super resolução: foto 1 · 15/16 pedaços · desloca -0.66, -0.13 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 2 · 15/16 pedaços · desloca -1.31, 0.24 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 3 · 15/16 pedaços · desloca 0.40, -0.91 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 4 · 15/16 pedaços · desloca -0.85, -1.48 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 5 · 15/16 pedaços · desloca 0.15, 1.08 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 6 · 15/16 pedaços · desloca -1.96, -0.57 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 7 · 15/16 pedaços · desloca -0.26, 0.47 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 8 · 15/16 pedaços · desloca -1.61, -1.23 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 9 · 15/16 pedaços · desloca 0.69, -0.28 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 10 · 15/16 pedaços · desloca -1.02, 1.33 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 11 · 15/16 pedaços · desloca -1.00, -0.13 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 12 · 15/16 pedaços · desloca -0.34, -0.42 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 13 · 15/16 pedaços · desloca -0.70, 0.37 px · giro 0.001° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 14 · 15/16 pedaços · desloca -1.02, -0.59 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 16 · 15/16 pedaços · desloca -1.29, 0.29 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 15/16 pedaços · desloca -0.44, -0.92 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 18 · 15/16 pedaços · desloca -0.24, 0.68 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 19 · 15/16 pedaços · desloca -1.59, -0.47 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 20 · 15/16 pedaços · desloca 0.35, -0.53 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 21 · 15/16 pedaços · desloca -1.16, 0.93 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 22 · 15/16 pedaços · desloca -1.03, -1.32 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 23 · 15/16 pedaços · desloca 0.49, 0.54 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 24 · 15/16 pedaços · desloca -2.04, 0.18 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: alinhado em 39200 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 0 MB · desconvolução 3 passos · 46361 ms · memória livre 0 MB
+iphonexs super resolução: 46435 ms
+iphonexs super resolução: 2016×1512 (original 2016×1512)
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 15) · recorte 1008×756 · ampliação 2.00× → 2016×1512
+Super resolução: foto 1 · 15/16 pedaços · desloca -0.66, -0.13 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 2 · 15/16 pedaços · desloca -1.31, 0.24 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 3 · 15/16 pedaços · desloca 0.40, -0.91 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 4 · 15/16 pedaços · desloca -0.85, -1.48 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 5 · 15/16 pedaços · desloca 0.15, 1.08 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 6 · 15/16 pedaços · desloca -1.96, -0.57 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 7 · 15/16 pedaços · desloca -0.26, 0.47 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 8 · 15/16 pedaços · desloca -1.61, -1.23 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 9 · 15/16 pedaços · desloca 0.69, -0.28 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 10 · 15/16 pedaços · desloca -1.02, 1.33 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 11 · 15/16 pedaços · desloca -1.00, -0.13 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 12 · 15/16 pedaços · desloca -0.34, -0.42 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 13 · 15/16 pedaços · desloca -0.70, 0.37 px · giro 0.001° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 14 · 15/16 pedaços · desloca -1.02, -0.59 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 16 · 15/16 pedaços · desloca -1.29, 0.29 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 15/16 pedaços · desloca -0.44, -0.92 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 18 · 15/16 pedaços · desloca -0.24, 0.68 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 19 · 15/16 pedaços · desloca -1.59, -0.47 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 20 · 15/16 pedaços · desloca 0.35, -0.53 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 21 · 15/16 pedaços · desloca -1.16, 0.93 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 22 · 15/16 pedaços · desloca -1.03, -1.32 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 23 · 15/16 pedaços · desloca 0.49, 0.54 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 24 · 15/16 pedaços · desloca -2.04, 0.18 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: alinhado em 29065 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 0 MB · desconvolução 3 passos · 36338 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 15) · recorte 1008×756 · ampliação 2.00× → 2016×1512
+Super resolução: foto 1 · 15/16 pedaços · desloca -0.66, -0.13 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 2 · 15/16 pedaços · desloca -1.31, 0.24 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 3 · 15/16 pedaços · desloca 0.40, -0.91 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 4 · 15/16 pedaços · desloca -0.85, -1.48 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 5 · 15/16 pedaços · desloca 0.15, 1.08 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 6 · 15/16 pedaços · desloca -1.96, -0.57 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 7 · 15/16 pedaços · desloca -0.26, 0.47 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 8 · 15/16 pedaços · desloca -1.61, -1.23 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 9 · 15/16 pedaços · desloca 0.69, -0.28 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 10 · 15/16 pedaços · desloca -1.02, 1.33 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 11 · 15/16 pedaços · desloca -1.00, -0.13 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 12 · 15/16 pedaços · desloca -0.34, -0.42 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 13 · 15/16 pedaços · desloca -0.70, 0.37 px · giro 0.001° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 14 · 15/16 pedaços · desloca -1.02, -0.59 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 16 · 15/16 pedaços · desloca -1.29, 0.29 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 15/16 pedaços · desloca -0.44, -0.92 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 18 · 15/16 pedaços · desloca -0.24, 0.68 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 19 · 15/16 pedaços · desloca -1.59, -0.47 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 20 · 15/16 pedaços · desloca 0.35, -0.53 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 21 · 15/16 pedaços · desloca -1.16, 0.93 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 22 · 15/16 pedaços · desloca -1.03, -1.32 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 23 · 15/16 pedaços · desloca 0.49, 0.54 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 24 · 15/16 pedaços · desloca -2.04, 0.18 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: alinhado em 39958 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 0 MB · desconvolução 2 passos · 45987 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 15) · recorte 1008×756 · ampliação 2.00× → 2016×1512
+Super resolução: foto 1 · 15/16 pedaços · desloca -0.66, -0.13 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 2 · 15/16 pedaços · desloca -1.31, 0.24 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 3 · 15/16 pedaços · desloca 0.40, -0.91 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 4 · 15/16 pedaços · desloca -0.85, -1.48 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 5 · 15/16 pedaços · desloca 0.15, 1.08 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 6 · 15/16 pedaços · desloca -1.96, -0.57 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 7 · 15/16 pedaços · desloca -0.26, 0.47 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 8 · 15/16 pedaços · desloca -1.61, -1.23 px · giro -0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 9 · 15/16 pedaços · desloca 0.69, -0.28 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: foto 10 · 15/16 pedaços · desloca -1.02, 1.33 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 11 · 15/16 pedaços · desloca -1.00, -0.13 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 12 · 15/16 pedaços · desloca -0.34, -0.42 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 13 · 15/16 pedaços · desloca -0.70, 0.37 px · giro 0.001° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 14 · 15/16 pedaços · desloca -1.02, -0.59 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 16 · 15/16 pedaços · desloca -1.29, 0.29 px · giro 0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 15/16 pedaços · desloca -0.44, -0.92 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 18 · 15/16 pedaços · desloca -0.24, 0.68 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 19 · 15/16 pedaços · desloca -1.59, -0.47 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 20 · 15/16 pedaços · desloca 0.35, -0.53 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 21 · 15/16 pedaços · desloca -1.16, 0.93 px · giro 0.000° · região até 0.02 px · sobra 0.01 px
+Super resolução: foto 22 · 15/16 pedaços · desloca -1.03, -1.32 px · giro 0.001° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 23 · 15/16 pedaços · desloca 0.49, 0.54 px · giro 0.000° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 24 · 15/16 pedaços · desloca -2.04, 0.18 px · giro 0.000° · região até 0.01 px · sobra 0.01 px
+Super resolução: alinhado em 42569 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 3 MP · 0 MB · desconvolução 3 passos · 47942 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 18) · recorte 2036×1528 · ampliação 2.00× → 4072×3056
+Super resolução: foto 1 · 16/16 pedaços · desloca -0.42, -0.79 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -1.07, -0.45 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 0.61, -1.63 px · giro -0.000° · região até 0.04 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca -0.63, -2.16 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 0.37, 0.40 px · giro -0.001° · região até 0.08 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -1.73, -1.26 px · giro -0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.01, -0.20 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -1.37, -1.89 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 0.91, -0.95 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 10 · 16/16 pedaços · desloca -0.76, 0.65 px · giro -0.000° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 11 · 16/16 pedaços · desloca -0.71, -0.80 px · giro 0.001° · região até 0.06 px · sobra 0.03 px
+Super resolução: foto 12 · 16/16 pedaços · desloca -0.06, -1.08 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca -0.43, -0.29 px · giro 0.000° · região até 0.03 px · sobra 0.02 px
+Super resolução: foto 14 · 16/16 pedaços · desloca -0.77, -1.28 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 0.24, -0.66 px · giro -0.001° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -1.06, -0.39 px · giro -0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 16/16 pedaços · desloca -0.22, -1.61 px · giro -0.000° · região até 0.06 px · sobra 0.02 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -1.38, -1.17 px · giro -0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 0.55, -1.21 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.92, 0.25 px · giro -0.000° · região até 0.05 px · sobra 0.03 px
+Super resolução: foto 22 · 16/16 pedaços · desloca -0.80, -1.98 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 0.73, -0.15 px · giro 0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.82, -0.50 px · giro -0.001° · região até 0.08 px · sobra 0.04 px
+Super resolução: alinhado em 61387 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 12 MP · 2 MB · desconvolução 3 passos · 79294 ms · memória livre 0 MB
+pixel8pro super resolução: 79529 ms
+pixel8pro super resolução: 4072×3056 (original 4072×3064)
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 18) · recorte 2036×1528 · ampliação 2.00× → 4072×3056
+Super resolução: foto 1 · 16/16 pedaços · desloca -0.42, -0.79 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -1.07, -0.45 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 0.61, -1.63 px · giro -0.000° · região até 0.04 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca -0.63, -2.16 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 0.37, 0.40 px · giro -0.001° · região até 0.08 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -1.73, -1.26 px · giro -0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.01, -0.20 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -1.37, -1.89 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 0.91, -0.95 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 10 · 16/16 pedaços · desloca -0.76, 0.65 px · giro -0.000° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 11 · 16/16 pedaços · desloca -0.71, -0.80 px · giro 0.001° · região até 0.06 px · sobra 0.03 px
+Super resolução: foto 12 · 16/16 pedaços · desloca -0.06, -1.08 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca -0.43, -0.29 px · giro 0.000° · região até 0.03 px · sobra 0.02 px
+Super resolução: foto 14 · 16/16 pedaços · desloca -0.77, -1.28 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 0.24, -0.66 px · giro -0.001° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -1.06, -0.39 px · giro -0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 16/16 pedaços · desloca -0.22, -1.61 px · giro -0.000° · região até 0.06 px · sobra 0.02 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -1.38, -1.17 px · giro -0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 0.55, -1.21 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.92, 0.25 px · giro -0.000° · região até 0.05 px · sobra 0.03 px
+Super resolução: foto 22 · 16/16 pedaços · desloca -0.80, -1.98 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 0.73, -0.15 px · giro 0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.82, -0.50 px · giro -0.001° · região até 0.08 px · sobra 0.04 px
+Super resolução: alinhado em 41700 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 12 MP · 3 MB · desconvolução 3 passos · 58332 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 18) · recorte 2036×1528 · ampliação 2.00× → 4072×3056
+Super resolução: foto 1 · 16/16 pedaços · desloca -0.42, -0.79 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -1.07, -0.45 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 0.61, -1.63 px · giro -0.000° · região até 0.04 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca -0.63, -2.16 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 0.37, 0.40 px · giro -0.001° · região até 0.08 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -1.73, -1.26 px · giro -0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.01, -0.20 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -1.37, -1.89 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 0.91, -0.95 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 10 · 16/16 pedaços · desloca -0.76, 0.65 px · giro -0.000° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 11 · 16/16 pedaços · desloca -0.71, -0.80 px · giro 0.001° · região até 0.06 px · sobra 0.03 px
+Super resolução: foto 12 · 16/16 pedaços · desloca -0.06, -1.08 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca -0.43, -0.29 px · giro 0.000° · região até 0.03 px · sobra 0.02 px
+Super resolução: foto 14 · 16/16 pedaços · desloca -0.77, -1.28 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 0.24, -0.66 px · giro -0.001° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -1.06, -0.39 px · giro -0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 16/16 pedaços · desloca -0.22, -1.61 px · giro -0.000° · região até 0.06 px · sobra 0.02 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -1.38, -1.17 px · giro -0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 0.55, -1.21 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.92, 0.25 px · giro -0.000° · região até 0.05 px · sobra 0.03 px
+Super resolução: foto 22 · 16/16 pedaços · desloca -0.80, -1.98 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 0.73, -0.15 px · giro 0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.82, -0.50 px · giro -0.001° · região até 0.08 px · sobra 0.04 px
+Super resolução: alinhado em 53998 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 12 MP · 3 MB · desconvolução 2 passos · 71068 ms · memória livre 0 MB
+Super resolução: usando as 24 mais nítidas de 24
+Super resolução: 24 fotos (referência 18) · recorte 2036×1528 · ampliação 2.00× → 4072×3056
+Super resolução: foto 1 · 16/16 pedaços · desloca -0.42, -0.79 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 2 · 16/16 pedaços · desloca -1.07, -0.45 px · giro -0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 3 · 16/16 pedaços · desloca 0.61, -1.63 px · giro -0.000° · região até 0.04 px · sobra 0.04 px
+Super resolução: foto 4 · 16/16 pedaços · desloca -0.63, -2.16 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 5 · 16/16 pedaços · desloca 0.37, 0.40 px · giro -0.001° · região até 0.08 px · sobra 0.03 px
+Super resolução: foto 6 · 16/16 pedaços · desloca -1.73, -1.26 px · giro -0.000° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 7 · 16/16 pedaços · desloca 0.01, -0.20 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 8 · 16/16 pedaços · desloca -1.37, -1.89 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 9 · 16/16 pedaços · desloca 0.91, -0.95 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 10 · 16/16 pedaços · desloca -0.76, 0.65 px · giro -0.000° · região até 0.01 px · sobra 0.02 px
+Super resolução: foto 11 · 16/16 pedaços · desloca -0.71, -0.80 px · giro 0.001° · região até 0.06 px · sobra 0.03 px
+Super resolução: foto 12 · 16/16 pedaços · desloca -0.06, -1.08 px · giro 0.000° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 13 · 16/16 pedaços · desloca -0.43, -0.29 px · giro 0.000° · região até 0.03 px · sobra 0.02 px
+Super resolução: foto 14 · 16/16 pedaços · desloca -0.77, -1.28 px · giro -0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 15 · 16/16 pedaços · desloca 0.24, -0.66 px · giro -0.001° · região até 0.02 px · sobra 0.04 px
+Super resolução: foto 16 · 16/16 pedaços · desloca -1.06, -0.39 px · giro -0.001° · região até 0.02 px · sobra 0.02 px
+Super resolução: foto 17 · 16/16 pedaços · desloca -0.22, -1.61 px · giro -0.000° · região até 0.06 px · sobra 0.02 px
+Super resolução: foto 19 · 16/16 pedaços · desloca -1.38, -1.17 px · giro -0.000° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 20 · 16/16 pedaços · desloca 0.55, -1.21 px · giro -0.001° · região até 0.03 px · sobra 0.04 px
+Super resolução: foto 21 · 16/16 pedaços · desloca -0.92, 0.25 px · giro -0.000° · região até 0.05 px · sobra 0.03 px
+Super resolução: foto 22 · 16/16 pedaços · desloca -0.80, -1.98 px · giro -0.001° · região até 0.02 px · sobra 0.03 px
+Super resolução: foto 23 · 16/16 pedaços · desloca 0.73, -0.15 px · giro 0.000° · região até 0.03 px · sobra 0.03 px
+Super resolução: foto 24 · 16/16 pedaços · desloca -1.82, -0.50 px · giro -0.001° · região até 0.08 px · sobra 0.04 px
+Super resolução: alinhado em 62308 ms
+Super resolução: 24 fotos juntadas por regressão de núcleo (cada pixel no lugar exato)
+Super resolução revelada: 24 fotos · 12 MP · 3 MB · desconvolução 3 passos · 75881 ms · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 1.89
+Noite: luz média -7.5 EV · clareia 3.4 paradas
+Noite: ruído medido 0.0909
+Noite: preto em 0.0428 (chão 0.0475)
+Tons locais: luz média -4.14 EV · força 0.14
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -7.4 EV · clareia 3.3 paradas
+Noite: ruído medido 0.0004
+Noite: preto em 0.0102 (chão 0.0113)
+Tons locais: luz média -4.45 EV · força 0.14
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 1512×2016 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.19 px): só deslocamento pelo centro
+Super resolução: foto 2 · 8/16 pedaços · desloca -0.61, -0.56 px · giro 0.000° · região até 0.00 px · sobra 0.19 px
+Super resolução: foto 3 · poucos pedaços (0.22 px): só deslocamento pelo centro
+Super resolução: foto 3 · 9/16 pedaços · desloca -1.38, -0.07 px · giro 0.000° · região até 0.00 px · sobra 0.22 px
+Super resolução: foto 4 · poucos pedaços (0.20 px): só deslocamento pelo centro
+Super resolução: foto 4 · 9/16 pedaços · desloca 0.33, -0.59 px · giro 0.000° · região até 0.00 px · sobra 0.20 px
+Super resolução: foto 5 · poucos pedaços (0.21 px): só deslocamento pelo centro
+Super resolução: foto 5 · 9/16 pedaços · desloca -0.60, 0.01 px · giro 0.000° · região até 0.00 px · sobra 0.21 px
+Super resolução: foto 6 · poucos pedaços (0.16 px): só deslocamento pelo centro
+Super resolução: foto 6 · 9/16 pedaços · desloca -1.49, -0.77 px · giro 0.000° · região até 0.00 px · sobra 0.16 px
+Super resolução: foto 7 · poucos pedaços (0.09 px): só deslocamento pelo centro
+Super resolução: foto 7 · 9/16 pedaços · desloca -0.01, 0.01 px · giro 0.000° · região até 0.00 px · sobra 0.09 px
+Super resolução: foto 8 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 8 · 9/16 pedaços · desloca -0.83, -0.73 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Alinhamento: 24170 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -7.3 EV · clareia 3.3 paradas
+Noite: ruído medido 0.0023
+Noite: preto em 0.0140 (chão 0.0156)
+Tons locais: luz média -4.54 EV · força 0.14
+Empilhamento + revelação: 27943 ms · memória livre 0 MB
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 1512×2016 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.19 px): só deslocamento pelo centro
+Super resolução: foto 2 · 8/16 pedaços · desloca -0.61, -0.56 px · giro 0.000° · região até 0.00 px · sobra 0.19 px
+Super resolução: foto 3 · poucos pedaços (0.22 px): só deslocamento pelo centro
+Super resolução: foto 3 · 9/16 pedaços · desloca -1.38, -0.07 px · giro 0.000° · região até 0.00 px · sobra 0.22 px
+Super resolução: foto 4 · poucos pedaços (0.20 px): só deslocamento pelo centro
+Super resolução: foto 4 · 9/16 pedaços · desloca 0.33, -0.59 px · giro 0.000° · região até 0.00 px · sobra 0.20 px
+Super resolução: foto 5 · poucos pedaços (0.21 px): só deslocamento pelo centro
+Super resolução: foto 5 · 9/16 pedaços · desloca -0.60, 0.01 px · giro 0.000° · região até 0.00 px · sobra 0.21 px
+Super resolução: foto 6 · poucos pedaços (0.16 px): só deslocamento pelo centro
+Super resolução: foto 6 · 9/16 pedaços · desloca -1.49, -0.77 px · giro 0.000° · região até 0.00 px · sobra 0.16 px
+Super resolução: foto 7 · poucos pedaços (0.09 px): só deslocamento pelo centro
+Super resolução: foto 7 · 9/16 pedaços · desloca -0.01, 0.01 px · giro 0.000° · região até 0.00 px · sobra 0.09 px
+Super resolução: foto 8 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 8 · 9/16 pedaços · desloca -0.83, -0.73 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Alinhamento: 17050 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -7.3 EV · clareia 3.3 paradas
+Noite: ruído medido 0.0023
+Noite: preto em 0.0140 (chão 0.0156)
+Tons locais: luz média -4.54 EV · força 0.14
+Empilhamento + revelação: 20764 ms · memória livre 0 MB
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 1512×2016 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.19 px): só deslocamento pelo centro
+Super resolução: foto 2 · 8/16 pedaços · desloca -0.61, -0.56 px · giro 0.000° · região até 0.00 px · sobra 0.19 px
+Super resolução: foto 3 · poucos pedaços (0.22 px): só deslocamento pelo centro
+Super resolução: foto 3 · 9/16 pedaços · desloca -1.38, -0.07 px · giro 0.000° · região até 0.00 px · sobra 0.22 px
+Super resolução: foto 4 · poucos pedaços (0.20 px): só deslocamento pelo centro
+Super resolução: foto 4 · 9/16 pedaços · desloca 0.33, -0.59 px · giro 0.000° · região até 0.00 px · sobra 0.20 px
+Super resolução: foto 5 · poucos pedaços (0.21 px): só deslocamento pelo centro
+Super resolução: foto 5 · 9/16 pedaços · desloca -0.60, 0.01 px · giro 0.000° · região até 0.00 px · sobra 0.21 px
+Super resolução: foto 6 · poucos pedaços (0.16 px): só deslocamento pelo centro
+Super resolução: foto 6 · 9/16 pedaços · desloca -1.49, -0.77 px · giro 0.000° · região até 0.00 px · sobra 0.16 px
+Super resolução: foto 7 · poucos pedaços (0.09 px): só deslocamento pelo centro
+Super resolução: foto 7 · 9/16 pedaços · desloca -0.01, 0.01 px · giro 0.000° · região até 0.00 px · sobra 0.09 px
+Super resolução: foto 8 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 8 · 9/16 pedaços · desloca -0.83, -0.73 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Alinhamento: 30932 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -7.3 EV · clareia 3.3 paradas
+Noite: ruído medido 0.0023
+Noite: preto em 0.0140 (chão 0.0156)
+Tons locais: luz média -4.54 EV · força 0.14
+Empilhamento + revelação: 36994 ms · memória livre 0 MB
+iphone12pro noite empilhada: 37146 ms
+Noite: ISO 3200 · redução de ruído 1.89
+Noite: luz média -8.4 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0839
+Noite: preto em 0.0374 (chão 0.0416)
+Tons locais: luz média -4.47 EV · força 0.14
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.7 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0005
+Noite: preto em 0.0035 (chão 0.0007)
+Tons locais: luz média -5.80 EV · força 0.14
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 2016×1512 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 2 · 8/16 pedaços · desloca -0.67, -0.61 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Super resolução: foto 3 · poucos pedaços (0.29 px): só deslocamento pelo centro
+Super resolução: foto 3 · 8/16 pedaços · desloca -1.41, -0.00 px · giro 0.000° · região até 0.00 px · sobra 0.29 px
+Super resolução: foto 4 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 4 · 8/16 pedaços · desloca -0.01, -0.64 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 5 · poucos pedaços (0.27 px): só deslocamento pelo centro
+Super resolução: foto 5 · 8/16 pedaços · desloca -0.70, 0.02 px · giro 0.000° · região até 0.00 px · sobra 0.27 px
+Super resolução: foto 6 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 6 · 8/16 pedaços · desloca -1.39, -0.63 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Super resolução: foto 7 · poucos pedaços (0.17 px): só deslocamento pelo centro
+Super resolução: foto 7 · 8/16 pedaços · desloca 0.03, -0.05 px · giro 0.000° · região até 0.00 px · sobra 0.17 px
+Super resolução: foto 8 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 8 · 8/16 pedaços · desloca -0.70, -0.57 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Alinhamento: 22461 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.2 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0029
+Noite: preto em 0.0095 (chão 0.0106)
+Tons locais: luz média -5.23 EV · força 0.14
+Empilhamento + revelação: 26805 ms · memória livre 0 MB
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 2016×1512 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 2 · 8/16 pedaços · desloca -0.67, -0.61 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Super resolução: foto 3 · poucos pedaços (0.29 px): só deslocamento pelo centro
+Super resolução: foto 3 · 8/16 pedaços · desloca -1.41, -0.00 px · giro 0.000° · região até 0.00 px · sobra 0.29 px
+Super resolução: foto 4 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 4 · 8/16 pedaços · desloca -0.01, -0.64 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 5 · poucos pedaços (0.27 px): só deslocamento pelo centro
+Super resolução: foto 5 · 8/16 pedaços · desloca -0.70, 0.02 px · giro 0.000° · região até 0.00 px · sobra 0.27 px
+Super resolução: foto 6 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 6 · 8/16 pedaços · desloca -1.39, -0.63 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Super resolução: foto 7 · poucos pedaços (0.17 px): só deslocamento pelo centro
+Super resolução: foto 7 · 8/16 pedaços · desloca 0.03, -0.05 px · giro 0.000° · região até 0.00 px · sobra 0.17 px
+Super resolução: foto 8 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 8 · 8/16 pedaços · desloca -0.70, -0.57 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Alinhamento: 17838 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.2 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0029
+Noite: preto em 0.0095 (chão 0.0106)
+Tons locais: luz média -5.23 EV · força 0.14
+Empilhamento + revelação: 23493 ms · memória livre 0 MB
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 2016×1512 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 2 · 8/16 pedaços · desloca -0.67, -0.61 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Super resolução: foto 3 · poucos pedaços (0.29 px): só deslocamento pelo centro
+Super resolução: foto 3 · 8/16 pedaços · desloca -1.41, -0.00 px · giro 0.000° · região até 0.00 px · sobra 0.29 px
+Super resolução: foto 4 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 4 · 8/16 pedaços · desloca -0.01, -0.64 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 5 · poucos pedaços (0.27 px): só deslocamento pelo centro
+Super resolução: foto 5 · 8/16 pedaços · desloca -0.70, 0.02 px · giro 0.000° · região até 0.00 px · sobra 0.27 px
+Super resolução: foto 6 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 6 · 8/16 pedaços · desloca -1.39, -0.63 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Super resolução: foto 7 · poucos pedaços (0.17 px): só deslocamento pelo centro
+Super resolução: foto 7 · 8/16 pedaços · desloca 0.03, -0.05 px · giro 0.000° · região até 0.00 px · sobra 0.17 px
+Super resolução: foto 8 · poucos pedaços (0.23 px): só deslocamento pelo centro
+Super resolução: foto 8 · 8/16 pedaços · desloca -0.70, -0.57 px · giro 0.000° · região até 0.00 px · sobra 0.23 px
+Alinhamento: 11515 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.2 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0029
+Noite: preto em 0.0095 (chão 0.0106)
+Tons locais: luz média -5.23 EV · força 0.14
+Empilhamento + revelação: 14974 ms · memória livre 0 MB
+iphonexs noite empilhada: 15068 ms
+Noite: ISO 3200 · redução de ruído 1.89
+Noite: luz média -8.2 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0993
+Noite: preto em 0.0382 (chão 0.0425)
+Tons locais: luz média -4.54 EV · força 0.14
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.1 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0007
+Noite: preto em 0.0035 (chão 0.0036)
+Tons locais: luz média -5.00 EV · força 0.14
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 4072×3064 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.28 px): só deslocamento pelo centro
+Super resolução: foto 2 · 7/16 pedaços · desloca -0.81, -0.61 px · giro 0.000° · região até 0.00 px · sobra 0.28 px
+Super resolução: foto 3 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 3 · 7/16 pedaços · desloca -1.36, 0.00 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 4 · poucos pedaços (0.22 px): só deslocamento pelo centro
+Super resolução: foto 4 · 7/16 pedaços · desloca -0.00, -0.63 px · giro 0.000° · região até 0.00 px · sobra 0.22 px
+Super resolução: foto 5 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 5 · 7/16 pedaços · desloca -0.57, -0.01 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 6 · poucos pedaços (0.24 px): só deslocamento pelo centro
+Super resolução: foto 6 · 7/16 pedaços · desloca -1.50, -0.62 px · giro 0.000° · região até 0.00 px · sobra 0.24 px
+Super resolução: foto 7 · poucos pedaços (0.36 px): só deslocamento pelo centro
+Super resolução: foto 7 · 7/16 pedaços · desloca 0.12, -0.00 px · giro 0.000° · região até 0.00 px · sobra 0.36 px
+Super resolução: foto 8 · poucos pedaços (0.27 px): só deslocamento pelo centro
+Super resolução: foto 8 · 7/16 pedaços · desloca -0.84, -0.60 px · giro 0.000° · região até 0.00 px · sobra 0.27 px
+Alinhamento: 34667 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.0 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0037
+Noite: preto em 0.0114 (chão 0.0126)
+Tons locais: luz média -5.01 EV · força 0.14
+Empilhamento + revelação: 48841 ms · memória livre 0 MB
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 4072×3064 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.28 px): só deslocamento pelo centro
+Super resolução: foto 2 · 7/16 pedaços · desloca -0.81, -0.61 px · giro 0.000° · região até 0.00 px · sobra 0.28 px
+Super resolução: foto 3 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 3 · 7/16 pedaços · desloca -1.36, 0.00 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 4 · poucos pedaços (0.22 px): só deslocamento pelo centro
+Super resolução: foto 4 · 7/16 pedaços · desloca -0.00, -0.63 px · giro 0.000° · região até 0.00 px · sobra 0.22 px
+Super resolução: foto 5 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 5 · 7/16 pedaços · desloca -0.57, -0.01 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 6 · poucos pedaços (0.24 px): só deslocamento pelo centro
+Super resolução: foto 6 · 7/16 pedaços · desloca -1.50, -0.62 px · giro 0.000° · região até 0.00 px · sobra 0.24 px
+Super resolução: foto 7 · poucos pedaços (0.36 px): só deslocamento pelo centro
+Super resolução: foto 7 · 7/16 pedaços · desloca 0.12, -0.00 px · giro 0.000° · região até 0.00 px · sobra 0.36 px
+Super resolução: foto 8 · poucos pedaços (0.27 px): só deslocamento pelo centro
+Super resolução: foto 8 · 7/16 pedaços · desloca -0.84, -0.60 px · giro 0.000° · região até 0.00 px · sobra 0.27 px
+Alinhamento: 28943 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.0 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0037
+Noite: preto em 0.0114 (chão 0.0126)
+Tons locais: luz média -5.01 EV · força 0.14
+Empilhamento + revelação: 43409 ms · memória livre 0 MB
+Noite: referência é a foto 7 (a mais nítida)
+Empilhando 8 quadros (média) · 4072×3064 · memória livre 0 MB
+Super resolução: foto 2 · poucos pedaços (0.28 px): só deslocamento pelo centro
+Super resolução: foto 2 · 7/16 pedaços · desloca -0.81, -0.61 px · giro 0.000° · região até 0.00 px · sobra 0.28 px
+Super resolução: foto 3 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 3 · 7/16 pedaços · desloca -1.36, 0.00 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 4 · poucos pedaços (0.22 px): só deslocamento pelo centro
+Super resolução: foto 4 · 7/16 pedaços · desloca -0.00, -0.63 px · giro 0.000° · região até 0.00 px · sobra 0.22 px
+Super resolução: foto 5 · poucos pedaços (0.18 px): só deslocamento pelo centro
+Super resolução: foto 5 · 7/16 pedaços · desloca -0.57, -0.01 px · giro 0.000° · região até 0.00 px · sobra 0.18 px
+Super resolução: foto 6 · poucos pedaços (0.24 px): só deslocamento pelo centro
+Super resolução: foto 6 · 7/16 pedaços · desloca -1.50, -0.62 px · giro 0.000° · região até 0.00 px · sobra 0.24 px
+Super resolução: foto 7 · poucos pedaços (0.36 px): só deslocamento pelo centro
+Super resolução: foto 7 · 7/16 pedaços · desloca 0.12, -0.00 px · giro 0.000° · região até 0.00 px · sobra 0.36 px
+Super resolução: foto 8 · poucos pedaços (0.27 px): só deslocamento pelo centro
+Super resolução: foto 8 · 7/16 pedaços · desloca -0.84, -0.60 px · giro 0.000° · região até 0.00 px · sobra 0.27 px
+Alinhamento: 36635 ms
+Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre 0 MB
+Noite: ISO 3200 · redução de ruído 0.67
+Noite: luz média -8.0 EV · clareia 3.5 paradas
+Noite: ruído medido 0.0037
+Noite: preto em 0.0114 (chão 0.0126)
+Tons locais: luz média -5.01 EV · força 0.14
+Empilhamento + revelação: 54345 ms · memória livre 0 MB
+pixel8pro noite empilhada: 55185 ms
+Tons locais: luz média -3.34 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+Noite: estrela de 6 pontas (como o iPhone 18 em f/2.8–f/4)
+Noite: estrela de 18 pontas (como o iPhone 18 em f/1.8)
+Tons locais: luz média -2.03 EV · força 0.15
+Tons locais: ajuste de luz -0.15 EV
+HDR: 3 quadros (-2 +0 +2 EV) · 1512×2016
+Quadro deslocado -0, -0 px
+Quadro deslocado 0, -0 px
+Tons locais: luz média -2.02 EV · força 0.38
+HDR revelado: 2472 ms
+iphone12pro HDR: 2606 ms
+Tons locais: luz média -2.03 EV · força 0.15
+Tons locais: ajuste de luz -0.15 EV
+HDR: 3 quadros (-2 +0 +2 EV) · 1512×2016
+Quadro deslocado -0, -0 px
+Quadro deslocado 0, -0 px
+Tons locais: luz média -2.02 EV · força 0.38
+HDR revelado: 2020 ms
+Tons locais: luz média -3.35 EV · força 0.15
+Tons locais: ajuste de luz +0.05 EV
+HDR: 3 quadros (-2 +0 +2 EV) · 2016×1512
+Quadro deslocado 0, 0 px
+Quadro deslocado -0, -0 px
+Tons locais: luz média -3.34 EV · força 0.38
+HDR revelado: 2713 ms
+iphonexs HDR: 2894 ms
+Tons locais: luz média -3.38 EV · força 0.15
+Tons locais: ajuste de luz +0.06 EV
+HDR: 3 quadros (-2 +0 +2 EV) · 2016×1512
+Quadro deslocado 0, 0 px
+Quadro deslocado -0, -0 px
+Tons locais: luz média -3.37 EV · força 0.38
+HDR revelado: 3638 ms
+Tons locais: luz média -2.82 EV · força 0.15
+Tons locais: ajuste de luz -0.03 EV
+HDR: 3 quadros (-2 +0 +2 EV) · 4072×3064
+Quadro deslocado -0, 0 px
+Quadro deslocado 0, -0 px
+Tons locais: luz média -2.80 EV · força 0.38
+HDR revelado: 7838 ms
+pixel8pro HDR: 8275 ms
+Tons locais: luz média -2.82 EV · força 0.15
+Tons locais: ajuste de luz -0.03 EV
+HDR: 3 quadros (-2 +0 +2 EV) · 4072×3064
+Quadro deslocado -0, 0 px
+Quadro deslocado 0, -0 px
+Tons locais: luz média -2.80 EV · força 0.38
+HDR revelado: 13178 ms
