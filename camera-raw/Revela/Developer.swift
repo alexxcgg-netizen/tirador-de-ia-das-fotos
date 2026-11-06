@@ -1121,14 +1121,12 @@ enum Developer {
                 dlog(String(format: "Homografia exagerada (%.0f px); usando só translação", maxShift))
             }
         }
-        let request = VNTranslationalImageRegistrationRequest(targetedCIImage: small, options: [:])
-        guard (try? handler.perform([request])) != nil,
-              let observation = request.results?.first as? VNImageTranslationAlignmentObservation else {
-            dlog("Alinhamento falhou num quadro (usado sem alinhar)")
+        // Translação pela nossa busca (o Vision errava feio com a mão de verdade: andou 5 px, ele disse 28)
+        guard let shift = coarseShift(ref: reference, img: small, scale: scale) else {
+            dlog("Alinhamento: imagem lisa demais para medir (quadro usado sem deslocar)")
             return { $0 }
         }
-        let t = observation.alignmentTransform
-        let tx = t.tx / scale, ty = t.ty / scale
+        let tx = shift.x, ty = shift.y
         // No escuro o Vision às vezes "acha" um pulo de metade da foto: isso é erro, a mão não anda tanto
         if abs(tx) > fullExtent.width * 0.08 || abs(ty) > fullExtent.height * 0.08 {
             dlog(String(format: "Alinhamento absurdo (%.0f, %.0f px): quadro usado sem deslocar", tx, ty))

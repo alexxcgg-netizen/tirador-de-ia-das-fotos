@@ -90,3 +90,6 @@ laboratório: o que aparecer lá entra no topo da fila.
 - No mesmo relatório: alinhamento no aparelho com "0/9 pedaços" na maioria das fotos (NOITE e SUPER ZOOM) e saltos de
   50–70 px — já acontecia na 0.22. O laboratório só testava deslocamentos de 1–3 px. Meta nova: deslocamentos de mão
   de verdade (10–26 px).
+- Teste novo reproduziu o aparelho: com 12 e 18 px acerta (9/9, erro 0,1 px), mas o grosso do Vision chuta errado
+  (andou 5 px, disse 28; andou 26, disse 48) e a busca fina não acha nada. Trocado por busca nossa no centro da
+  versão em ¼ (±96 px) — também no HDR e na foto curta da NOITE.

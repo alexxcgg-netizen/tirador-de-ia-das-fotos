@@ -256,7 +256,6 @@ extension Developer {
         var result = [Alignment?](repeating: nil, count: frames.count)
         result[refIndex] = Alignment(transform: .identity, residuals: [CGPoint](repeating: .zero, count: 9))
         guard let smallRef = image(from: frames[refIndex], scale: Float(alignScale)) else { return result }
-        let refHandler = VNImageRequestHandler(ciImage: smallRef, options: [:])
 
         let half = CGFloat(patch / 2)
         // Os 9 pedaços saem numa leitura só (um RAW aberto uma vez, em vez de nove)
@@ -267,13 +266,10 @@ extension Developer {
         for i in frames.indices where i != refIndex {
             autoreleasepool {
                 guard let img = image(from: frames[i]), let small = image(from: frames[i], scale: Float(alignScale)) else { return }
-                var coarse = CGPoint.zero
-                let request = VNTranslationalImageRegistrationRequest(targetedCIImage: small, options: [:])
-                if (try? refHandler.perform([request])) != nil,
-                   let observation = request.results?.first as? VNImageTranslationAlignmentObservation {
-                    coarse = CGPoint(x: (observation.alignmentTransform.tx / alignScale).rounded(),
-                                     y: (observation.alignmentTransform.ty / alignScale).rounded())
-                }
+                // Grosso: busca nossa no centro da versão em ¼ (até ±96 px). O Vision errava feio com a mão de verdade
+                // (laboratório: andou 5 px, ele disse 28; andou 26, disse 48) e aí a busca fina não achava nada ("0/9")
+                // Se o centro for liso demais para medir, parte do zero (o chute do Vision era pior que nada)
+                var coarse = coarseShift(ref: smallRef, img: small, scale: alignScale) ?? .zero
                 // No escuro o Vision às vezes "acha" um pulo enorme: a mão não anda tanto
                 let e = reference.extent
                 if abs(coarse.x) > e.width * 0.08 || abs(coarse.y) > e.height * 0.08 { coarse = .zero }
@@ -307,6 +303,21 @@ extension Developer {
             }
         }
         return result
+    }
+
+    /// Deslocamento grosso entre duas versões pequenas (escala `scale`): um pedaço grande do centro, busca de ±24 px
+    /// (±96 px na foto cheia), com a fração de pixel. Mesmo sentido do grosso do Vision (o que soma em c − grosso).
+    static func coarseShift(ref: CIImage, img: CIImage, scale: CGFloat) -> CGPoint? {
+        let e = ref.extent
+        let n = min(256, Int(min(e.width, e.height) * 0.6) / 2 * 2)
+        let s = 24
+        guard n >= 64 else { return nil }
+        let rect = CGRect(x: (e.midX - CGFloat(n) / 2).rounded(), y: (e.midY - CGFloat(n) / 2).rounded(), width: CGFloat(n), height: CGFloat(n))
+        guard let refPatch = grayPatches(ref, rects: [rect]).first ?? nil,
+              let imgPatch = grayPatches(img, rects: [rect.insetBy(dx: -CGFloat(s), dy: -CGFloat(s))]).first ?? nil,
+              let shift = subpixelShift(ref: refPatch, img: imgPatch, size: n, search: s) else { return nil }
+        // Na foto o ponto c da referência está em c + (u, −v): o grosso é o contrário, na escala cheia
+        return CGPoint(x: (-shift.x / scale).rounded(), y: (shift.y / scale).rounded())
     }
 
     /// Luminância (raiz, para o escuro pesar parecido com o claro) de vários pedaços, linha 0 em cima.
