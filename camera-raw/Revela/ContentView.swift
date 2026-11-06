@@ -30,6 +30,7 @@ struct ContentView: View {
     @State private var anthropicKey = ""
     @ObservedObject private var critic = PhotoCritic.shared
     @State private var originalsSize = "…"
+    @State private var labSize = "…"
     @State private var showReport = false
     @State private var showGuide = false
     @State private var pressingShutter = false
@@ -993,6 +994,20 @@ struct ContentView: View {
                                 .font(.footnote).foregroundStyle(.secondary)
                         }
                         if !sync.status.isEmpty { Text(sync.status).font(.footnote).foregroundStyle(.secondary) }
+                    }
+
+                    settingsSection("Laboratório do Claude") {
+                        Toggle("Guardar para o laboratório", isOn: $camera.labCapture)
+                        Text("Cada disparo guarda também todas as fotos cruas da sequência (NOITE, SUPER ZOOM, HDR…) em Arquivos → No meu iPhone → Revela → laboratorio · \(labSize). Mande a pasta para o Google Drive e o Claude testa a revelação nas suas fotos de verdade, sem você fotografar de novo. Uma NOITE ocupa uns 200–400 MB: deixe ligado só para testar.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                        Button("Apagar o laboratório", role: .destructive) {
+                            LabCapture.clear()
+                            labSize = "0 MB"
+                        }
+                    }
+                    .task {
+                        let bytes = await Task.detached { LabCapture.totalBytes() }.value
+                        labSize = String(format: "%.0f MB", Double(bytes) / 1_048_576)
                     }
 
                     settingsSection("Claude analisa as fotos") {

@@ -93,3 +93,9 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Teste novo reproduziu o aparelho: com 12 e 18 px acerta (9/9, erro 0,1 px), mas o grosso do Vision chuta errado
   (andou 5 px, disse 28; andou 26, disse 48) e a busca fina não acha nada. Trocado por busca nossa no centro da
   versão em ¼ (±96 px) — também no HDR e na foto curta da NOITE.
+- Laboratório: alinhamento de dia 0,28 px (OK); no escuro 1,1 px (só 1/9 pedaços passam o ruído) → com menos de 3
+  pedaços vale o pedaço grande do centro com fração de pixel (em teste).
+- **0.27 — ciclo mais rápido com o Alex:** (1) "Guardar para o laboratório" salva todas as fotos cruas de cada
+  disparo em Arquivos/Revela/laboratorio (ele manda pelo Google Drive; nunca no GitHub público); (2) calibragem
+  remota: calibragem.json no ramo revela-sync muda tom, NOITE, estrela e SUPER ZOOM sem reinstalar (chaves em
+  Revela/Calibration.swift; {"padrao": true} volta ao normal).

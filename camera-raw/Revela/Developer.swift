@@ -31,6 +31,30 @@ struct ToneTuning {
     var hueKeep: Float = 0.5
 }
 
+/// Calibragem da NOITE (pode vir do Claude pela ponte, sem reinstalar).
+struct NightTuning {
+    /// Luz média que a noite busca (log2): mais alto = noite mais clara.
+    var liftTarget: Float = -3.95
+    /// Quanto no máximo clareia (paradas).
+    var liftMax: Float = 3
+    /// Quanto do "chão" de luz vira preto, e o máximo.
+    var blackFactor: Float = 0.9
+    var blackCap: Float = 0.06
+    /// Força dos tons locais na noite (1 = não mexe; menor = sombras sobem mais).
+    var shadowStrength: Float = 0.86
+}
+
+/// Calibragem da estrela nas luzes (pode vir do Claude pela ponte).
+struct StarTuning {
+    /// Multiplicam o comprimento dos raios, a força, o halo e a largura.
+    var length: Float = 1
+    var strength: Float = 1
+    var glow: Float = 1
+    var width: Float = 1
+    /// Reforço da estrela no sol estourado (de dia).
+    var dayBoost: Float = 26
+}
+
 /// Só para achar o pacote onde está o metallib.
 private final class BundleToken {}
 
@@ -552,6 +576,8 @@ struct DevelopOptions {
 /// Revela o DNG com a nossa própria curva, sem o processamento de "aparência" da Apple.
 enum Developer {
     static var tuning = ToneTuning()
+    static var nightTuning = NightTuning()
+    static var starTuning = StarTuning()
 
     struct Output {
         let heic: Data
@@ -1157,7 +1183,7 @@ enum Developer {
         // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
         let floor = darkFloor(out)
         // Até 0,06 (era 0,03: no laboratório o chão chegava a 0,044 e o preto ficava cinza)
-        let blackPoint = max(0.0035, min(0.06, floor * 0.9))
+        let blackPoint = max(0.0035, min(nightTuning.blackCap, floor * nightTuning.blackFactor))
         dlog(String(format: "Noite: preto em %.4f (chão %.4f)", blackPoint, floor))
         out = out.applyingFilter("CIColorMatrix", parameters: [
             "inputRVector": CIVector(x: CGFloat(1 + blackPoint * 2), y: 0, z: 0, w: 0),
@@ -1167,7 +1193,7 @@ enum Developer {
             "inputBiasVector": CIVector(x: CGFloat(-blackPoint), y: CGFloat(-blackPoint), z: CGFloat(-blackPoint), w: 0),
         ]).cropped(to: extent)
         // As sombras sobem pouco
-        out = localTone(out, strength: 0.86)
+        out = localTone(out, strength: nightTuning.shadowStrength)
         if starPoints > 0 { out = starBurst(out, points: starPoints, threshold: 1.5 * exp2(lift)) }
         return out
     }
@@ -1211,7 +1237,7 @@ enum Developer {
                        format: .RGBAf, colorSpace: nil)
         guard pixel[0].isFinite else { return 0 }
         // −3,95 EV (era −4,2): no laboratório a noite saía com luz média 0,16–0,18; o Night Sight fica um pouco mais claro
-        let lift = min(3, max(0, -3.95 - pixel[0]))
+        let lift = min(nightTuning.liftMax, max(0, nightTuning.liftTarget - pixel[0]))
         dlog(String(format: "Noite: luz média %.1f EV · clareia %.1f paradas", pixel[0], lift))
         return lift
     }
@@ -1239,7 +1265,7 @@ enum Developer {
         let white = max(pixel[0], max(pixel[1], pixel[2]))
         // Sem nada estourado (nem sol nem lâmpada): sem estrela
         guard white.isFinite, white > 0.6 else { return scene }
-        return starBurst(scene, points: points, threshold: white * 0.82 / 1.3, compactOnly: true, boost: 26)
+        return starBurst(scene, points: points, threshold: white * 0.82 / 1.3, compactOnly: true, boost: starTuning.dayBoost)
     }
 
     static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5,
@@ -1265,7 +1291,7 @@ enum Developer {
             let maxed = soft.applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: r])
             let area = Float(CGFloat.pi * r * r * 0.15)
             // Largura do raio: no iPhone 18 em f/4 o raio é suave e largo (~0,5% da foto); em f/1.8, fino
-            let width: Double = points > 8 ? 1.0 : 2.0
+            let width: Double = (points > 8 ? 1.0 : 2.0) * Double(starTuning.width)
             small = (peakKernel.apply(extent: smallRect, arguments: [soft, maxed, area]) ?? small)
                 .applyingGaussianBlur(sigma: width).clampedToExtent()
         }
@@ -1274,8 +1300,8 @@ enum Developer {
         let directions = points / 2
         // Comprimentos dobrando e pesos caindo pela metade: o brilho ao longo do raio cai ~1/r², como na difração
         // Os raios do iPhone 18 vão longe, cada vez mais transparentes: comprimentos dobrando, peso caindo 40%
-        let base: CGFloat = many ? 0.007 : 0.009
-        let fade: Float = many ? 0.2 : 0.8
+        let base: CGFloat = (many ? 0.007 : 0.009) * CGFloat(starTuning.length)
+        let fade: Float = (many ? 0.2 : 0.8) * starTuning.strength
         var layers: [(length: CGFloat, weight: Float, warm: Bool)] = []
         var weight: Float = 0.5 * fade
         // De dia (sol) um quinto comprimento: no iPhone 18 os raios do sol chegam a ~14% da foto
@@ -1307,7 +1333,7 @@ enum Developer {
         ])
         // Brilho suave em volta da luz (a lente nunca é perfeita)
         // Brilho em volta da luz: largo e suave (no iPhone 18 o sol tem um halo grande e claro)
-        let glow = scaled(small.applyingGaussianBlur(sigma: Double(side * 0.03)).cropped(to: smallRect), by: compactOnly ? 1.4 : 0.5)
+        let glow = scaled(small.applyingGaussianBlur(sigma: Double(side * 0.03)).cropped(to: smallRect), by: (compactOnly ? 1.4 : 0.5) * starTuning.glow)
             .applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey:
                 scaled(small.applyingGaussianBlur(sigma: Double(side * 0.008)).cropped(to: smallRect), by: 0.3)])
         let rays = warmed.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: neutral])

@@ -587,6 +587,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var readoutISO: Float = 0
     var readoutShutter: Double = 0
     var readoutLensPosition: Float = 0
+    /// Guarda as fotos cruas de cada disparo (todas da sequência) no app Arquivos, para o laboratório do Claude.
+    @Published var labCapture = UserDefaults.standard.bool(forKey: "labCapture") {
+        didSet { defaults.set(labCapture, forKey: "labCapture") }
+    }
     @Published var processing = 0 {
         // Revelar de novo pediu para a câmera descansar enquanto a foto ainda saía: descansa agora
         didSet { if processing == 0, oldValue > 0, pauseWanted { pauseSession() } }
@@ -701,6 +705,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     override init() {
         super.init()
         Diagnostics.shared.startMonitoring()
+        // A calibragem que o Claude mandou pela ponte continua valendo depois de fechar o app
+        Calibration.loadSaved()
         // O teste de modos estava no meio quando o app fechou: anota em qual modo
         if let stuck = defaults.string(forKey: "selfTestCurrent") {
             dlog("💥 Teste de modos: o app fechou no modo \(stuck)")
@@ -2850,6 +2856,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         case .failure(let error):
             done(.failure(error))
         case .success(let frames):
+            // Laboratório: as fotos cruas da sequência vão para o app Arquivos, para o Claude testar em cima delas
+            if labCapture { LabCapture.save(frames, mode: mode.rawValue, options: options) }
             // Uma revelação pesada por vez: na rajada as fotos entram numa fila em vez de lotar a memória.
             // A foto simples e leve vai por outra fila e sai na frente
             let light = frames.count == 1 && (frames.first?.data.count ?? .max) < 40_000_000 && mode.stackKind == nil

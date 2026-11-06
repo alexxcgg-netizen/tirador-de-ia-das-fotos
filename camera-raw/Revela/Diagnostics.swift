@@ -117,6 +117,7 @@ final class Diagnostics: NSObject, MXMetricManagerSubscriber {
             for (key, value) in self.stats.sorted(by: { $0.key < $1.key }) { out += "- \(key): \(value)\n" }
             out += "\n## Câmera\n\(camera)\n"
             // O que o Claude (Opus 5.5) viu nas últimas fotos, se a análise foi feita
+            out += "## Calibragem da revelação\n\(Calibration.summary)\n\n"
             if let analysis = PhotoCritic.lastAnalysis {
                 out += "## Análise das fotos pelo Claude (Opus 5.5)\n\(analysis)\n\n"
             }

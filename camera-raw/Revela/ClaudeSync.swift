@@ -119,6 +119,19 @@ final class ClaudeSync: ObservableObject {
                 camera?.applyRemoteSettings(settings)
             }
         }
+        // Calibragem da revelação (tom, NOITE, estrela, SUPER ZOOM): vale na hora, sem versão nova
+        if let data = await fetchIfChanged("calibragem.json"),
+           let d = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] {
+            let fingerprint = shas["calibragem.json"] ?? ""
+            if !fingerprint.isEmpty, fingerprint != defaults.string(forKey: "calibragemAplicada") {
+                defaults.set(fingerprint, forKey: "calibragemAplicada")
+                let applied = Calibration.apply(d)
+                dlog("Claude: calibragem nova (\(applied.isEmpty ? "padrão" : applied.joined(separator: ", ")))")
+                camera?.message = applied.isEmpty
+                    ? "O Claude voltou a revelação ao padrão."
+                    : "O Claude ajustou a revelação (\(applied.count) valor(es)). Abra a última foto em Revelar de novo para ver."
+            }
+        }
         if let data = await fetchIfChanged("recado.json"),
            let recado = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
            let id = recado["id"] as? String, !id.isEmpty, id != defaults.string(forKey: "ultimoRecado"),
