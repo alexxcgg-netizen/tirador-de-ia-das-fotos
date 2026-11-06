@@ -82,3 +82,7 @@ laboratório: o que aparecer lá entra no topo da fila.
   núcleo 0,75: pior (+1,2). Rodada de confirmação antes da versão final.
 - Rodada 22b8d65 (confirmação): **33/33 metas**. SUPER ZOOM +1,85/+2,67/+1,84 dB. → **Versão final 0.26.**
   Próximas melhorias quando houver fotos reais do Alex: relatório + análise do Claude Opus 5.5 no app.
+- **Primeiro relatório real da 0.26 (iPhone 17 Pro Max):** NOITE morria logo depois de "Empilhando 8 quadros"
+  (sem travamento registrado = o iOS matou por memória). A junção em duas faixas guardava ~15 imagens de 12 MP
+  (~1,5 GB). Refeita: liso em ¼, comparação em ½, só o detalhe no tamanho cheio (~4× menos memória). O simulador
+  não tem esse limite — nova regra: toda mudança de memória é conferida pela conta de buffers, não só pelo laboratório.

@@ -1380,32 +1380,54 @@ enum Developer {
     private static func twoBandMerge(count: Int, extent: CGRect, reference: CIImage, frame: (Int) -> CIImage?) -> CIImage? {
         guard let robustColorKernel, let robustWeightKernel, let highColorKernel, let subKernel, let divideAddKernel else { return nil }
         let k: Float = 0.1
-        func low(_ image: CIImage) -> CIImage {
-            image.clampedToExtent().applyingGaussianBlur(sigma: 6).cropped(to: extent)
+        // Memória: só o detalhe fica no tamanho cheio. A parte lisa (borrão de 6 px) vive em ¼ do tamanho e a
+        // comparação de movimento (borrão de 2,5 px) em ½ — já são borradas, não perdem nada. Antes eram ~15 imagens
+        // de 12 MP ao mesmo tempo (~1,5 GB) e o iOS matava o app no meio da NOITE (relatório da 0.26)
+        let quarter: CGFloat = 0.25, half: CGFloat = 0.5
+        func small(_ s: CGFloat) -> CGRect {
+            CGRect(x: 0, y: 0, width: (extent.width * s).rounded(.down), height: (extent.height * s).rounded(.down))
+        }
+        func shrink(_ image: CIImage, blur: Double, by s: CGFloat) -> CIImage {
+            let r = small(s)
+            let reduced = image.clampedToExtent().applyingGaussianBlur(sigma: blur).cropped(to: extent)
+                .transformed(by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY).concatenating(CGAffineTransform(scaleX: s, y: s)))
+                .cropped(to: r)
+            return materialize(reduced, extent: r)
+        }
+        func grow(_ image: CIImage, by s: CGFloat) -> CIImage {
+            image.clampedToExtent()
+                .transformed(by: CGAffineTransform(scaleX: 1 / s, y: 1 / s).concatenating(CGAffineTransform(translationX: extent.minX, y: extent.minY)))
+                .cropped(to: extent)
         }
         let ref = materialize(reference, extent: extent)
-        let refBlur = materialize(blurred(ref, extent: extent), extent: extent)
-        let refLow = materialize(low(ref), extent: extent)
-        guard let refHigh = subKernel.apply(extent: extent, arguments: [ref, refLow]) else { return nil }
-        let one = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: extent)
-        var lowSum = refLow, lowWeight = one
-        var highSum = materialize(refHigh, extent: extent), highWeight = one
+        let refLow = shrink(ref, blur: 6, by: quarter)
+        let refBlur = shrink(ref, blur: 2.5, by: half)
+        let refBlurUp = grow(refBlur, by: half)
+        guard let refHigh = subKernel.apply(extent: extent, arguments: [ref, grow(refLow, by: quarter)]) else { return nil }
+        var lowSum = refLow
+        var lowWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: small(quarter))
+        var highSum = materialize(refHigh, extent: extent)
+        var highWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: small(half))
         for i in 1..<count {
-            guard let opened = frame(i) else { continue }
-            let image = materialize(opened, extent: extent)
-            let imageBlur = materialize(blurred(image, extent: extent), extent: extent)
-            let imageLow = materialize(low(image), extent: extent)
-            guard let lc = robustColorKernel.apply(extent: extent, arguments: [imageLow, imageLow, refLow, k * 2.5]),
-                  let lw = robustWeightKernel.apply(extent: extent, arguments: [imageLow, refLow, k * 2.5]),
-                  let hc = highColorKernel.apply(extent: extent, arguments: [image, imageLow, imageBlur, refBlur, k]),
-                  let hw = robustWeightKernel.apply(extent: extent, arguments: [imageBlur, refBlur, k]) else { continue }
-            lowSum = materialize(add(lowSum, lc), extent: extent)
-            lowWeight = materialize(add(lowWeight, lw), extent: extent)
-            highSum = materialize(add(highSum, hc), extent: extent)
-            highWeight = materialize(add(highWeight, hw), extent: extent)
+            autoreleasepool {
+                guard let opened = frame(i) else { return }
+                let image = materialize(opened, extent: extent)
+                let imageLow = shrink(image, blur: 6, by: quarter)
+                let imageBlur = shrink(image, blur: 2.5, by: half)
+                guard let lc = robustColorKernel.apply(extent: small(quarter), arguments: [imageLow, imageLow, refLow, k * 2.5]),
+                      let lw = robustWeightKernel.apply(extent: small(quarter), arguments: [imageLow, refLow, k * 2.5]),
+                      let hw = robustWeightKernel.apply(extent: small(half), arguments: [imageBlur, refBlur, k]),
+                      let hc = highColorKernel.apply(extent: extent, arguments: [image, grow(imageLow, by: quarter),
+                                                                                grow(imageBlur, by: half), refBlurUp, k]) else { return }
+                lowSum = materialize(add(lowSum, lc), extent: small(quarter))
+                lowWeight = materialize(add(lowWeight, lw), extent: small(quarter))
+                highWeight = materialize(add(highWeight, hw), extent: small(half))
+                highSum = materialize(add(highSum, hc), extent: extent)
+            }
         }
-        dlog("Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu)")
-        guard let merged = divideAddKernel.apply(extent: extent, arguments: [lowSum, lowWeight, highSum, highWeight]) else { return nil }
+        dlog("Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre \(Diagnostics.freeMemory)")
+        guard let merged = divideAddKernel.apply(extent: extent, arguments: [grow(lowSum, by: quarter), grow(lowWeight, by: quarter),
+                                                                           highSum, grow(highWeight, by: half)]) else { return nil }
         return materialize(merged, extent: extent)
     }
 
