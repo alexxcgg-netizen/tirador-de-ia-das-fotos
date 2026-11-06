@@ -463,12 +463,15 @@ extension Developer {
         let (ref, refVariance) = normalized(rawRef)
         // Pedaço liso (céu, parede) não diz nada sobre o deslocamento
         guard refVariance > 0.0004 else { return nil }
-        let (img, _) = normalized(rawImg)
+        // A foto fica sem normalizar: cada janela testada é normalizada por ela mesma (correlação normalizada de
+        // verdade). Antes a janela inteira (maior) era normalizada de uma vez: com degradê (céu, chão) a mesma imagem
+        // contra ela mesma dava 0,3 px de deslocamento falso em y. Em Python: erro típico 0,30 → 0,005 px
+        let img = rawImg
         let wide = n + 2 * s
 
-        // Diferença entre a referência e a foto deslocada (u, v), olhando 1 de cada `step` pixels
+        // Diferença entre a referência e a janela (u, v) normalizada, olhando 1 de cada `step` pixels
         func ssd(_ u: Int, _ v: Int, step: Int) -> Float {
-            var sum: Float = 0
+            var rm: Float = 0, sm: Float = 0, sm2: Float = 0, sr: Float = 0, sr2: Float = 0, count: Float = 0
             ref.withUnsafeBufferPointer { r in
                 img.withUnsafeBufferPointer { m in
                     var y = 0
@@ -476,15 +479,18 @@ extension Developer {
                         let ro = y * n, io = (y + s + v) * wide + s + u
                         var x = 0
                         while x < n {
-                            let d = r[ro + x] - m[io + x]
-                            sum += d * d
+                            let a = r[ro + x], b = m[io + x]
+                            rm += a * b; sm += b; sm2 += b * b; sr += a; sr2 += a * a
+                            count += 1
                             x += step
                         }
                         y += step
                     }
                 }
             }
-            return sum
+            let mean = sm / count
+            let sd = max((sm2 / count - mean * mean).squareRoot(), 1e-6)
+            return sr2 + count - 2 / sd * (rm - mean * sr)
         }
 
         // 1) Busca larga de 2 em 2 pixels, olhando 1 de cada 2
@@ -544,15 +550,26 @@ extension Developer {
                     return top + (bottom - top) * fy
                 }
                 for _ in 0..<3 {
+                    // A janela da foto normalizada por ela mesma (média e desvio), como a referência
+                    var sm: Float = 0, sm2: Float = 0, count: Float = 0
+                    for y in 2..<(n - 2) {
+                        let py = Float(y + s) + v
+                        for x in 2..<(n - 2) {
+                            let val = sample(Float(x + s) + u, py)
+                            sm += val; sm2 += val * val; count += 1
+                        }
+                    }
+                    let mean = sm / count
+                    let inv = 1 / max((sm2 / count - mean * mean).squareRoot(), 1e-6)
                     var axx: Float = 0, axy: Float = 0, ayy: Float = 0, bx: Float = 0, by: Float = 0
                     // Uma borda de 2 px fica de fora (o gradiente precisa dos vizinhos)
                     for y in 2..<(n - 2) {
                         let py = Float(y + s) + v
                         for x in 2..<(n - 2) {
                             let px = Float(x + s) + u
-                            let gx = (sample(px + 1, py) - sample(px - 1, py)) * 0.5
-                            let gy = (sample(px, py + 1) - sample(px, py - 1)) * 0.5
-                            let e = r[y * n + x] - sample(px, py)
+                            let gx = (sample(px + 1, py) - sample(px - 1, py)) * 0.5 * inv
+                            let gy = (sample(px, py + 1) - sample(px, py - 1)) * 0.5 * inv
+                            let e = r[y * n + x] - (sample(px, py) - mean) * inv
                             axx += gx * gx; axy += gx * gy; ayy += gy * gy
                             bx += gx * e; by += gy * e
                         }
