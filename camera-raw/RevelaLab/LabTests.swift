@@ -498,7 +498,17 @@ final class LabTests: XCTestCase {
                     let angle = atan2(next.1 - prev.1, next.0 - prev.0)
                     // 1 px nas normais (1/8 s; nas NOITEs do Alex as de 1/10 s saíram nítidas), 9 px nas tremidas
                     let length: CGFloat = (i == 3 || i == 7) ? 9 : 1
-                    img = img.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: length / 2, kCIInputAngleKey: angle])
+                    // Borrão de movimento de verdade: média de cópias deslocadas ao longo do caminho (o CIMotionBlur com
+                    // raio pequeno borrava muito mais que 1 px e o teste ficava mais duro que a mão)
+                    let taps = 7
+                    var sum: CIImage?
+                    for t in 0..<taps {
+                        let f = (CGFloat(t) / CGFloat(taps - 1) - 0.5) * length
+                        let moved = Developer.warpCubic(truth, transform: CGAffineTransform(translationX: dx + f * cos(angle), y: dy + f * sin(angle)),
+                                                        residuals: [], grid: CIVector(x: 0, y: 0, z: 1, w: 1), extent: e) ?? img
+                        sum = sum.map { Developer.add($0, moved) } ?? moved
+                    }
+                    if let sum { img = Developer.scaled(sum, by: 1 / Float(taps)).clampedToExtent() }
                 }
                 // Luz de fim de tarde e ruído leve: aqui mede-se a nitidez (alinhamento + fotos tremidas fora); o ruído do
                 // escuro já tem o teste da pilha. No escuro total a medida de borda contava o ruído como "detalhe"

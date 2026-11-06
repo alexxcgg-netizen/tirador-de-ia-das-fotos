@@ -333,17 +333,23 @@ extension Developer {
                     }.sorted()
                     return d[d.count / 2]
                 } ?? .infinity
-                if t == nil || spread > 0.5 {
-                    if let full = centerShift(ref: reference, img: img, search: 6, size: 512, start: precise, ambiguity: 0.97) {
+                // Com menos de 10 dos 16 pedaços (escuro: só os com textura passam) os poucos que sobram podem concordar no
+                // erro (NOITE do Pixel: 7/16, errando 0,9 px juntos por causa do carro que passa): vale o pedaço grande do
+                // centro, maior nas fotos grandes
+                let few = pairs.count < 10
+                if t == nil || spread > 0.5 || few {
+                    let size = min(768, max(512, Int(reference.extent.width / 6) / 16 * 16))
+                    if let full = centerShift(ref: reference, img: img, search: 6, size: size, start: precise, ambiguity: 0.97) {
                         precise = full
                     } else {
                         dlog("Super resolução: foto \(i + 1) · centro na foto cheia não encaixou (fica o grosso)")
                     }
-                    if t != nil { dlog(String(format: "Super resolução: foto %d · pedaços discordam (%.2f px): só deslocamento", i + 1, spread)) }
+                    if t != nil { dlog(String(format: "Super resolução: foto %d · %@ (%.2f px): só deslocamento pelo centro", i + 1,
+                                              few ? "poucos pedaços" : "pedaços discordam", spread)) }
                     t = CGAffineTransform(translationX: precise.x, y: precise.y)
                 }
                 let transform = t ?? CGAffineTransform(translationX: precise.x, y: precise.y)
-                let trusted = spread <= 0.5
+                let trusted = spread <= 0.5 && !few
                 // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu),
                 // levado para os 9 pontos da grade pela média dos pedaços em volta (peso cai com a distância)
                 // Só os pedaços que concordam com a maioria (o que errou feio não vira "região que se mexeu")
