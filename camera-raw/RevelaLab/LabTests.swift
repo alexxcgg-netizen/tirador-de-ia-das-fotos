@@ -237,10 +237,15 @@ final class LabTests: XCTestCase {
             let truth = Developer.materialize(truthRaw.cropped(to: truthRaw.extent.integral), extent: truthRaw.extent.integral)
             let e = truth.extent
             // Deslocamentos fixos (como uma mão tremendo, frações de pixel variadas): cada rodada mede o mesmo
-            let fixed: [(CGFloat, CGFloat)] = [(0, 0), (1.3, -0.7), (-2.1, 1.6), (0.4, 2.7), (-1.6, -2.4),
+            // 24 fotos, como o SUPER ZOOM tira agora (as 10 de sempre + 14 fixas, espalhadas em ±3 px)
+            var fixed: [(CGFloat, CGFloat)] = [(0, 0), (1.3, -0.7), (-2.1, 1.6), (0.4, 2.7), (-1.6, -2.4),
                                                (2.6, 0.9), (-0.8, -1.2), (1.9, 2.2), (-2.7, 0.3), (0.7, -2.9)]
+            for k in 0..<14 {
+                let a = Double(k) * 2.399963, r = 0.6 + 2.3 * (Double(k) + 0.5) / 14
+                fixed.append((CGFloat(r * cos(a)), CGFloat(r * sin(a))))
+            }
             var lows: [CIImage] = []
-            for i in 0..<10 {
+            for i in 0..<fixed.count {
                 let (dx, dy) = fixed[i]
                 // Deslocamento bicúbico: o bilinear borrava cada foto (menos a de referência) antes do "sensor", um
                 // detalhe perdido que nenhuma super resolução recupera (o protótipo em Python desloca sem borrar)
@@ -284,9 +289,10 @@ final class LabTests: XCTestCase {
                                         height: (img.extent.height * CGFloat(scale)).rounded(.down)))
             }
             defer { Developer.decodeOverride = nil }
-            let frames = (0..<10).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            let frames = (0..<fixed.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
             let t0 = CFAbsoluteTimeGetCurrent()
-            let out = Developer.superResolution(frames, options: options(.neutro), keep: 8)
+            // Como o modo SUPER ZOOM: pelo menos 10, e toda foto nítida entra
+            let out = Developer.superResolution(frames, options: options(.neutro), keep: 10)
             dlog("\(name) super resolução: \(Diagnostics.ms(since: t0))")
             let opts = options(.neutro)
             let crop = CGRect(x: e.midX - 300, y: e.midY - 300, width: 600, height: 600)
@@ -319,12 +325,10 @@ final class LabTests: XCTestCase {
             let variants: [(String, Developer.SRTuning)] = [
                 ("nucleo_0_5", .init(splatSigma: 0.5)),
                 ("desconv_mais_forte", .init(deconvScale: 0.55, deconvIterations: 4)),
-                ("todas_10", .init()),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning
-                // "todas_10": as 10 fotos (sem descartar as 2 menos nítidas; no teste nenhuma é tremida)
-                if let heic = Developer.superResolution(frames, options: options(.neutro), keep: label == "todas_10" ? 10 : 8)?.heic,
+                if let heic = Developer.superResolution(frames, options: options(.neutro), keep: 10)?.heic,
                    let sr = CIImage(data: heic) {
                     let se = sr.extent
                     save(sr.cropped(to: CGRect(x: se.midX - 300, y: se.midY - 300, width: 600, height: 600)),

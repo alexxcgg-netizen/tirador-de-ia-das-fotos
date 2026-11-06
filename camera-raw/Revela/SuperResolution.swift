@@ -43,10 +43,21 @@ extension Developer {
         guard allFrames.count >= 2 else { return allFrames.first.flatMap { develop($0, options: options) } }
 
         // As mais nítidas (as tremidas só borrariam a soma); a referência é a mais nítida de todas
-        let allScores = allFrames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
+        // Nitidez no centro de uma versão em ¼ (em ⅛ a foto tremida passava, como na NOITE)
+        let allScores = allFrames.map { frame -> Float in
+            guard let small = image(from: frame, scale: 0.25) else { return 0 }
+            let e = small.extent
+            let side = min(512, e.width, e.height)
+            return sharpnessScore(small.cropped(to: CGRect(x: (e.midX - side / 2).rounded(), y: (e.midY - side / 2).rounded(),
+                                                           width: side, height: side)))
+        }
         var chosen = Array(allFrames.indices)
         if let keep, keep < allFrames.count {
-            chosen = Array(chosen.sorted { allScores[$0] > allScores[$1] }.prefix(max(2, keep))).sorted()
+            // Pelo menos `keep`, e toda foto nítida (≥ 85% da melhor) também entra: mais fotos = mais detalhe
+            // (protótipo com a cena do laboratório: 10 fotos +4,1 dB, 16 +4,7, 24 +5,1). Antes ficavam só as `keep`
+            let best = allScores.max() ?? 0
+            let ranked = chosen.sorted { allScores[$0] > allScores[$1] }
+            chosen = ranked.enumerated().filter { $0.offset < max(2, keep) || allScores[$0.element] >= 0.85 * best }.map(\.element).sorted()
             dlog("Super resolução: usando as \(chosen.count) mais nítidas de \(allFrames.count)")
         }
         let frames = chosen.map { allFrames[$0] }

@@ -124,7 +124,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan,
              .document, .panorama: return 1
         case .superRes: return 8
-        case .superZoom: return 16
+        // 24: com todas as nítidas juntadas, o detalhe sobe com o número de fotos (laboratório: 16 +4,7 dB, 24 +5,1)
+        case .superZoom: return 24
         case .night, .average: return 8
         case .moon: return 5
         case .stars: return 16
