@@ -269,10 +269,11 @@ extension Developer {
                 // Grosso: busca nossa no centro da versão em ¼ (até ±96 px). O Vision errava feio com a mão de verdade
                 // (laboratório: andou 5 px, ele disse 28; andou 26, disse 48) e aí a busca fina não achava nada ("0/9")
                 // Se o centro for liso demais para medir, parte do zero (o chute do Vision era pior que nada)
-                var coarse = coarseShift(ref: smallRef, img: small, scale: alignScale) ?? .zero
+                var precise = coarseShift(ref: smallRef, img: small, scale: alignScale) ?? .zero
+                var coarse = CGPoint(x: precise.x.rounded(), y: precise.y.rounded())
                 // No escuro o Vision às vezes "acha" um pulo enorme: a mão não anda tanto
                 let e = reference.extent
-                if abs(coarse.x) > e.width * 0.08 || abs(coarse.y) > e.height * 0.08 { coarse = .zero }
+                if abs(coarse.x) > e.width * 0.08 || abs(coarse.y) > e.height * 0.08 { coarse = .zero; precise = .zero }
                 // Pares (ponto na foto, ponto na referência) com precisão de fração de pixel
                 var pairs: [(frame: CGPoint, ref: CGPoint)] = []
                 var pairTile: [Int] = []
@@ -288,10 +289,12 @@ extension Developer {
                     pairs.append((CGPoint(x: c.x - coarse.x + shift.x, y: c.y - coarse.y - shift.y), c))
                     pairTile.append(k)
                 }
-                let t = fitSimilarity(pairs) ?? CGAffineTransform(translationX: coarse.x, y: coarse.y)
+                // Com menos de 3 pedaços (escuro com muito ruído), o pedaço grande do centro mede melhor que 1 ou 2 pequenos
+                let fallback = CGAffineTransform(translationX: precise.x, y: precise.y)
+                let t = pairs.count >= 3 ? (fitSimilarity(pairs) ?? fallback) : fallback
                 // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu)
                 var residuals = [CGPoint](repeating: .zero, count: 9)
-                for (n, pair) in pairs.enumerated() {
+                for (n, pair) in pairs.enumerated() where pairs.count >= 3 {
                     let placed = pair.frame.applying(t)
                     let r = CGPoint(x: pair.ref.x - placed.x, y: pair.ref.y - placed.y)
                     if hypot(r.x, r.y) < 1.5 { residuals[pairTile[n]] = r }
@@ -316,8 +319,8 @@ extension Developer {
         guard let refPatch = grayPatches(ref, rects: [rect]).first ?? nil,
               let imgPatch = grayPatches(img, rects: [rect.insetBy(dx: -CGFloat(s), dy: -CGFloat(s))]).first ?? nil,
               let shift = subpixelShift(ref: refPatch, img: imgPatch, size: n, search: s) else { return nil }
-        // Na foto o ponto c da referência está em c + (u, −v): o grosso é o contrário, na escala cheia
-        return CGPoint(x: (-shift.x / scale).rounded(), y: (shift.y / scale).rounded())
+        // Na foto o ponto c da referência está em c + (u, −v): o grosso é o contrário, na escala cheia (com a fração)
+        return CGPoint(x: -shift.x / scale, y: shift.y / scale)
     }
 
     /// Luminância (raiz, para o escuro pesar parecido com o claro) de vários pedaços, linha 0 em cima.
