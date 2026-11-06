@@ -203,6 +203,10 @@ final class LabTests: XCTestCase {
             let blurred = Developer.bokeh(Developer.materialize(lit, extent: e), map: map, radius: e.width * 0.025, extent: e)
             let out = Developer.developed(blurred, options: options(.neutro)).0
             save(out, "retrato/\(name)", maxSide: 1200)
+            // Para o placar: a cena nítida e o mapa (1 = fundo), no mesmo tamanho, para medir o vazamento na borda
+            save(Developer.developed(lit, options: options(.neutro)).0, "retrato/\(name)_0_cena", maxSide: 1200)
+            save(map, "retrato/\(name)_0_mapa", maxSide: 1200)
+            dlog(String(format: "RETRATO %@: raio %.1f px em %.0f px", name, e.width * 0.025, e.width))
             dlog("\(name) retrato: \(Diagnostics.ms(since: t0))")
         }
     }
