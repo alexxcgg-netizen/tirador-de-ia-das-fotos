@@ -262,6 +262,18 @@ final class LabTests: XCTestCase {
                 let noisy = Developer.add(low.cropped(to: le), sensorNoise(le, seed: 400 + i, amplitude: 0.02)).cropped(to: le)
                 lows.append(Developer.materialize(noisy, extent: le))
             }
+            // Fotos de entrada em PNG de 16 bits (luz linear × 0,5), para rodar o protótipo em Python nas mesmas fotos
+            if name.hasPrefix("iphone12") {
+                let lin = CGColorSpace(name: CGColorSpace.linearDisplayP3)!
+                for (i, low) in lows.enumerated() {
+                    let url = outDir.appendingPathComponent("superres_cru/\(name)_\(i).png")
+                    try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                    try? Developer.context.writePNGRepresentation(of: Developer.scaled(low, by: 0.5), to: url, format: .RGBA16, colorSpace: lin)
+                }
+                let url = outDir.appendingPathComponent("superres_cru/\(name)_verdade.png")
+                try? Developer.context.writePNGRepresentation(of: Developer.scaled(truth, by: 0.5), to: url, format: .RGBA16, colorSpace: lin)
+                dlog("SUPER ZOOM cru: deslocamentos " + fixed.map { String(format: "(%.1f, %.1f)", $0.0, $0.1) }.joined(separator: " "))
+            }
             Developer.decodeOverride = { frame, scale in
                 let i = Int(frame.data.first ?? 0)
                 guard lows.indices.contains(i) else { return nil }
