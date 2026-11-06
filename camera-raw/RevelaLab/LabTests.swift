@@ -288,7 +288,15 @@ final class LabTests: XCTestCase {
                 save(back, "superres/\(name)_3_original_heic", maxSide: 600)
             }
             let single = lows[0].applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: 2, kCIInputAspectRatioKey: 1])
-            save(Developer.developed(single, options: opts).0.cropped(to: crop), "superres/\(name)_1_uma_ampliada", maxSide: 600)
+            // A ampliada também passa pelo HEIC (no aparelho as duas seriam HEIC; antes só a super resolução levava a perda)
+            var singleOut = Developer.developed(single, options: opts).0.cropped(to: crop)
+            let flatSingle = singleOut.transformed(by: CGAffineTransform(translationX: -crop.minX, y: -crop.minY))
+            if let heif = Developer.context.heifRepresentation(of: flatSingle, format: .RGBA8, colorSpace: Developer.displayP3,
+                                                               options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.9]),
+               let back = CIImage(data: heif) {
+                singleOut = back
+            }
+            save(singleOut, "superres/\(name)_1_uma_ampliada", maxSide: 600)
             if let heic = out?.heic, let sr = CIImage(data: heic) {
                 let se = sr.extent
                 dlog("\(name) super resolução: \(Int(se.width))×\(Int(se.height)) (original \(Int(e.width))×\(Int(e.height)))")

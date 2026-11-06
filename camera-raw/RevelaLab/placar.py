@@ -174,7 +174,7 @@ def main(root):
             if not all(os.path.exists(real(p(s))) for s in ("0_ideal", "1_uma", "2_juntada")):
                 continue
             ideal, one, fused = load(p("0_ideal")), load(p("1_uma")), load(p("2_juntada"))
-            gain = psnr(fused, ideal) - psnr(one, ideal)
+            gain = psnr(fused, ideal, reach=4) - psnr(one, ideal, reach=4)
             check(f"FOTO 3× {n}", "erro da juntada vs foto única (vs cena sem ruído)", f"{gain:+.2f} dB", gain >= 4.77, "≥ +4,8 dB")
             r = local_noise(fused) / max(local_noise(one), 1e-6)
             check(f"FOTO 3× {n}", "ruído juntada ÷ foto única", f"{r:.2f}", r <= 0.33, "≤ 0,33")
@@ -259,12 +259,12 @@ def main(root):
             if not all(os.path.exists(real(p(s))) for s in ("0_original", "1_uma_ampliada", "2_super")):
                 continue
             t = load(p("0_original"))
-            gain = psnr(load(p("2_super")), t) - psnr(load(p("1_uma_ampliada")), t)
+            gain = psnr(load(p("2_super")), t, reach=4) - psnr(load(p("1_uma_ampliada")), t, reach=4)
             # 3×: um terço do erro (potência) de uma foto ampliada = +4,8 dB
             check(f"SUPER ZOOM {n}", "ganho de PSNR sobre uma ampliada (3×)", f"{gain:+.2f} dB", gain >= 4.77, "≥ +4,8 dB")
             if os.path.exists(real(p("3_original_heic"))):
                 rows.append((f"SUPER ZOOM {n}", "PSNR do HEIC 0,9 sozinho / do SUPER ZOOM (só informação)",
-                             f"{psnr(load(p('3_original_heic')), t):.1f} / {psnr(load(p('2_super')), t):.1f} dB", "", ""))
+                             f"{psnr(load(p('3_original_heic')), t, reach=4):.1f} / {psnr(load(p('2_super')), t, reach=4):.1f} dB", "", ""))
 
     var = os.path.join(root, "superres_var")
     if os.path.isdir(var):
@@ -274,7 +274,7 @@ def main(root):
             if not os.path.exists(real(p("0_original"))):
                 continue
             t = load(p("0_original"))
-            gain = psnr(load(os.path.join(var, fl)), t) - psnr(load(p("1_uma_ampliada")), t)
+            gain = psnr(load(os.path.join(var, fl)), t, reach=4) - psnr(load(p("1_uma_ampliada")), t, reach=4)
             rows.append((f"SUPER ZOOM {n}", f"variação {label} (só informação)", f"{gain:+.2f} dB", "", ""))
 
     # Alinhamento com deslocamentos de mão de verdade: o "desloca" do registro contra o esperado
