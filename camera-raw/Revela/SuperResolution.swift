@@ -16,10 +16,12 @@ extension Developer {
     /// Calibragem da super resolução (o laboratório testa variações; o app usa a padrão).
     struct SRTuning {
         /// Tamanho do núcleo de cada pixel na grade grande (em pixels grandes).
-        var splatSigma: Double = 0.6
+        // 0,45 com 24 fotos (mais amostras pedem núcleo mais estreito; laboratório 86ab1f0: +4,12/+6,09/+4,48 dB contra
+        // +3,44/+5,53/+4,67 com 0,6 e desconvolução 0,45)
+        var splatSigma: Double = 0.45
         /// Borrão da desconvolução final, × o fator de ampliação.
         // 0,45 × fator com 3 passos (laboratório b22822c: +1,85/+2,67/+1,84 dB contra +1,66/+1,98/+1,73 com 0,35 × 2)
-        var deconvScale: Double = 0.45
+        var deconvScale: Double = 0.4
         var deconvIterations = 3
         /// Tolerância do anti-fantasma na junção (maior = aceita mais diferença da referência). O serrilhado diferente
         /// em cada foto é justamente o que a super resolução aproveita: tolerância apertada demais o jogava fora
