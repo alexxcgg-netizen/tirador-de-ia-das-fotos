@@ -8,14 +8,14 @@
     "grade" : true,
     "grao" : 1,
     "intensidade" : 1,
-    "lente" : "4×",
+    "lente" : "1×",
     "look" : "Ektar 100",
     "looksExtras" : [
       "Kodachrome",
       "Tri-X 400"
     ],
     "macroAutomatico" : true,
-    "modo" : "SUPER ZOOM",
+    "modo" : "FOTO",
     "modosEscondidos" : [
 
     ],
@@ -48,8 +48,8 @@
     "visor60" : false
   },
   "aparelho" : "iPhone18,2",
-  "atualizadoEm" : "2026-11-06T00:28:09Z",
-  "instalacaoValeAte" : "12 Nov 2026 at 21:18",
+  "atualizadoEm" : "2026-11-06T02:12:00Z",
+  "instalacaoValeAte" : "12 Nov 2026 at 23:11",
   "ios" : "27.0",
-  "versao" : "0.26 (1)"
+  "versao" : "0.27 (1)"
 }
