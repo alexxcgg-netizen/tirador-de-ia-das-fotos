@@ -652,15 +652,34 @@ enum Developer {
     static let sumKernel = kernel("revelaAdd")
     private static let falseColorKernel = kernel("revelaFalseColor")
 
-    private static let noise = CIFilter.randomGenerator().outputImage!
+    /// Ruído uniforme (0–1) em cada cor, transparência 1, sorteado em memória com semente fixa.
+    /// Antes vinha do CIRandomGenerator, que sorteia também a transparência: os filtros de cor dividem por ela e onde
+    /// ela saía baixa o grão virava um pontinho branco forte (a NOITE da sala do Alex ficou cheia de pontinhos claros).
+    private static func uniformNoise(side n: Int) -> CIImage {
+        var values = [Float](repeating: 1, count: n * n * 4)
+        var seed: UInt64 = 0x5EED_0F_F11A
+        for k in 0..<(n * n) {
+            for c in 0..<3 {
+                seed &+= 0x9E3779B97F4A7C15
+                var z = seed
+                z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+                z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+                z ^= z >> 31
+                values[k * 4 + c] = Float(z >> 40) / Float(1 << 24)
+            }
+        }
+        return CIImage(bitmapData: values.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: n * 16,
+                       size: CGSize(width: n, height: n), format: .RGBAf, colorSpace: nil)
+    }
 
     /// Grão de filme: ruído em três tamanhos somados (0,6, 1,2 e 2,4 px, pesos 1, ½, ¼), como os grãos de prata
     /// de vários tamanhos. Antes era ruído de 1 pixel ampliado, que vira um quadriculado. Feito uma vez (1024 px)
     /// e repetido lado a lado; cada foto pega um pedaço diferente.
     private static let grainTexture: CIImage = {
         let side: CGFloat = 1024, pad: CGFloat = 16
-        let source = noise.cropped(to: CGRect(x: 0, y: 0, width: side + 2 * pad, height: side + 2 * pad))
-        // Desvio do ruído uniforme (0,289) cai com o borrão (≈ 0,28/σ): cada camada volta ao mesmo desvio total
+        let source = uniformNoise(side: Int(side + 2 * pad))
+        // Desvio do ruído uniforme (0,289) cai com o borrão (≈ 0,28/σ): cada camada volta ao mesmo desvio total.
+        // Tudo com transparência 1 (a soma é a nossa, que não mexe nela)
         var sum = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5)).cropped(to: source.extent)
         for (sigma, weight) in [(0.6, 1.0), (1.2, 0.5), (2.4, 0.25)] as [(Double, Double)] {
             let k = CGFloat(weight * 2.08)
@@ -668,9 +687,9 @@ enum Developer {
                 .applyingFilter("CIColorMatrix", parameters: [
                     "inputRVector": CIVector(x: k, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: k, z: 0, w: 0),
                     "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0), "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 0),
-                    "inputBiasVector": CIVector(x: -0.5 * k, y: -0.5 * k, z: -0.5 * k, w: 0),
+                    "inputBiasVector": CIVector(x: -0.5 * k, y: -0.5 * k, z: -0.5 * k, w: 1),
                 ])
-            sum = layer.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: sum]).cropped(to: source.extent)
+            sum = add(sum, layer).cropped(to: source.extent)
         }
         let tile = materialize(sum.cropped(to: CGRect(x: pad, y: pad, width: side, height: side)),
                                extent: CGRect(x: pad, y: pad, width: side, height: side))

@@ -113,12 +113,7 @@ final class LabTests: XCTestCase {
             let e = linear.extent
             let dark = Developer.scaled(linear, by: 1.0 / 16)
             // Ruído de sensor (já reduzido pela soma) e luzes de poste
-            let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!.cropped(to: e)
-                .applyingFilter("CIColorMatrix", parameters: [
-                    "inputRVector": CIVector(x: 0.012, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.012, z: 0, w: 0),
-                    "inputBVector": CIVector(x: 0, y: 0, z: 0.012, w: 0), "inputBiasVector": CIVector(x: -0.006, y: -0.006, z: -0.006, w: 0),
-                ])
-            var night = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: dark]).cropped(to: e)
+            var night = Developer.add(dark.cropped(to: e), sensorNoise(e.integral, seed: 300, amplitude: 0.012)).cropped(to: e)
             for (fx, fy) in [(0.3, 0.6), (0.62, 0.55), (0.8, 0.7)] {
                 let c = CGPoint(x: e.minX + e.width * fx, y: e.minY + e.height * fy)
                 let lamp = CIFilter(name: "CIRadialGradient", parameters: [
@@ -231,13 +226,7 @@ final class LabTests: XCTestCase {
                 let low = box.samplingNearest().transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5))
                 let le = CGRect(x: 0, y: 0, width: (e.width / 2).rounded(.down), height: (e.height / 2).rounded(.down))
                 // Ruído de sensor de foto com pouca luz (desvio ~0,6%)
-                let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
-                    .transformed(by: CGAffineTransform(translationX: CGFloat(i * 97), y: CGFloat(i * 53))).cropped(to: le)
-                    .applyingFilter("CIColorMatrix", parameters: [
-                        "inputRVector": CIVector(x: 0.02, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.02, z: 0, w: 0),
-                        "inputBVector": CIVector(x: 0, y: 0, z: 0.02, w: 0), "inputBiasVector": CIVector(x: -0.01, y: -0.01, z: -0.01, w: 0),
-                    ])
-                let noisy = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: low.cropped(to: le)]).cropped(to: le)
+                let noisy = Developer.add(low.cropped(to: le), sensorNoise(le, seed: 400 + i, amplitude: 0.02)).cropped(to: le)
                 lows.append(Developer.materialize(noisy, extent: le))
             }
             Developer.decodeOverride = { frame, scale in
@@ -300,13 +289,8 @@ final class LabTests: XCTestCase {
                                             width: e.width * 0.12, height: e.height * 0.07))
                     img = car.composited(over: img).cropped(to: e)
                 }
-                let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
-                    .transformed(by: CGAffineTransform(translationX: CGFloat(i * 131), y: CGFloat(i * 71))).cropped(to: e)
-                    .applyingFilter("CIColorMatrix", parameters: [
-                        "inputRVector": CIVector(x: 0.03, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.03, z: 0, w: 0),
-                        "inputBVector": CIVector(x: 0, y: 0, z: 0.03, w: 0), "inputBiasVector": CIVector(x: -0.015, y: -0.015, z: -0.015, w: 0),
-                    ])
-                let noisy = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: img]).cropped(to: e)
+                // Ruído de sensor limpo (o CIRandomGenerator sorteia a transparência e virava pontinhos)
+                let noisy = Developer.add(img, sensorNoise(e, seed: 200 + i)).cropped(to: e)
                 frames.append(Developer.materialize(noisy, extent: e))
             }
             Developer.decodeOverride = { frame, scale in
@@ -324,6 +308,16 @@ final class LabTests: XCTestCase {
             o.originalAspect = true
             let single = Developer.developed(Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0), options: o).0
             save(single, "noite_pilha/\(name)_0_uma_foto", maxSide: 1200)
+            // NOITE com filme em 100% (como a foto da sala do Alex, com Ektar): o grão não pode virar pontinhos
+            let night1 = Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0)
+            for (look, label) in [(Look.neutro, "neutro"), (Look.ektar, "ektar")] {
+                var lo = options(look)
+                lo.originalAspect = true
+                let img = Developer.developed(night1, options: lo).0
+                let ie = img.extent
+                save(img.cropped(to: CGRect(x: ie.midX - 400, y: ie.midY - 300, width: 800, height: 600).integral),
+                     "noite_filme/\(name)_\(label)_100pct", maxSide: 800)
+            }
             let t0 = CFAbsoluteTimeGetCurrent()
             if let out = Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: o), let img = CIImage(data: out.heic) {
                 dlog("\(name) noite empilhada: \(Diagnostics.ms(since: t0))")
@@ -372,13 +366,7 @@ final class LabTests: XCTestCase {
             var frames: [CIImage] = []
             for (i, bias) in [-2, 0, 2].enumerated() {
                 let gain = Float(pow(2.0, Double(bias)))
-                let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
-                    .transformed(by: CGAffineTransform(translationX: CGFloat(i * 211), y: CGFloat(i * 97))).cropped(to: e)
-                    .applyingFilter("CIColorMatrix", parameters: [
-                        "inputRVector": CIVector(x: 0.01, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.01, z: 0, w: 0),
-                        "inputBVector": CIVector(x: 0, y: 0, z: 0.01, w: 0), "inputBiasVector": CIVector(x: -0.005, y: -0.005, z: -0.005, w: 0),
-                    ])
-                let exposed = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: Developer.scaled(scene, by: gain)])
+                let exposed = Developer.add(Developer.scaled(scene, by: gain), sensorNoise(e.integral, seed: 500 + i, amplitude: 0.01))
                     .applyingFilter("CIColorClamp", parameters: ["inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
                                                                  "inputMaxComponents": CIVector(x: 1, y: 1, z: 1, w: 1)])
                     .cropped(to: e)
@@ -415,7 +403,7 @@ final class LabTests: XCTestCase {
     /// Ruído de sensor: uniforme ±0,015 em cada cor, sorteado em memória com semente fixa (o teste dá sempre igual).
     /// O CIRandomGenerator sorteia também a transparência (o filtro de cor divide por ela) e não serve para isso.
     /// Cada semente cai num trecho bem longe da sequência (antes a foto 6 repetia o ruído da 0 andado 2 px).
-    private func sensorNoise(_ e: CGRect, seed index: Int) -> CIImage {
+    private func sensorNoise(_ e: CGRect, seed index: Int, amplitude: Float = 0.03) -> CIImage {
         let w = Int(e.width), h = Int(e.height)
         var seed = UInt64(index + 1) << 40
         var values = [Float](repeating: 1, count: w * h * 4)
@@ -426,7 +414,7 @@ final class LabTests: XCTestCase {
                 z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
                 z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
                 z ^= z >> 31
-                values[k * 4 + c] = (Float(z >> 40) / Float(1 << 24) - 0.5) * 0.03
+                values[k * 4 + c] = (Float(z >> 40) / Float(1 << 24) - 0.5) * amplitude
             }
         }
         return CIImage(bitmapData: values.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: w * 16,

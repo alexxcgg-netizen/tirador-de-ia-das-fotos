@@ -132,6 +132,22 @@ def main(root):
             check(f"NOITE {n}", "preto (p1)", f"{np.percentile(lb, 1):.3f}", np.percentile(lb, 1) <= 0.06, "≤ 0,06")
             check(f"NOITE {n}", "luz média", f"{lb.mean():.2f}", 0.18 <= lb.mean() <= 0.32, "0,18–0,32")
 
+    # Grão do filme na NOITE em 100%: pontinhos claros soltos em área lisa, além dos que o Neutro já tem
+    nf = os.path.join(root, "noite_filme")
+    if os.path.isdir(nf):
+        from scipy import ndimage
+        def specks(path):
+            l = np.asarray(Image.open(path).convert("L")).astype(np.float64) / 255
+            med = ndimage.median_filter(l, 5)
+            tex = ndimage.uniform_filter(np.abs(l - ndimage.gaussian_filter(l, 2)), 9)
+            flat = tex < np.percentile(tex, 40)
+            return float((((l - med) > 0.08) & flat).sum() / l.size * 1e6)
+        for n in sorted({f.split("_")[0] for f in os.listdir(nf)}):
+            a, b = os.path.join(nf, f"{n}_ektar_100pct.jpg"), os.path.join(nf, f"{n}_neutro_100pct.jpg")
+            if os.path.exists(a) and os.path.exists(b):
+                extra = specks(a) - specks(b)
+                check(f"NOITE filme {n}", "pontinhos do grão por MP (Ektar − Neutro)", f"{extra:.0f}", extra <= 50, "≤ 50")
+
     # NOITE na mão (caminho da mão do Alex + borrão + 2 fotos tremidas) contra a mesma cena no tripé
     mao = os.path.join(root, "noite_mao")
     if os.path.exists(os.path.join(mao, "mao_100pct.jpg")) and os.path.exists(os.path.join(mao, "tripe_100pct.jpg")):
