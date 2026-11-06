@@ -26,7 +26,7 @@ final class LabTests: XCTestCase {
     }
 
     /// Pastas medidas em PSNR/ruído fino: PNG (sem perda). O JPEG 0,86 errava ~40 dB sozinho e escondia a melhora
-    private let losslessFolders = ["superres/", "superres_var/", "foto_fusao/", "noite_mao/", "noite_filme/"]
+    private let losslessFolders = ["superres/", "superres_var/", "foto_fusao/", "noite_mao/", "noite_filme/", "hdr/"]
 
     private func save(_ image: CIImage, _ name: String, maxSide: CGFloat = 900) {
         let e = image.extent
