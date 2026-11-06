@@ -241,36 +241,16 @@ def main(root):
                 r = nz(b) / max(nz(a), 1e-6)
             check(f"HDR {n}", "ruído relativo nas sombras HDR ÷ normal (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
 
-    # RETRATO 3×: vazamento da cor do sujeito no fundo, logo acima da borda, ≤ ⅓ do de um desfoque comum
-    rt = os.path.join(root, "retrato")
-    if os.path.isdir(rt):
+    # RETRATO 3×: vazamento do sujeito no fundo logo acima da borda (o laboratório troca o sujeito por magenta e mede o
+    # que muda no fundo), ≤ ⅓ do de um desfoque comum
+    lp = os.path.join(root, "log.txt")
+    if os.path.exists(lp):
         import re
-        radii = {}
-        lp = os.path.join(root, "log.txt")
-        if os.path.exists(lp):
-            for m in re.finditer(r"RETRATO (\w+): raio ([\d.]+) px em (\d+) px", open(lp, encoding="utf-8", errors="ignore").read()):
-                radii[m.group(1)] = (float(m.group(2)), float(m.group(3)))
-        from scipy import ndimage
-        for n in sorted({f.split("_")[0].split(".")[0] for f in os.listdir(rt)}):
-            po, pc, pm = os.path.join(rt, f"{n}.jpg"), os.path.join(rt, f"{n}_0_cena.jpg"), os.path.join(rt, f"{n}_0_mapa.jpg")
-            if not all(os.path.exists(real(x)) for x in (po, pc, pm)) or n not in radii:
-                continue
-            out, cena = load(po), load(pc)
-            w = load(pm)[..., 0]
-            if out.shape != cena.shape or w.shape != out.shape[:2]:
-                continue
-            r = radii[n][0] * out.shape[1] / radii[n][1]
-            lin = cena ** 2.2
-            disk = lambda x: ndimage.uniform_filter(x, size=max(3, int(2 * r) | 1))
-            ideal = (np.stack([disk(lin[..., c] * w) for c in range(3)], -1) / np.maximum(disk(w), 1e-4)[..., None]) ** (1 / 2.2)
-            naive = np.stack([disk(lin[..., c]) for c in range(3)], -1) ** (1 / 2.2)
-            band = (w > 0.98) & (ndimage.uniform_filter((w < 0.5).astype(float), size=int(2 * r) | 1) > 0)
-            if band.sum() < 100:
-                continue
-            e_ours = float(np.abs(out - ideal)[band].mean())
-            e_naive = float(np.abs(naive - ideal)[band].mean())
-            ratio = e_ours / max(e_naive, 1e-6)
-            check(f"RETRATO {n}", "vazamento na borda ÷ desfoque comum (3×)", f"{ratio:.2f}", ratio <= 0.33, "≤ 0,33")
+        for m in re.finditer(r"RETRATO (\w+): vazamento nosso ([\d.]+) · desfoque comum ([\d.]+)",
+                             open(lp, encoding="utf-8", errors="ignore").read()):
+            ours, naive = float(m.group(2)), float(m.group(3))
+            ratio = ours / max(naive, 1e-9)
+            check(f"RETRATO {m.group(1)}", "vazamento na borda ÷ desfoque comum (3×)", f"{ratio:.2f}", ratio <= 0.33, "≤ 0,33")
 
     sr = os.path.join(root, "superres")
     if os.path.isdir(sr):
@@ -291,7 +271,7 @@ def main(root):
         for fl in sorted(os.listdir(var)):
             n, label = fl[:-4].split("_", 1)
             p = lambda s: os.path.join(sr, f"{n}_{s}.jpg")
-            if not os.path.exists(p("0_original")):
+            if not os.path.exists(real(p("0_original"))):
                 continue
             t = load(p("0_original"))
             gain = psnr(load(os.path.join(var, fl)), t) - psnr(load(p("1_uma_ampliada")), t)

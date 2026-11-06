@@ -203,10 +203,27 @@ final class LabTests: XCTestCase {
             let blurred = Developer.bokeh(Developer.materialize(lit, extent: e), map: map, radius: e.width * 0.025, extent: e)
             let out = Developer.developed(blurred, options: options(.neutro)).0
             save(out, "retrato/\(name)", maxSide: 1200)
-            // Para o placar: a cena nítida e o mapa (1 = fundo), no mesmo tamanho, para medir o vazamento na borda
-            save(Developer.developed(lit, options: options(.neutro)).0, "retrato/\(name)_0_cena", maxSide: 1200)
-            save(map, "retrato/\(name)_0_mapa", maxSide: 1200)
-            dlog(String(format: "RETRATO %@: raio %.1f px em %.0f px", name, e.width * 0.025, e.width))
+            // Vazamento: a mesma cena com o sujeito trocado por magenta forte. Tudo que muda no fundo, logo acima da
+            // borda, veio do sujeito. O mesmo com um desfoque comum (borra tudo e mistura pelo mapa) para comparar
+            let radius = e.width * 0.025
+            let magenta = CIImage(color: CIColor(red: 1.5, green: 0, blue: 1.5, colorSpace: Developer.linearP3)!).cropped(to: e)
+            let swapped = lit.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: magenta, kCIInputMaskImageKey: map])
+            let ours2 = Developer.bokeh(Developer.materialize(swapped, extent: e), map: map, radius: radius, extent: e)
+            func naive(_ x: CIImage) -> CIImage {
+                let b = x.clampedToExtent().applyingGaussianBlur(sigma: Double(radius) / 2).cropped(to: e)
+                return b.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: x, kCIInputMaskImageKey: map])
+            }
+            let band = CGRect(x: e.minX, y: e.minY + e.height * 0.5, width: e.width, height: radius * 1.5)
+            func leak(_ a: CIImage, _ b: CIImage) -> Float {
+                let d = a.applyingFilter("CIDifferenceBlendMode", parameters: [kCIInputBackgroundImageKey: b]).cropped(to: band)
+                    .applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: band)])
+                var px = [Float](repeating: 0, count: 4)
+                Developer.context.render(d, toBitmap: &px, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                                         format: .RGBAf, colorSpace: nil)
+                return (px[0] + px[1] + px[2]) / 3
+            }
+            let leakOurs = leak(blurred, ours2), leakNaive = leak(naive(lit), naive(swapped))
+            dlog(String(format: "RETRATO %@: vazamento nosso %.5f · desfoque comum %.5f", name, leakOurs, leakNaive))
             dlog("\(name) retrato: \(Diagnostics.ms(since: t0))")
         }
     }
@@ -225,7 +242,11 @@ final class LabTests: XCTestCase {
             var lows: [CIImage] = []
             for i in 0..<10 {
                 let (dx, dy) = fixed[i]
-                let shifted = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: e)
+                // Deslocamento bicúbico: o bilinear borrava cada foto (menos a de referência) antes do "sensor", um
+                // detalhe perdido que nenhuma super resolução recupera (o protótipo em Python desloca sem borrar)
+                let shifted = (Developer.warpCubic(truth, transform: CGAffineTransform(translationX: dx, y: dy), residuals: [],
+                                                   grid: CIVector(x: 0, y: 0, z: 1, w: 1), extent: e)
+                               ?? truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy))).cropped(to: e)
                 // Como o sensor: cada pixel soma a luz de um quadrado 2×2 (sem filtro antes: tem serrilhado, que é
                 // justamente o que a super resolução recupera)
                 let quarter = { (x: CGFloat, y: CGFloat) in
