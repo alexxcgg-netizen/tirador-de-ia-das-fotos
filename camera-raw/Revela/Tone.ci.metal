@@ -11,11 +11,13 @@ namespace revela {
     }
 
     // HDR: peso de cada pixel de um quadro (evita o estourado e o muito escuro, que tem ruído)
-    inline float hdrWeight(float3 c, float floorWeight) {
+    // boost: peso pela luz que a foto recebeu (exposição²). Com o mesmo peso, a de −2 EV (4× o ruído) sujava a
+    // sombra e o HDR ficava com mais ruído que a foto normal; como no HDR+, a mais clara manda onde não estourou
+    inline float hdrWeight(float3 c, float floorWeight, float boost) {
         float peak = max(c.r, max(c.g, c.b));
         float l = dot(c, kLuma);
         float w = (1.0f - smoothstep(0.75f, 0.97f, peak)) * smoothstep(0.0f, 0.04f, l);
-        return max(w, floorWeight);
+        return max(w * boost, floorWeight);
     }
 
     // Quanto um quadro "bate" com a referência (1 = igual, 0 = algo se mexeu).
@@ -150,28 +152,39 @@ namespace coreimage {
     }
 
     // HDR: cor do quadro trazida para a exposição normal (gain) e multiplicada pelo peso
-    float4 revelaHDRColor(sample_t s, float gain, float floorWeight) {
+    float4 revelaHDRColor(sample_t s, float gain, float floorWeight, float boost) {
         float3 c = max(s.rgb, float3(0.0f));
-        return float4(c * gain * revela::hdrWeight(c, floorWeight), 1.0f);
+        return float4(c * gain * revela::hdrWeight(c, floorWeight, boost), 1.0f);
     }
 
-    float4 revelaHDRWeight(sample_t s, float floorWeight) {
-        float w = revela::hdrWeight(max(s.rgb, float3(0.0f)), floorWeight);
+    float4 revelaHDRWeight(sample_t s, float floorWeight, float boost) {
+        float w = revela::hdrWeight(max(s.rgb, float3(0.0f)), floorWeight, boost);
         return float4(w, w, w, 1.0f);
     }
 
     // HDR sem fantasma: o quadro (já na exposição normal) só conta onde bate com o de referência.
     // Onde a referência estourou não dá para comparar: aí o quadro escuro manda.
-    float4 revelaHDRGhostColor(sample_t s, sample_t sBlur, sample_t refBlur, float gain, float floorWeight, float k) {
+    float4 revelaHDRGhostColor(sample_t s, sample_t sBlur, sample_t refBlur, float gain, float floorWeight, float k, float boost) {
         float3 c = max(s.rgb, float3(0.0f));
         float g = revela::ghost(max(sBlur.rgb, float3(0.0f)) * gain, max(refBlur.rgb, float3(0.0f)), k);
-        return float4(c * gain * revela::hdrWeight(c, floorWeight) * g, 1.0f);
+        return float4(c * gain * revela::hdrWeight(c, floorWeight, boost) * g, 1.0f);
     }
 
-    float4 revelaHDRGhostWeight(sample_t s, sample_t sBlur, sample_t refBlur, float gain, float floorWeight, float k) {
+    float4 revelaHDRGhostWeight(sample_t s, sample_t sBlur, sample_t refBlur, float gain, float floorWeight, float k, float boost) {
         float g = revela::ghost(max(sBlur.rgb, float3(0.0f)) * gain, max(refBlur.rgb, float3(0.0f)), k);
-        float w = revela::hdrWeight(max(s.rgb, float3(0.0f)), floorWeight) * g;
+        float w = revela::hdrWeight(max(s.rgb, float3(0.0f)), floorWeight, boost) * g;
         return float4(w, w, w, 1.0f);
+    }
+
+    // HDR: joelho só nas luzes (cena linear). Abaixo de knee nada muda; acima, a luz chega no máximo a top, sem
+    // estourar, mantendo a cor (escala o RGB todo). Antes o HDR só tirava contraste e ainda clareava 0,15 parada
+    float4 revelaKnee(sample_t s, float knee, float top) {
+        float3 c = max(s.rgb, float3(0.0f));
+        float l = max(c.r, max(c.g, c.b));
+        if (l <= knee) return float4(c, 1.0f);
+        float span = max(top - knee, 1e-4f);
+        float l2 = knee + span * (1.0f - exp(-(l - knee) / span));
+        return float4(c * (l2 / l), 1.0f);
     }
 
     // NOITE sem fantasma: cada quadro conta menos onde difere da referência (algo se mexeu).
@@ -419,10 +432,12 @@ namespace coreimage {
         return float4(clamp(c.rgb, lo, hi), 1.0f);
     }
 
-    float4 revelaShrink(sample_t s, sample_t blur, float threshold) {
+    float4 revelaShrink(sample_t s, sample_t blur, float threshold, float floorT) {
         float3 d = s.rgb - blur.rgb;
         float dl = dot(d, revela::kLuma);
-        float t = threshold * sqrt(max(dot(max(blur.rgb, float3(0.0f)), revela::kLuma), 0.0004f));
+        // Limiar pela luz (ruído de fóton) e nunca abaixo do ruído medido na foto (no escuro manda o ruído eletrônico,
+        // que não cai com a luz: a regra só da raiz deixava o granulado fino nas sombras da NOITE)
+        float t = max(threshold * sqrt(max(dot(max(blur.rgb, float3(0.0f)), revela::kLuma), 0.0004f)), floorT);
         float k = abs(dl) > 1e-6f ? max(abs(dl) - t, 0.0f) / abs(dl) : 0.0f;
         // Um pouco do ruído volta (15%): sem isso vira pintura
         k = mix(0.15f, 1.0f, k);

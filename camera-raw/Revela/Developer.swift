@@ -567,8 +567,8 @@ struct DevelopOptions {
             p.bloom = 0
         }
         if hdrCompress {
+            // Sem clarear (+0,15 parada estourava mais); as luzes agora são seguradas pelo joelho do HDR
             p.contrast *= 0.85
-            p.exposure += 0.15
         }
         return p
     }
@@ -625,6 +625,7 @@ enum Developer {
     static let paperKernel = kernel("revelaPaper")
     private static let hdrGhostColorKernel = kernel("revelaHDRGhostColor")
     private static let hdrGhostWeightKernel = kernel("revelaHDRGhostWeight")
+    private static let kneeKernel = kernel("revelaKnee")
     static let robustColorKernel = kernel("revelaRobustColor")
     static let robustWeightKernel = kernel("revelaRobustWeight")
     private static let logLumaKernel = kernel("revelaLogLuma")
@@ -1280,7 +1281,9 @@ enum Developer {
         // Mais claro = mais ruído aparente: a redução acompanha
         let cleanup = min(1, strength + lift * 0.12)
         out = nightDenoise(out, strength: cleanup)
-        out = despeckle(lumaDenoise(out, strength: cleanup))
+        let noise = measuredNoise(out)
+        dlog(String(format: "Noite: ruído medido %.4f", noise))
+        out = despeckle(lumaDenoise(out, strength: cleanup, noise: noise))
         // Noite com cara de noite: preto de verdade (sem véu cinza). O "chão" de luz que o ruído e o céu
         // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
         let floor = darkFloor(out)
@@ -1448,15 +1451,39 @@ enum Developer {
     }
 
     /// Ruído de brilho em duas faixas (fina e média): tira o chuvisco sem borrar as bordas fortes.
-    static func lumaDenoise(_ scene: CIImage, strength: Float) -> CIImage {
+    static func lumaDenoise(_ scene: CIImage, strength: Float, noise: Float = 0) -> CIImage {
         guard strength > 0.05, let shrinkKernel else { return scene }
         let e = scene.extent
         var out = scene
-        for (sigma, k) in [(1.0, 0.05), (2.5, 0.03)] as [(Double, Float)] {
+        // noise: desvio do ruído medido na foto (no detalhe de 1 px). O limiar de cada escala não fica abaixo dele
+        for (sigma, k, floorK) in [(1.0, 0.05, 1.1), (2.5, 0.03, 0.45)] as [(Double, Float, Float)] {
             let blur = out.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: e)
-            out = shrinkKernel.apply(extent: e, arguments: [out, blur, k * strength]) ?? out
+            out = shrinkKernel.apply(extent: e, arguments: [out, blur, k * strength, noise * floorK * min(strength, 1)]) ?? out
         }
         return out
+    }
+
+    /// Desvio do ruído de brilho medido na foto: mediana do |detalhe de 1 px| no centro (512 px), ÷ 0,6745.
+    /// A mediana não liga para as bordas (são poucos pixels); o que sobra é o granulado
+    static func measuredNoise(_ scene: CIImage) -> Float {
+        let e = scene.extent
+        let side = min(512, e.width, e.height)
+        let rect = CGRect(x: (e.midX - side / 2).rounded(), y: (e.midY - side / 2).rounded(), width: side, height: side)
+        let blur = scene.clampedToExtent().applyingGaussianBlur(sigma: 1).cropped(to: e)
+        guard let subKernel, let detail = subKernel.apply(extent: rect, arguments: [scene, blur]) else { return 0 }
+        let n = Int(side)
+        var pixels = [Float](repeating: 0, count: n * n * 4)
+        context.render(detail.transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY)), toBitmap: &pixels,
+                       rowBytes: n * 16, bounds: CGRect(x: 0, y: 0, width: n, height: n), format: .RGBAf, colorSpace: nil)
+        var values = [Float]()
+        values.reserveCapacity(n * n)
+        for i in stride(from: 0, to: pixels.count, by: 4) {
+            let l = abs(0.2126 * pixels[i] + 0.7152 * pixels[i + 1] + 0.0722 * pixels[i + 2])
+            if l.isFinite { values.append(l) }
+        }
+        guard !values.isEmpty else { return 0 }
+        values.sort()
+        return values[values.count / 2] / 0.6745
     }
 
     /// Ruído da noite: o colorido (o pior) some tirando a cor de uma versão borrada e o brilho da original;
@@ -1652,18 +1679,21 @@ enum Developer {
                                      fullExtent: extent, homography: false)
                 aligned = warp(image).cropped(to: extent)
             }
-            // O mais escuro e o de referência sempre contam um pouco (o escuro é o único com detalhe no estourado)
-            let floor: Float = index == 0 ? 0.01 : (isReference ? 0.02 : 0)
+            // O mais escuro e o de referência sempre contam um pouco (o escuro é o único com detalhe no estourado).
+            // Peso pela luz que a foto recebeu (exposição²: −2 EV 1/16, 0 EV 1, +2 EV 16), como no HDR+. O piso da
+            // referência ficou bem baixo: no estourado quem manda é o escuro
+            let floor: Float = index == 0 ? 0.01 : (isReference ? 0.002 : 0)
+            let boost = Float(pow(4.0, Double(frame.exposureBias)))
             let color: CIImage?, weight: CIImage?
             if !isReference, let hdrGhostColorKernel, let hdrGhostWeightKernel {
                 // Sem fantasma: onde algo se mexeu entre as fotos, fica só o quadro de referência
                 let frameBlur = blurred(aligned, extent: extent)
                 let k: Float = 0.12
-                color = hdrGhostColorKernel.apply(extent: extent, arguments: [aligned, frameBlur, refBlur, gain, floor, k])
-                weight = hdrGhostWeightKernel.apply(extent: extent, arguments: [aligned, frameBlur, refBlur, gain, floor, k])
+                color = hdrGhostColorKernel.apply(extent: extent, arguments: [aligned, frameBlur, refBlur, gain, floor, k, boost])
+                weight = hdrGhostWeightKernel.apply(extent: extent, arguments: [aligned, frameBlur, refBlur, gain, floor, k, boost])
             } else {
-                color = hdrColorKernel.apply(extent: extent, arguments: [aligned, gain, floor])
-                weight = hdrWeightKernel.apply(extent: extent, arguments: [aligned, floor])
+                color = hdrColorKernel.apply(extent: extent, arguments: [aligned, gain, floor, boost])
+                weight = hdrWeightKernel.apply(extent: extent, arguments: [aligned, floor, boost])
             }
             guard let color, let weight else { continue }
             sumColor = materialize(sumColor.map { add($0, color) } ?? color, extent: extent)
@@ -1677,6 +1707,11 @@ enum Developer {
         }
         merged = materialize(merged, extent: extent)
         merged = localTone(merged, strength: 0.62)
+        // Luzes sem estourar: a luz da cena que a curva leva ao branco (zebra) vira o teto; o joelho começa em 55% dele
+        if let kneeKernel {
+            let top = zebraThreshold * 0.97
+            merged = kneeKernel.apply(extent: extent, arguments: [merged, top * 0.55, top]) ?? merged
+        }
         var hdrOptions = options
         hdrOptions.hdrCompress = true
         let output = finish(merged.settingProperties(refImage.properties), options: hdrOptions)

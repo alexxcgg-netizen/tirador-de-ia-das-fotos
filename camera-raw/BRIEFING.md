@@ -36,7 +36,8 @@ Pedido do Alex (06/11): **todos os modos 3× melhores que a câmera da Apple**; 
 | Estrela | comprimento e forma vs iPhone 18 f/4 | raio do sol 10–15% da largura; 6 pontas, uma em pé; halo visível |
 | SUPER ZOOM | PSNR vs original de verdade | ≥ uma foto ampliada + 4,8 dB (⅓ do erro, 3×) |
 | Alinhamento | deslocamentos de mão de verdade (10–26 px), de dia e no escuro com ruído | erro ≤ 0,5 px |
-| HDR | detalhe nas nuvens (p99 não estourado) e sombra | nuvem com textura; p1 ≤ 0,05 |
+| HDR | estourado e ruído nas sombras vs foto normal | ≤ ⅓ dos dois (3× a faixa de luz) |
+| FOTO 3× | 8 fotos juntadas vs foto única, contra a cena sem ruído | +4,8 dB e ⅓ do ruído |
 | RETRATO | vazamento da cor do sujeito no fundo | sem halo na borda do degrau |
 | Velocidade | revelação no aparelho (relatório) | FOTO 12 MP < 1 s, 48 MP < 2 s, NOITE < 5 s, SUPER ZOOM < 7 s |
 | Estabilidade | travamentos no relatório | zero |

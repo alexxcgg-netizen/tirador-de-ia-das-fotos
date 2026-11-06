@@ -145,8 +145,12 @@ def main(root):
                     l = luma(x)
                     im = Image.fromarray((np.clip(l, 0, 1) * 255).astype(np.uint8))
                     bl = np.asarray(im.filter(ImageFilter.GaussianBlur(2))).astype(np.float64) / 255
-                    return float(np.abs(l - bl)[flat].mean() / max(l[flat].mean(), 1e-3))
-                r = noise_on(b) / max(noise_on(a), 1e-6)
+                    return float(np.abs(l - bl)[flat].mean())
+                # Absoluto (dividir pelo brilho punia a pilha: na foto única o próprio ruído clareia o escuro), menos a
+                # textura que a cena sem ruído já tem ali
+                base = noise_on(ideal[..., None].repeat(3, -1))
+                excess = lambda v: max(v * v - base * base, 0) ** 0.5
+                r = excess(noise_on(b)) / max(excess(noise_on(a)), 1e-6)
             else:
                 r = local_noise(b) / max(local_noise(a), 1e-6)
             check(f"NOITE {n}", "ruído 8 fotos ÷ 1 foto (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
@@ -193,6 +197,34 @@ def main(root):
         et, _ = edges(os.path.join(mao, "tripe_100pct.jpg"))
         r = em / max(et, 1e-6)
         check("NOITE na mão", "detalhe na mão ÷ tripé (centro 100%)", f"{r:.2f}", r >= 0.9, "≥ 0,90")
+
+    # HDR 3×: 3× a faixa de luz da foto normal = ⅓ do estourado e ⅓ do ruído (relativo) nas sombras
+    hd = os.path.join(root, "hdr")
+    if os.path.isdir(hd):
+        for n in sorted({f.split("_")[0] for f in os.listdir(hd)}):
+            pa, pb = os.path.join(hd, f"{n}_0_foto_normal.jpg"), os.path.join(hd, f"{n}_1_hdr.jpg")
+            if not (os.path.exists(real(pa)) and os.path.exists(real(pb))):
+                continue
+            a, b = load(pa), load(pb)
+            if a.shape != b.shape:
+                continue
+            ca, cb = (a.max(-1) >= 0.98).mean(), (b.max(-1) >= 0.98).mean()
+            check(f"HDR {n}", "estourado HDR ÷ foto normal (3×)", f"{cb / max(ca, 1e-6):.2f} ({cb * 100:.1f}%)",
+                  cb <= ca / 3 or cb <= 0.001, "≤ 0,33")
+            la = luma(a)
+            im = Image.fromarray((la * 255).astype(np.uint8))
+            tex = np.abs(np.asarray(im.filter(ImageFilter.GaussianBlur(2))).astype(np.float64) / 255
+                         - np.asarray(im.filter(ImageFilter.GaussianBlur(8))).astype(np.float64) / 255)
+            sh = (la > 0.03) & (la < 0.25) & (tex < np.percentile(tex, 50))
+            if sh.mean() < 0.005:
+                continue
+            def nz(x):
+                l = luma(x)
+                i2 = Image.fromarray((np.clip(l, 0, 1) * 255).astype(np.uint8))
+                bl = np.asarray(i2.filter(ImageFilter.GaussianBlur(2))).astype(np.float64) / 255
+                return float(np.abs(l - bl)[sh].mean() / max(l[sh].mean(), 1e-3))
+            r = nz(b) / max(nz(a), 1e-6)
+            check(f"HDR {n}", "ruído relativo nas sombras HDR ÷ normal (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
 
     sr = os.path.join(root, "superres")
     if os.path.isdir(sr):
