@@ -87,6 +87,12 @@ tcm-volvo-xc40/
 
 ## Status
 
-Projeto iniciado. Comece preenchendo `hardware/` com as fotos e os part numbers —
-é o que destrava todo o resto (sem saber qual é o MCU, não dá pra escolher as
-ferramentas das fases seguintes).
+**Fase 1 (hardware) — identificação externa concluída.** Módulo fotografado e
+identificado: Volvo **32313196** / Bosch **F01R00DT75** / **TCU-053-19**, controlador
+da dupla embreagem **7DCTH** do T5 híbrido. Ver [`hardware/IDENTIFICACAO.md`](hardware/IDENTIFICACAO.md)
+e a pesquisa em [`docs/pesquisa-F01R00DT75.md`](docs/pesquisa-F01R00DT75.md).
+
+**Pendências que destravam o resto:**
+1. **Código de erro exato do VIDA** na gravação — o dado mais valioso.
+2. **Chipset interno** (MCU/flash/EEPROM) — só visível abrindo a carcaça selada.
+3. Provável necessidade de **clonagem de EEPROM** para o pareamento (ver pesquisa).
