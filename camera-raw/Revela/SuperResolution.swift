@@ -290,30 +290,42 @@ extension Developer {
                     pairs.append((CGPoint(x: c.x - coarse.x + shift.x, y: c.y - coarse.y - shift.y), c))
                     pairTile.append(k)
                 }
-                // Com menos de 3 pedaços (escuro com muito ruído), um pedaço grande do centro mede melhor que 1 ou 2
-                // pequenos. Medido na foto cheia: o grosso em ¼ errava até 0,9 px no laboratório escuro
-                // O teste de "encaixe ambíguo" é para buscas largas: aqui o lugar já é conhecido (±6 px) e no escuro
-                // ele recusava o pedaço bom (o laboratório ficava com o grosso em ¼, erro de 0,5 px)
-                if pairs.count < 3 {
+                // Os pedaços concordam entre si? No escuro cada pedaço pequeno erra mais de 1 px e o ajuste "inventava"
+                // giro (laboratório com ruído limpo: 0,07°, que nas bordas vira 3,4 px). Então: com menos de 3 pedaços,
+                // ou com eles discordando (sobra típica acima de 0,5 px), vale o pedaço grande do centro na foto cheia,
+                // só deslocamento. O teste de "encaixe ambíguo" fica brando: o lugar já é conhecido (±6 px)
+                var t = pairs.count >= 3 ? fitSimilarity(pairs) : nil
+                // Sobra típica (a do meio: um pedaço com algo se mexendo não conta)
+                let spread: CGFloat = t.map { fit in
+                    let d = pairs.map { p -> CGFloat in
+                        let m = p.frame.applying(fit)
+                        return hypot(m.x - p.ref.x, m.y - p.ref.y)
+                    }.sorted()
+                    return d[d.count / 2]
+                } ?? .infinity
+                if t == nil || spread > 0.5 {
                     if let full = centerShift(ref: reference, img: img, search: 6, size: 512, start: precise, ambiguity: 0.97) {
                         precise = full
                     } else {
                         dlog("Super resolução: foto \(i + 1) · centro na foto cheia não encaixou (fica o grosso)")
                     }
+                    if t != nil { dlog(String(format: "Super resolução: foto %d · pedaços discordam (%.2f px): só deslocamento", i + 1, spread)) }
+                    t = CGAffineTransform(translationX: precise.x, y: precise.y)
                 }
-                let fallback = CGAffineTransform(translationX: precise.x, y: precise.y)
-                let t = pairs.count >= 3 ? (fitSimilarity(pairs) ?? fallback) : fallback
+                let transform = t ?? CGAffineTransform(translationX: precise.x, y: precise.y)
+                let trusted = spread <= 0.5
                 // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu)
                 var residuals = [CGPoint](repeating: .zero, count: 9)
-                for (n, pair) in pairs.enumerated() where pairs.count >= 3 {
-                    let placed = pair.frame.applying(t)
+                for (n, pair) in pairs.enumerated() where trusted {
+                    let placed = pair.frame.applying(transform)
                     let r = CGPoint(x: pair.ref.x - placed.x, y: pair.ref.y - placed.y)
                     if hypot(r.x, r.y) < 1.5 { residuals[pairTile[n]] = r }
                 }
-                result[i] = Alignment(transform: t, residuals: residuals)
+                result[i] = Alignment(transform: transform, residuals: residuals)
                 let worst = residuals.map { hypot($0.x, $0.y) }.max() ?? 0
-                dlog(String(format: "Super resolução: foto %d · %d/9 pedaços · desloca %.2f, %.2f px · giro %.3f° · região até %.2f px",
-                            i + 1, pairs.count, t.tx, t.ty, atan2(t.b, t.a) * 180 / .pi, worst))
+                dlog(String(format: "Super resolução: foto %d · %d/9 pedaços · desloca %.2f, %.2f px · giro %.3f° · região até %.2f px · sobra %.2f px",
+                            i + 1, pairs.count, transform.tx, transform.ty, atan2(transform.b, transform.a) * 180 / .pi, worst,
+                            spread.isFinite ? spread : -1))
             }
         }
         return result
