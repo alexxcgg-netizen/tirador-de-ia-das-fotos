@@ -426,14 +426,26 @@ final class LabTests: XCTestCase {
             for (i, (dx, dy)) in shifts.enumerated() {
                 var img = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: e)
                 if dark {
-                    let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
-                        .transformed(by: CGAffineTransform(translationX: CGFloat(i * 131), y: CGFloat(i * 71))).cropped(to: e)
-                        .applyingFilter("CIColorMatrix", parameters: [
-                            "inputRVector": CIVector(x: 0.03, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.03, z: 0, w: 0),
-                            "inputBVector": CIVector(x: 0, y: 0, z: 0.03, w: 0), "inputBiasVector": CIVector(x: -0.015, y: -0.015, z: -0.015, w: 0),
-                        ])
-                    img = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: Developer.scaled(img, by: 1.0 / 16)])
-                        .cropped(to: e)
+                    // Ruído de sensor: uniforme ±0,015 em cada cor, sorteado em memória com semente fixa (o teste dá
+                    // sempre igual). Antes vinha do CIRandomGenerator, que sorteia também a transparência: o filtro de
+                    // cor divide por ela e o "ruído" virava uma mistura que nenhum sensor tem (Python com ruído limpo: 0,09 px)
+                    let w = Int(e.width), h = Int(e.height)
+                    var seed = UInt64(i + 1) &* 0x9E3779B97F4A7C15
+                    var values = [Float](repeating: 1, count: w * h * 4)
+                    for k in 0..<(w * h) {
+                        for c in 0..<3 {
+                            seed &+= 0x9E3779B97F4A7C15
+                            var z = seed
+                            z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+                            z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+                            z ^= z >> 31
+                            values[k * 4 + c] = (Float(z >> 40) / Float(1 << 24) - 0.5) * 0.03
+                        }
+                    }
+                    let noise = CIImage(bitmapData: values.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: w * 16,
+                                        size: CGSize(width: w, height: h), format: .RGBAf, colorSpace: nil)
+                        .transformed(by: CGAffineTransform(translationX: e.minX, y: e.minY))
+                    img = Developer.add(Developer.scaled(img, by: 1.0 / 16), noise).cropped(to: e)
                 }
                 frames.append(Developer.materialize(img, extent: e))
             }
