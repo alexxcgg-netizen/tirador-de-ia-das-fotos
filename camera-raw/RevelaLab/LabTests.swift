@@ -327,7 +327,8 @@ final class LabTests: XCTestCase {
                 ("desconv_mais_forte", .init(deconvScale: 0.55, deconvIterations: 4)),
                 ("nucleo_0_4", .init(splatSigma: 0.4)),
                 ("desconv_leve", .init(deconvScale: 0.35, deconvIterations: 2)),
-                ("nucleo_0_5_desconv_leve", .init(splatSigma: 0.5, deconvScale: 0.35, deconvIterations: 2)),
+                ("nucleo_0_4_desconv_leve", .init(splatSigma: 0.4, deconvScale: 0.35, deconvIterations: 2)),
+                ("nucleo_0_45_desconv_0_4", .init(splatSigma: 0.45, deconvScale: 0.4, deconvIterations: 3)),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning
