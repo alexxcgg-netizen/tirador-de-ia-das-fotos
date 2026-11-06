@@ -635,6 +635,7 @@ enum Developer {
     private static let highColorKernel = kernel("revelaHighColor")
     private static let subKernel = kernel("revelaSub")
     private static let divideAddKernel = kernel("revelaDivideAdd")
+    private static let bokehWeightKernel = kernel("revelaBokehWeight")
     private static let bokehSourceKernel = kernel("revelaBokehSource")
     private static let shrinkKernel = kernel("revelaShrink")
     private static let recoverKernel = kernel("revelaRecover")
@@ -1943,20 +1944,23 @@ enum Developer {
             // tanto quanto um desfoque comum, 0,95–1,10). O kernel usa o limiar como início da rampa até 0,95
             let threshold: Float = lower >= 0.45 ? 1.1 : lower * 0.5
             let weighted = lower > 0.01 ? bokehSourceKernel?.apply(extent: extent, arguments: [scene, map, threshold]) : nil
-            let layer = (weighted ?? scene)
-                .transformed(by: CGAffineTransform(scaleX: k, y: k))
-                .clampedToExtent()
-                .cropped(to: smallExtent.insetBy(dx: -r * k * 2, dy: -r * k * 2))
-                .applyingFilter("CIBokehBlur", parameters: [
-                    kCIInputRadiusKey: r * k,
-                    "inputRingAmount": 0.12,
-                    "inputRingSize": 0.08,
-                    "inputSoftness": 1.0,
-                ])
-                .applyingFilter("CIUnpremultiply")
-                .settingAlphaOne(in: smallExtent.insetBy(dx: -r * k * 2, dy: -r * k * 2))
-                .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
-                .cropped(to: extent)
+            let pad = smallExtent.insetBy(dx: -r * k * 2, dy: -r * k * 2)
+            func disc(_ image: CIImage) -> CIImage {
+                image.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent().cropped(to: pad)
+                    .applyingFilter("CIBokehBlur", parameters: [
+                        kCIInputRadiusKey: r * k, "inputRingAmount": 0.12, "inputRingSize": 0.08, "inputSoftness": 1.0,
+                    ])
+                    .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
+            }
+            let layer: CIImage
+            if let weighted, let divideKernel, let bokehWeightKernel,
+               let weight = bokehWeightKernel.apply(extent: extent, arguments: [map, threshold]) {
+                // Cor (já × peso) e peso borrados em separado e divididos: não depende de o desfoque respeitar a
+                // transparência (laboratório: o fundo ainda vazava 0,45–0,86 do sujeito com a divisão pelo alfa)
+                layer = divideKernel.apply(extent: extent, arguments: [disc(weighted).cropped(to: extent), disc(weight).cropped(to: extent)]) ?? scene
+            } else {
+                layer = disc(scene).settingAlphaOne(in: extent).cropped(to: extent)
+            }
             guard let mask = bandKernel.apply(extent: extent, arguments: [map, lower, level]) else { continue }
             result = layer.applyingFilter("CIBlendWithMask", parameters: [
                 kCIInputBackgroundImageKey: result,
