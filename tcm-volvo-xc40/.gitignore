@@ -1,0 +1,8 @@
+# Dumps de firmware e binários grandes — use Git LFS se precisar versionar
+*.bin
+*.hex
+*.srec
+*.elf
+# Logs CAN brutos muito grandes
+*.asc
+*.blf
