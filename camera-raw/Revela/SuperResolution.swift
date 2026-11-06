@@ -343,11 +343,13 @@ extension Developer {
                 let trusted = spread <= 0.5
                 // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu),
                 // levado para os 9 pontos da grade pela média dos pedaços em volta (peso cai com a distância)
+                // Só os pedaços que concordam com a maioria (o que errou feio não vira "região que se mexeu")
                 var measured: [(at: CGPoint, r: CGPoint)] = []
+                let limit = max(0.25, 2.5 * spread)
                 for (n, pair) in pairs.enumerated() where trusted {
                     let placed = pair.frame.applying(transform)
                     let r = CGPoint(x: pair.ref.x - placed.x, y: pair.ref.y - placed.y)
-                    if hypot(r.x, r.y) < 1.5 { measured.append((measure[pairTile[n]], r)) }
+                    if hypot(r.x, r.y) < min(1.5, limit) { measured.append((measure[pairTile[n]], r)) }
                 }
                 let reachGrid = 1.2 * max(abs(centers[1].x - centers[0].x), abs(centers[3].y - centers[0].y), 1)
                 let residuals = centers.map { g -> CGPoint in
@@ -590,11 +592,24 @@ extension Developer {
             return CGAffineTransform(a: a, b: b, c: -b, d: a, tx: px - (a * qx - b * qy), ty: py - (b * qx + a * qy))
         }
         guard var t = fit(pairs) else { return nil }
-        let kept = pairs.filter { p in
+        func residual(_ p: (frame: CGPoint, ref: CGPoint), _ t: CGAffineTransform) -> CGFloat {
             let m = p.frame.applying(t)
-            return hypot(m.x - p.ref.x, m.y - p.ref.y) < 1.5
+            return hypot(m.x - p.ref.x, m.y - p.ref.y)
         }
+        var kept = pairs.filter { residual($0, t) < 1.5 }
         if kept.count >= 3, kept.count < pairs.count, let refit = fit(kept) { t = refit }
+        // Robusto: os pedaços que discordam da maioria (céu liso, reflexo na água) saem e a conta é refeita.
+        // No laboratório 11 de 16 pedaços acertavam 0,001 px e 5 erravam 0,2–1,8 px: esses puxavam tudo (giro falso,
+        // sobra de 0,24 px, até 1,5 dB a menos no SUPER ZOOM)
+        for _ in 0..<2 {
+            let r = kept.map { residual($0, t) }.sorted()
+            guard r.count >= 4 else { break }
+            let limit = max(0.12, 2.5 * r[r.count / 2])
+            let inliers = kept.filter { residual($0, t) <= limit }
+            guard inliers.count >= 4, inliers.count < kept.count, let refit = fit(inliers) else { break }
+            kept = inliers
+            t = refit
+        }
         return t
     }
 
