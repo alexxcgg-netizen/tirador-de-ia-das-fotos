@@ -730,6 +730,13 @@ enum Developer {
     }()
 
     /// Valor de cena em que o vídeo do iPhone já chega estourado (0,97 na tela), para a zebra.
+    /// Luz da cena que a curva filmica leva ao valor `x` na tela (antes da abertura do branco)
+    static func sceneValue(forDisplay x: Float) -> Float {
+        let a: Float = 2.51, b: Float = 0.03, c: Float = 2.43, d: Float = 0.59, e: Float = 0.14
+        let A = x * c - a, B = x * d - b, C = x * e
+        return (-B - (B * B - 4 * A * C).squareRoot()) / (2 * A) / tuning.filmicGain
+    }
+
     private static var zebraThreshold: Float {
         let x: Float = 0.97, a: Float = 2.51, b: Float = 0.03, c: Float = 2.43, d: Float = 0.59, e: Float = 0.14
         let A = x * c - a, B = x * d - b, C = x * e
@@ -1715,9 +1722,11 @@ enum Developer {
         merged = materialize(merged, extent: extent)
         merged = localTone(merged, strength: 0.62)
         // Luzes sem estourar: a luz da cena que a curva leva ao branco (zebra) vira o teto; o joelho começa em 55% dele
+        // O teto é a luz que a curva leva a 0,93 na tela, já com a abertura do branco (whiteScale, que multiplica no
+        // fim): sem ela o teto ficava acima do branco e o HDR sem ruído ainda estourava 0,5–2,1% (laboratório)
         if let kneeKernel {
-            let top = zebraThreshold * 0.97
-            merged = kneeKernel.apply(extent: extent, arguments: [merged, top * 0.55, top]) ?? merged
+            let top = sceneValue(forDisplay: 0.93 / tuning.whiteScale)
+            merged = kneeKernel.apply(extent: extent, arguments: [merged, top * 0.5, top]) ?? merged
         }
         var hdrOptions = options
         hdrOptions.hdrCompress = true
