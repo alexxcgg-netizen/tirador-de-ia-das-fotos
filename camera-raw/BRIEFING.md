@@ -106,3 +106,10 @@ laboratório: o que aparecer lá entra no topo da fila.
 - Na sequência de 1 s cada foto saiu tremida (o app achou que estava apoiado); a de 1/15 s saiu nítida e a de
   1/4 s um pouco borrada. → se a mão mexe no meio, o resto sai no tempo de mão; mão até 1/4 s (borrão 4 px);
   fotos com menos de 80% da nitidez da melhor saem da junção. Metade das cenas pedia mais de 3 paradas → até 3,5.
+- Mais das fotos cruas: nas NOITEs de 1 s a "foto curta" (postes) saiu com 1 s; o app a multiplicava por 8 e trocava
+  a junção de 16 fotos por uma só clareada. → ganho medido pelo EXIF (tempo × ISO), fora se < 2×, e espera o quadro
+  longo passar. A NOITE do terraço saiu da ultra-angular (macro automático preso desde a FOTO / foco sem contraste
+  no escuro) → macro automático desliga ao sair da FOTO e não liga com ISO ≥ 1600. info.json do laboratório agora
+  tem lente, tempo de NOITE, apoiado, mão e ISO do visor.
+- Laboratório b13f8bc: 170 px acerta de dia e no escuro; escuro 0,87 → 0,51 px (meta 0,5). Refino na foto cheia era
+  recusado pelo teste de "ambíguo" (janela curta) → teste mais brando em volta de lugar já achado (rodada 1ed83df).
