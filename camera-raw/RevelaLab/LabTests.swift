@@ -556,12 +556,14 @@ final class LabTests: XCTestCase {
                                           (-5, 12), (-5.5, 19.5), (3, 8), (6, -4), (10, 2), (14, 9)]
         for handheld in [false, true] {
             var frames: [CIImage] = []
-            for (i, (dx, dy)) in path.enumerated() {
+            for (i, (px, py)) in path.enumerated() {
                 var img = truth.clampedToExtent()
+                // Deslocamento inteiro (sem interpolar: qualquer filtro amolece a foto já no teste, antes do app; as do tripé
+                // não eram deslocadas). A fração da mão de verdade fica no borrão de movimento logo abaixo
+                let (dx, dy) = (px.rounded(), py.rounded())
                 if handheld {
-                    // Deslocamento bicúbico (o bilinear amolecia a foto já no teste, antes do app)
-                    img = (Developer.warpCubic(truth, transform: CGAffineTransform(translationX: dx, y: dy), residuals: [],
-                                               grid: CIVector(x: 0, y: 0, z: 1, w: 1), extent: e) ?? img).clampedToExtent()
+                    // Inteiro: o deslocamento é exato, sem filtro nenhum
+                    img = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy))
                     // Borrão da mexidinha durante a foto, na direção em que a mão ia (as fotos 4 e 8 tremeram bem)
                     let next = path[min(i + 1, path.count - 1)], prev = path[max(i - 1, 0)]
                     let angle = atan2(next.1 - prev.1, next.0 - prev.0)
