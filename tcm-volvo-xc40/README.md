@@ -92,7 +92,17 @@ identificado: Volvo **32313196** / Bosch **F01R00DT75** / **TCU-053-19**, contro
 da dupla embreagem **7DCTH** do T5 híbrido. Ver [`hardware/IDENTIFICACAO.md`](hardware/IDENTIFICACAO.md)
 e a pesquisa em [`docs/pesquisa-F01R00DT75.md`](docs/pesquisa-F01R00DT75.md).
 
+**Diagnóstico de oficina analisado** (scanner Bosch) → ver [`docs/diagnostico-oficina.md`](docs/diagnostico-oficina.md).
+Achado-chave: a falha **documentada** do módulo antigo foi **perda de comunicação**
+no barramento ("Sem ligação" / ECM com U0100/U0101), e não simplesmente "não aceita
+gravação". Motor confirmado **B3154T5** (1.5 3-cil), transmissão **7DCTH**.
+
 **Pendências que destravam o resto:**
-1. **Código de erro exato do VIDA** na gravação — o dado mais valioso.
-2. **Chipset interno** (MCU/flash/EEPROM) — só visível abrindo a carcaça selada.
-3. Provável necessidade de **clonagem de EEPROM** para o pareamento (ver pesquisa).
+1. **Esclarecer a discrepância**: "sem ligação" (scanner Bosch) × "comunicava mas não
+   gravava" (VIDA). Decide a estratégia de recuperação.
+2. **Teste de bancada**: energizar e ver se o módulo comunica em CAN.
+3. **Chipset interno** (MCU/flash/EEPROM) — só visível abrindo a carcaça selada.
+4. Provável necessidade de **clonagem de EEPROM** para o pareamento (ver pesquisa).
+
+> ⚠️ **Repositório público:** não commitar VIN, placa, nomes ou o PDF cru da oficina.
+> Dados pessoais foram omitidos/mascarados de propósito nos arquivos deste projeto.

@@ -6,3 +6,9 @@
 # Logs CAN brutos muito grandes
 *.asc
 *.blf
+
+# Dados pessoais / relatorios de oficina (repo publico) - NUNCA commitar
+*.pdf
+*vin*
+*laudo*
+relatorio-oficina*
