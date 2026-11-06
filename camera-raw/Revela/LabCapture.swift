@@ -10,14 +10,14 @@ enum LabCapture {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("laboratorio", isDirectory: true)
     }
 
-    static func save(_ frames: [CapturedFrame], mode: String, options: DevelopOptions) {
+    static func save(_ frames: [CapturedFrame], mode: String, options: DevelopOptions, extra: [String: Any] = [:]) {
         guard !frames.isEmpty else { return }
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
         let stamp = formatter.string(from: Date())
         let safeMode = mode.folding(options: .diacriticInsensitive, locale: nil).replacingOccurrences(of: " ", with: "-")
         let folder = directory.appendingPathComponent("\(stamp)_\(safeMode)", isDirectory: true)
-        let info: [String: Any] = [
+        var info: [String: Any] = [
             "modo": mode,
             "fotos": frames.count,
             "exposicoes": frames.map { Double($0.exposureBias) },
@@ -29,6 +29,7 @@ enum LabCapture {
             "versao": Diagnostics.appVersion,
             "data": ISO8601DateFormatter().string(from: Date()),
         ]
+        info.merge(extra) { old, _ in old }
         queue.async {
             do {
                 try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)

@@ -249,6 +249,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var portraitPreviewOn = false
     private let motion = CMMotionManager()
     private var recentRotation: [Double] = []
+    /// O que o app sabia na hora do disparo (vai no info.json do laboratório)
+    private var shotContext: [String: Any] = [:]
     /// Cópia do giroscópio para a fila da câmera (o original é da fila principal)
     private let rotationLock = NSLock()
     private var sharedRotation: [Double] = []
@@ -1964,6 +1966,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let macroStacking = mode == .focusStack && lens == .macro
         // Escuro de verdade com o iPhone apoiado: mais fotos (cada uma de 1 s, logo abaixo)
         let veryDark = mode == .night && isSteady && nightTime == .auto && readoutISO >= 3200
+        // Para o laboratório: por que o app escolheu este tempo (apoiado? quanto a mão mexia? o visor estava em quê?)
+        let rotation = recentRotation.sorted()
+        shotContext = [
+            "lente": lens.rawValue, "tempoNoite": nightTime.rawValue, "apoiado": isSteady,
+            "maoRadPorS": rotation.isEmpty ? 0 : rotation[rotation.count / 2], "maoMaxRadPorS": rotation.last ?? 0,
+            "isoVisor": Double(readoutISO), "macroAutomatico": macroIsAuto,
+        ]
         let normalCount = mode == .night ? (veryDark ? max(nightFrames, 12) : nightFrames) : (macroStacking ? 6 : mode.frameCount)
         // NOITE: mais uma foto curta no fim, só para as luzes fortes (postes) não estourarem
         let shortLast = mode == .night && !manualExposure
@@ -2904,7 +2913,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             done(.failure(error))
         case .success(let frames):
             // Laboratório: as fotos cruas da sequência vão para o app Arquivos, para o Claude testar em cima delas
-            if labCapture { LabCapture.save(frames, mode: mode.rawValue, options: options) }
+            if labCapture { LabCapture.save(frames, mode: mode.rawValue, options: options, extra: shotContext) }
             // Uma revelação pesada por vez: na rajada as fotos entram numa fila em vez de lotar a memória.
             // A foto simples e leve vai por outra fila e sai na frente
             let light = frames.count == 1 && (frames.first?.data.count ?? .max) < 40_000_000 && mode.stackKind == nil
