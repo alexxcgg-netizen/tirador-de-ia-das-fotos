@@ -269,7 +269,10 @@ extension Developer {
     private static func alignTransforms(frames: [CapturedFrame], refIndex: Int, reference: CIImage,
                                         centers: [CGPoint]) -> [Alignment?] {
         let alignScale: CGFloat = 0.25
-        let patch = 160, search = 16
+        // Pedaço proporcional à foto (160 px em 2000 px, até 320 px em 4000 px+): na NOITE do Pixel (4072 px, bem
+        // escura) os de 160 px erravam até 2 px, a junção recusava as fotos e o ruído ficava em 0,71 da foto única
+        // Busca de ±10 px nos pedaços grandes (o grosso em dois níveis já acerta com menos de 1 px): mesma conta de antes
+        let patch = min(320, max(160, Int(reference.extent.width / 12) / 16 * 16)), search = patch >= 256 ? 10 : 16
         var result = [Alignment?](repeating: nil, count: frames.count)
         result[refIndex] = Alignment(transform: .identity, residuals: [CGPoint](repeating: .zero, count: 9))
         guard let smallRef = image(from: frames[refIndex], scale: Float(alignScale)) else { return result }
