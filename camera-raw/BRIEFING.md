@@ -99,3 +99,10 @@ laboratório: o que aparecer lá entra no topo da fila.
   disparo em Arquivos/Revela/laboratorio (ele manda pelo Google Drive; nunca no GitHub público); (2) calibragem
   remota: calibragem.json no ramo revela-sync muda tom, NOITE, estrela e SUPER ZOOM sem reinstalar (chaves em
   Revela/Calibration.swift; {"padrao": true} volta ao normal).
+- **Primeiras fotos cruas do Alex (10 NOITEs da 0.27, rua com poste):** a mão andou 40–130 px entre a 1ª e a
+  última foto, e 295–350 px numa sequência de 16 × 1 s. O grosso de ±96 px não alcançava → dois níveis (1/16 com
+  ±320 px, depois 1/4 com ±32). Porta em Python nas 10 sequências: todos os quadros alinham, 4–9/9 pedaços.
+  Com menos de 3 pedaços, o pedaço de 512 px do centro na foto cheia (no escuro o grosso em ¼ errava 0,87 px).
+- Na sequência de 1 s cada foto saiu tremida (o app achou que estava apoiado); a de 1/15 s saiu nítida e a de
+  1/4 s um pouco borrada. → se a mão mexe no meio, o resto sai no tempo de mão; mão até 1/4 s (borrão 4 px);
+  fotos com menos de 80% da nitidez da melhor saem da junção. Metade das cenas pedia mais de 3 paradas → até 3,5.
