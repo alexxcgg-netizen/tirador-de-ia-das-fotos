@@ -265,10 +265,11 @@ namespace coreimage {
     // e cada uma amolecia a foto quando o deslocamento tinha fração de pixel (a NOITE na mão perdia detalhe)
     // Mitchell–Netravali (B = C = ⅓): quase tão nítido quanto o Catmull-Rom e sem o repique nas bordas, que com
     // ruído virava borda pontilhada na NOITE (laboratório: 570–940 pontinhos por MP nas persianas do XS)
-    // B = 0,2, C = 0,4 (na linha B + 2C = 1 de Mitchell–Netravali): entre o Mitchell (⅓, ⅓, que amolecia: 0,93 do
+    // Mitchell (B = C = ⅓). Testado B = 0,2, C = 0,4: NOITE na mão 0,78 → 0,82, mas as bordas voltaram a pontilhar
+    // (69–98 → 192–267/MP no Neutro). Antes: entre o Mitchell (⅓, ⅓, que amolecia: 0,93 do
     // detalhe numa média de 10 encaixadas) e o Catmull-Rom (0, ½, que repicava e pontilhava a borda com ruído)
     inline float catmull(float x) {
-        const float B = 0.2f, C = 0.4f;
+        const float B = 1.0f / 3.0f, C = 1.0f / 3.0f;
         x = fabs(x);
         return x < 1.0f ? ((12.0f - 9.0f * B - 6.0f * C) * x * x * x + (-18.0f + 12.0f * B + 6.0f * C) * x * x + (6.0f - 2.0f * B)) / 6.0f
              : (x < 2.0f ? ((-B - 6.0f * C) * x * x * x + (6.0f * B + 30.0f * C) * x * x + (-12.0f * B - 48.0f * C) * x + (8.0f * B + 24.0f * C)) / 6.0f : 0.0f);
