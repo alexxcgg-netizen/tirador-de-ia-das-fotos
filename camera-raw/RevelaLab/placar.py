@@ -187,6 +187,9 @@ def main(root):
             gain = psnr(load(p("2_super")), t) - psnr(load(p("1_uma_ampliada")), t)
             # 3×: um terço do erro (potência) de uma foto ampliada = +4,8 dB
             check(f"SUPER ZOOM {n}", "ganho de PSNR sobre uma ampliada (3×)", f"{gain:+.2f} dB", gain >= 4.77, "≥ +4,8 dB")
+            if os.path.exists(real(p("3_original_heic"))):
+                rows.append((f"SUPER ZOOM {n}", "PSNR do HEIC 0,9 sozinho / do SUPER ZOOM (só informação)",
+                             f"{psnr(load(p('3_original_heic')), t):.1f} / {psnr(load(p('2_super')), t):.1f} dB", "", ""))
 
     var = os.path.join(root, "superres_var")
     if os.path.isdir(var):

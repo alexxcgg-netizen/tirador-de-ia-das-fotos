@@ -253,7 +253,15 @@ final class LabTests: XCTestCase {
             dlog("\(name) super resolução: \(Diagnostics.ms(since: t0))")
             let opts = options(.neutro)
             let crop = CGRect(x: e.midX - 300, y: e.midY - 300, width: 600, height: 600)
-            save(Developer.developed(truth, options: opts).0.cropped(to: crop), "superres/\(name)_0_original", maxSide: 600)
+            let originalCrop = Developer.developed(truth, options: opts).0.cropped(to: crop)
+            save(originalCrop, "superres/\(name)_0_original", maxSide: 600)
+            // Quanto o HEIC 0,9 (o do SUPER ZOOM) erra sozinho: se for perto do que o SUPER ZOOM alcança, ele é o limite
+            let flat = originalCrop.transformed(by: CGAffineTransform(translationX: -crop.minX, y: -crop.minY))
+            if let heif = Developer.context.heifRepresentation(of: flat, format: .RGBA8, colorSpace: Developer.displayP3,
+                                                               options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.9]),
+               let back = CIImage(data: heif) {
+                save(back, "superres/\(name)_3_original_heic", maxSide: 600)
+            }
             let single = lows[0].applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: 2, kCIInputAspectRatioKey: 1])
             save(Developer.developed(single, options: opts).0.cropped(to: crop), "superres/\(name)_1_uma_ampliada", maxSide: 600)
             if let heic = out?.heic, let sr = CIImage(data: heic) {
