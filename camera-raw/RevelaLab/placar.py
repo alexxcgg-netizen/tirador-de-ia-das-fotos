@@ -153,7 +153,15 @@ def main(root):
                 r = excess(noise_on(b)) / max(excess(noise_on(a)), 1e-6)
             else:
                 r = local_noise(b) / max(local_noise(a), 1e-6)
-            check(f"NOITE {n}", "ruído 8 fotos ÷ 1 foto (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
+            if os.path.exists(real(ideal_path)):
+                # 3× como na FOTO: um terço do erro (potência) da foto única, contra a cena sem ruído. Pega ruído e perda de
+                # detalhe juntos (só o ruído premiava limpar demais a foto única de comparação)
+                ideal_img = load(ideal_path)
+                gain = psnr(b, ideal_img, reach=4) - psnr(a, ideal_img, reach=4)
+                check(f"NOITE {n}", "erro 8 fotos vs 1 foto (vs cena sem ruído, 3×)", f"{gain:+.2f} dB", gain >= 4.77, "≥ +4,8 dB")
+                rows.append((f"NOITE {n}", "ruído 8 fotos ÷ 1 foto (só informação)", f"{r:.2f}", "", ""))
+            else:
+                check(f"NOITE {n}", "ruído 8 fotos ÷ 1 foto (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
             lb = luma(b)
             check(f"NOITE {n}", "preto (p1)", f"{np.percentile(lb, 1):.3f}", np.percentile(lb, 1) <= 0.06, "≤ 0,06")
             check(f"NOITE {n}", "luz média", f"{lb.mean():.2f}", 0.18 <= lb.mean() <= 0.32, "0,18–0,32")
@@ -218,12 +226,19 @@ def main(root):
             sh = (la > 0.03) & (la < 0.25) & (tex < np.percentile(tex, 50))
             if sh.mean() < 0.005:
                 continue
-            def nz(x):
-                l = luma(x)
-                i2 = Image.fromarray((np.clip(l, 0, 1) * 255).astype(np.uint8))
-                bl = np.asarray(i2.filter(ImageFilter.GaussianBlur(2))).astype(np.float64) / 255
-                return float(np.abs(l - bl)[sh].mean() / max(l[sh].mean(), 1e-3))
-            r = nz(b) / max(nz(a), 1e-6)
+            ia, ib = os.path.join(hd, f"{n}_0_foto_normal_ideal.jpg"), os.path.join(hd, f"{n}_1_hdr_ideal.jpg")
+            if os.path.exists(real(ia)) and os.path.exists(real(ib)):
+                # Ruído = diferença para a mesma foto sem ruído, relativa ao brilho dela (a textura não conta)
+                ai, bi = load(ia), load(ib)
+                nz = lambda x, xi: float(np.abs(luma(x) - luma(xi))[sh].mean() / max(luma(xi)[sh].mean(), 1e-3))
+                r = nz(b, bi) / max(nz(a, ai), 1e-6)
+            else:
+                def nz(x):
+                    l = luma(x)
+                    i2 = Image.fromarray((np.clip(l, 0, 1) * 255).astype(np.uint8))
+                    bl = np.asarray(i2.filter(ImageFilter.GaussianBlur(2))).astype(np.float64) / 255
+                    return float(np.abs(l - bl)[sh].mean() / max(l[sh].mean(), 1e-3))
+                r = nz(b) / max(nz(a), 1e-6)
             check(f"HDR {n}", "ruído relativo nas sombras HDR ÷ normal (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
 
     # RETRATO 3×: vazamento da cor do sujeito no fundo, logo acima da borda, ≤ ⅓ do de um desfoque comum

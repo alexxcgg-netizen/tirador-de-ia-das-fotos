@@ -388,18 +388,22 @@ final class LabTests: XCTestCase {
             let e = base.extent.integral
             let scene = Developer.scaled(base, by: 2.5).cropped(to: e)
             var frames: [CIImage] = []
+            var clean: [CIImage] = []
             for (i, bias) in [-2, 0, 2].enumerated() {
                 let gain = Float(pow(2.0, Double(bias)))
-                let exposed = Developer.add(Developer.scaled(scene, by: gain), sensorNoise(e.integral, seed: 500 + i, amplitude: 0.01))
-                    .applyingFilter("CIColorClamp", parameters: ["inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
-                                                                 "inputMaxComponents": CIVector(x: 1, y: 1, z: 1, w: 1)])
-                    .cropped(to: e)
+                let clampOne = { (x: CIImage) in x.applyingFilter("CIColorClamp", parameters: [
+                    "inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0), "inputMaxComponents": CIVector(x: 1, y: 1, z: 1, w: 1)]).cropped(to: e) }
+                let exposed = clampOne(Developer.add(Developer.scaled(scene, by: gain), sensorNoise(e.integral, seed: 500 + i, amplitude: 0.01)))
                 frames.append(Developer.materialize(exposed, extent: e))
+                // As mesmas sem ruído: o placar mede o ruído como diferença para elas (nas sombras com textura, a medida
+                // sozinha confundia folhagem e reflexo com ruído)
+                clean.append(Developer.materialize(clampOne(Developer.scaled(scene, by: gain)), extent: e))
             }
+            var useClean = false
             Developer.decodeOverride = { frame, scale in
                 let i = Int(frame.data.first ?? 0)
                 guard frames.indices.contains(i) else { return nil }
-                let img = frames[i]
+                let img = useClean ? clean[i] : frames[i]
                 guard scale < 0.999 else { return img }
                 return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
                     .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
@@ -420,6 +424,11 @@ final class LabTests: XCTestCase {
             if let out = Developer.hdr(captured, options: ho), let img = CIImage(data: out.heic) {
                 dlog("\(name) HDR: \(Diagnostics.ms(since: t0))")
                 save(img, "hdr/\(name)_1_hdr", maxSide: 1200)
+            }
+            useClean = true
+            save(Developer.developed(Developer.enhanced(clean[1]), options: o).0, "hdr/\(name)_0_foto_normal_ideal", maxSide: 1200)
+            if let out = Developer.hdr(captured, options: ho), let img = CIImage(data: out.heic) {
+                save(img, "hdr/\(name)_1_hdr_ideal", maxSide: 1200)
             }
         }
     }

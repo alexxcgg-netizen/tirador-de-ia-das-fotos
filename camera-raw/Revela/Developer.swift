@@ -1675,7 +1675,13 @@ enum Developer {
             var aligned = image
             let isReference = frame.exposureBias == reference.exposureBias
             if !isReference, let smallImage = hdrImage(frame, scale: small) {
-                let warp = alignment(of: scaled(smallImage, by: gain), to: refSmall, scale: CGFloat(small),
+                // As duas cortadas no mesmo teto de luz (o que estoura numa e não na outra virava "detalhe" e o
+                // alinhamento errava: +2 EV "andou" 4 px no laboratório, sem ter andado nada)
+                let ceiling = CGFloat(0.95 * min(1, gain))
+                let clamp = { (i: CIImage) in i.applyingFilter("CIColorClamp", parameters: [
+                    "inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
+                    "inputMaxComponents": CIVector(x: ceiling, y: ceiling, z: ceiling, w: 1)]) }
+                let warp = alignment(of: clamp(scaled(smallImage, by: gain)), to: clamp(refSmall), scale: CGFloat(small),
                                      fullExtent: extent, homography: false)
                 aligned = warp(image).cropped(to: extent)
             }
