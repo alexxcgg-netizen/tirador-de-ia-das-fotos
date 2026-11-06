@@ -2016,8 +2016,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             let begin = {
                 guard nightPlan || fastPlan, let d = self.device, (try? d.lockForConfiguration()) != nil else { return run() }
                 let f = d.activeFormat
-                if fastPlan {
-                    // Todas as fotos iguais: cor e foco travados na primeira (a exposição fica fixa logo abaixo)
+                if fastPlan || nightPlan {
+                    // Todas as fotos iguais: cor e foco travados na primeira (a exposição fica fixa logo abaixo).
+                    // NOITE também: numa NOITE do Alex o balanço de branco mudou 23% entre as fotos da sequência
+                    // (cada uma com uma cor), e no escuro o foco procura entre uma foto e outra
                     attempt("Travar cor e foco") {
                         if d.isWhiteBalanceModeSupported(.locked) { d.whiteBalanceMode = .locked }
                         if lockFocus, d.isFocusModeSupported(.locked) { d.focusMode = .locked }
