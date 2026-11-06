@@ -132,6 +132,14 @@ def main(root):
             check(f"NOITE {n}", "preto (p1)", f"{np.percentile(lb, 1):.3f}", np.percentile(lb, 1) <= 0.06, "≤ 0,06")
             check(f"NOITE {n}", "luz média", f"{lb.mean():.2f}", 0.18 <= lb.mean() <= 0.32, "0,18–0,32")
 
+    # NOITE na mão (caminho da mão do Alex + borrão + 2 fotos tremidas) contra a mesma cena no tripé
+    mao = os.path.join(root, "noite_mao")
+    if os.path.exists(os.path.join(mao, "mao_100pct.jpg")) and os.path.exists(os.path.join(mao, "tripe_100pct.jpg")):
+        em, _ = edges(os.path.join(mao, "mao_100pct.jpg"))
+        et, _ = edges(os.path.join(mao, "tripe_100pct.jpg"))
+        r = em / max(et, 1e-6)
+        check("NOITE na mão", "detalhe na mão ÷ tripé (centro 100%)", f"{r:.2f}", r >= 0.9, "≥ 0,90")
+
     sr = os.path.join(root, "superres")
     if os.path.isdir(sr):
         for n in sorted({f.split("_")[0] for f in os.listdir(sr)}):

@@ -671,7 +671,10 @@ struct ContentView: View {
                         .frame(maxHeight: .infinity, alignment: .bottom)
                         .padding(.bottom, camera.loupe ? 40 : 10)
                 }
-                if let progress = camera.stackProgress {
+                if camera.stackProgress != nil, let end = camera.nightEnd {
+                    NightAim(offset: camera.aimOffset, end: end, progress: camera.stackProgress ?? "")
+                        .allowsHitTesting(false)
+                } else if let progress = camera.stackProgress {
                     VStack(spacing: 6) {
                         ProgressView().tint(.white)
                         Text(camera.captureMode == .longExposure ? "Expondo · faltam \(progress)" : "Fotografando \(progress)")
@@ -1633,4 +1636,46 @@ private struct AngleLayerView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: Host, context: Context) {}
+}
+
+
+/// Mira da NOITE, como a do iPhone: a cruz branca é onde o iPhone estava no disparo; a amarela é para onde ele aponta
+/// agora. Manter uma em cima da outra = foto mais nítida. Só ajuda: o app fotografa de qualquer jeito e alinha o resto.
+struct NightAim: View {
+    var offset: CGSize
+    var end: Date
+    var progress: String
+
+    var body: some View {
+        let distance = hypot(offset.width, offset.height)
+        let steady = distance < 10
+        VStack(spacing: 14) {
+            ZStack {
+                cross(size: 34, width: 1.5).foregroundStyle(.white.opacity(0.85))
+                cross(size: 26, width: 2.5)
+                    .foregroundStyle(steady ? Color(red: 0.96, green: 0.64, blue: 0.24) : Color.yellow)
+                    .offset(offset)
+                    .animation(.linear(duration: 0.1), value: offset)
+            }
+            .frame(width: 160, height: 160)
+            TimelineView(.periodic(from: .now, by: 0.25)) { context in
+                let left = max(0, end.timeIntervalSince(context.date))
+                VStack(spacing: 3) {
+                    Text(left > 0.05 ? String(format: "%.0f", left.rounded(.up)) : "…")
+                        .font(.system(size: 30, weight: .bold, design: .rounded)).monospacedDigit()
+                    Text(steady ? "Firme · \(progress)" : "Segure firme · \(progress)")
+                        .font(.caption.weight(.semibold)).opacity(0.85)
+                }
+                .padding(.horizontal, 14).padding(.vertical, 8)
+                .background(.black.opacity(0.5), in: RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+
+    private func cross(size: CGFloat, width: CGFloat) -> some View {
+        ZStack {
+            Rectangle().frame(width: size, height: width)
+            Rectangle().frame(width: width, height: size)
+        }
+    }
 }

@@ -412,6 +412,76 @@ final class LabTests: XCTestCase {
         }
     }
 
+    /// Ruído de sensor: uniforme ±0,015 em cada cor, sorteado em memória com semente fixa (o teste dá sempre igual).
+    /// O CIRandomGenerator sorteia também a transparência (o filtro de cor divide por ela) e não serve para isso.
+    /// Cada semente cai num trecho bem longe da sequência (antes a foto 6 repetia o ruído da 0 andado 2 px).
+    private func sensorNoise(_ e: CGRect, seed index: Int) -> CIImage {
+        let w = Int(e.width), h = Int(e.height)
+        var seed = UInt64(index + 1) << 40
+        var values = [Float](repeating: 1, count: w * h * 4)
+        for k in 0..<(w * h) {
+            for c in 0..<3 {
+                seed &+= 0x9E3779B97F4A7C15
+                var z = seed
+                z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+                z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+                z ^= z >> 31
+                values[k * 4 + c] = (Float(z >> 40) / Float(1 << 24) - 0.5) * 0.03
+            }
+        }
+        return CIImage(bitmapData: values.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: w * 16,
+                       size: CGSize(width: w, height: h), format: .RGBAf, colorSpace: nil)
+            .transformed(by: CGAffineTransform(translationX: e.minX, y: e.minY))
+    }
+
+    /// NOITE na mão como a do Alex: o caminho da mão medido na sequência das 23:13:48 (iPhone 17 Pro Max, até 39 px na
+    /// foto cheia; aqui em meia resolução), um borrão de mexidinha em cada foto e duas fotos bem tremidas. Comparado com a
+    /// mesma cena no tripé (mesmo ruído, sem mexer): o placar quer o detalhe no centro ≥ 90% do tripé.
+    func test11HandheldNight() throws {
+        guard let url = raws().first(where: { $0.lastPathComponent.hasPrefix("iphone12") }) ?? raws().first,
+              let base = Developer.image(from: try frame(url), scale: 0.5) else { return }
+        let e = base.extent.integral
+        let truth = Developer.materialize(base.cropped(to: e), extent: e)
+        let path: [(CGFloat, CGFloat)] = [(0, 0), (-6.5, -15), (-7.5, -16), (-15.5, -0.5), (-13, 5), (-2.5, 5.5),
+                                          (-5, 12), (-5.5, 19.5), (3, 8), (6, -4), (10, 2), (14, 9)]
+        for handheld in [false, true] {
+            var frames: [CIImage] = []
+            for (i, (dx, dy)) in path.enumerated() {
+                var img = truth.clampedToExtent()
+                if handheld {
+                    img = img.transformed(by: CGAffineTransform(translationX: dx, y: dy))
+                    // Borrão da mexidinha durante a foto, na direção em que a mão ia (as fotos 4 e 8 tremeram bem)
+                    let next = path[min(i + 1, path.count - 1)], prev = path[max(i - 1, 0)]
+                    let angle = atan2(next.1 - prev.1, next.0 - prev.0)
+                    let length: CGFloat = (i == 3 || i == 7) ? 9 : 2
+                    img = img.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: length / 2, kCIInputAngleKey: angle])
+                }
+                img = Developer.add(Developer.scaled(img.cropped(to: e), by: 1.0 / 16), sensorNoise(e, seed: 100 + i)).cropped(to: e)
+                frames.append(Developer.materialize(img, extent: e))
+            }
+            Developer.decodeOverride = { frame, scale in
+                let i = Int(frame.data.first ?? 0)
+                guard frames.indices.contains(i) else { return nil }
+                let img = frames[i]
+                guard scale < 0.999 else { return img }
+                return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
+                    .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
+                                        height: (img.extent.height * CGFloat(scale)).rounded(.down)))
+            }
+            defer { Developer.decodeOverride = nil }
+            let captured = (0..<path.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            let t0 = CFAbsoluteTimeGetCurrent()
+            guard let out = Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: options(.neutro)),
+                  let img = CIImage(data: out.heic) else { continue }
+            let name = handheld ? "mao" : "tripe"
+            dlog("NOITE \(name): \(path.count) fotos em \(Diagnostics.ms(since: t0))")
+            let ie = img.extent
+            // Centro em 100% (sem reduzir): é onde a nitidez aparece
+            save(img.cropped(to: CGRect(x: ie.midX - 400, y: ie.midY - 300, width: 800, height: 600).integral), "noite_mao/\(name)_100pct", maxSide: 800)
+            save(img, "noite_mao/\(name)", maxSide: 1200)
+        }
+    }
+
     /// Alinhamento com deslocamentos de mão de verdade (10–26 px, em todas as direções, e um de 170 px como nas NOITEs
     /// do Alex), de dia e no escuro com ruído.
     /// O registro "desloca x, y" de cada foto tem que dar o contrário do deslocamento aplicado.
@@ -429,24 +499,7 @@ final class LabTests: XCTestCase {
                     // Ruído de sensor: uniforme ±0,015 em cada cor, sorteado em memória com semente fixa (o teste dá
                     // sempre igual). Antes vinha do CIRandomGenerator, que sorteia também a transparência: o filtro de
                     // cor divide por ela e o "ruído" virava uma mistura que nenhum sensor tem (Python com ruído limpo: 0,09 px)
-                    let w = Int(e.width), h = Int(e.height)
-                    // Cada foto num trecho bem longe da sequência (antes a foto 6 repetia o ruído da 0 andado 2 px, e o
-                    // alinhamento encaixava o ruído em vez da imagem)
-                    var seed = UInt64(i + 1) << 40
-                    var values = [Float](repeating: 1, count: w * h * 4)
-                    for k in 0..<(w * h) {
-                        for c in 0..<3 {
-                            seed &+= 0x9E3779B97F4A7C15
-                            var z = seed
-                            z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
-                            z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
-                            z ^= z >> 31
-                            values[k * 4 + c] = (Float(z >> 40) / Float(1 << 24) - 0.5) * 0.03
-                        }
-                    }
-                    let noise = CIImage(bitmapData: values.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: w * 16,
-                                        size: CGSize(width: w, height: h), format: .RGBAf, colorSpace: nil)
-                        .transformed(by: CGAffineTransform(translationX: e.minX, y: e.minY))
+                    let noise = sensorNoise(e, seed: i)
                     img = Developer.add(Developer.scaled(img, by: 1.0 / 16), noise).cropped(to: e)
                 }
                 frames.append(Developer.materialize(img, extent: e))

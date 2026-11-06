@@ -234,6 +234,20 @@ extension Developer {
         }
     }
 
+    /// 16 pontos de medida (4×4) no mesmo recorte da grade 3×3 (que fica em 20%, 50% e 80%): em 14%, 38%, 62% e 86%.
+    private static func measureCenters(fromGrid g: [CGPoint]) -> [CGPoint] {
+        guard g.count == 9 else { return g }
+        let w = (g[2].x - g[0].x) / 0.6, h = (g[6].y - g[0].y) / 0.6
+        let x0 = g[0].x - 0.2 * w, y0 = g[0].y - 0.2 * h
+        var out: [CGPoint] = []
+        for fy in [0.14, 0.38, 0.62, 0.86] {
+            for fx in [0.14, 0.38, 0.62, 0.86] {
+                out.append(CGPoint(x: (x0 + w * CGFloat(fx)).rounded(), y: (y0 + h * CGFloat(fy)).rounded()))
+            }
+        }
+        return out
+    }
+
     /// 9 pedaços espalhados pelo recorte (linha de baixo primeiro, como o Core Image conta).
     private static func tileCenters(in region: CGRect) -> [CGPoint] {
         var centers: [CGPoint] = []
@@ -258,8 +272,11 @@ extension Developer {
         guard let smallRef = image(from: frames[refIndex], scale: Float(alignScale)) else { return result }
 
         let half = CGFloat(patch / 2)
-        // Os 9 pedaços saem numa leitura só (um RAW aberto uma vez, em vez de nove)
-        let refPatches = grayPatches(reference, rects: centers.map { c in
+        // Medido em 16 pedaços (4×4) e não nos 9 da grade: mais medidas = giro e região mais certos com a mão
+        // mexendo, e um pedaço com algo se mexendo pesa menos. O resultado volta para a grade 3×3 dos desenhos da GPU
+        let measure = measureCenters(fromGrid: centers)
+        // Os pedaços saem numa leitura só (um RAW aberto uma vez, em vez de dezesseis)
+        let refPatches = grayPatches(reference, rects: measure.map { c in
             CGRect(x: c.x - half, y: c.y - half, width: CGFloat(patch), height: CGFloat(patch))
         })
 
@@ -279,11 +296,11 @@ extension Developer {
                 var pairs: [(frame: CGPoint, ref: CGPoint)] = []
                 var pairTile: [Int] = []
                 let s = CGFloat(search)
-                let imgPatches = grayPatches(img, rects: centers.map { c in
+                let imgPatches = grayPatches(img, rects: measure.map { c in
                     CGRect(x: c.x - half - coarse.x - s, y: c.y - half - coarse.y - s,
                            width: CGFloat(patch) + 2 * s, height: CGFloat(patch) + 2 * s)
                 })
-                for (k, c) in centers.enumerated() {
+                for (k, c) in measure.enumerated() {
                     guard let refPatch = refPatches[k], let imgPatch = imgPatches[k],
                           let shift = subpixelShift(ref: refPatch, img: imgPatch, size: patch, search: search) else { continue }
                     // O que está em c na referência está em c − grosso + (u, −v) nesta foto (linhas do bitmap descem)
@@ -314,16 +331,26 @@ extension Developer {
                 }
                 let transform = t ?? CGAffineTransform(translationX: precise.x, y: precise.y)
                 let trusted = spread <= 0.5
-                // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu)
-                var residuals = [CGPoint](repeating: .zero, count: 9)
+                // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu),
+                // levado para os 9 pontos da grade pela média dos pedaços em volta (peso cai com a distância)
+                var measured: [(at: CGPoint, r: CGPoint)] = []
                 for (n, pair) in pairs.enumerated() where trusted {
                     let placed = pair.frame.applying(transform)
                     let r = CGPoint(x: pair.ref.x - placed.x, y: pair.ref.y - placed.y)
-                    if hypot(r.x, r.y) < 1.5 { residuals[pairTile[n]] = r }
+                    if hypot(r.x, r.y) < 1.5 { measured.append((measure[pairTile[n]], r)) }
+                }
+                let reachGrid = 1.2 * max(abs(centers[1].x - centers[0].x), abs(centers[3].y - centers[0].y), 1)
+                let residuals = centers.map { g -> CGPoint in
+                    var sum = CGPoint.zero, weight: CGFloat = 0
+                    for m in measured {
+                        let w = max(0, 1 - hypot(m.at.x - g.x, m.at.y - g.y) / reachGrid)
+                        sum.x += m.r.x * w; sum.y += m.r.y * w; weight += w
+                    }
+                    return weight > 0.05 ? CGPoint(x: sum.x / weight, y: sum.y / weight) : .zero
                 }
                 result[i] = Alignment(transform: transform, residuals: residuals)
                 let worst = residuals.map { hypot($0.x, $0.y) }.max() ?? 0
-                dlog(String(format: "Super resolução: foto %d · %d/9 pedaços · desloca %.2f, %.2f px · giro %.3f° · região até %.2f px · sobra %.2f px",
+                dlog(String(format: "Super resolução: foto %d · %d/16 pedaços · desloca %.2f, %.2f px · giro %.3f° · região até %.2f px · sobra %.2f px",
                             i + 1, pairs.count, transform.tx, transform.ty, atan2(transform.b, transform.a) * 180 / .pi, worst,
                             spread.isFinite ? spread : -1))
             }

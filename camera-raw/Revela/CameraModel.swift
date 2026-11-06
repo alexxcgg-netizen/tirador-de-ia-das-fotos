@@ -603,6 +603,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var pauseWanted = false
     /// "3/7" enquanto uma sequência está sendo fotografada.
     @Published var stackProgress: String?
+    /// NOITE: mira como a do iPhone. Quanto o iPhone saiu de onde estava no disparo (pontos de tela) e quando acaba
+    @Published var aimOffset: CGSize = .zero
+    @Published var nightEnd: Date?
     @Published var message: String?
     @Published var thumbnail: UIImage?
 
@@ -939,8 +942,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// NOITE na mão, como o Night Sight: o tempo de cada foto vem do quanto a mão está mexendo agora.
-    /// Borrão aceito ≈ 4 px (o estabilizador da lente tira a maior parte); mão firme vai até 1/4 s, tremendo fica em 1/10 s.
-    /// Era 6 px e 1/3 s: nas NOITEs do Alex as fotos de 1/4 s já saíram um pouco tremidas (as de 1/15 s, nítidas)
+    /// Borrão aceito ≈ 3 px (o estabilizador da lente tira a maior parte); mão firme vai até 1/8 s, tremendo fica em 1/15 s.
+    /// Era 6 px e 1/3 s, depois 4 px e 1/4 s: nas NOITEs do Alex as de 1/4 s ainda borravam (as de 1/15 s, nítidas)
     private var handheldNightSeconds: Double { Self.handheldSeconds(recentRotation, zoom: Double(zoom)) }
 
     private static func handheldSeconds(_ rotation: [Double], zoom: Double) -> Double {
@@ -948,7 +951,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         guard !sorted.isEmpty else { return 1.0 / 8 }
         let typical = max(sorted[sorted.count / 2], 0.004)  // rad/s
         let focalPixels = 2628 * max(zoom, 1)
-        let seconds = min(1.0 / 4, max(1.0 / 10, 4 / (typical * focalPixels)))
+        // Na mão, como o modo Noite do iPhone: fotos curtas e mais delas. Nas NOITEs do Alex as de 1/15 s saíram nítidas
+        // e as de 1/4 s já borravam com as mexidinhas da mão: agora de 1/15 a 1/8 s (borrão aceito 3 px)
+        let seconds = min(1.0 / 8, max(1.0 / 15, 3 / (typical * focalPixels)))
         dlog(String(format: "Noite na mão: mão a %.3f rad/s → %.3f s por foto", typical, seconds))
         return seconds
     }
@@ -962,6 +967,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.recentRotation.append((r.x * r.x + r.y * r.y + r.z * r.z).squareRoot())
             if self.recentRotation.count > 15 { self.recentRotation.removeFirst() }
             self.rotationLock.lock(); self.sharedRotation = self.recentRotation; self.rotationLock.unlock()
+            // Mira da NOITE: soma o giro desde o disparo. Câmera de trás olha para −z: girar em +x aponta para cima
+            // (a mira sobe), girar em +y aponta para a esquerda. ~480 pontos por radiano na 1× em pé
+            if self.nightEnd != nil {
+                let k = 480 * Double(max(self.zoom, 1)) * 0.1
+                let next = CGSize(width: self.aimOffset.width - r.y * k, height: self.aimOffset.height - r.x * k)
+                self.aimOffset = CGSize(width: min(max(next.width, -70), 70), height: min(max(next.height, -70), 70))
+            }
             let steady = self.recentRotation.count == 15 && (self.recentRotation.max() ?? 1) < 0.03
             if steady != self.isSteady { self.isSteady = steady }
             // Mexeu no iPhone: acorda. Parado e sem toque por 30 s (e nada acontecendo): economia
@@ -1973,7 +1985,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             "maoRadPorS": rotation.isEmpty ? 0 : rotation[rotation.count / 2], "maoMaxRadPorS": rotation.last ?? 0,
             "isoVisor": Double(readoutISO), "macroAutomatico": macroIsAuto,
         ]
-        let normalCount = mode == .night ? (veryDark ? max(nightFrames, 12) : nightFrames) : (macroStacking ? 6 : mode.frameCount)
+        // NOITE na mão (Auto): fotos mais curtas, então mais delas para juntar a mesma luz (4 → 6, 8 → 12, 16 fica)
+        let handheldNight = mode == .night && !isSteady && nightTime == .auto && !manualExposure
+        let nightCount = veryDark ? max(nightFrames, 12) : (handheldNight ? min(16, nightFrames * 3 / 2) : nightFrames)
+        let normalCount = mode == .night ? nightCount : (macroStacking ? 6 : mode.frameCount)
         // NOITE: mais uma foto curta no fim, só para as luzes fortes (postes) não estourarem
         let shortLast = mode == .night && !manualExposure
         let count = normalCount + (shortLast ? 1 : 0)
@@ -2006,6 +2021,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     dlog("Sequência de \(count) fotografada: \(Diagnostics.ms(since: t0))")
                     DispatchQueue.main.async {
                         self.stackProgress = nil
+                        self.nightEnd = nil
                         self.updateFocus()
                         self.updateExposure()
                         self.updateWhiteBalance()
@@ -2036,6 +2052,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 let iso = min(max(d.iso * Float(current / target) * exp2(deficit), f.minISO), f.maxISO)
                 dlog(String(format: "%@: %.4fs ISO %.0f → %.4fs ISO %.0f · %d fotos%@", nightPlan ? "Noite" : "Super resolução",
                             current, d.iso, target, iso, count, deficit > 0.1 ? String(format: " · +%.1f EV", deficit) : ""))
+                if nightPlan {
+                    // Contagem da mira: cada foto leva o tempo dela e mais ~0,06 s de leitura
+                    let total = Double(count) * (target + 0.06)
+                    DispatchQueue.main.async {
+                        self.aimOffset = .zero
+                        self.nightEnd = Date().addingTimeInterval(total)
+                    }
+                }
                 // Se a câmera parar no meio (ligação, Central de Controle), a resposta pode nunca vir: segue sozinho
                 let go = self.onceOnSessionQueue(timeout: 2 + target * 2, run)
                 d.safeCustomExposure(seconds: target, iso: iso) { _ in go() }
