@@ -299,12 +299,15 @@ final class LabTests: XCTestCase {
             let variants: [(String, Developer.SRTuning)] = [
                 ("nucleo_0_5", .init(splatSigma: 0.5)),
                 ("desconv_mais_forte", .init(deconvScale: 0.55, deconvIterations: 4)),
-                ("fantasma_0_3", .init(ghostK: 0.3)),
-                ("sem_fantasma", .init(ghostK: 100)),
+                ("limpeza_0_5", .init(denoise: 0.5)),
+                ("limpeza_1", .init(denoise: 1)),
+                ("todas_10", .init()),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning
-                if let heic = Developer.superResolution(frames, options: options(.neutro), keep: 8)?.heic, let sr = CIImage(data: heic) {
+                // "todas_10": as 10 fotos (sem descartar as 2 menos nítidas; no teste nenhuma é tremida)
+                if let heic = Developer.superResolution(frames, options: options(.neutro), keep: label == "todas_10" ? 10 : 8)?.heic,
+                   let sr = CIImage(data: heic) {
                     let se = sr.extent
                     save(sr.cropped(to: CGRect(x: se.midX - 300, y: se.midY - 300, width: 600, height: 600)),
                          "superres_var/\(name)_\(label)", maxSide: 600)

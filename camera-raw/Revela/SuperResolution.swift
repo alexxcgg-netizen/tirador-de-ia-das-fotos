@@ -24,6 +24,9 @@ extension Developer {
         /// Tolerância do anti-fantasma na junção (maior = aceita mais diferença da referência). O serrilhado diferente
         /// em cada foto é justamente o que a super resolução aproveita: tolerância apertada demais o jogava fora
         var ghostK: Float = 0.1
+        /// Limpeza de brilho depois da desconvolução (× o ruído medido na junção). A desconvolução realça o ruído e a
+        /// super resolução não tinha limpeza nenhuma (a foto ampliada de comparação tem o ruído suavizado pela ampliação)
+        var denoise: Float = 0
     }
     static var srTuning = SRTuning()
 
@@ -150,8 +153,15 @@ extension Developer {
         // o borrão antigo de 1,35 px com 4 passos tirava 1,5 dB). Lua um passo a mais
         let iterations = splatted ? srTuning.deconvIterations + (sharpen >= 0.8 ? 1 : 0) : (sharpen >= 0.8 ? 6 : 4)
         let sigma = splatted ? srTuning.deconvScale * Double(factor) : Double(0.55 * factor + 0.25)
+        // Ruído da junção (antes da desconvolução, que o realça ~1,5×) para a limpeza final
+        let cleanup = srTuning.denoise
+        let noise = cleanup > 0 ? measuredNoise(merged) * 1.5 : 0
+        if cleanup > 0 { dlog(String(format: "Super resolução: limpeza %.2f · ruído medido %.4f", cleanup, noise)) }
         guard let heic = renderInStrips(merged, extent: outExtent, properties: properties, iterations: iterations, sigma: sigma,
-                                        grade: { developed($0.settingProperties(properties), options: opts).0 }) else {
+                                        grade: { strip in
+            let clean = cleanup > 0 ? lumaDenoise(strip, strength: cleanup, noise: noise * cleanup) : strip
+            return developed(clean.settingProperties(properties), options: opts).0
+        }) else {
             dlog("❌ Super resolução: não consegui gravar a foto")
             return nil
         }

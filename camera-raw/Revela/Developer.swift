@@ -1938,7 +1938,11 @@ enum Developer {
             // Só o que é fundo entra no borrão (com alfa), e depois divide pelo alfa borrado: a cor da pessoa
             // não vaza para o fundo (antes ficava um halo da roupa/pele em volta do recorte)
             // (a primeira camada, quase nítida, usa a cena inteira: ela cobre também a borda da pessoa)
-            let weighted = lower > 0.01 ? bokehSourceKernel?.apply(extent: extent, arguments: [scene, map, lower * 0.5]) : nil
+            // Nas camadas do fundo de verdade (mapa ≥ 0,45) só entra o que é claramente fundo: a faixa de transição do mapa
+            // (meio sujeito, meio fundo) entrava com peso cheio e levava a cor do sujeito para o fundo (laboratório: vazava
+            // tanto quanto um desfoque comum, 0,95–1,10). O kernel usa o limiar como início da rampa até 0,95
+            let threshold: Float = lower >= 0.45 ? 1.1 : lower * 0.5
+            let weighted = lower > 0.01 ? bokehSourceKernel?.apply(extent: extent, arguments: [scene, map, threshold]) : nil
             let layer = (weighted ?? scene)
                 .transformed(by: CGAffineTransform(scaleX: k, y: k))
                 .clampedToExtent()

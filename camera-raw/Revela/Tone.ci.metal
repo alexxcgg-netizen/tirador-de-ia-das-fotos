@@ -398,7 +398,8 @@ namespace coreimage {
         float3 c = max(s.rgb, float3(0.0f));
         float y = dot(c, revela::kLuma);
         c *= 1.0f + 2.5f * smoothstep(0.75f, 1.0f, y);
-        float w = smoothstep(threshold * 0.5f, threshold, map.r);
+        // threshold > 1 = camada do fundo: só o que é claramente fundo (rampa de 0,55 a 0,95 do mapa)
+        float w = threshold > 1.0f ? smoothstep(0.55f, 0.95f, map.r) : smoothstep(threshold * 0.5f, threshold, map.r);
         return float4(c * w, w);
     }
 
