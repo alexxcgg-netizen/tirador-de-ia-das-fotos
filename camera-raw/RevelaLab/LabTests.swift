@@ -510,7 +510,9 @@ final class LabTests: XCTestCase {
             defer { Developer.decodeOverride = nil }
             dlog("ALINHAMENTO \(dark ? "escuro" : "dia"): esperado " + shifts.dropFirst().map { String(format: "(%.1f, %.1f)", -$0.0, -$0.1) }.joined(separator: " "))
             let captured = (0..<shifts.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            Developer.logTiles = !dark
             _ = Developer.fineWarps(captured, reference: frames[0])
+            Developer.logTiles = false
             dlog("ALINHAMENTO \(dark ? "escuro" : "dia"): fim")
         }
     }

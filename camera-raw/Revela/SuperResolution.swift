@@ -262,6 +262,9 @@ extension Developer {
 
     // MARK: - Alinhamento fino
 
+    /// Laboratório: registra a medida de cada pedaço (para achar erro sistemático)
+    static var logTiles = false
+
     /// Para cada foto, a transformação (deslocamento, um pouco de giro e escala) que a leva em cima da referência.
     private static func alignTransforms(frames: [CapturedFrame], refIndex: Int, reference: CIImage,
                                         centers: [CGPoint]) -> [Alignment?] {
@@ -306,6 +309,10 @@ extension Developer {
                     // O que está em c na referência está em c − grosso + (u, −v) nesta foto (linhas do bitmap descem)
                     pairs.append((CGPoint(x: c.x - coarse.x + shift.x, y: c.y - coarse.y - shift.y), c))
                     pairTile.append(k)
+                    if logTiles {
+                        dlog(String(format: "PEDACO foto %d · %d · em %.0f, %.0f · grosso %.0f, %.0f · fino %.3f, %.3f · desloca %.3f, %.3f",
+                                    i + 1, k, c.x, c.y, coarse.x, coarse.y, shift.x, shift.y, coarse.x - shift.x, coarse.y + shift.y))
+                    }
                 }
                 // Os pedaços concordam entre si? No escuro cada pedaço pequeno erra mais de 1 px e o ajuste "inventava"
                 // giro (laboratório com ruído limpo: 0,07°, que nas bordas vira 3,4 px). Então: com menos de 3 pedaços,
