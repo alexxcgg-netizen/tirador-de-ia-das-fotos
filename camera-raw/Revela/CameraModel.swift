@@ -2080,7 +2080,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 dlog(String(format: "Noite: a mão mexeu na foto %d → %.3fs ISO %.0f nas restantes", index + 1, target, iso))
                 let next = { self.shootSequence(index: index, count: count, positions: positions, frames: frames,
                                                 fullResolution: fullResolution, shortLast: shortLast, completion: completion) }
-                let go = onceOnSessionQueue(timeout: 2 + target * 2, next)
+                // O quadro longo que já estava sendo exposto precisa passar (senão a próxima ainda sai longa)
+                let go = onceOnSessionQueue(timeout: 2 + target * 2 + current) {
+                    self.sessionQueue.asyncAfter(deadline: .now() + current + 0.05, execute: next)
+                }
                 d.safeCustomExposure(seconds: target, iso: iso) { _ in go() }
                 d.unlockForConfiguration()
                 return
@@ -2106,8 +2109,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if isShort, let d = device, (try? d.lockForConfiguration()) != nil {
             // Mesmo ISO, 1/8 do tempo: espera a câmera aplicar e fotografa
             let f = d.activeFormat
-            let duration = max(d.exposureDuration.seconds / 8, f.minExposureDuration.seconds)
-            let go = onceOnSessionQueue(timeout: 2 + duration * 2, shoot)
+            let long = d.exposureDuration.seconds
+            let duration = max(long / 8, f.minExposureDuration.seconds)
+            // Com fotos longas (1 s) o quadro que já estava sendo exposto ainda é longo: nas NOITEs do Alex a "curta"
+            // saiu com 1 s. Espera esse quadro passar antes de fotografar
+            let settle = long > 0.2 ? long + 0.05 : 0
+            let go = onceOnSessionQueue(timeout: 2 + duration * 2 + settle) {
+                if settle > 0 { self.sessionQueue.asyncAfter(deadline: .now() + settle, execute: shoot) } else { shoot() }
+            }
             d.safeCustomExposure(seconds: duration, iso: d.iso) { _ in go() }
             d.unlockForConfiguration()
             return

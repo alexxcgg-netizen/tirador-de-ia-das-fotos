@@ -1099,7 +1099,22 @@ enum Developer {
                 // Postes e letreiros: a foto curta devolve a luz onde a junção estourou
                 if let shortFrame, let recoverKernel, let short = image(from: shortFrame),
                    let smallShort = image(from: shortFrame, scale: alignScale) {
-                    let gain = Float(pow(2.0, Double(-shortFrame.exposureBias)))
+                    // Ganho medido (tempo × ISO de cada uma), não o pedido: nas NOITEs de 1 s do Alex a "curta" saiu
+                    // com 1 s também, e ×8 trocava a junção de 16 fotos por uma só clareada 8× (com todo o ruído)
+                    func light(_ i: CIImage) -> Double? {
+                        let exif = i.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
+                        guard let t = (exif?[kCGImagePropertyExifExposureTime as String] as? NSNumber)?.doubleValue,
+                              let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.doubleValue,
+                              t > 0, iso > 0 else { return nil }
+                        return t * iso
+                    }
+                    let asked = pow(2.0, Double(-shortFrame.exposureBias))
+                    let measured = light(reference).flatMap { l in light(short).map { l / $0 } } ?? asked
+                    let gain = Float(min(measured, asked * 1.5))
+                    guard gain >= 2 else {
+                        dlog(String(format: "Noite: a foto curta saiu sem ser curta (%.1f×): fica de fora", measured))
+                        return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints)
+                    }
                     let warp = alignment(of: scaled(smallShort, by: gain), to: smallReference, scale: CGFloat(alignScale),
                                          fullExtent: extent, homography: false)
                     let alignedShort = warp(short).cropped(to: extent)
