@@ -292,8 +292,14 @@ extension Developer {
                 }
                 // Com menos de 3 pedaços (escuro com muito ruído), um pedaço grande do centro mede melhor que 1 ou 2
                 // pequenos. Medido na foto cheia: o grosso em ¼ errava até 0,9 px no laboratório escuro
-                if pairs.count < 3, let full = centerShift(ref: reference, img: img, search: 6, size: 512, start: precise) {
-                    precise = full
+                // O teste de "encaixe ambíguo" é para buscas largas: aqui o lugar já é conhecido (±6 px) e no escuro
+                // ele recusava o pedaço bom (o laboratório ficava com o grosso em ¼, erro de 0,5 px)
+                if pairs.count < 3 {
+                    if let full = centerShift(ref: reference, img: img, search: 6, size: 512, start: precise, ambiguity: 0.97) {
+                        precise = full
+                    } else {
+                        dlog("Super resolução: foto \(i + 1) · centro na foto cheia não encaixou (fica o grosso)")
+                    }
                 }
                 let fallback = CGAffineTransform(translationX: precise.x, y: precise.y)
                 let t = pairs.count >= 3 ? (fitSimilarity(pairs) ?? fallback) : fallback
@@ -329,7 +335,9 @@ extension Developer {
         }
         // A busca larga pode falhar (centro liso): aí a de sempre, ±24 px a partir do zero
         let near = start == .zero ? 24 : 8
-        guard let shift = centerShift(ref: ref, img: img, search: near, size: 256, start: start)
+        // Em volta de um lugar já achado a janela é curta: o teste de encaixe ambíguo fica mais brando
+        guard let shift = centerShift(ref: ref, img: img, search: near, size: 256, start: start,
+                                      ambiguity: start == .zero ? 0.8 : 0.93)
                 ?? (start == .zero ? nil : centerShift(ref: ref, img: img, search: 24, size: 256, start: .zero)) else { return nil }
         // Na foto o ponto c da referência está em c − grosso: o grosso na escala cheia (com a fração)
         return CGPoint(x: shift.x / scale, y: shift.y / scale)
@@ -337,7 +345,8 @@ extension Developer {
 
     /// Deslocamento "grosso" (o que soma em c − grosso) entre as versões dadas, pelo pedaço do centro, buscando
     /// ±`search` px em volta de `start` (mesma escala e mesmo sentido do resultado).
-    private static func centerShift(ref: CIImage, img: CIImage, search s: Int, size: Int, start: CGPoint) -> CGPoint? {
+    private static func centerShift(ref: CIImage, img: CIImage, search s: Int, size: Int, start: CGPoint,
+                                    ambiguity: Float = 0.8) -> CGPoint? {
         let e = ref.extent
         let n = min(size, Int(min(e.width, e.height) * 0.6) / 2 * 2)
         guard n >= 48 else { return nil }
@@ -345,7 +354,7 @@ extension Developer {
         let o = CGPoint(x: start.x.rounded(), y: start.y.rounded())
         guard let refPatch = grayPatches(ref, rects: [rect]).first ?? nil,
               let imgPatch = grayPatches(img, rects: [rect.offsetBy(dx: -o.x, dy: -o.y).insetBy(dx: -CGFloat(s), dy: -CGFloat(s))]).first ?? nil,
-              let shift = subpixelShift(ref: refPatch, img: imgPatch, size: n, search: s) else { return nil }
+              let shift = subpixelShift(ref: refPatch, img: imgPatch, size: n, search: s, ambiguity: ambiguity) else { return nil }
         // O ponto c da referência está em c − o + (u, −v) nesta foto
         return CGPoint(x: o.x - shift.x, y: o.y + shift.y)
     }
@@ -392,7 +401,8 @@ extension Developer {
     /// primeiro em meia resolução numa área grande, depois em resolução cheia perto do melhor, e refina com
     /// uma parábola. Os pedaços são normalizados (média 0, desvio 1): a exposição pode mudar entre as fotos.
     /// nil se o pedaço é liso demais ou se o encaixe saiu da área de busca.
-    private static func subpixelShift(ref rawRef: [Float], img rawImg: [Float], size n: Int, search s: Int) -> CGPoint? {
+    private static func subpixelShift(ref rawRef: [Float], img rawImg: [Float], size n: Int, search s: Int,
+                                      ambiguity: Float = 0.8) -> CGPoint? {
         func normalized(_ a: [Float]) -> ([Float], Float) {
             let mean = a.reduce(0, +) / Float(a.count)
             let variance = a.reduce(0) { $0 + ($1 - mean) * ($1 - mean) } / Float(a.count)
@@ -438,7 +448,7 @@ extension Developer {
             }
         }
         // Encaixe ambíguo (o melhor quase igual à média, típico de pedaço liso com ruído): não serve
-        guard best.cost < 0.8 * costSum / max(costCount, 1) else { return nil }
+        guard best.cost < ambiguity * costSum / max(costCount, 1) else { return nil }
         // 2) Fina: todos os pixels, ±2 em volta do melhor
         var fine = (u: best.u, v: best.v, cost: Float.greatestFiniteMagnitude)
         var costs: [Int: Float] = [:]
