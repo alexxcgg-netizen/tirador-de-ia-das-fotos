@@ -31,6 +31,7 @@ velocidade é parte da qualidade; toda escolha de imagem com referência (Apple/
 | NOITE | fantasma do carro | diferença no lugar do carro ≤ 2% |
 | Estrela | comprimento e forma vs iPhone 18 f/4 | raio do sol 10–15% da largura; 6 pontas, uma em pé; halo visível |
 | SUPER ZOOM | PSNR vs original de verdade | ≥ uma foto ampliada + 1,5 dB |
+| Alinhamento | deslocamentos de mão de verdade (10–26 px), de dia e no escuro com ruído | erro ≤ 0,5 px |
 | HDR | detalhe nas nuvens (p99 não estourado) e sombra | nuvem com textura; p1 ≤ 0,05 |
 | RETRATO | vazamento da cor do sujeito no fundo | sem halo na borda do degrau |
 | Velocidade | revelação no aparelho (relatório) | FOTO 12 MP < 1 s, 48 MP < 2 s, NOITE < 5 s, SUPER ZOOM < 7 s |
@@ -86,3 +87,6 @@ laboratório: o que aparecer lá entra no topo da fila.
   (sem travamento registrado = o iOS matou por memória). A junção em duas faixas guardava ~15 imagens de 12 MP
   (~1,5 GB). Refeita: liso em ¼, comparação em ½, só o detalhe no tamanho cheio (~4× menos memória). O simulador
   não tem esse limite — nova regra: toda mudança de memória é conferida pela conta de buffers, não só pelo laboratório.
+- No mesmo relatório: alinhamento no aparelho com "0/9 pedaços" na maioria das fotos (NOITE e SUPER ZOOM) e saltos de
+  50–70 px — já acontecia na 0.22. O laboratório só testava deslocamentos de 1–3 px. Meta nova: deslocamentos de mão
+  de verdade (10–26 px).

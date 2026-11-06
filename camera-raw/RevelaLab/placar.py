@@ -153,6 +153,30 @@ def main(root):
             gain = psnr(load(os.path.join(var, fl)), t) - psnr(load(p("1_uma_ampliada")), t)
             rows.append((f"SUPER ZOOM {n}", f"variação {label} (só informação)", f"{gain:+.2f} dB", "", ""))
 
+    # Alinhamento com deslocamentos de mão de verdade: o "desloca" do registro contra o esperado
+    log_path = os.path.join(root, "log.txt")
+    if os.path.exists(log_path):
+        import re
+        lines = open(log_path, encoding="utf-8", errors="ignore").read().splitlines()
+        for i, line in enumerate(lines):
+            m = re.match(r"ALINHAMENTO (\w+): esperado (.*)", line)
+            if not m:
+                continue
+            kind = m.group(1)
+            expected = [tuple(map(float, p.split(","))) for p in re.findall(r"\(([-\d.]+, [-\d.]+)\)", m.group(2))]
+            got = []
+            for nxt in lines[i + 1:]:
+                if nxt.startswith(f"ALINHAMENTO {kind}: fim"):
+                    break
+                g = re.search(r"desloca ([-\d.]+), ([-\d.]+) px", nxt)
+                if g:
+                    got.append((float(g.group(1)), float(g.group(2))))
+            if len(got) != len(expected):
+                check(f"ALINHAMENTO {kind}", "fotos alinhadas", f"{len(got)}/{len(expected)}", False, "todas")
+                continue
+            err = max(((a - x) ** 2 + (b - y) ** 2) ** 0.5 for (a, b), (x, y) in zip(got, expected))
+            check(f"ALINHAMENTO {kind}", "erro máximo (deslocamento de mão real)", f"{err:.2f} px", err <= 0.5, "≤ 0,5 px")
+
     width = max(len(r[1]) for r in rows) if rows else 10
     ok = sum(1 for r in rows if r[4] == "OK")
     total = sum(1 for r in rows if r[4])

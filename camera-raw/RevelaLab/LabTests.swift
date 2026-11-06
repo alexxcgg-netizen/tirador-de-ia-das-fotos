@@ -411,4 +411,45 @@ final class LabTests: XCTestCase {
             }
         }
     }
+
+    /// Alinhamento com deslocamentos de mão de verdade (10–26 px, em todas as direções), de dia e no escuro com ruído.
+    /// O registro "desloca x, y" de cada foto tem que dar o contrário do deslocamento aplicado.
+    func test10Alignment() throws {
+        guard let url = raws().first(where: { $0.lastPathComponent.hasPrefix("iphone12") }) ?? raws().first,
+              let base = Developer.image(from: try frame(url), scale: 0.5) else { return }
+        let e = base.extent.integral
+        let truth = Developer.materialize(base.cropped(to: e), extent: e)
+        let shifts: [(CGFloat, CGFloat)] = [(0, 0), (12.4, -7.3), (-18.6, 15.2), (25.1, 22.7), (-9.8, -26.4), (5.3, 3.1)]
+        for dark in [false, true] {
+            var frames: [CIImage] = []
+            for (i, (dx, dy)) in shifts.enumerated() {
+                var img = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: e)
+                if dark {
+                    let noise = CIFilter(name: "CIRandomGenerator")!.outputImage!
+                        .transformed(by: CGAffineTransform(translationX: CGFloat(i * 131), y: CGFloat(i * 71))).cropped(to: e)
+                        .applyingFilter("CIColorMatrix", parameters: [
+                            "inputRVector": CIVector(x: 0.03, y: 0, z: 0, w: 0), "inputGVector": CIVector(x: 0, y: 0.03, z: 0, w: 0),
+                            "inputBVector": CIVector(x: 0, y: 0, z: 0.03, w: 0), "inputBiasVector": CIVector(x: -0.015, y: -0.015, z: -0.015, w: 0),
+                        ])
+                    img = noise.applyingFilter("CIAdditionCompositing", parameters: [kCIInputBackgroundImageKey: Developer.scaled(img, by: 1.0 / 16)])
+                        .cropped(to: e)
+                }
+                frames.append(Developer.materialize(img, extent: e))
+            }
+            Developer.decodeOverride = { frame, scale in
+                let i = Int(frame.data.first ?? 0)
+                guard frames.indices.contains(i) else { return nil }
+                let img = frames[i]
+                guard scale < 0.999 else { return img }
+                return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
+                    .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
+                                        height: (img.extent.height * CGFloat(scale)).rounded(.down)))
+            }
+            defer { Developer.decodeOverride = nil }
+            dlog("ALINHAMENTO \(dark ? "escuro" : "dia"): esperado " + shifts.dropFirst().map { String(format: "(%.1f, %.1f)", -$0.0, -$0.1) }.joined(separator: " "))
+            let captured = (0..<shifts.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            _ = Developer.fineWarps(captured, reference: frames[0])
+            dlog("ALINHAMENTO \(dark ? "escuro" : "dia"): fim")
+        }
+    }
 }
