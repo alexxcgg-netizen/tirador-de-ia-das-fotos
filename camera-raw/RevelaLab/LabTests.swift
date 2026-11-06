@@ -412,14 +412,15 @@ final class LabTests: XCTestCase {
         }
     }
 
-    /// Alinhamento com deslocamentos de mão de verdade (10–26 px, em todas as direções), de dia e no escuro com ruído.
+    /// Alinhamento com deslocamentos de mão de verdade (10–26 px, em todas as direções, e um de 170 px como nas NOITEs
+    /// do Alex), de dia e no escuro com ruído.
     /// O registro "desloca x, y" de cada foto tem que dar o contrário do deslocamento aplicado.
     func test10Alignment() throws {
         guard let url = raws().first(where: { $0.lastPathComponent.hasPrefix("iphone12") }) ?? raws().first,
               let base = Developer.image(from: try frame(url), scale: 0.5) else { return }
         let e = base.extent.integral
         let truth = Developer.materialize(base.cropped(to: e), extent: e)
-        let shifts: [(CGFloat, CGFloat)] = [(0, 0), (12.4, -7.3), (-18.6, 15.2), (25.1, 22.7), (-9.8, -26.4), (5.3, 3.1)]
+        let shifts: [(CGFloat, CGFloat)] = [(0, 0), (12.4, -7.3), (-18.6, 15.2), (25.1, 22.7), (-9.8, -26.4), (5.3, 3.1), (-140.6, 96.2)]
         for dark in [false, true] {
             var frames: [CIImage] = []
             for (i, (dx, dy)) in shifts.enumerated() {

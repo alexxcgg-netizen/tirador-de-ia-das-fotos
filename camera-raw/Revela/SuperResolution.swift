@@ -266,14 +266,15 @@ extension Developer {
         for i in frames.indices where i != refIndex {
             autoreleasepool {
                 guard let img = image(from: frames[i]), let small = image(from: frames[i], scale: Float(alignScale)) else { return }
-                // Grosso: busca nossa no centro da versão em ¼ (até ±96 px). O Vision errava feio com a mão de verdade
+                // Grosso: busca nossa no centro, em ¹⁄₁₆ e depois em ¼ (até ±300 px). O Vision errava feio com a mão de verdade
                 // (laboratório: andou 5 px, ele disse 28; andou 26, disse 48) e aí a busca fina não achava nada ("0/9")
                 // Se o centro for liso demais para medir, parte do zero (o chute do Vision era pior que nada)
                 var precise = coarseShift(ref: smallRef, img: small, scale: alignScale) ?? .zero
                 var coarse = CGPoint(x: precise.x.rounded(), y: precise.y.rounded())
-                // No escuro o Vision às vezes "acha" um pulo enorme: a mão não anda tanto
+                // Pulo maior que a busca alcança (±300 px) é erro. As fotos do Alex andaram até 295 px: o limite antigo
+                // (8% = 240 px na vertical) jogava fora um quadro bom
                 let e = reference.extent
-                if abs(coarse.x) > e.width * 0.08 || abs(coarse.y) > e.height * 0.08 { coarse = .zero; precise = .zero }
+                if abs(coarse.x) > e.width * 0.12 || abs(coarse.y) > e.height * 0.12 { coarse = .zero; precise = .zero }
                 // Pares (ponto na foto, ponto na referência) com precisão de fração de pixel
                 var pairs: [(frame: CGPoint, ref: CGPoint)] = []
                 var pairTile: [Int] = []
@@ -289,7 +290,11 @@ extension Developer {
                     pairs.append((CGPoint(x: c.x - coarse.x + shift.x, y: c.y - coarse.y - shift.y), c))
                     pairTile.append(k)
                 }
-                // Com menos de 3 pedaços (escuro com muito ruído), o pedaço grande do centro mede melhor que 1 ou 2 pequenos
+                // Com menos de 3 pedaços (escuro com muito ruído), um pedaço grande do centro mede melhor que 1 ou 2
+                // pequenos. Medido na foto cheia: o grosso em ¼ errava até 0,9 px no laboratório escuro
+                if pairs.count < 3, let full = centerShift(ref: reference, img: img, search: 6, size: 512, start: precise) {
+                    precise = full
+                }
                 let fallback = CGAffineTransform(translationX: precise.x, y: precise.y)
                 let t = pairs.count >= 3 ? (fitSimilarity(pairs) ?? fallback) : fallback
                 // O que sobrou em cada pedaço depois do geral (até 1,5 px; mais que isso é algo que se mexeu)
@@ -308,19 +313,41 @@ extension Developer {
         return result
     }
 
-    /// Deslocamento grosso entre duas versões pequenas (escala `scale`): um pedaço grande do centro, busca de ±24 px
-    /// (±96 px na foto cheia), com a fração de pixel. Mesmo sentido do grosso do Vision (o que soma em c − grosso).
+    /// Deslocamento grosso entre duas versões pequenas (escala `scale`): pedaço grande do centro, em dois níveis
+    /// (até ±320 px na foto cheia), com a fração de pixel. Mesmo sentido do grosso do Vision (o que soma em c − grosso).
     static func coarseShift(ref: CIImage, img: CIImage, scale: CGFloat) -> CGPoint? {
+        // As fotos de noite do Alex (iPhone 17 Pro Max, na mão) andaram 40–130 px entre o 1º e o último quadro, e
+        // até 350 px numa delas: ±96 px não alcançava. Primeiro uma busca larga numa versão 4× menor ainda
+        // (±20 px lá = ±320 px na foto cheia), depois a busca de sempre, curta, em volta dela
+        var start = CGPoint.zero
+        let k: CGFloat = 0.25
+        func tiny(_ i: CIImage) -> CIImage {
+            i.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: k, kCIInputAspectRatioKey: 1])
+        }
+        if let wide = centerShift(ref: tiny(ref), img: tiny(img), search: 20, size: 128, start: .zero) {
+            start = CGPoint(x: wide.x / k, y: wide.y / k)
+        }
+        // A busca larga pode falhar (centro liso): aí a de sempre, ±24 px a partir do zero
+        let near = start == .zero ? 24 : 8
+        guard let shift = centerShift(ref: ref, img: img, search: near, size: 256, start: start)
+                ?? (start == .zero ? nil : centerShift(ref: ref, img: img, search: 24, size: 256, start: .zero)) else { return nil }
+        // Na foto o ponto c da referência está em c − grosso: o grosso na escala cheia (com a fração)
+        return CGPoint(x: shift.x / scale, y: shift.y / scale)
+    }
+
+    /// Deslocamento "grosso" (o que soma em c − grosso) entre as versões dadas, pelo pedaço do centro, buscando
+    /// ±`search` px em volta de `start` (mesma escala e mesmo sentido do resultado).
+    private static func centerShift(ref: CIImage, img: CIImage, search s: Int, size: Int, start: CGPoint) -> CGPoint? {
         let e = ref.extent
-        let n = min(256, Int(min(e.width, e.height) * 0.6) / 2 * 2)
-        let s = 24
-        guard n >= 64 else { return nil }
+        let n = min(size, Int(min(e.width, e.height) * 0.6) / 2 * 2)
+        guard n >= 48 else { return nil }
         let rect = CGRect(x: (e.midX - CGFloat(n) / 2).rounded(), y: (e.midY - CGFloat(n) / 2).rounded(), width: CGFloat(n), height: CGFloat(n))
+        let o = CGPoint(x: start.x.rounded(), y: start.y.rounded())
         guard let refPatch = grayPatches(ref, rects: [rect]).first ?? nil,
-              let imgPatch = grayPatches(img, rects: [rect.insetBy(dx: -CGFloat(s), dy: -CGFloat(s))]).first ?? nil,
+              let imgPatch = grayPatches(img, rects: [rect.offsetBy(dx: -o.x, dy: -o.y).insetBy(dx: -CGFloat(s), dy: -CGFloat(s))]).first ?? nil,
               let shift = subpixelShift(ref: refPatch, img: imgPatch, size: n, search: s) else { return nil }
-        // Na foto o ponto c da referência está em c + (u, −v): o grosso é o contrário, na escala cheia (com a fração)
-        return CGPoint(x: -shift.x / scale, y: shift.y / scale)
+        // O ponto c da referência está em c − o + (u, −v) nesta foto
+        return CGPoint(x: o.x - shift.x, y: o.y + shift.y)
     }
 
     /// Luminância (raiz, para o escuro pesar parecido com o claro) de vários pedaços, linha 0 em cima.

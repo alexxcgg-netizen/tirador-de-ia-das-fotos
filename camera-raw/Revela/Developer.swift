@@ -1153,8 +1153,8 @@ enum Developer {
             return { $0 }
         }
         let tx = shift.x, ty = shift.y
-        // No escuro o Vision às vezes "acha" um pulo de metade da foto: isso é erro, a mão não anda tanto
-        if abs(tx) > fullExtent.width * 0.08 || abs(ty) > fullExtent.height * 0.08 {
+        // Pulo maior que a busca alcança (±300 px) é erro; a mão do Alex chegou a 295 px numa NOITE
+        if abs(tx) > fullExtent.width * 0.12 || abs(ty) > fullExtent.height * 0.12 {
             dlog(String(format: "Alinhamento absurdo (%.0f, %.0f px): quadro usado sem deslocar", tx, ty))
             return { $0 }
         }
