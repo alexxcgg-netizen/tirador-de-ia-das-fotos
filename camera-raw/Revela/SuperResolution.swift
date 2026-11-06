@@ -468,7 +468,54 @@ extension Developer {
         }
         let du = parabola(at(fine.u - 1, fine.v), fine.cost, at(fine.u + 1, fine.v))
         let dv = parabola(at(fine.u, fine.v - 1), fine.cost, at(fine.u, fine.v + 1))
-        return CGPoint(x: CGFloat(Float(fine.u) + du), y: CGFloat(Float(fine.v) + dv))
+        let start = (u: Float(fine.u) + du, v: Float(fine.v) + dv)
+        // A parábola "gruda" no pixel inteiro (no laboratório escuro: 18,6 → 18,97; 140,6 → 141,07). Lucas–Kanade
+        // em cima dela acha a fração pelo gradiente, sem esse vício
+        let refined = lucasKanade(ref: ref, img: img, size: n, search: s, start: start)
+        return CGPoint(x: CGFloat(refined.u), y: CGFloat(refined.v))
+    }
+
+    /// Refino da fração de pixel por Lucas–Kanade (3 passos), no mesmo sentido do `subpixelShift`: o pixel (x, y)
+    /// da referência cai em (x + s + u, y + s + v) do pedaço maior. Se sair a mais de 1 px do começo, fica o começo.
+    private static func lucasKanade(ref: [Float], img: [Float], size n: Int, search s: Int,
+                                    start: (u: Float, v: Float)) -> (u: Float, v: Float) {
+        let wide = n + 2 * s
+        var u = start.u, v = start.v
+        img.withUnsafeBufferPointer { m in
+            ref.withUnsafeBufferPointer { r in
+                func sample(_ x: Float, _ y: Float) -> Float {
+                    let x0 = Int(x.rounded(.down)), y0 = Int(y.rounded(.down))
+                    guard x0 >= 0, y0 >= 0, x0 + 1 < wide, y0 + 1 < wide else { return 0 }
+                    let fx = x - Float(x0), fy = y - Float(y0)
+                    let o = y0 * wide + x0
+                    let top = m[o] + (m[o + 1] - m[o]) * fx
+                    let bottom = m[o + wide] + (m[o + wide + 1] - m[o + wide]) * fx
+                    return top + (bottom - top) * fy
+                }
+                for _ in 0..<3 {
+                    var axx: Float = 0, axy: Float = 0, ayy: Float = 0, bx: Float = 0, by: Float = 0
+                    // Uma borda de 2 px fica de fora (o gradiente precisa dos vizinhos)
+                    for y in 2..<(n - 2) {
+                        let py = Float(y + s) + v
+                        for x in 2..<(n - 2) {
+                            let px = Float(x + s) + u
+                            let gx = (sample(px + 1, py) - sample(px - 1, py)) * 0.5
+                            let gy = (sample(px, py + 1) - sample(px, py - 1)) * 0.5
+                            let e = r[y * n + x] - sample(px, py)
+                            axx += gx * gx; axy += gx * gy; ayy += gy * gy
+                            bx += gx * e; by += gy * e
+                        }
+                    }
+                    let det = axx * ayy - axy * axy
+                    guard det > 1e-6 else { break }
+                    let dx = (ayy * bx - axy * by) / det, dy = (axx * by - axy * bx) / det
+                    u += dx; v += dy
+                    if abs(dx) < 0.005 && abs(dy) < 0.005 { break }
+                }
+            }
+        }
+        guard u.isFinite, v.isFinite, abs(u - start.u) <= 1, abs(v - start.v) <= 1 else { return start }
+        return (u, v)
     }
 
     /// Melhor deslocamento + giro + escala (mínimos quadrados) que leva os pontos da foto nos da referência.
