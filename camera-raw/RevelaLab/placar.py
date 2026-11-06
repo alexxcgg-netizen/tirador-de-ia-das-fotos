@@ -132,6 +132,19 @@ def main(root):
             check(f"NOITE {n}", "preto (p1)", f"{np.percentile(lb, 1):.3f}", np.percentile(lb, 1) <= 0.06, "≤ 0,06")
             check(f"NOITE {n}", "luz média", f"{lb.mean():.2f}", 0.18 <= lb.mean() <= 0.32, "0,18–0,32")
 
+    # FOTO 3×: 8 fotos juntadas contra a foto única, as duas medidas contra a mesma cena sem ruído
+    ff = os.path.join(root, "foto_fusao")
+    if os.path.isdir(ff):
+        for n in sorted({f.split("_")[0] for f in os.listdir(ff)}):
+            p = lambda s: os.path.join(ff, f"{n}_{s}.jpg")
+            if not all(os.path.exists(p(s)) for s in ("0_ideal", "1_uma", "2_juntada")):
+                continue
+            ideal, one, fused = load(p("0_ideal")), load(p("1_uma")), load(p("2_juntada"))
+            gain = psnr(fused, ideal) - psnr(one, ideal)
+            check(f"FOTO 3× {n}", "erro da juntada vs foto única (vs cena sem ruído)", f"{gain:+.2f} dB", gain >= 4.77, "≥ +4,8 dB")
+            r = local_noise(fused) / max(local_noise(one), 1e-6)
+            check(f"FOTO 3× {n}", "ruído juntada ÷ foto única", f"{r:.2f}", r <= 0.33, "≤ 0,33")
+
     # Grão do filme na NOITE em 100%: pontinhos claros soltos em área lisa, além dos que o Neutro já tem
     nf = os.path.join(root, "noite_filme")
     if os.path.isdir(nf):

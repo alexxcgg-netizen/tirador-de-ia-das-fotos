@@ -999,6 +999,12 @@ struct ContentView: View {
                         if !sync.status.isEmpty { Text(sync.status).font(.footnote).foregroundStyle(.secondary) }
                     }
 
+                    settingsSection("FOTO 3×") {
+                        Toggle("Juntar várias fotos em cada toque", isOn: $camera.photoFusion)
+                        Text("Com pouca luz (interior, fim de tarde, ISO 320 ou mais), cada toque na FOTO tira várias fotos do mesmo instante (8 em RAW puro, 4 em ProRAW), alinha e junta: um terço do ruído e sombra limpa, como o Deep Fusion. Com sol fica a foto única de 48 MP, que tem mais detalhe. Desligado: sempre uma foto só.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
+
                     settingsSection("Laboratório do Claude") {
                         Toggle("Guardar para o laboratório", isOn: $camera.labCapture)
                         Text("Cada disparo guarda também todas as fotos cruas da sequência (NOITE, SUPER ZOOM, HDR…) em Arquivos → No meu iPhone → Revela → laboratorio · \(labSize). Mande a pasta para o Google Drive e o Claude testa a revelação nas suas fotos de verdade, sem você fotografar de novo. Uma NOITE ocupa uns 200–400 MB: deixe ligado só para testar.")

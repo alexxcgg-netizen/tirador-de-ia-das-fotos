@@ -1063,7 +1063,7 @@ enum Developer {
     /// foco empilhado (pega o pedaço mais nítido de cada um) ou média (menos ruído / exposição longa).
     /// `starPoints`: NOITE, raios em volta das luzes fortes, como numa lente fechada (0 = sem).
     static func stack(_ allFrames: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
-                      robust: Bool = false, starPoints: Int = 0, options: DevelopOptions) -> Output? {
+                      robust: Bool = false, starPoints: Int = 0, night: Bool = true, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
         // NOITE: a foto curta (para as luzes) fica de fora da soma
         let shortFrame = allFrames.first { $0.exposureBias < -1 }
@@ -1122,10 +1122,12 @@ enum Developer {
         let merged: CIImage?
         switch kind {
         case .average where robust:
+            let nightMode = night
             merged = robustMerge(count: frames.count, extent: extent, frame: aligned).map { night in
                 let exif = reference.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
                 let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 800
                 var out = materialize(night, extent: extent)
+                guard nightMode else { return photoFinish(out, iso: iso, frameCount: frames.count) }
                 // Postes e letreiros: a foto curta devolve a luz onde a junção estourou
                 if let shortFrame, let recoverKernel, let short = image(from: shortFrame),
                    let smallShort = image(from: shortFrame, scale: alignScale) {
@@ -1222,6 +1224,21 @@ enum Developer {
     /// Soma em lotes de 3, guardando o parcial em memória de vídeo: nunca há mais de 3 RAW abertos ao mesmo tempo.
     /// Estrela nas luzes: as luzes bem fortes ganham raios, como numa lente fechada em f/11–f/16.
     /// Feito numa versão pequena (os raios são suaves de qualquer jeito) e somado à luz da cena.
+    /// FOTO com várias fotos juntas (como o Deep Fusion / HDR+): a junção já tirou o grosso do ruído (√n);
+    /// aqui só uma limpeza leve de cor e de granulado, na medida do ISO e de quantas fotos entraram
+    static func photoFinish(_ merged: CIImage, iso: Float, frameCount: Int) -> CIImage {
+        let strength = min(1, max(0.15, log2(max(iso, 50) / 100) / 6)) / sqrt(Float(max(frameCount, 1)) / 4)
+        dlog(String(format: "FOTO juntada: %d fotos · ISO %.0f · limpeza %.2f", frameCount, iso, strength))
+        var out = nightDenoise(merged, strength: min(1, strength))
+        out = lumaDenoise(out, strength: min(1, strength * 0.6))
+        return out
+    }
+
+    /// FOTO 3×: várias fotos do mesmo instante, alinhadas e juntadas sem fantasma, depois a revelação de sempre
+    static func fuse(_ frames: [CapturedFrame], options: DevelopOptions) -> Output? {
+        stack(frames, kind: .average, robust: true, starPoints: 0, night: false, options: options)
+    }
+
     /// NOITE depois de juntar: clareia, tira ruído, tons locais e estrelas nas luzes.
     static func nightFinish(_ merged: CIImage, iso: Float, frameCount: Int, starPoints: Int) -> CIImage {
         let extent = merged.extent

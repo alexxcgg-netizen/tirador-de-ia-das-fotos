@@ -593,6 +593,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var readoutShutter: Double = 0
     var readoutLensPosition: Float = 0
     /// Guarda as fotos cruas de cada disparo (todas da sequência) no app Arquivos, para o laboratório do Claude.
+    /// FOTO 3×: cada toque tira várias fotos do mesmo instante e junta (⅓ do ruído). Desligado = uma foto só, mais rápida
+    @Published var photoFusion = UserDefaults.standard.object(forKey: "photoFusion") as? Bool ?? true {
+        didSet { defaults.set(photoFusion, forKey: "photoFusion") }
+    }
     @Published var labCapture = UserDefaults.standard.bool(forKey: "labCapture") {
         didSet { defaults.set(labCapture, forKey: "labCapture") }
     }
@@ -1960,6 +1964,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // Três looks: lidos aqui (na fila principal); rajada não entra (seriam centenas de fotos)
         let extraLooks = multiLook && !mode.holdsForBurst
             ? extraLookIDs.compactMap { self.options(swappingLookTo: $0, from: options) } : []
+        // FOTO 3×: várias fotos do mesmo instante, juntadas (como o Deep Fusion / HDR+). Com luz forte (ISO baixo) o
+        // ruído já é mínimo e a foto única de 48 MP tem mais detalhe que a junção em 12 MP: fica a de sempre
+        if mode == .photo, photoFusion, lens != .macro, lens != .front, manualExposure ? selectedISO >= 320 : readoutISO >= 320 {
+            let raw = rawMode
+            sessionQueue.async { self.captureFusion(raw: raw, options: options, started: t0) }
+            return
+        }
         guard mode.frameCount > 1 || mode == .night else {
             let flash = mode == .flash
             let fast = mode.usesFastFormat
@@ -2915,6 +2926,41 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
+    /// FOTO 3×. RAW puro: 8 fotos num disparo só (bracketing do sensor, ~0,25 s; o iPhone 17 Pro Max faz até 8).
+    /// ProRAW (cada uma já vem com a junção da Apple): 4 seguidas, e a nossa junção por cima.
+    private func captureFusion(raw: RawMode, options: DevelopOptions, started t0: CFAbsoluteTime) {
+        let bayer = photoOutput.availableRawPhotoPixelFormatTypes.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }
+        let count = min(8, photoOutput.maxBracketedCapturePhotoCount)
+        if raw == .bayer, !photoOutput.isAppleProRAWEnabled, let bayer, count >= 4 {
+            let brackets = (0..<count).map { _ in AVCaptureAutoExposureBracketedStillImageSettings.autoExposureSettings(exposureTargetBias: 0) }
+            let settings = AVCapturePhotoBracketSettings(rawPixelFormatType: bayer, processedFormat: nil, bracketedSettings: brackets)
+            if photoOutput.isLensStabilizationDuringBracketedCaptureSupported { settings.isLensStabilizationEnabled = true }
+            if let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelCapture,
+               let connection = photoOutput.connection(with: .video), connection.isVideoRotationAngleSupported(angle) {
+                connection.videoRotationAngle = angle
+            }
+            dlog("FOTO 3×: \(count) RAW puro num disparo")
+            let id = settings.uniqueID
+            let delegate = BracketCaptureDelegate { result in
+                self.sessionQueue.async { self.inFlight[id] = nil }
+                dlog("FOTO 3×: fotos recebidas: \(Diagnostics.ms(since: t0))")
+                self.process(result, mode: .photo, options: options, started: t0)
+            }
+            inFlight[id] = delegate
+            if attempt("Tirar a FOTO 3×", { photoOutput.capturePhoto(with: settings, delegate: delegate) }) { return }
+            inFlight[id] = nil
+            dlog("FOTO 3×: o iPhone recusou o bracketing; fotos seguidas")
+        }
+        let n = 4
+        dlog("FOTO 3×: \(n) fotos seguidas (\(raw.rawValue))")
+        DispatchQueue.main.async { self.stackProgress = "0/\(n)" }
+        shootSequence(index: 0, count: n, positions: nil, frames: []) { result in
+            DispatchQueue.main.async { self.stackProgress = nil }
+            dlog("FOTO 3×: fotos recebidas: \(Diagnostics.ms(since: t0))")
+            self.process(result, mode: .photo, options: options, started: t0)
+        }
+    }
+
     /// Revela (e junta, se for sequência) e salva na galeria.
     private func process(_ result: Result<[CapturedFrame], Error>, mode: CaptureMode, options: DevelopOptions,
                          started t0: CFAbsoluteTime, aperture: Float = 2.8, focusPoint: CGPoint? = nil,
@@ -2954,6 +3000,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     output = Developer.superResolution(frames, options: options, keep: 10)
                 } else if mode == .moon {
                     output = Developer.superResolution(frames, options: options, sharpen: 0.9)
+                } else if mode == .photo, frames.count > 1 {
+                    output = Developer.fuse(frames, options: options)
                 } else if let kind = mode.stackKind {
                     output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, robust: mode == .night,
                                              starPoints: mode == .night ? self.nightStarPoints : 0, options: options)

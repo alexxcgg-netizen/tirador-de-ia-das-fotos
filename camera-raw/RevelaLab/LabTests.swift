@@ -400,11 +400,53 @@ final class LabTests: XCTestCase {
         }
     }
 
+    /// FOTO 3×: 8 fotos do mesmo instante (mão mexendo de leve, luz de interior, ISO alto) juntadas, contra a foto única
+    /// e contra a mesma cena sem ruído (o "ideal"). O placar quer ⅓ do erro da foto única (+4,8 dB) e ⅓ do ruído.
+    func test12PhotoFusion() throws {
+        for url in raws() {
+            let name = url.deletingPathExtension().lastPathComponent
+            guard let base = Developer.image(from: try frame(url), scale: 0.5) else { continue }
+            let e = base.extent.integral
+            let truth = Developer.materialize(Developer.scaled(base.cropped(to: e), by: 0.25), extent: e)
+            let shifts: [(CGFloat, CGFloat)] = [(0, 0), (0.8, -0.5), (-1.3, 0.9), (1.7, 1.2), (-0.6, -1.8), (2.2, -0.3), (-1.9, 1.6), (0.4, 2.1)]
+            var frames: [CIImage] = []
+            for (i, (dx, dy)) in shifts.enumerated() {
+                let moved = truth.clampedToExtent().transformed(by: CGAffineTransform(translationX: dx, y: dy)).cropped(to: e)
+                let noisy = Developer.add(moved, sensorNoise(e, seed: 600 + i, amplitude: 0.035)).cropped(to: e)
+                frames.append(Developer.materialize(noisy, extent: e).settingProperties(iso800))
+            }
+            Developer.decodeOverride = { frame, scale in
+                let i = Int(frame.data.first ?? 0)
+                guard frames.indices.contains(i) else { return nil }
+                let img = frames[i]
+                guard scale < 0.999 else { return img }
+                return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
+                    .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
+                                        height: (img.extent.height * CGFloat(scale)).rounded(.down)))
+            }
+            defer { Developer.decodeOverride = nil }
+            let o = options(.neutro)
+            // As três pela mesma revelação completa (tons locais, nitidez, limpeza) que a FOTO usa
+            guard let idealOut = Developer.finish(truth.settingProperties(iso800), options: o), let ideal = CIImage(data: idealOut.heic),
+                  let singleOut = Developer.finish(frames[0], options: o), let single = CIImage(data: singleOut.heic) else { continue }
+            let captured = (0..<shifts.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            let t0 = CFAbsoluteTimeGetCurrent()
+            guard let out = Developer.fuse(captured, options: o), let fused = CIImage(data: out.heic) else { continue }
+            dlog("\(name) FOTO juntada (\(shifts.count) fotos): \(Diagnostics.ms(since: t0))")
+            for (img, label) in [(ideal, "0_ideal"), (single, "1_uma"), (fused, "2_juntada")] {
+                let ie = img.extent
+                save(img.cropped(to: CGRect(x: ie.midX - 400, y: ie.midY - 300, width: 800, height: 600).integral),
+                     "foto_fusao/\(name)_\(label)", maxSide: 800)
+            }
+        }
+    }
+
     /// Ruído de sensor: uniforme ±0,015 em cada cor, sorteado em memória com semente fixa (o teste dá sempre igual).
     /// O CIRandomGenerator sorteia também a transparência (o filtro de cor divide por ela) e não serve para isso.
     /// Cada semente cai num trecho bem longe da sequência (antes a foto 6 repetia o ruído da 0 andado 2 px).
     /// EXIF de foto de noite (ISO 3200), como o RAW de verdade traz
     private let iso3200: [String: Any] = [kCGImagePropertyExifDictionary as String: [kCGImagePropertyExifISOSpeedRatings as String: [3200]]]
+    private let iso800: [String: Any] = [kCGImagePropertyExifDictionary as String: [kCGImagePropertyExifISOSpeedRatings as String: [800]]]
 
     private func sensorNoise(_ e: CGRect, seed index: Int, amplitude: Float = 0.03) -> CIImage {
         let w = Int(e.width), h = Int(e.height)
