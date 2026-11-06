@@ -35,8 +35,9 @@ struct ToneTuning {
 struct NightTuning {
     /// Luz média que a noite busca (log2): mais alto = noite mais clara.
     var liftTarget: Float = -3.95
-    /// Quanto no máximo clareia (paradas).
-    var liftMax: Float = 3
+    /// Quanto no máximo clareia (paradas). Era 3: metade das NOITEs do Alex (iPhone 17 Pro Max, rua com poste)
+    /// precisava de 3,3–3,5 e ficava abaixo da luz de noite. Com 8–16 fotos o ruído aguenta meia parada a mais
+    var liftMax: Float = 3.5
     /// Quanto do "chão" de luz vira preto, e o máximo.
     var blackFactor: Float = 0.9
     var blackCap: Float = 0.06
@@ -1047,10 +1048,21 @@ enum Developer {
         var frames = allFrames.filter { $0.exposureBias >= -1 }
         if robust, frames.count > 2 {
             // Noite: a referência (que manda onde algo se mexeu) é a foto mais nítida, não a primeira
-            let scores = frames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
+            var scores = frames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
             if let best = scores.indices.max(by: { scores[$0] < scores[$1] }), best != 0 {
                 frames.swapAt(0, best)
+                scores.swapAt(0, best)
                 dlog(String(format: "Noite: referência é a foto %d (a mais nítida)", best + 1))
+            }
+            // Foto tremida não ajuda: borra a junção (como o HDR+, que descarta os quadros ruins). Sai a que tem
+            // menos de 80% da nitidez da melhor, ficando sempre pelo menos metade (e no mínimo 4). Nas NOITEs do Alex
+            // isso tira só as tremidas de verdade (1/4 s: 0,70 e 0,74; as nítidas ficam acima de 0,84)
+            let keepAtLeast = min(frames.count, max(4, frames.count / 2))
+            let ranked = scores.indices.sorted { scores[$0] > scores[$1] }
+            let keep = Set(ranked.enumerated().filter { $0.offset < keepAtLeast || scores[$0.element] >= 0.8 * scores[0] }.map(\.element))
+            if keep.count < frames.count {
+                dlog(String(format: "Noite: %d de %d fotos tremidas ficaram de fora", frames.count - keep.count, frames.count))
+                frames = frames.indices.filter { keep.contains($0) }.map { frames[$0] }
             }
         }
         guard let reference = frames.first.flatMap({ image(from: $0) }) else { return nil }

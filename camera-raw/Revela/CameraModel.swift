@@ -249,6 +249,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var portraitPreviewOn = false
     private let motion = CMMotionManager()
     private var recentRotation: [Double] = []
+    /// Cópia do giroscópio para a fila da câmera (o original é da fila principal)
+    private let rotationLock = NSLock()
+    private var sharedRotation: [Double] = []
     private let longExposure = LongExposure()
     // Vídeo
     private let movieOutput = AVCaptureMovieFileOutput()
@@ -934,13 +937,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// NOITE na mão, como o Night Sight: o tempo de cada foto vem do quanto a mão está mexendo agora.
-    /// Borrão aceito ≈ 6 px (o estabilizador da lente tira a maior parte); mão firme vai até 1/3 s, tremendo fica em 1/10 s.
-    private var handheldNightSeconds: Double {
-        let sorted = recentRotation.sorted()
+    /// Borrão aceito ≈ 4 px (o estabilizador da lente tira a maior parte); mão firme vai até 1/4 s, tremendo fica em 1/10 s.
+    /// Era 6 px e 1/3 s: nas NOITEs do Alex as fotos de 1/4 s já saíram um pouco tremidas (as de 1/15 s, nítidas)
+    private var handheldNightSeconds: Double { Self.handheldSeconds(recentRotation, zoom: Double(zoom)) }
+
+    private static func handheldSeconds(_ rotation: [Double], zoom: Double) -> Double {
+        let sorted = rotation.sorted()
         guard !sorted.isEmpty else { return 1.0 / 8 }
         let typical = max(sorted[sorted.count / 2], 0.004)  // rad/s
-        let focalPixels = 2628 * Double(max(zoom, 1))
-        let seconds = min(1.0 / 3, max(1.0 / 10, 6 / (typical * focalPixels)))
+        let focalPixels = 2628 * max(zoom, 1)
+        let seconds = min(1.0 / 4, max(1.0 / 10, 4 / (typical * focalPixels)))
         dlog(String(format: "Noite na mão: mão a %.3f rad/s → %.3f s por foto", typical, seconds))
         return seconds
     }
@@ -953,6 +959,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             guard let self, let r = data?.rotationRate else { return }
             self.recentRotation.append((r.x * r.x + r.y * r.y + r.z * r.z).squareRoot())
             if self.recentRotation.count > 15 { self.recentRotation.removeFirst() }
+            self.rotationLock.lock(); self.sharedRotation = self.recentRotation; self.rotationLock.unlock()
             let steady = self.recentRotation.count == 15 && (self.recentRotation.max() ?? 1) < 0.03
             if steady != self.isSteady { self.isSteady = steady }
             // Mexeu no iPhone: acorda. Parado e sem toque por 30 s (e nada acontecendo): economia
@@ -1977,7 +1984,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             let run = {
                 self.shootSequence(index: 0, count: count, positions: positions, frames: [], fullResolution: fullResolution,
-                                   shortLast: shortLast) { result in
+                                   shortLast: shortLast, handGuard: nightPlan && nightAuto && nightSeconds > 0.26) { result in
                     dlog("Sequência de \(count) fotografada: \(Diagnostics.ms(since: t0))")
                     DispatchQueue.main.async {
                         self.stackProgress = nil
@@ -2054,10 +2061,31 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// `shortLast`: a última foto sai 3 paradas mais escura (1/8 do tempo), para as luzes fortes.
     private func shootSequence(index: Int, count: Int, positions: [Float]?, frames: [CapturedFrame],
-                               fullResolution: Bool = false, shortLast: Bool = false,
+                               fullResolution: Bool = false, shortLast: Bool = false, handGuard: Bool = false,
                                completion: @escaping (Result<[CapturedFrame], Error>) -> Void) {
         guard index < count else { return completion(.success(frames)) }
         let isShort = shortLast && index == count - 1
+        // NOITE com fotos longas (o iPhone parecia apoiado): se a mão mexe no meio, o resto sai no tempo de mão.
+        // Na NOITE do Alex de 16 × 1 s o celular andou 350 px e todas as fotos saíram tremidas
+        if handGuard, index > 0, !isShort, let d = device {
+            rotationLock.lock(); let rotation = sharedRotation; rotationLock.unlock()
+            // Mesmo critério do "apoiado" (abaixo de 0,03 rad/s): passou disso, já não está apoiado
+            let moving = (rotation.suffix(5).max() ?? 0) > 0.035
+            let current = d.exposureDuration.seconds
+            let seconds = Self.handheldSeconds(rotation.suffix(10).map { $0 }, zoom: Double(zoom))
+            if moving, current > seconds * 1.3, (try? d.lockForConfiguration()) != nil {
+                let f = d.activeFormat
+                let target = max(seconds, f.minExposureDuration.seconds)
+                let iso = min(max(d.iso * Float(current / target), f.minISO), f.maxISO)
+                dlog(String(format: "Noite: a mão mexeu na foto %d → %.3fs ISO %.0f nas restantes", index + 1, target, iso))
+                let next = { self.shootSequence(index: index, count: count, positions: positions, frames: frames,
+                                                fullResolution: fullResolution, shortLast: shortLast, completion: completion) }
+                let go = onceOnSessionQueue(timeout: 2 + target * 2, next)
+                d.safeCustomExposure(seconds: target, iso: iso) { _ in go() }
+                d.unlockForConfiguration()
+                return
+            }
+        }
         let shoot = {
             self.captureRAW(forStack: !fullResolution) { result in
                 switch result {
@@ -2069,7 +2097,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     self.sessionQueue.async {
                         self.shootSequence(index: index + 1, count: count, positions: positions,
                                            frames: frames + [self.spilled(data)],
-                                           fullResolution: fullResolution, shortLast: shortLast, completion: completion)
+                                           fullResolution: fullResolution, shortLast: shortLast, handGuard: handGuard,
+                                           completion: completion)
                     }
                 }
             }
