@@ -1021,10 +1021,11 @@ enum Developer {
     static func sharpnessScore(_ image: CIImage) -> Float {
         let scale = min(1, 512 / max(image.extent.width, image.extent.height))
         let small = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-        let laplacian = small.applyingFilter("CIConvolution3X3", parameters: [
+        // Borda repetida: num recorte, o vazio em volta virava uma "borda nítida" falsa
+        let laplacian = small.clampedToExtent().applyingFilter("CIConvolution3X3", parameters: [
             "inputWeights": CIVector(values: [0, 1, 0, 1, -4, 1, 0, 1, 0], count: 9),
             "inputBias": 0,
-        ])
+        ]).cropped(to: small.extent)
         guard let abs = sharpnessKernel?.apply(extent: small.extent, arguments: [laplacian]) else { return 0 }
         let average = abs.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: small.extent)])
         var pixel = [Float](repeating: 0, count: 4)
@@ -1048,7 +1049,15 @@ enum Developer {
         var frames = allFrames.filter { $0.exposureBias >= -1 }
         if robust, frames.count > 2 {
             // Noite: a referência (que manda onde algo se mexeu) é a foto mais nítida, não a primeira
-            var scores = frames.map { frame in image(from: frame, scale: 0.125).map(sharpnessScore) ?? 0 }
+            // Nitidez no centro de uma versão em ¼ (512 px, sem reduzir mais): em ⅛ um borrão de 9 px virava 1 px e
+            // a foto tremida passava (laboratório da NOITE na mão)
+            var scores = frames.map { frame -> Float in
+                guard let small = image(from: frame, scale: 0.25) else { return 0 }
+                let e = small.extent
+                let side = min(512, e.width, e.height)
+                return sharpnessScore(small.cropped(to: CGRect(x: (e.midX - side / 2).rounded(), y: (e.midY - side / 2).rounded(),
+                                                               width: side, height: side)))
+            }
             if let best = scores.indices.max(by: { scores[$0] < scores[$1] }), best != 0 {
                 frames.swapAt(0, best)
                 scores.swapAt(0, best)

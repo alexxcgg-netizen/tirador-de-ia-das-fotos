@@ -56,6 +56,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.alexxcgg.revela.lab
         GENERATE_INFOPLIST_FILE: YES
+        # Otimizado como o app: sem isso os tempos do laboratório saíam 20–50× maiores que no iPhone
+        SWIFT_OPTIMIZATION_LEVEL: "-O"
         MTL_COMPILER_FLAGS: -fcikernel
         MTLLINKER_FLAGS: -cikernel
 schemes:

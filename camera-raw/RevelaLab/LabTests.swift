@@ -453,7 +453,8 @@ final class LabTests: XCTestCase {
                     // Borrão da mexidinha durante a foto, na direção em que a mão ia (as fotos 4 e 8 tremeram bem)
                     let next = path[min(i + 1, path.count - 1)], prev = path[max(i - 1, 0)]
                     let angle = atan2(next.1 - prev.1, next.0 - prev.0)
-                    let length: CGFloat = (i == 3 || i == 7) ? 9 : 2
+                    // 1 px nas normais (1/8 s; nas NOITEs do Alex as de 1/10 s saíram nítidas), 9 px nas tremidas
+                    let length: CGFloat = (i == 3 || i == 7) ? 9 : 1
                     img = img.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: length / 2, kCIInputAngleKey: angle])
                 }
                 img = Developer.add(Developer.scaled(img.cropped(to: e), by: 1.0 / 16), sensorNoise(e, seed: 100 + i)).cropped(to: e)
