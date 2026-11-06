@@ -113,3 +113,9 @@ laboratório: o que aparecer lá entra no topo da fila.
   tem lente, tempo de NOITE, apoiado, mão e ISO do visor.
 - Laboratório b13f8bc: 170 px acerta de dia e no escuro; escuro 0,87 → 0,51 px (meta 0,5). Refino na foto cheia era
   recusado pelo teste de "ambíguo" (janela curta) → teste mais brando em volta de lugar já achado (rodada 1ed83df).
+- Medida do alinhamento escuro consertada: o ruído do teste vinha do CIRandomGenerator (sorteia transparência; o
+  filtro de cor divide por ela) e cada foto repetia o ruído da anterior andado um valor (a foto 6 = referência
+  andada 2 px). Com ruído limpo apareceu o defeito real: pedaços pequenos erram > 1 px no escuro e o ajuste inventava
+  giro (0,07° = 3,4 px nas bordas) → pedaços discordando (sobra típica > 0,5 px) = só deslocamento pelo pedaço de
+  512 px do centro; Lucas–Kanade depois da parábola (que grudava no inteiro). Rodada 6f1afc6: **35/35 metas**
+  (escuro 0,45 px, dia 0,24). → 0.28 com tudo das fotos cruas do Alex.
