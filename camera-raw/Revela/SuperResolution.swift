@@ -213,6 +213,9 @@ extension Developer {
         return alignments.map { alignment in
             guard let alignment else { return { $0 } }
             return { image in
+                if let cubic = warpCubic(image, transform: alignment.transform, residuals: alignment.residuals, grid: grid, extent: e) {
+                    return cubic
+                }
                 // Borda repetida: o quadro deslocado não deixa faixa vazia (escura ou colorida) na beirada
                 var out = image.clampedToExtent().transformed(by: alignment.transform)
                 let r = alignment.residuals

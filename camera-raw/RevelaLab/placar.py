@@ -12,8 +12,15 @@ from PIL import Image, ImageFilter
 LUMA = np.array([0.2126, 0.7152, 0.0722])
 
 
+def real(path):
+    """As pastas medidas em PSNR vêm em PNG (sem perda); as outras em JPEG."""
+    if path.endswith(".jpg") and not os.path.exists(path) and os.path.exists(path[:-4] + ".png"):
+        return path[:-4] + ".png"
+    return path
+
+
 def load(path):
-    return np.asarray(Image.open(path).convert("RGB")).astype(np.float64) / 255
+    return np.asarray(Image.open(real(path)).convert("RGB")).astype(np.float64) / 255
 
 
 def luma(a):
@@ -25,7 +32,7 @@ def sat(a):
 
 
 def edges(path):
-    g = np.asarray(Image.open(path).convert("L").filter(ImageFilter.FIND_EDGES)).astype(np.float64)
+    g = np.asarray(Image.open(real(path)).convert("L").filter(ImageFilter.FIND_EDGES)).astype(np.float64)
     return float(g.mean()), float(np.percentile(g, 99.5))
 
 
@@ -137,7 +144,7 @@ def main(root):
     if os.path.isdir(ff):
         for n in sorted({f.split("_")[0] for f in os.listdir(ff)}):
             p = lambda s: os.path.join(ff, f"{n}_{s}.jpg")
-            if not all(os.path.exists(p(s)) for s in ("0_ideal", "1_uma", "2_juntada")):
+            if not all(os.path.exists(real(p(s))) for s in ("0_ideal", "1_uma", "2_juntada")):
                 continue
             ideal, one, fused = load(p("0_ideal")), load(p("1_uma")), load(p("2_juntada"))
             gain = psnr(fused, ideal) - psnr(one, ideal)
@@ -150,20 +157,21 @@ def main(root):
     if os.path.isdir(nf):
         from scipy import ndimage
         def specks(path):
-            l = np.asarray(Image.open(path).convert("L")).astype(np.float64) / 255
+            l = np.asarray(Image.open(real(path)).convert("L")).astype(np.float64) / 255
             med = ndimage.median_filter(l, 5)
             tex = ndimage.uniform_filter(np.abs(l - ndimage.gaussian_filter(l, 2)), 9)
             flat = tex < np.percentile(tex, 40)
             return float((((l - med) > 0.08) & flat).sum() / l.size * 1e6)
         for n in sorted({f.split("_")[0] for f in os.listdir(nf)}):
             a, b = os.path.join(nf, f"{n}_ektar_100pct.jpg"), os.path.join(nf, f"{n}_neutro_100pct.jpg")
+            a, b = real(a), real(b)
             if os.path.exists(a) and os.path.exists(b):
                 extra = specks(a) - specks(b)
                 check(f"NOITE filme {n}", "pontinhos do grão por MP (Ektar − Neutro)", f"{extra:.0f}", extra <= 50, "≤ 50")
 
     # NOITE na mão (caminho da mão do Alex + borrão + 2 fotos tremidas) contra a mesma cena no tripé
     mao = os.path.join(root, "noite_mao")
-    if os.path.exists(os.path.join(mao, "mao_100pct.jpg")) and os.path.exists(os.path.join(mao, "tripe_100pct.jpg")):
+    if os.path.exists(real(os.path.join(mao, "mao_100pct.jpg"))) and os.path.exists(real(os.path.join(mao, "tripe_100pct.jpg"))):
         em, _ = edges(os.path.join(mao, "mao_100pct.jpg"))
         et, _ = edges(os.path.join(mao, "tripe_100pct.jpg"))
         r = em / max(et, 1e-6)
@@ -173,7 +181,7 @@ def main(root):
     if os.path.isdir(sr):
         for n in sorted({f.split("_")[0] for f in os.listdir(sr)}):
             p = lambda s: os.path.join(sr, f"{n}_{s}.jpg")
-            if not all(os.path.exists(p(s)) for s in ("0_original", "1_uma_ampliada", "2_super")):
+            if not all(os.path.exists(real(p(s))) for s in ("0_original", "1_uma_ampliada", "2_super")):
                 continue
             t = load(p("0_original"))
             gain = psnr(load(p("2_super")), t) - psnr(load(p("1_uma_ampliada")), t)

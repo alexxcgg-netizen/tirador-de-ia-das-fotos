@@ -25,6 +25,9 @@ final class LabTests: XCTestCase {
         return files.filter { $0.pathExtension.lowercased() == "dng" }.sorted { $0.lastPathComponent < $1.lastPathComponent }
     }
 
+    /// Pastas medidas em PSNR/ruído fino: PNG (sem perda). O JPEG 0,86 errava ~40 dB sozinho e escondia a melhora
+    private let losslessFolders = ["superres/", "superres_var/", "foto_fusao/", "noite_mao/", "noite_filme/"]
+
     private func save(_ image: CIImage, _ name: String, maxSide: CGFloat = 900) {
         let e = image.extent
         let s = min(1, maxSide / max(e.width, e.height))
@@ -33,11 +36,16 @@ final class LabTests: XCTestCase {
             small = image.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: s, kCIInputAspectRatioKey: 1])
         }
         small = small.cropped(to: small.extent.integral)
-        let url = outDir.appendingPathComponent(name + ".jpg")
+        let lossless = losslessFolders.contains { name.hasPrefix($0) }
+        let url = outDir.appendingPathComponent(name + (lossless ? ".png" : ".jpg"))
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         do {
-            try Developer.context.writeJPEGRepresentation(of: small, to: url, colorSpace: Developer.displayP3,
-                                                          options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.86])
+            if lossless {
+                try Developer.context.writePNGRepresentation(of: small, to: url, format: .RGBA8, colorSpace: Developer.displayP3)
+            } else {
+                try Developer.context.writeJPEGRepresentation(of: small, to: url, colorSpace: Developer.displayP3,
+                                                              options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.86])
+            }
         } catch {
             dlog("❌ não gravou \(name): \(error)")
         }
@@ -482,7 +490,9 @@ final class LabTests: XCTestCase {
             for (i, (dx, dy)) in path.enumerated() {
                 var img = truth.clampedToExtent()
                 if handheld {
-                    img = img.transformed(by: CGAffineTransform(translationX: dx, y: dy))
+                    // Deslocamento bicúbico (o bilinear amolecia a foto já no teste, antes do app)
+                    img = (Developer.warpCubic(truth, transform: CGAffineTransform(translationX: dx, y: dy), residuals: [],
+                                               grid: CIVector(x: 0, y: 0, z: 1, w: 1), extent: e) ?? img).clampedToExtent()
                     // Borrão da mexidinha durante a foto, na direção em que a mão ia (as fotos 4 e 8 tremeram bem)
                     let next = path[min(i + 1, path.count - 1)], prev = path[max(i - 1, 0)]
                     let angle = atan2(next.1 - prev.1, next.0 - prev.0)

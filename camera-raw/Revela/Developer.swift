@@ -642,6 +642,25 @@ enum Developer {
     private static let localToneKernel = kernel("revelaLocalTone")
     static let splatKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplat", fromMetalLibraryData: $0) }
     static let despeckleKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaDespeckle", fromMetalLibraryData: $0) }
+    static let warpCubicKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaWarpCubic", fromMetalLibraryData: $0) }
+
+    /// Encaixe bicúbico numa passada: `transform` leva a foto para a referência; `residuals` (9, grade 3×3 em `grid`)
+    /// é o que sobra em cada região. nil se o kernel não carregou (aí fica o jeito antigo)
+    static func warpCubic(_ image: CIImage, transform: CGAffineTransform, residuals: [CGPoint], grid: CIVector, extent: CGRect) -> CIImage? {
+        guard let warpCubicKernel else { return nil }
+        let inv = transform.inverted()
+        let r = residuals.count == 9 ? residuals : [CGPoint](repeating: .zero, count: 9)
+        let reach = (r.map { max(abs($0.x), abs($0.y)) }.max() ?? 0) + 3
+        let src = image.clampedToExtent()
+        return warpCubicKernel.apply(extent: extent, roiCallback: { _, rect in
+            rect.insetBy(dx: -reach, dy: -reach).applying(inv).insetBy(dx: -3, dy: -3)
+        }, arguments: [
+            src, CIVector(x: inv.a, y: inv.c, z: inv.tx), CIVector(x: inv.b, y: inv.d, z: inv.ty),
+            CIVector(x: r[0].x, y: r[0].y, z: r[1].x, w: r[1].y), CIVector(x: r[2].x, y: r[2].y, z: r[3].x, w: r[3].y),
+            CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y), CIVector(x: r[6].x, y: r[6].y, z: r[7].x, w: r[7].y),
+            CIVector(x: r[8].x, y: r[8].y), grid,
+        ])
+    }
 
     /// Tira os pontos soltos (o pixel volta para o limite dos 8 vizinhos). Não borra: textura de verdade tem vizinhos parecidos
     static func despeckle(_ image: CIImage) -> CIImage {
