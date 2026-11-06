@@ -250,9 +250,12 @@ namespace coreimage {
     // Encaixe numa passada só e bicúbico (Catmull-Rom): a foto vai para cima da referência pelo geral (inversa em
     // inv0/inv1) e pelo que sobrou em cada região (grade 3×3). Antes eram duas passadas bilineares (geral e região),
     // e cada uma amolecia a foto quando o deslocamento tinha fração de pixel (a NOITE na mão perdia detalhe)
+    // Mitchell–Netravali (B = C = ⅓): quase tão nítido quanto o Catmull-Rom e sem o repique nas bordas, que com
+    // ruído virava borda pontilhada na NOITE (laboratório: 570–940 pontinhos por MP nas persianas do XS)
     inline float catmull(float x) {
         x = fabs(x);
-        return x < 1.0f ? (1.5f * x - 2.5f) * x * x + 1.0f : (x < 2.0f ? ((-0.5f * x + 2.5f) * x - 4.0f) * x + 2.0f : 0.0f);
+        return x < 1.0f ? ((7.0f * x - 12.0f) * x * x + 16.0f / 3.0f) / 6.0f
+             : (x < 2.0f ? (((-7.0f / 3.0f) * x + 12.0f) * x * x - 20.0f * x + 32.0f / 3.0f) / 6.0f : 0.0f);
     }
     float4 revelaWarpCubic(sampler src, float3 inv0, float3 inv1, float4 a, float4 b, float4 c, float4 d, float2 e,
                            float4 grid, destination dest) {

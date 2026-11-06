@@ -326,6 +326,10 @@ final class LabTests: XCTestCase {
             o.originalAspect = true
             let single = Developer.developed(Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0), options: o).0
             save(single, "noite_pilha/\(name)_0_uma_foto", maxSide: 1200)
+            // A mesma cena sem ruído: o placar mede o ruído só onde ela é lisa de verdade (a textura fina das nuvens,
+            // numa NOITE já limpa, contava como ruído)
+            let ideal = Developer.developed(Developer.nightFinish(dark.settingProperties(iso3200), iso: 3200, frameCount: 8, starPoints: 0), options: o).0
+            save(ideal, "noite_pilha/\(name)_9_ideal", maxSide: 1200)
             // NOITE juntada com filme em 100% (como a foto da sala do Alex, com Ektar): o grão não pode virar pontinhos
             for (look, label) in [(Look.neutro, "neutro"), (Look.ektar, "ektar")] {
                 guard let out = Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: options(look)),

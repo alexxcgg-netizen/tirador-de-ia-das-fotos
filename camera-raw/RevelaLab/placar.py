@@ -133,7 +133,22 @@ def main(root):
             if not (os.path.exists(one) and os.path.exists(eight)):
                 continue
             a, b = load(one), load(eight)
-            r = local_noise(b) / max(local_noise(a), 1e-6)
+            ideal_path = os.path.join(pilha, f"{n}_9_ideal.jpg")
+            if os.path.exists(real(ideal_path)):
+                # Ruído onde a cena sem ruído é lisa, relativo ao brilho de cada uma (a pilha sai mais escura que a foto única)
+                ideal = luma(load(ideal_path))
+                img_i = Image.fromarray((np.clip(ideal, 0, 1) * 255).astype(np.uint8))
+                tex = np.abs(np.asarray(img_i.filter(ImageFilter.GaussianBlur(2))).astype(np.float64) / 255
+                             - np.asarray(img_i.filter(ImageFilter.GaussianBlur(8))).astype(np.float64) / 255)
+                flat = tex <= np.percentile(tex, 30)
+                def noise_on(x):
+                    l = luma(x)
+                    im = Image.fromarray((np.clip(l, 0, 1) * 255).astype(np.uint8))
+                    bl = np.asarray(im.filter(ImageFilter.GaussianBlur(2))).astype(np.float64) / 255
+                    return float(np.abs(l - bl)[flat].mean() / max(l[flat].mean(), 1e-3))
+                r = noise_on(b) / max(noise_on(a), 1e-6)
+            else:
+                r = local_noise(b) / max(local_noise(a), 1e-6)
             check(f"NOITE {n}", "ruído 8 fotos ÷ 1 foto (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
             lb = luma(b)
             check(f"NOITE {n}", "preto (p1)", f"{np.percentile(lb, 1):.3f}", np.percentile(lb, 1) <= 0.06, "≤ 0,06")
@@ -168,6 +183,8 @@ def main(root):
             if os.path.exists(a) and os.path.exists(b):
                 extra = specks(a) - specks(b)
                 check(f"NOITE filme {n}", "pontinhos do grão por MP (Ektar − Neutro)", f"{extra:.0f}", extra <= 50, "≤ 50")
+                # Absoluto (a foto da sala do Alex tinha 5.150): bordas pontilhadas também contam
+                rows.append((f"NOITE filme {n}", "pontinhos por MP no Neutro (só informação)", f"{specks(b):.0f}", "", ""))
 
     # NOITE na mão (caminho da mão do Alex + borrão + 2 fotos tremidas) contra a mesma cena no tripé
     mao = os.path.join(root, "noite_mao")
