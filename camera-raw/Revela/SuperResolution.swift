@@ -21,6 +21,9 @@ extension Developer {
         // 0,45 × fator com 3 passos (laboratório b22822c: +1,85/+2,67/+1,84 dB contra +1,66/+1,98/+1,73 com 0,35 × 2)
         var deconvScale: Double = 0.45
         var deconvIterations = 3
+        /// Tolerância do anti-fantasma na junção (maior = aceita mais diferença da referência). O serrilhado diferente
+        /// em cada foto é justamente o que a super resolução aproveita: tolerância apertada demais o jogava fora
+        var ghostK: Float = 0.1
     }
     static var srTuning = SRTuning()
 
@@ -190,7 +193,7 @@ extension Developer {
                 CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y),
                 CIVector(x: r[6].x, y: r[6].y, z: r[7].x, w: r[7].y),
                 CIVector(x: r[8].x, y: r[8].y),
-                grid, Float(0.1),
+                grid, srTuning.ghostK,
             ]
             guard let color = splatKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(0)]),
                   let weight = splatKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(1)]) else { continue }

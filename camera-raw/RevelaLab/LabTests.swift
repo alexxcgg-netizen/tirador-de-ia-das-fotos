@@ -278,6 +278,8 @@ final class LabTests: XCTestCase {
             let variants: [(String, Developer.SRTuning)] = [
                 ("nucleo_0_5", .init(splatSigma: 0.5)),
                 ("desconv_mais_forte", .init(deconvScale: 0.55, deconvIterations: 4)),
+                ("fantasma_0_3", .init(ghostK: 0.3)),
+                ("sem_fantasma", .init(ghostK: 100)),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning
