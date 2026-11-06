@@ -430,7 +430,9 @@ final class LabTests: XCTestCase {
                     // sempre igual). Antes vinha do CIRandomGenerator, que sorteia também a transparência: o filtro de
                     // cor divide por ela e o "ruído" virava uma mistura que nenhum sensor tem (Python com ruído limpo: 0,09 px)
                     let w = Int(e.width), h = Int(e.height)
-                    var seed = UInt64(i + 1) &* 0x9E3779B97F4A7C15
+                    // Cada foto num trecho bem longe da sequência (antes a foto 6 repetia o ruído da 0 andado 2 px, e o
+                    // alinhamento encaixava o ruído em vez da imagem)
+                    var seed = UInt64(i + 1) << 40
                     var values = [Float](repeating: 1, count: w * h * 4)
                     for k in 0..<(w * h) {
                         for c in 0..<3 {
