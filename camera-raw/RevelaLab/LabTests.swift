@@ -291,7 +291,9 @@ final class LabTests: XCTestCase {
                 }
                 // Ruído de sensor limpo (o CIRandomGenerator sorteia a transparência e virava pontinhos)
                 let noisy = Developer.add(img, sensorNoise(e, seed: 200 + i)).cropped(to: e)
-                frames.append(Developer.materialize(noisy, extent: e))
+                // Com o ISO da foto (como o RAW de verdade traz): sem ele o app achava ISO 800 e limpava pouco a pilha,
+                // enquanto a foto única de comparação ia como ISO 3200
+                frames.append(Developer.materialize(noisy, extent: e).settingProperties(iso3200))
             }
             Developer.decodeOverride = { frame, scale in
                 let i = Int(frame.data.first ?? 0)
@@ -308,12 +310,10 @@ final class LabTests: XCTestCase {
             o.originalAspect = true
             let single = Developer.developed(Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0), options: o).0
             save(single, "noite_pilha/\(name)_0_uma_foto", maxSide: 1200)
-            // NOITE com filme em 100% (como a foto da sala do Alex, com Ektar): o grão não pode virar pontinhos
-            let night1 = Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0)
+            // NOITE juntada com filme em 100% (como a foto da sala do Alex, com Ektar): o grão não pode virar pontinhos
             for (look, label) in [(Look.neutro, "neutro"), (Look.ektar, "ektar")] {
-                var lo = options(look)
-                lo.originalAspect = true
-                let img = Developer.developed(night1, options: lo).0
+                guard let out = Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: options(look)),
+                      let img = CIImage(data: out.heic) else { continue }
                 let ie = img.extent
                 save(img.cropped(to: CGRect(x: ie.midX - 400, y: ie.midY - 300, width: 800, height: 600).integral),
                      "noite_filme/\(name)_\(label)_100pct", maxSide: 800)
@@ -403,6 +403,9 @@ final class LabTests: XCTestCase {
     /// Ruído de sensor: uniforme ±0,015 em cada cor, sorteado em memória com semente fixa (o teste dá sempre igual).
     /// O CIRandomGenerator sorteia também a transparência (o filtro de cor divide por ela) e não serve para isso.
     /// Cada semente cai num trecho bem longe da sequência (antes a foto 6 repetia o ruído da 0 andado 2 px).
+    /// EXIF de foto de noite (ISO 3200), como o RAW de verdade traz
+    private let iso3200: [String: Any] = [kCGImagePropertyExifDictionary as String: [kCGImagePropertyExifISOSpeedRatings as String: [3200]]]
+
     private func sensorNoise(_ e: CGRect, seed index: Int, amplitude: Float = 0.03) -> CIImage {
         let w = Int(e.width), h = Int(e.height)
         var seed = UInt64(index + 1) << 40
@@ -445,8 +448,10 @@ final class LabTests: XCTestCase {
                     let length: CGFloat = (i == 3 || i == 7) ? 9 : 1
                     img = img.applyingFilter("CIMotionBlur", parameters: [kCIInputRadiusKey: length / 2, kCIInputAngleKey: angle])
                 }
-                img = Developer.add(Developer.scaled(img.cropped(to: e), by: 1.0 / 16), sensorNoise(e, seed: 100 + i)).cropped(to: e)
-                frames.append(Developer.materialize(img, extent: e))
+                // Luz de fim de tarde e ruído leve: aqui mede-se a nitidez (alinhamento + fotos tremidas fora); o ruído do
+                // escuro já tem o teste da pilha. No escuro total a medida de borda contava o ruído como "detalhe"
+                img = Developer.add(Developer.scaled(img.cropped(to: e), by: 0.25), sensorNoise(e, seed: 100 + i, amplitude: 0.01)).cropped(to: e)
+                frames.append(Developer.materialize(img, extent: e).settingProperties(iso3200))
             }
             Developer.decodeOverride = { frame, scale in
                 let i = Int(frame.data.first ?? 0)

@@ -34,7 +34,8 @@ struct ToneTuning {
 /// Calibragem da NOITE (pode vir do Claude pela ponte, sem reinstalar).
 struct NightTuning {
     /// Luz média que a noite busca (log2): mais alto = noite mais clara.
-    var liftTarget: Float = -3.95
+    /// Com ruído de teste limpo a NOITE do iPhone 12 Pro chegou a 0,32 (limite) com o máximo de 3,5 paradas: −4,05
+    var liftTarget: Float = -4.05
     /// Quanto no máximo clareia (paradas). Era 3: metade das NOITEs do Alex (iPhone 17 Pro Max, rua com poste)
     /// precisava de 3,3–3,5 e ficava abaixo da luz de noite. Com 8–16 fotos o ruído aguenta meia parada a mais
     var liftMax: Float = 3.5
@@ -344,7 +345,8 @@ enum Look: String, CaseIterable, Identifiable {
             return .make {
                 $0.mono = 1; $0.contrast = 1.1; $0.toe = 0.02
                 $0.matR = SIMD3(1.05, -0.03, -0.02)
-                $0.grain = 0.16; $0.grainSize = 2.2; $0.vignette = 0.15
+                // Grão agora de verdade (o ruído antigo saía quase só em pontinhos): 0,16 esmagava a sombra (p5 0,12 → 0,01)
+                $0.grain = 0.1; $0.grainSize = 2.2; $0.vignette = 0.15
             }
         case .portra:
             return .make {

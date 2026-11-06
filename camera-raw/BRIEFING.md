@@ -19,6 +19,9 @@ velocidade é parte da qualidade; toda escolha de imagem com referência (Apple/
 
 ## O que é "perfeição" (metas do placar)
 
+Pedido do Alex (06/11): **todos os modos 3× melhores que a câmera da Apple**; IPA só quando tudo passar.
+"3×" = um terço do ruído / do erro / do borrão, ou 3× a faixa de luz, medido no laboratório e nas fotos dele.
+
 | Área | Medida | Meta |
 |---|---|---|
 | FOTO — tom | luz média, ponto 50% e 99% vs Apple no mesmo RAW | dentro de ±0,04; branco (p99) ≥ Apple − 0,03 |
@@ -26,12 +29,12 @@ velocidade é parte da qualidade; toda escolha de imagem com referência (Apple/
 | FOTO — detalhe | bordas no recorte 100% | ≥ Apple, sem halo de nitidez (pico de borda ≤ 1,3× a Apple) |
 | FOTO — preto | p1 | ≤ Apple + 0,03 (sem névoa) |
 | Filmes | sem esmagar sombra nem apagar o branco (vs o Neutro da mesma foto; Noir e Bleach são de propósito) | p5 ≥ mín(0,02; 0,6 × Neutro) e p99 ≥ mín(0,7; Neutro − 0,12) |
-| NOITE | ruído em área lisa (desvio local) | ≤ 50% da foto única |
+| NOITE | ruído em área lisa (desvio local) | ≤ ⅓ da foto única (3×) |
 | NOITE | preto (p1) / cara de noite | p1 ≤ 0,06; luz média 0,18–0,32 |
 | NOITE | fantasma do carro | diferença no lugar do carro ≤ 2% |
 | NOITE na mão | caminho da mão do Alex (até 39 px) + borrão + 2 fotos tremidas vs tripé | detalhe no centro ≥ 90% do tripé |
 | Estrela | comprimento e forma vs iPhone 18 f/4 | raio do sol 10–15% da largura; 6 pontas, uma em pé; halo visível |
-| SUPER ZOOM | PSNR vs original de verdade | ≥ uma foto ampliada + 1,5 dB |
+| SUPER ZOOM | PSNR vs original de verdade | ≥ uma foto ampliada + 4,8 dB (⅓ do erro, 3×) |
 | Alinhamento | deslocamentos de mão de verdade (10–26 px), de dia e no escuro com ruído | erro ≤ 0,5 px |
 | HDR | detalhe nas nuvens (p99 não estourado) e sombra | nuvem com textura; p1 ≤ 0,05 |
 | RETRATO | vazamento da cor do sujeito no fundo | sem halo na borda do degrau |

@@ -127,7 +127,7 @@ def main(root):
                 continue
             a, b = load(one), load(eight)
             r = local_noise(b) / max(local_noise(a), 1e-6)
-            check(f"NOITE {n}", "ruído 8 fotos ÷ 1 foto", f"{r:.2f}", r <= 0.5, "≤ 0,50")
+            check(f"NOITE {n}", "ruído 8 fotos ÷ 1 foto (3×)", f"{r:.2f}", r <= 0.33, "≤ 0,33")
             lb = luma(b)
             check(f"NOITE {n}", "preto (p1)", f"{np.percentile(lb, 1):.3f}", np.percentile(lb, 1) <= 0.06, "≤ 0,06")
             check(f"NOITE {n}", "luz média", f"{lb.mean():.2f}", 0.18 <= lb.mean() <= 0.32, "0,18–0,32")
@@ -164,7 +164,8 @@ def main(root):
                 continue
             t = load(p("0_original"))
             gain = psnr(load(p("2_super")), t) - psnr(load(p("1_uma_ampliada")), t)
-            check(f"SUPER ZOOM {n}", "ganho de PSNR sobre uma ampliada", f"{gain:+.2f} dB", gain >= 1.5, "≥ +1,5 dB")
+            # 3×: um terço do erro (potência) de uma foto ampliada = +4,8 dB
+            check(f"SUPER ZOOM {n}", "ganho de PSNR sobre uma ampliada (3×)", f"{gain:+.2f} dB", gain >= 4.77, "≥ +4,8 dB")
 
     var = os.path.join(root, "superres_var")
     if os.path.isdir(var):
