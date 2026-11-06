@@ -124,3 +124,14 @@ laboratório: o que aparecer lá entra no topo da fila.
   giro (0,07° = 3,4 px nas bordas) → pedaços discordando (sobra típica > 0,5 px) = só deslocamento pelo pedaço de
   512 px do centro; Lucas–Kanade depois da parábola (que grudava no inteiro). Rodada 6f1afc6: **35/35 metas**
   (escuro 0,45 px, dia 0,24). → 0.28 com tudo das fotos cruas do Alex.
+- **Metas 3× (pedido do Alex, 06/11) — rodada 8a3eb2a: 49/54.** O que mudou no caminho (cada um medido):
+  - Medida honesta: ruído de teste limpo (o CIRandomGenerator sorteia transparência), ISO no EXIF do teste, PNG nas
+    medidas finas (JPEG 0,86 errava ~40 dB), ruído/erro contra a cena sem ruído (NOITE, FOTO 3×, HDR).
+  - Grão sem pontinhos (5.150/MP na sala do Alex → 0–98) e pontos soltos tirados (8 vizinhos).
+  - Alinhamento: correlação normalizada de verdade (0,30 → 0,005 px), ajuste robusto, Lucas–Kanade, pedaço maior em
+    foto grande, encaixe Mitchell numa passada só. Dia 0,01 px, escuro 0,43 px.
+  - FOTO 3× (8 RAW num disparo com ISO ≥ 320): +9,5 a +10,4 dB, ruído 0,10–0,13. NOITE 3×: +6,8/+11,4/+10,3 dB.
+  - HDR 3×: peso pela luz (exposição²), joelho até o branco de verdade (whiteScale), alinha com teto comum: estourado
+    0%, sombra 0,15–0,29. RETRATO: fundo só com fundo (cor×peso e peso separados): vazamento 0,36/0,12/0,10.
+  - Faltam: SUPER ZOOM (+3,1/+4,5/+3,5 dB; Python +5 a +6,8 — fotos do teste exportadas para comparar), NOITE na mão
+    (0,78), RETRATO do iPhone 12 Pro (0,36).

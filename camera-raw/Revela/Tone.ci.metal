@@ -399,14 +399,15 @@ namespace coreimage {
         float y = dot(c, revela::kLuma);
         c *= 1.0f + 2.5f * smoothstep(0.75f, 1.0f, y);
         // threshold > 1 = camada do fundo: só o que é claramente fundo (rampa de 0,55 a 0,95 do mapa)
-        // Fundo de verdade: só o que tem 85% ou mais de fundo no mapa (a faixa de 55–95% ainda levava até 45% de sujeito)
-        float w = threshold > 1.0f ? smoothstep(0.85f, 1.0f, map.r) : smoothstep(threshold * 0.5f, threshold, map.r);
+        // Fundo de verdade: só o que tem 92% ou mais de fundo no mapa (55–95% ainda levava até 45% de sujeito; 85%: vazamento
+        // 0,36/0,12/0,10 de um desfoque comum)
+        float w = threshold > 1.0f ? smoothstep(0.92f, 1.0f, map.r) : smoothstep(threshold * 0.5f, threshold, map.r);
         // Opaco: a cor já vem × peso, e o peso sai à parte (revelaBokehWeight); no fim um divide pelo outro
         return float4(c * w, 1.0f);
     }
 
     float4 revelaBokehWeight(sample_t map, float threshold) {
-        float w = threshold > 1.0f ? smoothstep(0.85f, 1.0f, map.r) : smoothstep(threshold * 0.5f, threshold, map.r);
+        float w = threshold > 1.0f ? smoothstep(0.92f, 1.0f, map.r) : smoothstep(threshold * 0.5f, threshold, map.r);
         return float4(w, w, w, 1.0f);
     }
 
