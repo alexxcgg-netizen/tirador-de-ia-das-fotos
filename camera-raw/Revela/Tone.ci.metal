@@ -364,6 +364,27 @@ namespace coreimage {
 
     // Ruído de brilho por faixa (ondaletas): o detalhe menor que o ruído some, o maior fica.
     // O limite cresce com a raiz da luz, como o ruído do sensor
+    // Ponto solto (mais claro ou mais escuro que todos os 8 vizinhos): volta para o limite dos vizinhos, sem borrar
+    // nada em volta. A limpeza de brilho alisa o ruído pequeno mas deixa passar inteiro o pixel que foge muito, e a
+    // NOITE ficava lisa com pontinhos soltos (laboratório: 377 por megapixel no céu do Pixel)
+    float4 revelaDespeckle(sampler src, destination dest) {
+        float2 p = dest.coord();
+        float4 c = src.sample(src.transform(p));
+        float3 lo = float3(1e9f), hi = float3(-1e9f);
+        for (int j = -1; j <= 1; j++) {
+            for (int i = -1; i <= 1; i++) {
+                if (i == 0 && j == 0) continue;
+                float3 n = src.sample(src.transform(p + float2(float(i), float(j)))).rgb;
+                lo = min(lo, n);
+                hi = max(hi, n);
+            }
+        }
+        // Estrela e poste longe também são pontos soltos, mas bem mais claros que tudo em volta: esses ficam
+        float lc = dot(max(c.rgb, float3(0.0f)), revela::kLuma), lh = dot(max(hi, float3(0.0f)), revela::kLuma);
+        if (lc > max(0.35f, 3.0f * lh)) return float4(c.rgb, 1.0f);
+        return float4(clamp(c.rgb, lo, hi), 1.0f);
+    }
+
     float4 revelaShrink(sample_t s, sample_t blur, float threshold) {
         float3 d = s.rgb - blur.rgb;
         float dl = dot(d, revela::kLuma);

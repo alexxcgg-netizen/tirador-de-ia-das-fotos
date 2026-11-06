@@ -641,6 +641,15 @@ enum Developer {
     private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
     private static let localToneKernel = kernel("revelaLocalTone")
     static let splatKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplat", fromMetalLibraryData: $0) }
+    static let despeckleKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaDespeckle", fromMetalLibraryData: $0) }
+
+    /// Tira os pontos soltos (o pixel volta para o limite dos 8 vizinhos). Não borra: textura de verdade tem vizinhos parecidos
+    static func despeckle(_ image: CIImage) -> CIImage {
+        guard let despeckleKernel else { return image }
+        let e = image.extent
+        return despeckleKernel.apply(extent: e, roiCallback: { _, r in r.insetBy(dx: -1, dy: -1) },
+                                     arguments: [image.clampedToExtent()])?.cropped(to: e) ?? image
+    }
     static let gridWarpKernel: CIWarpKernel? = library.flatMap {
         try? CIWarpKernel(functionName: "revelaGridWarp", fromMetalLibraryData: $0)
     }
@@ -1230,7 +1239,7 @@ enum Developer {
         let strength = min(1, max(0.15, log2(max(iso, 50) / 100) / 6)) / sqrt(Float(max(frameCount, 1)) / 4)
         dlog(String(format: "FOTO juntada: %d fotos · ISO %.0f · limpeza %.2f", frameCount, iso, strength))
         var out = nightDenoise(merged, strength: min(1, strength))
-        out = lumaDenoise(out, strength: min(1, strength * 0.6))
+        out = despeckle(lumaDenoise(out, strength: min(1, strength * 0.6)))
         return out
     }
 
@@ -1252,7 +1261,7 @@ enum Developer {
         // Mais claro = mais ruído aparente: a redução acompanha
         let cleanup = min(1, strength + lift * 0.12)
         out = nightDenoise(out, strength: cleanup)
-        out = lumaDenoise(out, strength: cleanup)
+        out = despeckle(lumaDenoise(out, strength: cleanup))
         // Noite com cara de noite: preto de verdade (sem véu cinza). O "chão" de luz que o ruído e o céu
         // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
         let floor = darkFloor(out)
