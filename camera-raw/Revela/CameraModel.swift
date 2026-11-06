@@ -1070,6 +1070,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         captureMode = mode
         portraitTap = nil
         dlog("Modo: \(mode.rawValue)")
+        // O macro automático é coisa da FOTO: saindo dela ele não volta sozinho e ficava preso. Na NOITE do terraço
+        // do Alex (longe) a foto saiu da ultra-angular recortada 2× em vez da 1× (f/1.78, bem melhor no escuro)
+        if mode != .photo, lens == .macro, macroIsAuto {
+            dlog("Macro automático: desligou ao sair da FOTO")
+            select(lens: .wide)
+            setZoom(1, settle: false)
+        }
         // A exposição para RAW vale só nos modos de foto: liga ou desliga conforme o modo
         if ettr { updateExposure() }
         // SUPER ZOOM começa no 8× (tele) e estabiliza o visor
@@ -1468,8 +1475,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             return
         }
         if lens == .wide, zoom < 1.5, availableLenses.contains(.macro) {
-            // A 1× só foca a partir de 20 cm: no limite por 1,5 s seguidos = perto demais
-            closeFocusTicks = lensPosition <= 0.01 ? closeFocusTicks + 1 : 0
+            // A 1× só foca a partir de 20 cm: no limite por 1,5 s seguidos = perto demais.
+            // No escuro não: o foco sem contraste para no limite e parecia "perto" (terraço do Alex, à noite)
+            let dark = readoutISO >= 1600
+            closeFocusTicks = lensPosition <= 0.01 && !dark ? closeFocusTicks + 1 : 0
             if closeFocusTicks >= 6 {
                 closeFocusTicks = 0
                 lastAutoMacroSwitch = Date()
