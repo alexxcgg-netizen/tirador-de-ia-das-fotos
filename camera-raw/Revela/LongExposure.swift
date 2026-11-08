@@ -3,7 +3,7 @@ import CoreVideo
 import Vision
 
 /// Exposição longa: soma (seda) ou guarda o mais claro (rastros) de cada quadro do vídeo durante alguns segundos.
-/// Usa dois buffers que se alternam na memória de vídeo, sem guardar os quadros. Roda na fila de vídeo.
+/// Usa buffers que se alternam na memória de vídeo, sem guardar os quadros. Roda na fila de vídeo.
 final class LongExposure {
     enum Style: String, CaseIterable, Identifiable {
         case silk = "Seda"
@@ -11,9 +11,14 @@ final class LongExposure {
         var id: String { rawValue }
     }
 
-    private var buffers: [CVPixelBuffer] = []
+    /// Soma em 32 bits: em meia precisão a soma passava de 128 em ~300 quadros e cada quadro novo era arredondado
+    /// (o que somava menos de 0,06 sumia). Dois que se alternam, para não ler e escrever no mesmo
+    private var sumBuffers: [CVPixelBuffer] = []
+    /// Rastros: o maior excesso sobre a média de cada ponto (máximo não acumula erro: meia precisão basta)
+    private var trailBuffers: [CVPixelBuffer] = []
     private var current = 0
-    private var accumulated: CIImage?
+    private var sum: CIImage?
+    private var trail: CIImage?
     private var extent: CGRect = .zero
     private(set) var count = 0
     private(set) var isRunning = false
@@ -25,15 +30,27 @@ final class LongExposure {
     private var referenceSmall: CIImage?
     private var maxShift = CGSize.zero
     private let alignScale: CGFloat = 0.2
+    /// Rastros: o que passa da média menos que isso é ruído (medido no 1º quadro), não luz que passou
+    private var trailThreshold: Float = 0.01
+
+    /// Conta em 32 bits: o contexto de sempre trabalha em meia precisão e arredondaria a soma de novo no caminho
+    private static let floatContext = CIContext(options: [
+        .workingColorSpace: Developer.linearP3,
+        .workingFormat: CIFormat.RGBAf,
+        .cacheIntermediates: false,
+    ])
+    private var renderContext: CIContext = LongExposure.floatContext
 
     func start(seconds: Double, style: Style, handheld: Bool, completion: @escaping (CIImage?, Int) -> Void) {
         self.style = style
         self.handheld = handheld
         referenceSmall = nil
         maxShift = .zero
-        accumulated = nil
+        sum = nil
+        trail = nil
         count = 0
-        buffers = []
+        sumBuffers = []
+        trailBuffers = []
         endTime = CFAbsoluteTimeGetCurrent() + seconds
         finished = completion
         isRunning = true
@@ -42,42 +59,105 @@ final class LongExposure {
     func add(_ frame: CIImage) {
         guard isRunning else { return }
         // O tempo acabou: termina mesmo que este quadro não sirva (antes a LONGA podia nunca acabar)
-        if accumulated != nil, CFAbsoluteTimeGetCurrent() >= endTime { return stop() }
+        if sum != nil, CFAbsoluteTimeGetCurrent() >= endTime { return stop() }
         // Logo depois de ligar ainda podem chegar quadros no tamanho do visor: recomeça no tamanho novo
-        if accumulated != nil, frame.extent.size != extent.size {
+        if sum != nil, frame.extent.size != extent.size {
             guard count < 20 else { return }
-            accumulated = nil
-            buffers = []
+            sum = nil
+            trail = nil
+            sumBuffers = []
+            trailBuffers = []
             count = 0
             referenceSmall = nil
             maxShift = .zero
         }
-        if accumulated == nil {
+        if sum == nil {
             extent = frame.extent
             guard makeBuffers() else {
                 stop()
                 return
             }
         }
+        let bounds = CGRect(origin: .zero, size: extent.size)
         var shifted = frame.transformed(by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY))
         if handheld { shifted = align(shifted) }
+        if count == 0 {
+            // Ruído do quadro (detalhe de 1 px, mediana): o limite dos rastros fica em 3× ele
+            trailThreshold = max(0.004, 3 * Developer.measuredNoise(shifted.cropped(to: bounds)))
+        }
+        // Rastros: antes da soma nova, o excesso deste quadro sobre a média até aqui (o máximo puro das fotos com ruído
+        // subia o preto ~3σ e o céu ficava cinza). No fim: média + o maior excesso
+        if style == .trails, let sum, let trailKernel = Developer.trailKernel, count > 0 {
+            let previous = trail ?? CIImage(color: CIColor(red: 0, green: 0, blue: 0)).cropped(to: bounds)
+            if let nextTrail = trailKernel.apply(extent: bounds, arguments: [previous, shifted, sum, Float(1) / Float(count),
+                                                                         CIVector(x: CGFloat(trailThreshold), y: 0.05)]) {
+                let trailTarget = trailBuffers[current]
+                renderContext.render(nextTrail, to: trailTarget, bounds: bounds, colorSpace: Developer.linearP3)
+                trail = CIImage(cvPixelBuffer: trailTarget, options: [.colorSpace: Developer.linearP3])
+            }
+        }
         let next: CIImage
-        if let accumulated {
-            let kernel = style == .silk ? Developer.sumKernel : Developer.maxKernel
-            next = kernel?.apply(extent: shifted.extent, arguments: [accumulated, shifted]) ?? accumulated
+        if let sum {
+            next = Developer.sumKernel?.apply(extent: bounds, arguments: [sum, shifted]) ?? sum
         } else {
             next = shifted
         }
         // Calcula agora num dos dois buffers, alternando, para não acumular uma cadeia de filtros
-        let target = buffers[current]
+        var target = sumBuffers[current]
+        renderContext.render(next, to: target, bounds: bounds, colorSpace: Developer.linearP3)
+        // 1º quadro: conferido no buffer de 32 bits (se o formato não fosse aceito, a soma sairia preta): senão, meia precisão
+        if count == 0, renderContext === LongExposure.floatContext, !matches(next, buffer: target) {
+            dlog("Exposição longa: soma em 32 bits não conferiu; meia precisão")
+            let attributes: [CFString: Any] = [kCVPixelBufferIOSurfacePropertiesKey: [:] as [CFString: Any],
+                                               kCVPixelBufferMetalCompatibilityKey: true]
+            var half: [CVPixelBuffer] = []
+            for _ in 0..<2 {
+                var buffer: CVPixelBuffer?
+                if CVPixelBufferCreate(nil, Int(extent.width), Int(extent.height), kCVPixelFormatType_64RGBAHalf,
+                                       attributes as CFDictionary, &buffer) == kCVReturnSuccess, let buffer { half.append(buffer) }
+            }
+            guard half.count == 2 else {
+                stop()
+                return
+            }
+            sumBuffers = half
+            renderContext = Developer.context
+            target = sumBuffers[current]
+            renderContext.render(next, to: target, bounds: bounds, colorSpace: Developer.linearP3)
+        }
         current = 1 - current
-        Developer.context.render(next, to: target, bounds: CGRect(origin: .zero, size: extent.size), colorSpace: Developer.linearP3)
-        accumulated = CIImage(cvPixelBuffer: target, options: [.colorSpace: Developer.linearP3])
+        sum = CIImage(cvPixelBuffer: target, options: [.colorSpace: Developer.linearP3])
         count += 1
         if CFAbsoluteTimeGetCurrent() >= endTime { stop() }
     }
 
-    /// Desloca o quadro para cair em cima do primeiro (Vision numa versão pequena: rápido o bastante a 30 por segundo).
+    /// O quadro saiu mesmo no buffer de 32 bits? Média do verde num quadrado de 16 px no meio, lida do buffer, contra a do
+    /// quadro calculada à parte
+    private func matches(_ frame: CIImage, buffer: CVPixelBuffer) -> Bool {
+        let w = CVPixelBufferGetWidth(buffer), h = CVPixelBufferGetHeight(buffer)
+        guard w >= 32, h >= 32 else { return true }
+        let block = CGRect(x: w / 2 - 8, y: h / 2 - 8, width: 16, height: 16)
+        let average = frame.cropped(to: block).applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: block)])
+        let one = average.transformed(by: CGAffineTransform(translationX: -average.extent.minX, y: -average.extent.minY))
+        var expected = [Float](repeating: 0, count: 4)
+        Developer.context.render(one, toBitmap: &expected, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                                 format: .RGBAf, colorSpace: Developer.linearP3)
+        CVPixelBufferLockBaseAddress(buffer, .readOnly)
+        defer { CVPixelBufferUnlockBaseAddress(buffer, .readOnly) }
+        guard let base = CVPixelBufferGetBaseAddress(buffer) else { return false }
+        let rowBytes = CVPixelBufferGetBytesPerRow(buffer)
+        var total: Float = 0
+        for row in (h / 2 - 8)..<(h / 2 + 8) {
+            let line = (base + row * rowBytes).assumingMemoryBound(to: Float.self)
+            for col in (w / 2 - 8)..<(w / 2 + 8) { total += line[col * 4 + 1] }
+        }
+        let got = total / 256, want = expected[1]
+        guard got.isFinite, want.isFinite else { return false }
+        return abs(got - want) <= max(0.02, 0.1 * abs(want))
+    }
+
+    /// Desloca o quadro para cair em cima do primeiro, pela mesma busca da NOITE (pedaço do centro em dois níveis, com
+    /// fração de pixel). O Vision errava com a mão de verdade (andou 5 px, disse 28)
     private func align(_ image: CIImage) -> CIImage {
         let small = image.transformed(by: CGAffineTransform(scaleX: alignScale, y: alignScale))
         guard let referenceSmall else {
@@ -85,28 +165,33 @@ final class LongExposure {
             if let cg = Developer.context.createCGImage(small, from: small.extent) { referenceSmall = CIImage(cgImage: cg) }
             return image
         }
-        let request = VNTranslationalImageRegistrationRequest(targetedCIImage: small, options: [:])
-        guard (try? VNImageRequestHandler(ciImage: referenceSmall, options: [:]).perform([request])) != nil,
-              let observation = request.results?.first as? VNImageTranslationAlignmentObservation else { return image }
-        let tx = observation.alignmentTransform.tx / alignScale, ty = observation.alignmentTransform.ty / alignScale
+        guard let shift = Developer.coarseShift(ref: referenceSmall, img: small, scale: alignScale) else { return image }
+        let tx = shift.x, ty = shift.y
         // Pulo grande demais é erro do alinhamento: usa o quadro como veio
         guard abs(tx) < extent.width * 0.12, abs(ty) < extent.height * 0.12 else { return image }
         maxShift = CGSize(width: max(maxShift.width, abs(tx)), height: max(maxShift.height, abs(ty)))
-        return image.transformed(by: CGAffineTransform(translationX: tx, y: ty)).cropped(to: CGRect(origin: .zero, size: extent.size))
+        return image.clampedToExtent().transformed(by: CGAffineTransform(translationX: tx, y: ty))
+            .cropped(to: CGRect(origin: .zero, size: extent.size))
     }
 
     func stop() {
         guard isRunning else { return }
         isRunning = false
-        var result = accumulated
-        if style == .silk, let sum = accumulated, count > 0 {
+        var result: CIImage?
+        if let sum, count > 0 {
             let k = CGFloat(1) / CGFloat(count)
-            result = sum.applyingFilter("CIColorMatrix", parameters: [
+            let mean = sum.applyingFilter("CIColorMatrix", parameters: [
                 "inputRVector": CIVector(x: k, y: 0, z: 0, w: 0),
                 "inputGVector": CIVector(x: 0, y: k, z: 0, w: 0),
                 "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0),
                 "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
             ])
+            // Rastros: média (preto no lugar) + o que passou de luz acima dela
+            if style == .trails, let trail {
+                result = Developer.sumKernel?.apply(extent: mean.extent, arguments: [mean, trail]) ?? mean
+            } else {
+                result = mean
+            }
         }
         // Na mão: corta a borda que nem todos os quadros cobriram
         if handheld, let image = result, maxShift != .zero {
@@ -123,12 +208,14 @@ final class LongExposure {
             CVPixelBufferCreate(nil, Int(size.width), Int(size.height), kCVPixelFormatType_64RGBAHalf,
                                 [kCVPixelBufferIOSurfacePropertiesKey: [:] as [CFString: Any]] as CFDictionary, &out)
             if let out {
-                Developer.context.render(image, to: out, bounds: CGRect(origin: .zero, size: size), colorSpace: Developer.linearP3)
+                renderContext.render(image, to: out, bounds: CGRect(origin: .zero, size: size), colorSpace: Developer.linearP3)
                 result = CIImage(cvPixelBuffer: out, options: [.colorSpace: Developer.linearP3])
             }
         }
-        buffers = []
-        accumulated = nil
+        sumBuffers = []
+        trailBuffers = []
+        sum = nil
+        trail = nil
         let done = finished
         finished = nil
         done?(result, count)
@@ -137,11 +224,32 @@ final class LongExposure {
     private func makeBuffers() -> Bool {
         let attributes: [CFString: Any] = [kCVPixelBufferIOSurfacePropertiesKey: [:] as [CFString: Any],
                                            kCVPixelBufferMetalCompatibilityKey: true]
-        for _ in 0..<2 {
-            var buffer: CVPixelBuffer?
-            guard CVPixelBufferCreate(nil, Int(extent.width), Int(extent.height), kCVPixelFormatType_64RGBAHalf,
-                                      attributes as CFDictionary, &buffer) == kCVReturnSuccess, let buffer else { return false }
-            buffers.append(buffer)
+        func make(_ format: OSType, _ n: Int) -> [CVPixelBuffer]? {
+            var list: [CVPixelBuffer] = []
+            for _ in 0..<n {
+                var buffer: CVPixelBuffer?
+                guard CVPixelBufferCreate(nil, Int(extent.width), Int(extent.height), format,
+                                          attributes as CFDictionary, &buffer) == kCVReturnSuccess, let buffer else { return nil }
+                list.append(buffer)
+            }
+            return list
+        }
+        // Soma em 32 bits; sem memória para isso, meia precisão como antes (e o contexto de sempre)
+        if let float = make(kCVPixelFormatType_128RGBAFloat, 2) {
+            sumBuffers = float
+            renderContext = LongExposure.floatContext
+        } else if let half = make(kCVPixelFormatType_64RGBAHalf, 2) {
+            sumBuffers = half
+            renderContext = Developer.context
+            dlog("Exposição longa: soma em meia precisão (sem memória para 32 bits)")
+        } else {
+            return false
+        }
+        if style == .trails {
+            guard let half = make(kCVPixelFormatType_64RGBAHalf, 2) else { return false }
+            trailBuffers = half
+        } else {
+            trailBuffers = []
         }
         current = 0
         return true

@@ -127,7 +127,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         // 24: com todas as nítidas juntadas, o detalhe sobe com o número de fotos (laboratório: 16 +4,7 dB, 24 +5,1)
         case .superZoom: return 24
         case .night, .average: return 8
-        case .moon: return 5
+        // LUA como o SUPER ZOOM: 16 fotos rápidas de 12 MP (com 5 de 48 MP a conta de memória deixava 2 e cada uma levava 1,6 s)
+        case .moon: return 16
         case .stars: return 16
         case .focusStack: return 7
         }
@@ -163,7 +164,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .superZoom: return "Zoom de 8× a 25× na mão: 24 fotos rápidas e sem tremido; todas as nítidas são alinhadas e resolvidas juntas numa conta só, que tira o borrão sem inventar detalhe."
         case .night: return "Fotos alinhadas em fração de pixel e somadas sem fantasma, mais uma curta para os postes não estourarem. Apoiado no escuro: 1 s por foto. ✦ põe estrela nas luzes."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
-        case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 5 fotos de 48 MP juntadas no sub-pixel: mais detalhe nas crateras."
+        case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 16 fotos rápidas (fica com as 8 ou mais nítidas) juntadas no sub-pixel: mais detalhe nas crateras."
         case .flash: return "Uma foto RAW com o flash."
         case .focusStack: return "7 fotos com foco do perto ao longe, juntadas no mais nítido. Apoie o iPhone."
         case .average: return "8 fotos somadas: menos ruído, ou água lisa com obturador lento."
@@ -2531,7 +2532,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // Macro empilhado em 48 MP: o recorte do macro precisa do sensor inteiro
         // SUPER ZOOM em 12 MP: nas fotos de 48 MP o iPhone ignora o obturador rápido (o relatório mostrou 1/30 s
         // pedido 1/170) e cada uma leva 1,6 s; em 12 MP o obturador vale e saem 3 por segundo, quase sem tremido
-        let fullResolution = mode == .superRes || mode == .moon || macroStacking
+        // LUA também em 12 MP, como o SUPER ZOOM (a 8× o recorte cabe nos 12 MP e a junção dobra a resolução)
+        let fullResolution = mode == .superRes || macroStacking
         let nightPlan = mode == .night && !manualExposure
         // Noite: tempo escolhido, ou no Auto 1/2 s se o iPhone está apoiado e 1/8 s na mão
         let nightSeconds = nightTime.seconds ?? (veryDark ? 1.0 : (isSteady ? 0.5 : handheldNightSeconds))
@@ -2540,12 +2542,18 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let fastPlan = (mode == .superRes || mode == .superZoom) && !manualExposure
         let fastSeconds = min(1.0 / 60, 1.0 / (30 * max(Double(zoom), 1)))
         let lockFocus = !manualFocus
-        let waitForStill = mode == .superZoom
+        // LUA e FOCO EMPILHADO: todas as fotos com a mesma cor (e no foco empilhado a mesma luz; a LUA já vem com exposição
+        // manual). Antes nada travava: cada foto do foco empilhado saía com um brilho e a junção marcava as emendas
+        let lockPlan = (mode == .moon || mode == .focusStack) && !nightPlan && !fastPlan
+        let lockExposure = mode == .focusStack && !manualExposure
+        let waitForStill = mode == .superZoom || mode == .moon
         sessionQueue.async {
             let shot = fix(options)
             let run = {
+                // NOITE precisa de pelo menos 4 para valer a junção; os outros modos seguem com 2
                 self.shootSequence(index: 0, count: count, positions: positions, frames: [], fullResolution: fullResolution,
-                                   shortLast: shortLast, handGuard: nightPlan && nightAuto && nightSeconds > 0.26) { result in
+                                   shortLast: shortLast, handGuard: nightPlan && nightAuto && nightSeconds > 0.26,
+                                   minimumFrames: mode == .night ? 4 : 2) { result in
                     dlog("Sequência de \(count) fotografada: \(Diagnostics.ms(since: t0))")
                     DispatchQueue.main.async {
                         self.stackProgress = nil
@@ -2558,7 +2566,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 }
             }
             let begin = {
-                guard nightPlan || fastPlan, let d = self.device, (try? d.lockForConfiguration()) != nil else { return run() }
+                guard nightPlan || fastPlan || lockPlan, let d = self.device, (try? d.lockForConfiguration()) != nil else { return run() }
+                if lockPlan {
+                    attempt("Travar cor e luz da sequência") {
+                        if d.isWhiteBalanceModeSupported(.locked) { d.whiteBalanceMode = .locked }
+                        if lockExposure, d.isExposureModeSupported(.locked) { d.exposureMode = .locked }
+                    }
+                    d.unlockForConfiguration()
+                    return run()
+                }
                 let f = d.activeFormat
                 if fastPlan || nightPlan {
                     // Todas as fotos iguais: cor e foco travados na primeira (a exposição fica fixa logo abaixo).
@@ -2632,8 +2648,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// `shortLast`: a última foto sai 3 paradas mais escura (1/8 do tempo), para as luzes fortes.
+    /// `minimumFrames`: se uma foto falha no meio, segue com as que já chegaram quando são pelo menos essas
     private func shootSequence(index: Int, count: Int, positions: [Float]?, frames: [CapturedFrame],
                                fullResolution: Bool = false, shortLast: Bool = false, handGuard: Bool = false,
+                               minimumFrames: Int = 2,
                                completion: @escaping (Result<[CapturedFrame], Error>) -> Void) {
         guard index < count else { return completion(.success(frames)) }
         let isShort = shortLast && index == count - 1
@@ -2651,7 +2669,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 let iso = min(max(d.iso * Float(current / target), f.minISO), f.maxISO)
                 dlog(String(format: "Noite: a mão mexeu na foto %d → %.3fs ISO %.0f nas restantes", index + 1, target, iso))
                 let next = { self.shootSequence(index: index, count: count, positions: positions, frames: frames,
-                                                fullResolution: fullResolution, shortLast: shortLast, completion: completion) }
+                                                fullResolution: fullResolution, shortLast: shortLast,
+                                                minimumFrames: minimumFrames, completion: completion) }
                 // O quadro longo que já estava sendo exposto precisa passar (senão a próxima ainda sai longa)
                 let go = onceOnSessionQueue(timeout: 2 + target * 2 + current) {
                     self.sessionQueue.asyncAfter(deadline: .now() + current + 0.05, execute: next)
@@ -2665,7 +2684,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.captureRAW(forStack: !fullResolution) { result in
                 switch result {
                 case .failure(let error):
-                    completion(.failure(error))
+                    // Uma foto que falha no meio não joga fora as que já chegaram (antes a sequência inteira se perdia)
+                    let normal = frames.filter { $0.exposureBias >= -1 }.count
+                    if normal >= minimumFrames {
+                        dlog("⚠️ Sequência: a foto \(index + 1) de \(count) falhou (\(error.localizedDescription)); seguindo com \(frames.count)")
+                        completion(.success(frames))
+                    } else {
+                        completion(.failure(error))
+                    }
                 case .success(var data):
                     if isShort { data.exposureBias = -3 }
                     DispatchQueue.main.async { self.stackProgress = "\(index + 1)/\(count)" }
@@ -2673,7 +2699,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                         self.shootSequence(index: index + 1, count: count, positions: positions,
                                            frames: frames + [self.spilled(data)],
                                            fullResolution: fullResolution, shortLast: shortLast, handGuard: handGuard,
-                                           completion: completion)
+                                           minimumFrames: minimumFrames, completion: completion)
                     }
                 }
             }
@@ -2934,9 +2960,26 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             // Luz, cor e foco travados: as emendas não mudam de brilho nem de cor
             if let d = self.device, (try? d.lockForConfiguration()) != nil {
                 attempt("Travar para o panorama") {
-                    if d.isExposureModeSupported(.locked) { d.exposureMode = .locked }
                     if d.isWhiteBalanceModeSupported(.locked) { d.whiteBalanceMode = .locked }
                     if d.isFocusModeSupported(.locked) { d.focusMode = .locked }
+                }
+                // Girando, o automático travado em 1/30–1/60 s borrava 20–60 px: obturador até 1/250 s, o ISO compensa (até o
+                // máximo; se faltar luz, o tempo sobe só o que falta). Exposição manual = travada também
+                let f = d.activeFormat
+                let current = d.exposureDuration.seconds
+                var seconds = min(current, 1.0 / 250)
+                var iso = d.iso * Float(current / max(seconds, 1e-6))
+                if iso > f.maxISO {
+                    seconds = min(current, seconds * Double(iso / f.maxISO))
+                    iso = f.maxISO
+                }
+                if current.isFinite, seconds < current * 0.95 {
+                    dlog(String(format: "Panorama: %.4fs ISO %.0f → %.4fs ISO %.0f", current, d.iso, seconds, iso))
+                    d.safeCustomExposure(seconds: seconds, iso: iso)
+                } else {
+                    attempt("Travar a luz do panorama") {
+                        if d.isExposureModeSupported(.locked) { d.exposureMode = .locked }
+                    }
                 }
                 d.unlockForConfiguration()
             }
@@ -3949,7 +3992,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 } else if mode == .superZoom {
                     output = Developer.superResolution(frames, options: options, keep: 10)
                 } else if mode == .moon {
-                    output = Developer.superResolution(frames, options: options, sharpen: 0.9)
+                    // Pelo menos 8 das 16 (e toda nítida); a nitidez é medida onde está a Lua
+                    output = Developer.superResolution(frames, options: options, keep: 8, moon: true)
                 } else if mode == .photo, frames.count > 1 {
                     output = Developer.fuse(frames, options: options)
                 } else if let kind = mode.stackKind {

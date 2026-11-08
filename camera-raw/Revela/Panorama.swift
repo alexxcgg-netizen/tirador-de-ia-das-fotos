@@ -92,7 +92,8 @@ final class PanoramaCapture {
         if report { lastReport = now }
         lock.unlock()
         if report {
-            let warning: String? = speed > 0.9 ? "Mais devagar" : (drift > 0.08 ? "Mantenha na linha" : nil)
+            // O quadro só é guardado abaixo de ~0,4 rad/s (logo abaixo): o aviso acompanha
+            let warning: String? = speed > 0.4 ? "Mais devagar" : (drift > 0.08 ? "Mantenha na linha" : nil)
             DispatchQueue.main.async { self.onProgress?(progress, warning) }
         }
         if reached { DispatchQueue.main.async { self.onLimit?() } }
@@ -120,8 +121,11 @@ final class PanoramaCapture {
         }
         let current = yaw
         let first = takenCount == 0
-        // Rápido demais o quadro sai tremido: espera a mão desacelerar
-        let take = first || (abs(current) >= nextYaw && speed < 1.4)
+        // Rápido demais o quadro sai tremido: espera a mão desacelerar. Com o obturador até 1/250 s, 0,4 rad/s borra ~3 px
+        // (antes aceitava até 1,4 rad/s com 1/30–1/60 s: 20–60 px). Se a mão não desacelera e a parte repetida já está
+        // acabando (passou meio passo do ponto), aceita até 0,8 rad/s para não abrir buraco no panorama
+        let late = abs(current) >= nextYaw + step * 0.5
+        let take = first || (abs(current) >= nextYaw && (speed < 0.4 || (late && speed < 0.8)))
         if take {
             nextYaw = (first ? 0 : abs(current)) + step
             takenCount += 1
@@ -234,7 +238,13 @@ extension Developer {
             let overlapStart = rightward ? b : a
             let overlapEnd = rightward ? a + W : b + W
             let width = max(overlapEnd - overlapStart, 1)
-            let p0 = overlapStart + width * 0.3, p1 = overlapStart + width * 0.7
+            // Emenda na coluna em que os dois quadros mais concordam (gente andando, paralaxe de perto: a emenda fixa no meio
+            // cortava no meio deles e aparecia duplicado), com transição curta em volta dela (antes 30–70% fixo)
+            let previous = warped[i - 1].transformed(by: CGAffineTransform(translationX: positions[i - 1].x, y: positions[i - 1].y))
+            let yLow = max(positions[i - 1].y, positions[i].y), yHigh = min(positions[i - 1].y, positions[i].y) + H
+            let seam = seamColumn(previous, image, overlap: CGRect(x: overlapStart, y: yLow, width: width, height: yHigh - yLow))
+                ?? overlapStart + width * 0.5
+            let p0 = seam - width * 0.1, p1 = seam + width * 0.1
             let ramp = CIFilter(name: "CILinearGradient", parameters: [
                 "inputPoint0": CIVector(x: p0, y: 0),
                 "inputPoint1": CIVector(x: p1, y: 0),
@@ -267,5 +277,46 @@ extension Developer {
         dlog(String(format: "Panorama emendado: %d quadros → %.0f×%.0f em %@", warped.count, rect.width, rect.height,
                     Diagnostics.ms(since: t0)))
         return output
+    }
+
+    /// Coluna da emenda dentro da parte repetida (coordenadas do panorama): a de menor diferença de brilho entre os dois
+    /// quadros, numa versão de ~96 px de largura, entre 20% e 80% da parte repetida. nil se a parte repetida é pequena
+    private static func seamColumn(_ a: CIImage, _ b: CIImage, overlap: CGRect) -> CGFloat? {
+        guard overlap.width >= 16, overlap.height >= 16 else { return nil }
+        let k = min(1, 96 / overlap.width)
+        let w = Int((overlap.width * k).rounded(.down)), h = Int((overlap.height * k).rounded(.down))
+        guard w >= 8, h >= 8 else { return nil }
+        func small(_ image: CIImage) -> [Float] {
+            let reduced = image.cropped(to: overlap)
+                .transformed(by: CGAffineTransform(translationX: -overlap.minX, y: -overlap.minY))
+                .applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: k, kCIInputAspectRatioKey: 1])
+            var pixels = [Float](repeating: 0, count: w * h * 4)
+            context.render(reduced, toBitmap: &pixels, rowBytes: w * 16, bounds: CGRect(x: 0, y: 0, width: w, height: h),
+                           format: .RGBAf, colorSpace: nil)
+            return pixels
+        }
+        let pa = small(a), pb = small(b)
+        var cost = [Float](repeating: 0, count: w)
+        for y in 0..<h {
+            for x in 0..<w {
+                let o = (y * w + x) * 4
+                let la: Float = 0.2126 * pa[o] + 0.7152 * pa[o + 1] + 0.0722 * pa[o + 2]
+                let lb: Float = 0.2126 * pb[o] + 0.7152 * pb[o + 1] + 0.0722 * pb[o + 2]
+                let d = abs(la - lb)
+                if d.isFinite { cost[x] += d }
+            }
+        }
+        let lo = max(1, w / 5), hi = min(w - 2, w * 4 / 5)
+        guard hi > lo else { return nil }
+        var best = lo
+        var bestCost = Float.greatestFiniteMagnitude
+        for x in lo...hi {
+            let c = cost[x - 1] + cost[x] + cost[x + 1]
+            if c < bestCost {
+                bestCost = c
+                best = x
+            }
+        }
+        return overlap.minX + (CGFloat(best) + 0.5) / k
     }
 }
