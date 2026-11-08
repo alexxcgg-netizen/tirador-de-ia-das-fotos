@@ -125,7 +125,11 @@ final class PanoramaCapture {
         // (antes aceitava até 1,4 rad/s com 1/30–1/60 s: 20–60 px). Se a mão não desacelera e a parte repetida já está
         // acabando (passou meio passo do ponto), aceita até 0,8 rad/s para não abrir buraco no panorama
         let late = abs(current) >= nextYaw + step * 0.5
-        let take = first || (abs(current) >= nextYaw && (speed < 0.4 || (late && speed < 0.8)))
+        // Acima de 0,8 rad/s nenhum quadro era guardado e o panorama saía com um buraco (transparente/preto). O passo é 0,42
+        // do campo de visão: 0,9 passo depois do ponto só ~20% do quadro ainda repete o anterior (o encaixe pede 15%). Aí
+        // guarda de qualquer jeito: tremido é melhor que buraco
+        let lastChance = abs(current) >= nextYaw + step * 0.9
+        let take = first || (abs(current) >= nextYaw && (speed < 0.4 || (late && speed < 0.8) || lastChance))
         if take {
             nextYaw = (first ? 0 : abs(current)) + step
             takenCount += 1
@@ -190,8 +194,18 @@ extension Developer {
               let cylinderKernel else { return nil }
         let W = first.extent.width, H = first.extent.height
         let f = (W / 2) / CGFloat(tan(fov / 2))
+        // Sem parte repetida entre dois quadros seguidos (giro rápido demais, quadro perdido) ficava um buraco transparente
+        // no meio: o panorama vai até o último quadro emendado sem falha
+        var continuous = 1
+        while continuous < frames.count, abs(f * CGFloat(frames[continuous].yaw - frames[continuous - 1].yaw)) < W {
+            continuous += 1
+        }
+        if continuous < frames.count {
+            dlog("⚠️ Panorama: quadros \(continuous) e \(continuous + 1) sem parte repetida: fica até o quadro \(continuous) de \(frames.count)")
+        }
         let center = CIVector(x: W / 2, y: H / 2)
-        let warped: [CIImage] = images.map { image in
+        // Daqui em diante tudo conta por `warped` (só os quadros contínuos)
+        let warped: [CIImage] = images.prefix(continuous).map { image in
             let img = image.transformed(by: CGAffineTransform(translationX: -image.extent.minX, y: -image.extent.minY))
             return cylinderKernel.apply(extent: CGRect(x: 0, y: 0, width: W, height: H),
                                         roiCallback: { _, _ in img.extent },

@@ -304,6 +304,91 @@ def _estrelas(root, log):
     check(area, metas[2][0], f"{worst:.2f}", worst <= 0.10, metas[2][1])
 
 
+def _estrelas_polo(root, log):
+    """P04b: polo dentro da foto, estrelas finas, luz parada 2×2 no chão, quentes onde o céu anda ≥ 5 px e trilhas de avião.
+    As posições vêm do registro, no PNG (x, linha a partir de cima), já onde caem na foto de referência."""
+    area = "ESTRELAS polo"
+    metas = [("estrelas perto do polo (≤ 1,3 px de giro): pico ÷ céu parado", "≥ 0,80"),
+             ("luz parada 2×2 no chão: pico ÷ parado", "≥ 0,80"),
+             ("pixels quentes que sobram ÷ 1 foto", "≤ 0,10"),
+             ("trilha de avião em 1 foto: sobra ÷ σ do céu de 1 foto", "≤ 1,5"),
+             ("trilha em 2 fotos: sobra ÷ σ do céu de 1 foto", "≤ 1,5")]
+    m = re.search(r"ESTRELAS POLO: quentes ((?:\d+,\d+ ?)+) · luz (\d+),(\d+) · trilha1 ([-\d.,]+) · trilha2 ([-\d.,]+) · "
+                  r"perto do polo ([-\d.,;]+)", log)
+    ps, pm, p1 = (_png(root, f"estrelas/polo_{k}") for k in ("parado", "girando", "uma_foto"))
+    if not (m and ps and pm and p1):
+        return _sem(area, metas)
+    still, moving, single = _same(luma(load(ps)), luma(load(pm)), luma(load(p1)))
+    h, w = still.shape
+
+    def peak(lum, x, y, search):
+        c, r = int(np.floor(x)), int(np.floor(y))
+        if not (search <= r < h - search and search <= c < w - search):
+            return None
+        top = float(lum[r - search:r + search + 1, c - search:c + search + 1].max())
+        return top - float(np.median(lum[max(0, r - 10):r + 11, max(0, c - 10):c + 11]))
+
+    ratios = []
+    for t in m.group(6).split(";"):
+        x, y = (float(v) for v in t.split(","))
+        p0, pm_ = peak(still, x, y, 2), peak(moving, x, y, 3)
+        if p0 is not None and pm_ is not None and p0 > 0.05:
+            ratios.append(pm_ / p0)
+    if len(ratios) >= 3:
+        rp = float(np.median(ratios))
+        check(area, metas[0][0], f"{rp:.2f} ({len(ratios)} estrelas)", rp >= 0.8, metas[0][1])
+    else:
+        check(area, metas[0][0], f"{len(ratios)} estrelas", False, metas[0][1])
+    lx, ly = int(m.group(2)) + 1.0, int(m.group(3)) + 1.0
+    l0, l1 = peak(still, lx, ly, 2), peak(moving, lx, ly, 2)
+    if l0 is not None and l1 is not None and l0 > 0.05:
+        check(area, metas[1][0], f"{l1 / l0:.2f}", l1 / l0 >= 0.8, metas[1][1])
+    else:
+        check(area, metas[1][0], "luz sumiu" if l0 else SEM, False, metas[1][1])
+    hot = [tuple(int(v) for v in t.split(",")) for t in m.group(1).split()]
+
+    def excess(lum, c, r):
+        core = float(lum[max(0, r - 1):r + 2, max(0, c - 1):c + 2].max())
+        return core - float(np.median(lum[max(0, r - 6):r + 7, max(0, c - 6):c + 7]))
+
+    worst = max(excess(moving, c, r) / max(excess(single, c, r), 1e-6) for c, r in hot)
+    check(area, metas[2][0], f"{worst:.2f}", worst <= 0.10, metas[2][1])
+    # σ do céu numa foto só: desvio robusto (mediana) do detalhe fino no céu de cima, sem as estrelas
+    sky = single[int(h * 0.1):int(h * 0.45), 16:w - 16]
+    hp = sky - _gauss(sky, 3)
+    sigma = 1.4826 * float(np.median(np.abs(hp - np.median(hp))))
+
+    def residual(seg):
+        x0, y0, x1, y1 = seg
+        length = float(np.hypot(x1 - x0, y1 - y0))
+        ux, uy = (x1 - x0) / length, (y1 - y0) / length
+        nx, ny = -uy, ux
+        vals = []
+        for s in np.arange(12, length - 12, 3):
+            cx, cy = x0 + ux * s, y0 + uy * s
+
+            def at(t):
+                c, r = int(np.floor(cx + nx * t)), int(np.floor(cy + ny * t))
+                return float(moving[r, c]) if 0 <= r < h and 0 <= c < w else None
+
+            prof = [at(t) for t in range(-5, 6)]
+            bgv = [at(t) for t in list(range(-14, -7)) + list(range(8, 15))]
+            if any(v is None for v in prof + bgv):
+                continue
+            bg = float(np.median(bgv))
+            # Integral do excesso no perfil ÷ a do traço desenhado (σ 0,7 px: 1,75 px) = altura de uma trilha igual
+            vals.append(sum(v - bg for v in prof) / 1.75)
+        return float(np.median(vals)) if vals else None
+
+    for k, meta in ((4, metas[3]), (5, metas[4])):
+        seg = [float(v) for v in m.group(k).split(",")]
+        rv = residual(seg) if len(seg) == 4 else None
+        if rv is None or sigma <= 0:
+            _sem(area, [meta])
+            continue
+        check(area, meta[0], f"{rv / sigma:.2f}", rv / sigma <= 1.5, meta[1])
+
+
 def _media(root, log):
     area = "MÉDIA"
     metas = [("nitidez com fração de pixel ÷ foto ideal", "≥ 0,90"), ("ruído 8 fotos ÷ 1 foto (≈ 1/√8)", "≤ 0,42")]
@@ -352,6 +437,19 @@ def _foco(root, log):
         check(area, metas[2][0], f"{step:.3f}", step <= 0.02, metas[2][1])
     else:
         _sem(area, metas[2:])
+    # 4 fotos, a 1ª toda fora de foco e cada terço nítido numa delas (vizinhas com σ 1 e 2): a pior das três faixas
+    quatro = ("4 fotos (1ª fora de foco): nitidez ÷ cena nítida no pior terço", "≥ 0,85")
+    pq = _png(root, "foco/quatro")
+    if p["nitida"] and pq:
+        sharp, q = _same(luma(load(p["nitida"])), luma(load(pq)))
+        h, w = sharp.shape
+        mg = 24
+        cuts = [0, w // 3, 2 * w // 3, w]
+        zones = [(slice(mg, h - mg), slice(max(cuts[k] + 40, mg), min(cuts[k + 1] - 40, w - mg))) for k in range(3)]
+        r = min(_edge_mean(q[z]) / max(_edge_mean(sharp[z]), 1e-6) for z in zones)
+        check(area, quatro[0], f"{r:.2f}", r >= 0.85, quatro[1])
+    else:
+        _sem(area, [quatro])
 
 
 def _foto_consistencia(root, log):
@@ -464,9 +562,85 @@ def _lua(root, log):
         _sem(area, metas[2:])
 
 
+def _between(log, start, end):
+    a = log.find(start)
+    b = log.find(end, a + 1) if a >= 0 else -1
+    return log[a:b] if a >= 0 and b >= 0 else None
+
+
+def _estourado(root, log):
+    """P11: janela estourada de 14% (min(cena + ruído, 1) em cada foto). O ajuste do ruído da rajada desabava com ≥ ~6%
+    estourado e as junções viravam uma foto só."""
+    area = "ESTOURADO"
+    metas = [("FOTO 3×: ruído no liso juntada ÷ foto única", "≤ 0,60"),
+             ("NOITE: erro juntada vs foto única (vs cena sem ruído)", "≥ +3 dB"),
+             ("SUPER ZOOM: ganho com corte − ganho sem corte", "≥ −0,5 dB"),
+             ("SUPER ZOOM: σ ajustado com corte ÷ sem corte", "0,5–2")]
+    pu, pj = _png(root, "estourado/foto3x_uma"), _png(root, "estourado/foto3x_juntada")
+    if pu and pj:
+        one, fused = _same(luma(load(pu)), luma(load(pj)))
+        # Fora a janela estourada e a beirada dela (no liso dela as duas têm ruído zero e dominariam o "liso"): o que é claro
+        # demais ou chapado de verdade (variação < 2 códigos em 9×9 na foto única), alargado 6 px
+        chapado = (_maxfilt(one, 4) + _maxfilt(-one, 4)) < 2 / 255
+        valid = (_maxfilt(one, 6) < 0.95) & (_maxfilt(fused, 6) < 0.95) & (_maxfilt(chapado.astype(np.float64), 6) < 0.5)
+        valid[:16], valid[-16:], valid[:, :16], valid[:, -16:] = False, False, False, False
+        if valid.sum() < 1000:
+            check(area, metas[0][0], "sem liso", False, metas[0][1])
+        else:
+            # O liso pela textura da foto única (os 30% menos texturizados fora da janela), o mesmo lugar nas duas
+            tex = np.abs(_gauss(one, 2) - _gauss(one, 8))
+            sel = valid & (tex <= np.percentile(tex[valid], 30))
+            flat_noise = lambda l: float(np.abs(l - _gauss(l, 2))[sel].mean())
+            r = flat_noise(fused) / max(flat_noise(one), 1e-6)
+            check(area, metas[0][0], f"{r:.2f}", r <= 0.6, metas[0][1])
+    else:
+        _sem(area, metas[0:1])
+
+    def center(a, side=600):
+        h, w = a.shape[:2]
+        s = min(side, h, w)
+        y0, x0 = (h - s) // 2, (w - s) // 2
+        return a[y0:y0 + s, x0:x0 + s]
+
+    pi, p1, pm = (_png(root, f"estourado/noite_{k}") for k in ("ideal", "uma", "juntada"))
+    if pi and p1 and pm:
+        ideal, one, merged = _same(load(pi), load(p1), load(pm))
+        gain = psnr(center(merged), center(ideal), reach=4) - psnr(center(one), center(ideal), reach=4)
+        check(area, metas[1][0], f"{gain:+.2f} dB", gain >= 3, metas[1][1])
+    else:
+        _sem(area, metas[1:2])
+    for mode in ("foto3x", "noite"):
+        inner = _between(log, f"ESTOURADO {mode}: início", f"ESTOURADO {mode}: fim")
+        fit = re.search(r"σ em 0,18 ([\d.]+) · diferença no centro ([\d.]+)", inner or "")
+        if fit:
+            rows.append((area, f"{mode}: σ ajustado (detalhe) / diferença no centro (só informação)",
+                         f"{float(fit.group(1)):.5f} / {float(fit.group(2)):.5f}", "", ""))
+    gains, sigmas = {}, {}
+    for label in ("corte", "livre"):
+        pv, pu1, ps = (_png(root, f"estourado/superzoom_{label}_{k}") for k in ("verdade", "uma", "super"))
+        if pv and pu1 and ps:
+            t, one, sr = _same(load(pv), load(pu1), load(ps))
+            gains[label] = psnr(center(sr), center(t), reach=4) - psnr(center(one), center(t), reach=4)
+        inner = _between(log, f"ESTOURADO superzoom_{label}: início", f"ESTOURADO superzoom_{label}: fim")
+        fit = re.search(r"ruído a ([-\d.e+]+) b ([-\d.e+]+)", inner or "")
+        if fit:
+            sigmas[label] = max(float(fit.group(1)) * 0.18 + float(fit.group(2)), 0.0) ** 0.5
+    if len(gains) == 2:
+        d = gains["corte"] - gains["livre"]
+        check(area, metas[2][0], f"{d:+.2f} dB ({gains['corte']:+.2f} / {gains['livre']:+.2f})", d >= -0.5, metas[2][1])
+    else:
+        _sem(area, metas[2:3])
+    if len(sigmas) == 2 and sigmas["livre"] > 0:
+        q = sigmas["corte"] / sigmas["livre"]
+        check(area, metas[3][0], f"{q:.2f}", 0.5 <= q <= 2, metas[3][1])
+    else:
+        _sem(area, metas[3:4])
+
+
 def prevencao(root):
     log = _log_text(root)
-    for fn in (_geometria, _longa, _panorama, _estrelas, _media, _foco, _foto_consistencia, _noite_ruim, _fantasmas, _lua):
+    for fn in (_geometria, _longa, _panorama, _estrelas, _estrelas_polo, _media, _foco, _foto_consistencia, _noite_ruim,
+               _fantasmas, _lua, _estourado):
         try:
             fn(root, log)
         except Exception as e:  # um teste com saída estranha não derruba o placar: vira FALTA com o erro

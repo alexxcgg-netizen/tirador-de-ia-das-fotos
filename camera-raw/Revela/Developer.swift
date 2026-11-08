@@ -675,6 +675,9 @@ enum Developer {
     static let skyEvidenceKernel = kernel("revelaSkyEvidence")
     static let skyMaskKernel = kernel("revelaSkyMask")
     static let sigmaClipKernel = kernel("revelaSigmaClip")
+    static let secondMaxKernel = kernel("revelaSecondMax")
+    static let trimmedMeanKernel = kernel("revelaTrimmedMean")
+    static let trimmedSpreadKernel = kernel("revelaTrimmedSpread")
     static let squareKernel = kernel("revelaMultiply")
     static let coverageMaskKernel = kernel("revelaCoverageMask")
     static let focusWeightKernel = kernel("revelaFocusWeight")
@@ -1199,10 +1202,12 @@ enum Developer {
     static func stack(_ captured: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
                       robust: Bool = false, starPoints: Int = 0, night: Bool = true, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
-        // NOITE, FOTO 3× e ESTRELAS: RAW aberto sem a redução de ruído e a nitidez de cada foto (a limpeza de depois conta com
-        // a junção). Na MÉDIA não (a revelação dela não tem limpeza própria) nem no foco empilhado (lá a nitidez decide qual
-        // foto vale e o ruído contaria como nitidez)
-        let allFrames = kind == .average && (robust || removeOutliers) ? captured.map { frame -> CapturedFrame in
+        // NOITE e ESTRELAS: RAW aberto sem a redução de ruído e a nitidez de cada foto (a limpeza de depois conta com a junção:
+        // nightFinish mede o ruído que sobrou e limpa por ele). Na FOTO 3× não: onde algo se mexeu fica só a referência, e
+        // sem a redução da Apple ela saía com o ruído cru do sensor ao lado da FOTO de 1 quadro (que tem a redução e a
+        // nitidez, e para quem photoFinish/enhanced foram calibrados). Na MÉDIA também não (a revelação dela não tem
+        // limpeza própria) nem no foco empilhado (lá a nitidez decide qual foto vale e o ruído contaria como nitidez)
+        let allFrames = kind == .average && ((robust && night) || removeOutliers) ? captured.map { frame -> CapturedFrame in
             var f = frame
             f.merge = true
             return f
@@ -1223,7 +1228,9 @@ enum Developer {
                 return sharpnessScore(small.cropped(to: CGRect(x: (e.midX - side / 2).rounded(), y: (e.midY - side / 2).rounded(),
                                                                width: side, height: side)))
             }
-            if let best = scores.indices.max(by: { scores[$0] < scores[$1] }), best != 0 {
+            // ...que encaixe nas outras: a de puro ruído tem o laplaciano mais alto (trustedReference)
+            let best = trustedReference(frames, scores: scores)
+            if best != 0 {
                 frames.swapAt(0, best)
                 scores.swapAt(0, best)
                 dlog(String(format: "Noite: referência é a foto %d (a mais nítida)", best + 1))
@@ -1273,7 +1280,11 @@ enum Developer {
             // Onde quem se mexeu ficou só com a referência: limpeza mais forte por 1/√N_eff (sem isso a pessoa andando saía
             // com o ruído de uma foto só no meio da noite lisa)
             var coverage: CIImage?
-            merged = robustMerge(count: frames.count, extent: extent, frame: aligned, coverage: { coverage = $0 }).map { night in
+            // Quantas fotos entraram de verdade (a que não encaixou sai): a limpeza e o ISO seguem esse número, não o de
+            // fotos tiradas. A FOTO 3× (bloco abaixo) pode usar o mesmo mergedCount no lugar de frames.count
+            var mergedCount = frames.count
+            merged = robustMerge(count: frames.count, extent: extent, frame: aligned, coverage: { coverage = $0 },
+                                 used: { mergedCount = $0 }).map { night in
                 let exif = reference.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
                 let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 800
                 var out = materialize(night, extent: extent)
@@ -1301,8 +1312,8 @@ enum Developer {
                     let gain = Float(min(measured, asked * 1.5))
                     guard gain >= 2 else {
                         dlog(String(format: "Noite: a foto curta saiu sem ser curta (%.1f×): fica de fora", measured))
-                        return coverageDenoise(nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady),
-                                               coverage: coverage, frames: frames.count)
+                        return coverageDenoise(nightFinish(out, iso: iso, frameCount: mergedCount, starPoints: starPoints, deblur: !options.steady),
+                                               coverage: coverage, frames: mergedCount)
                     }
                     let warp = alignment(of: scaled(smallShort, by: gain), to: smallReference, scale: CGFloat(alignScale),
                                          fullExtent: extent, homography: false)
@@ -1310,23 +1321,24 @@ enum Developer {
                     out = recoverKernel.apply(extent: extent, arguments: [out, alignedShort, gain]) ?? out
                     dlog(String(format: "Noite: luzes fortes recuperadas da foto curta (%.0f×)", gain))
                 }
-                return coverageDenoise(nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady),
-                                       coverage: coverage, frames: frames.count)
+                return coverageDenoise(nightFinish(out, iso: iso, frameCount: mergedCount, starPoints: starPoints, deblur: !options.steady),
+                                       coverage: coverage, frames: mergedCount)
             }
         case .average:
-            var mean = average(count: frames.count, extent: extent, frame: aligned)
+            var averaged = frames.count
+            var mean = average(count: frames.count, extent: extent, frame: aligned, used: { averaged = $0 })
             if removeOutliers, let first = mean, let clipKernel {
                 // Segunda passada: cada quadro é limitado ao que a média permite
-                mean = average(count: frames.count, extent: extent) { i in
+                mean = average(count: frames.count, extent: extent, frame: { i in
                     aligned(i).flatMap { clipKernel.apply(extent: extent, arguments: [$0, first, Float(0.6)]) }
-                }
+                })
                 dlog("Estrelas: pontos que apareceram em poucos quadros removidos")
             }
             // MÉDIA: revelada como a FOTO (tons locais, cor pela luz, nitidez), com o ISO de uma foto com a luz de todas
             // (céu de estrelas não: o ajuste de luz da FOTO clarearia o céu inteiro)
             let preview = removeOutliers ? nil : image(from: frames[0], scale: 0.125)
             merged = removeOutliers ? mean : mean.map {
-                multiFrameEnhanced($0.settingProperties(reference.properties), frames: frames.count, preview: preview)
+                multiFrameEnhanced($0.settingProperties(reference.properties), frames: averaged, preview: preview)
             }
         case .focus:
             let preview = image(from: frames[0], scale: 0.125)
@@ -1664,18 +1676,21 @@ enum Developer {
 
     /// NOITE sem fantasma: o primeiro quadro é a referência; os outros só somam onde batem com ela.
     /// Onde algo se mexeu (pessoa, carro, folha), fica a referência (com um pouco mais de ruído ali, sem duplicar).
-    /// `coverage`: recebe N_eff (quantas fotos entraram em cada lugar, pelos mapas de movimento), quando a junção o tem
+    /// `coverage`: recebe N_eff (quantas fotos entraram em cada lugar, pelos mapas de movimento), quando a junção o tem.
+    /// `used`: recebe quantas fotos entraram (com a referência; a que não encaixou ou não abriu fica de fora)
     private static func robustMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?,
-                                    coverage: ((CIImage) -> Void)? = nil) -> CIImage? {
+                                    coverage: ((CIImage) -> Void)? = nil, used: ((Int) -> Void)? = nil) -> CIImage? {
         guard let reference = frame(0) else { return nil }
         guard let robustColorKernel, let robustWeightKernel, let divideKernel, count > 1 else {
-            return average(count: count, extent: extent, frame: frame)
+            return average(count: count, extent: extent, frame: frame, used: used)
         }
-        if let merged = twoBandMerge(count: count, extent: extent, reference: reference, frame: frame, coverage: coverage) { return merged }
+        if let merged = twoBandMerge(count: count, extent: extent, reference: reference, frame: frame, coverage: coverage,
+                                     used: used) { return merged }
         let refBlur = materialize(blurred(reference, extent: extent), extent: extent)
         var sumColor = materialize(reference, extent: extent)
         var sumWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: extent)
         let k: Float = 0.1
+        var entered = 1
         for i in 1..<count {
             // Aberto e alinhado uma vez só: a cor e o peso leem daqui (antes cada um abria o RAW de novo)
             guard let opened = frame(i) else { continue }
@@ -1685,7 +1700,10 @@ enum Developer {
                   let weight = robustWeightKernel.apply(extent: extent, arguments: [imageBlur, refBlur, k]) else { continue }
             sumColor = materialize(add(sumColor, color), extent: extent)
             sumWeight = materialize(add(sumWeight, weight), extent: extent)
+            entered += 1
         }
+        used?(entered)
+        if entered <= 1 { dlog("⚠️ Junção: nenhuma outra foto encaixou na referência: só a referência") }
         dlog("Noite: quadros juntados só onde nada se mexeu")
         guard let merged = divideKernel.apply(extent: extent, arguments: [sumColor, sumWeight]) else { return nil }
         return materialize(merged, extent: extent)
@@ -1695,7 +1713,7 @@ enum Developer {
     /// movimento diz que ela bate com a referência. Onde alguém se mexeu fica a referência (o liso dela, borrado 6 px, quase
     /// não tem ruído; antes o liso de todas entrava e a pessoa saía translúcida).
     private static func twoBandMerge(count: Int, extent: CGRect, reference: CIImage, frame: (Int) -> CIImage?,
-                                     coverage: ((CIImage) -> Void)? = nil) -> CIImage? {
+                                     coverage: ((CIImage) -> Void)? = nil, used: ((Int) -> Void)? = nil) -> CIImage? {
         guard let mulGKernel, let highGKernel, motionKernel != nil, let subKernel, let divideAddKernel else { return nil }
         // Memória: só o detalhe fica no tamanho cheio. A parte lisa (borrão de 6 px) vive em ¼ do tamanho e a
         // comparação de movimento (borrão de 2,5 px) em ½ — já são borradas, não perdem nada. Antes eram ~15 imagens
@@ -1726,6 +1744,7 @@ enum Developer {
         var highWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: small(half))
         // Ruído da rajada pela luz (var = a·Y + b) em cada faixa, ajustado na 1ª foto que chegar
         var highModel: (a: Float, b: Float)?, lowModel: (a: Float, b: Float)?
+        var entered = 1
         for i in 1..<count {
             autoreleasepool {
                 guard let opened = frame(i) else { return }
@@ -1747,6 +1766,12 @@ enum Developer {
                 if highModel == nil {
                     let sigma = diffNoise(imageBlur, refBlur, extent: small(half))
                     highModel = noiseModel(imageBlur, refBlur, extent: small(half)) ?? (a: 0, b: max(1e-8, sigma * sigma))
+                    // Registro: o laboratório confere o ajuste com estourado contra o sem estourar (com 7% estourado ele
+                    // desabava para σ 1e-4 e recusava quase todo o liso)
+                    if let m = highModel {
+                        dlog(String(format: "Junção: ruído da rajada (detalhe) a %.2e b %.2e · σ em 0,18 %.5f · diferença no centro %.5f",
+                                    m.a, m.b, (m.a * 0.18 + m.b).squareRoot(), sigma))
+                    }
                 }
                 if lowModel == nil {
                     let sigma = diffNoise(imageLow, refLow, extent: small(quarter))
@@ -1765,8 +1790,11 @@ enum Developer {
                 lowWeight = materialize(add(lowWeight, gLow), extent: small(quarter))
                 highWeight = materialize(add(highWeight, g), extent: small(half))
                 highSum = materialize(add(highSum, hc), extent: extent)
+                entered += 1
             }
         }
+        used?(entered)
+        if entered <= 1 { dlog("⚠️ Junção: nenhuma outra foto encaixou na referência: só a referência") }
         dlog("Noite: junção em duas faixas (cada foto só onde o mapa de movimento diz que nada se mexeu) · memória livre \(Diagnostics.freeMemory)")
         guard let merged = divideAddKernel.apply(extent: extent, arguments: [grow(lowSum, by: quarter), grow(lowWeight, by: quarter),
                                                                            highSum, grow(highWeight, by: half)]) else { return nil }
@@ -1775,7 +1803,9 @@ enum Developer {
         return materialize(merged, extent: extent)
     }
 
-    private static func average(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+    /// `used`: recebe quantas fotos entraram (a que não encaixou fica de fora: a revelação usa esse número, não o de tiradas)
+    private static func average(count: Int, extent: CGRect, frame: (Int) -> CIImage?,
+                                used report: ((Int) -> Void)? = nil) -> CIImage? {
         var sum: CIImage?
         var used = 0
         for i in 0..<count {
@@ -1784,6 +1814,7 @@ enum Developer {
             used += 1
             if used % 3 == 0, let partial = sum { sum = materialize(partial, extent: extent) }
         }
+        report?(used)
         guard let sum, used > 0 else { return nil }
         let k = CGFloat(1) / CGFloat(used)
         let mean = sum.applyingFilter("CIColorMatrix", parameters: [

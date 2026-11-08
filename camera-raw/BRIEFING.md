@@ -83,15 +83,15 @@ Mac em todo push, nunca (cota 10×): o `revela-placar.yml` (Linux) só confere q
 | Modo | Testes do laboratório | Metas |
 |---|---|---|
 | FOTO (1 quadro) | test2Foto, test1Looks, test4Tuning, test8SunStar | tom/cor/detalhe/preto vs Apple; filmes |
-| FOTO 3× | test12PhotoFusion; P07 (FOTO 3× = FOTO); P09 (fantasma) | +4,8 dB e ⅓ do ruído; luz/meio/saturação/contraste local iguais à FOTO; fantasma ≤ 5% |
-| NOITE | test3Night, test7NightStack, test11HandheldNight, test10Alignment; P08 (foto ruim); P09 | 3×, preto, luz média, mão, alinhamento ≤ 0,5 px; foto que não é da cena fora (≥ 35 dB); fantasma ≤ 5% |
-| SUPER ZOOM | test6SuperResolution; P09 (24 fotos) | +4,8 dB sobre 1 ampliada; fantasma ≤ 5% |
+| FOTO 3× | test12PhotoFusion; P07 (FOTO 3× = FOTO, aberta como o app: sem `merge`, com a redução da Apple imitada); P09 (fantasma); P11 (14% estourado) | +4,8 dB e ⅓ do ruído; luz/meio/saturação/contraste local iguais à FOTO; fantasma ≤ 5%; com estourado ruído ≤ 0,6 da foto única |
+| NOITE | test3Night, test7NightStack, test11HandheldNight, test10Alignment; P08 (foto ruim); P09; P11 (14% estourado) | 3×, preto, luz média, mão, alinhamento ≤ 0,5 px; foto que não é da cena fora (≥ 35 dB); fantasma ≤ 5%; com estourado ≥ +3 dB sobre 1 foto |
+| SUPER ZOOM | test6SuperResolution; P09 (24 fotos); P11 (com e sem corte em 1) | +4,8 dB sobre 1 ampliada; fantasma ≤ 5%; estourado não tira mais de 0,5 dB, σ ajustado dentro de 2× |
 | SUPER RES / LUA | P10 (saída de 48 MP, 5 fotos) | termina; usa as 5; memória ≤ 2500 MB a mais |
 | HDR | test9HDR | ⅓ do estourado e do ruído nas sombras |
 | RETRATO | test5Portrait; P01 (ponto do foco, função ainda não ligada) | vazamento ≤ ⅓ do desfoque comum |
-| ESTRELAS | P04 | pico ≥ 80%, largura ≤ 1,5×, pixels quentes ≤ 10% |
+| ESTRELAS | P04 (deriva 4 px: o caminho dos quentes roda); P04b (polo dentro da foto, luz 2×2 no chão, trilhas de avião em 1 e 2 fotos) | pico ≥ 80%, largura ≤ 1,5×, pixels quentes ≤ 10%; estrelas perto do polo e a luz ≥ 80%; trilhas ≤ 1,5σ |
 | MÉDIA | P05 | nitidez ≥ 0,9 da ideal; ruído ≈ 1/√8 |
-| FOCO EMPILHADO | P06 | nítido nas duas metades; sem halo; sem degrau com +0,3 EV |
+| FOCO EMPILHADO | P06 (2 fotos; 4 fotos com a 1ª fora de foco) | nítido nas duas metades; sem halo; sem degrau com +0,3 EV; 4 fotos ≥ 0,85 em cada terço |
 | LONGA | P02 (acumulador; a captura não) | seda sem degraus em 240 quadros; rastros sem levantar o preto |
 | PANORAMA | P03 (emenda; o giroscópio de verdade não) | emenda tão boa quanto o miolo; sem salto de exposição |
 | Lentes / zoom | P01 (`CaptureGeometry`, ainda não ligada no CameraModel) | todos os casos |

@@ -95,11 +95,20 @@ final class PrevencaoTests: XCTestCase {
 
     /// O app abre os quadros pelo `Developer.decodeOverride`: aqui ele recebe as imagens geradas (índice no 1º byte).
     /// Quem chama zera o override depois (`defer { Developer.decodeOverride = nil }`).
-    private func feed(_ frames: [CIImage]) -> [CapturedFrame] {
+    /// `appleNR`: como o CIRAWFilter, o quadro aberto SEM `merge` (FOTO de 1 quadro, FOTO 3×) leva a redução de ruído e a
+    /// nitidez da Apple (imitadas: limpeza de brilho 0,5 + nitidez 0,4); o de junção (`merge`, NOITE/ESTRELAS/SUPER ZOOM)
+    /// vem cru. Sem isso o laboratório abria todos crus e não via um modo abrindo diferente da FOTO
+    private func feed(_ frames: [CIImage], appleNR: Bool = false) -> [CapturedFrame] {
         Developer.decodeOverride = { frame, scale in
             let i = Int(frame.data.first ?? 0)
             guard frames.indices.contains(i) else { return nil }
-            let img = frames[i]
+            var img = frames[i]
+            if appleNR, !frame.merge {
+                let e = img.extent
+                img = Developer.lumaDenoise(img, strength: 0.5)
+                    .applyingFilter("CISharpenLuminance", parameters: [kCIInputSharpnessKey: 0.4])
+                    .cropped(to: e).settingProperties(frames[i].properties)
+            }
             guard scale < 0.999 else { return img }
             return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
                 .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
@@ -505,15 +514,16 @@ final class PrevencaoTests: XCTestCase {
 
     /// ESTRELAS (o modo: média com corte dos pontos que aparecem em poucas fotos, `removeOutliers`): céu sintético com
     /// 170 estrelas (gaussianas de 1,2 px), chão escuro parado e 3 pixels quentes fixos no sensor. Nas 16 fotos o céu
-    /// gira (5 px nos cantos) e deriva 1,7 px. Comparado com as mesmas 16 fotos sem o céu andar (o pico de uma foto):
-    /// o placar quer o pico das estrelas ≥ 80% (sem rastro apagando), a largura ≤ 1,5× e os pixels quentes fora
-    /// (≤ 10% do excesso numa foto só).
+    /// gira (5 px nos cantos) e deriva 4 px na horizontal (antes 1,7: abaixo dos 3 px o caminho dos quentes nunca rodava e o
+    /// teste não via esse caminho; com 4 px de lado o céu anda ≥ 3,5 px em cada quente, com a 1ª linha do bitmap em cima ou
+    /// embaixo). Comparado com as mesmas 16 fotos sem o céu andar (o pico de uma foto): o placar quer o pico das estrelas
+    /// ≥ 80% (sem rastro apagando), a largura ≤ 1,5× e os pixels quentes fora (≤ 10% do excesso numa foto só).
     func testP04Estrelas() {
         let w = 1024, h = 768, n = 16
         let e = CGRect(x: 0, y: 0, width: w, height: h)
         let cx = Double(w) / 2, cy = Double(h) / 2
         let totalAngle = 5.0 / (cx * cx + cy * cy).squareRoot()
-        let drift = (x: 1.5, y: 0.8)
+        let drift = (x: 4.0, y: 0.0)
         // Pixels quentes em coordenadas do Core Image (origem embaixo), longe do chão
         let hot: [(x: Int, y: Int)] = [(212, 530), (640, 300), (871, 610)]
         var state: UInt64 = 0xA57E_0001
@@ -606,7 +616,177 @@ final class PrevencaoTests: XCTestCase {
             dlog("❌ ESTRELAS: sem saída")
         }
         let hotText = hot.map { "\($0.x),\(h - 1 - $0.y)" }.joined(separator: " ")
-        dlog("ESTRELAS: pixels quentes \(hotText) · \(stars.count) estrelas · giro de 5 px nos cantos · \(Diagnostics.ms(since: t0))")
+        dlog("ESTRELAS: pixels quentes \(hotText) · \(stars.count) estrelas · giro de 5 px nos cantos, deriva 4 px · \(Diagnostics.ms(since: t0))")
+    }
+
+    /// ESTRELAS com o polo dentro da foto: o céu gira em volta dele (o centro anda 3,6 px, os cantos até 11 px, as estrelas
+    /// perto do polo quase nada), estrelas finas (σ 0,7 px) e grossas (1,2 px), uma luz parada de 2×2 no chão, 3 pixels quentes
+    /// onde o céu anda ≥ 5 px e duas trilhas de avião (Δ 0,3): uma em 1 foto, outra nas mesmas linhas do sensor em 2 fotos.
+    /// O placar quer: estrelas perto do polo e a luz com ≥ 80% do pico (o caminho dos quentes, pela mediana 3×3 e com o andar
+    /// do céu medido só no centro, apagava as duas), quentes ≤ 10% e as trilhas ≤ 1,5σ do céu de uma foto (o corte por média e
+    /// desvio que incluíam o próprio avião deixava 79–100% delas). Tudo em coordenadas do Core Image (y para cima); o registro
+    /// dá as posições no PNG (linha 0 em cima) e, nas trilhas e estrelas, já onde caem na foto de referência (a do meio)
+    func testP04bEstrelasPolo() {
+        let w = 1024, h = 768, n = 16
+        let e = CGRect(x: 0, y: 0, width: w, height: h)
+        let pole = (x: 256.0, y: 538.0)
+        let totalAngle = 0.012
+        let reference = Double(n / 2) / Double(n - 1)
+        // Linha do bitmap de cada y do Core Image (medido: o CIImage(bitmapData:) pode pôr a 1ª linha em cima ou embaixo)
+        let firstRowIsTop: Bool = {
+            let data: [Float] = [1, 1, 1, 1, 0, 0, 0, 1]
+            let probe = CIImage(bitmapData: data.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: 16,
+                                size: CGSize(width: 1, height: 2), format: .RGBAf, colorSpace: nil)
+            var px = [Float](repeating: -1, count: 4)
+            Developer.context.render(probe, toBitmap: &px, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                                     format: .RGBAf, colorSpace: nil)
+            return px[0] < 0.5
+        }()
+        func row(_ y: Int) -> Int { firstRowIsTop ? h - 1 - y : y }
+        func rotated(_ x: Double, _ y: Double, _ t: Double) -> (x: Double, y: Double) {
+            let a = totalAngle * t, ca = cos(a), sa = sin(a)
+            let rx = x - pole.x, ry = y - pole.y
+            return (pole.x + ca * rx - sa * ry, pole.y + sa * rx + ca * ry)
+        }
+        let hot: [(x: Int, y: Int)] = [(700, 600), (880, 420), (600, 250)]
+        let light = CGRect(x: 450, y: 60, width: 2, height: 2)
+        // Trilhas no céu, longe do polo e dos quentes (x0, y0, x1, y1): a 1ª na foto 3, a 2ª nas fotos 11 e 12
+        let trail1 = (x0: 620.0, y0: 380.0, x1: 980.0, y1: 700.0), trail2 = (x0: 80.0, y0: 240.0, x1: 500.0, y1: 330.0)
+        func nearSegment(_ x: Double, _ y: Double, _ s: (x0: Double, y0: Double, x1: Double, y1: Double), _ r: Double) -> Bool {
+            let dx = s.x1 - s.x0, dy = s.y1 - s.y0
+            let t = max(0, min(1, ((x - s.x0) * dx + (y - s.y0) * dy) / (dx * dx + dy * dy)))
+            let px = s.x0 + t * dx - x, py = s.y0 + t * dy - y
+            return px * px + py * py < r * r
+        }
+        var state: UInt64 = 0xA57E_0002
+        func uniform() -> Double {
+            state &+= 0x9E3779B97F4A7C15
+            var z = state
+            z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+            z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+            z ^= z >> 31
+            return Double(z >> 11) / Double(UInt64(1) << 53)
+        }
+        // Estrelas perto do polo (até 110 px: andam ≤ 1,3 px na sequência), finas e claras, e o resto do céu (acima do chão)
+        var stars: [(x: Double, y: Double, amp: Double, sigma: Double)] = []
+        for k in 0..<8 {
+            let a = Double(k) * 0.785 + 0.3, r = 30 + 80 * Double(k) / 7
+            stars.append((x: pole.x + r * cos(a), y: pole.y + r * sin(a), amp: 0.15 + 0.2 * uniform(), sigma: 0.7))
+        }
+        let poleStars = stars
+        while stars.count < 170 {
+            let x = 24 + uniform() * Double(w - 48), y = 200 + uniform() * Double(h - 224)
+            let nearHot = hot.contains(where: { abs(x - Double($0.x)) < 14 && abs(y - Double($0.y)) < 14 })
+            let nearTrail = nearSegment(x, y, trail1, 16) || nearSegment(x, y, trail2, 16)
+            if nearHot || nearTrail || hypot(x - pole.x, y - pole.y) <= 130 { continue }
+            stars.append((x: x, y: y, amp: 0.06 + 0.3 * uniform() * uniform(), sigma: uniform() < 0.5 ? 0.7 : 1.2))
+        }
+        let groundColor = CIColor(red: 0.002, green: 0.002, blue: 0.0025, colorSpace: Developer.linearP3)!
+        var ground = CIImage(color: groundColor).cropped(to: CGRect(x: 0, y: 0, width: w, height: 110))
+        for (x, width, height) in [(80, 40, 170), (300, 25, 150), (520, 60, 185), (760, 30, 160), (930, 45, 175)] {
+            ground = CIImage(color: groundColor).cropped(to: CGRect(x: x, y: 0, width: width, height: height)).composited(over: ground)
+        }
+        let lamp = CIImage(color: CIColor(red: 0.6, green: 0.55, blue: 0.45, colorSpace: Developer.linearP3)!).cropped(to: light)
+        var hotImage = CIImage.empty()
+        for p in hot {
+            let dot = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, colorSpace: Developer.linearP3)!)
+                .cropped(to: CGRect(x: p.x, y: p.y, width: 1, height: 1))
+            hotImage = dot.composited(over: hotImage)
+        }
+        let props = isoProps(3200)
+        func frame(_ i: Int, moving: Bool) -> CIImage {
+            var px = [Float](repeating: 1, count: w * h * 4)
+            var seed = UInt64(i + 1) << 40 | 0x5748
+            for y in 0..<h {
+                let sky = Float(0.007 + 0.003 * Double(y) / Double(h))
+                let base = row(y) * w
+                for x in 0..<w {
+                    let o = (base + x) * 4
+                    for c in 0..<3 {
+                        seed &+= 0x9E3779B97F4A7C15
+                        var z = seed
+                        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+                        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+                        z ^= z >> 31
+                        px[o + c] = sky + (Float(z >> 40) / Float(1 << 24) - 0.5) * 0.006
+                    }
+                }
+            }
+            func splat(_ cx: Double, _ cy: Double, _ amp: Double, _ sigma: Double) {
+                let xa = max(0, Int(cx) - 5), xb = min(w - 1, Int(cx) + 5)
+                let ya = max(0, Int(cy) - 5), yb = min(h - 1, Int(cy) + 5)
+                guard xa <= xb, ya <= yb else { return }
+                for yy in ya...yb {
+                    for xx in xa...xb {
+                        let ddx = Double(xx) + 0.5 - cx, ddy = Double(yy) + 0.5 - cy
+                        let g = Float(amp * exp(-(ddx * ddx + ddy * ddy) / (2 * sigma * sigma)))
+                        let o = (row(yy) * w + xx) * 4
+                        px[o] += g
+                        px[o + 1] += g * 0.97
+                        px[o + 2] += g * 0.92
+                    }
+                }
+            }
+            let t = moving ? Double(i) / Double(n - 1) : 0
+            for s in stars {
+                let p = rotated(s.x, s.y, t)
+                splat(p.x, p.y, s.amp, s.sigma)
+            }
+            // Avião: linha de 2 px (perfil gaussiano σ 0,7, pico 0,3) nas linhas do sensor, só nas fotos dele
+            func trail(_ s: (x0: Double, y0: Double, x1: Double, y1: Double)) {
+                let length = hypot(s.x1 - s.x0, s.y1 - s.y0)
+                let ux = (s.x1 - s.x0) / length, uy = (s.y1 - s.y0) / length
+                let xa = max(0, Int(min(s.x0, s.x1)) - 4), xb = min(w - 1, Int(max(s.x0, s.x1)) + 4)
+                let ya = max(0, Int(min(s.y0, s.y1)) - 4), yb = min(h - 1, Int(max(s.y0, s.y1)) + 4)
+                for yy in ya...yb {
+                    for xx in xa...xb {
+                        let qx = Double(xx) + 0.5 - s.x0, qy = Double(yy) + 0.5 - s.y0
+                        let along = qx * ux + qy * uy
+                        guard along >= 0, along <= length else { continue }
+                        let d = qx * uy - qy * ux
+                        guard abs(d) < 3 else { continue }
+                        let g = Float(0.3 * exp(-d * d / (2 * 0.49)))
+                        let o = (row(yy) * w + xx) * 4
+                        px[o] += g
+                        px[o + 1] += g
+                        px[o + 2] += g
+                    }
+                }
+            }
+            if moving, i == 3 { trail(trail1) }
+            if moving, i == 11 || i == 12 { trail(trail2) }
+            var img = CIImage(bitmapData: px.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: w * 16,
+                              size: CGSize(width: w, height: h), format: .RGBAf, colorSpace: nil)
+            img = Developer.add(img, hotImage).cropped(to: e)
+            img = lamp.composited(over: ground).composited(over: img).cropped(to: e)
+            return Developer.materialize(img, extent: e).settingProperties(props)
+        }
+        let o = options()
+        func run(_ frames: [CIImage]) -> CIImage? {
+            let captured = feed(frames)
+            defer { Developer.decodeOverride = nil }
+            return image(Developer.stack(captured, kind: .average, removeOutliers: true, robust: false, starPoints: 0, options: o))
+        }
+        let t0 = CFAbsoluteTimeGetCurrent()
+        let still = (0..<n).map { frame($0, moving: false) }
+        if let single = image(Developer.finish(still[0], options: o)) { savePNG(single, "estrelas/polo_uma_foto") }
+        if let out = run(still) { savePNG(out, "estrelas/polo_parado") } else { dlog("❌ ESTRELAS POLO parado: sem saída") }
+        let moving = (0..<n).map { frame($0, moving: true) }
+        if let out = run(moving) { savePNG(out, "estrelas/polo_girando") } else { dlog("❌ ESTRELAS POLO girando: sem saída") }
+        // Posições no PNG (x, linha a partir de cima). Estrelas e trilhas onde caem na foto de referência (t do meio)
+        func png(_ x: Double, _ y: Double) -> String { String(format: "%.1f,%.1f", x, Double(h) - y) }
+        func segment(_ s: (x0: Double, y0: Double, x1: Double, y1: Double), from t: Double) -> String {
+            let a = rotated(s.x0, s.y0, reference - t), b = rotated(s.x1, s.y1, reference - t)
+            return png(a.x, a.y) + "," + png(b.x, b.y)
+        }
+        let poleText = poleStars.map { s -> String in
+            let p = rotated(s.x, s.y, reference)
+            return png(p.x, p.y)
+        }.joined(separator: ";")
+        let hotText = hot.map { "\($0.x),\(h - 1 - $0.y)" }.joined(separator: " ")
+        dlog("ESTRELAS POLO: quentes \(hotText) · luz \(Int(light.minX)),\(h - 1 - Int(light.minY) - 1) · " +
+             "trilha1 \(segment(trail1, from: 3.0 / Double(n - 1))) · trilha2 \(segment(trail2, from: 11.5 / Double(n - 1))) · " +
+             "perto do polo \(poleText) · \(Diagnostics.ms(since: t0))")
     }
 
     // MARK: - 5. MÉDIA
@@ -663,14 +843,29 @@ final class PrevencaoTests: XCTestCase {
         let o = options()
         if let ideal = image(Developer.finish(sharp.settingProperties(props), options: o)) { savePNG(ideal, "foco/nitida") }
         if let soft = image(Developer.finish(blurred.settingProperties(props), options: o)) { savePNG(soft, "foco/borrada") }
-        for (pair, label) in [([a, b], "junta"), ([a, brighter], "junta_exposicao")] {
+        // Quatro fotos, a 1ª toda fora de foco (σ 3) e as outras cada vez mais nítidas numa faixa (terços): em cada terço uma
+        // nítida, uma vizinha com σ 1 e outra com σ 2. O peso antigo (relativo a 2× a média da 1ª, preso em 6,7) prendia a
+        // nítida e a de σ 1 juntas (estudo em Python: 0,83 no terço do meio); o placar quer ≥ 0,85 da nítida em cada terço
+        let soft1 = Developer.materialize(sharp.clampedToExtent().applyingGaussianBlur(sigma: 1).cropped(to: e), extent: e)
+        let soft2 = Developer.materialize(sharp.clampedToExtent().applyingGaussianBlur(sigma: 2).cropped(to: e), extent: e)
+        let thirds = (0..<3).map { k in
+            CGRect(x: (e.width * CGFloat(k) / 3).rounded(), y: 0, width: (e.width / 3).rounded() + 1, height: e.height).intersection(e)
+        }
+        func zones(_ parts: [CIImage]) -> CIImage {
+            var out = parts[2].cropped(to: thirds[2])
+            out = parts[1].cropped(to: thirds[1]).composited(over: out)
+            out = parts[0].cropped(to: thirds[0]).composited(over: out)
+            return Developer.materialize(out.cropped(to: e), extent: e).settingProperties(props)
+        }
+        let four = [blurred.settingProperties(props), zones([sharp, soft1, soft2]), zones([soft1, sharp, soft1]), zones([soft2, soft1, sharp])]
+        for (pair, label) in [([a, b], "junta"), ([a, brighter], "junta_exposicao"), (four, "quatro")] {
             let captured = feed(pair)
             // Como o modo FOCO EMPILHADO chama
             let out = image(Developer.stack(captured, kind: .focus, removeOutliers: false, robust: false, starPoints: 0, options: o))
             Developer.decodeOverride = nil
             if let out { savePNG(out, "foco/\(label)") } else { dlog("❌ FOCO \(label): sem saída") }
         }
-        dlog("FOCO: divisa no meio (x = 50%), 2ª foto +0,3 EV na junta_exposicao")
+        dlog("FOCO: divisa no meio (x = 50%), 2ª foto +0,3 EV na junta_exposicao; quatro: terços em x = 33% e 67%")
     }
 
     // MARK: - 7. FOTO 3× igual à FOTO
@@ -683,7 +878,8 @@ final class PrevencaoTests: XCTestCase {
             let name = url.deletingPathExtension().lastPathComponent
             guard let s = scene(url, width: 1600, height: 1200) else { continue }
             let shot = s.settingProperties(isoProps(200))
-            let captured = feed([shot, shot, shot, shot])
+            // Aberto como o app abre: a FOTO e a FOTO 3× sem `merge` (com a redução da Apple, imitada)
+            let captured = feed([shot, shot, shot, shot], appleNR: true)
             defer { Developer.decodeOverride = nil }
             let o = options()
             guard let single = image(Developer.develop(captured[0], options: o)) else {
@@ -881,5 +1077,108 @@ final class PrevencaoTests: XCTestCase {
         let extra = peak > before ? peak - before : 0
         dlog(String(format: "LUA 48 MP: fim · saída %@ · %@ · memória pico %.0f MB (acréscimo %.0f MB)", size, elapsed,
                     Double(peak) / 1_048_576, Double(extra) / 1_048_576))
+    }
+
+    // MARK: - 11. Estourado (o ruído da rajada nas junções)
+
+    /// Cena com uma janela estourada de 14% DEPOIS do ruído (min(cena + ruído, 1) em cada foto, como o sensor corta). O ajuste
+    /// do ruído da rajada (var = a·Y + b) desabava para σ ≈ 1e-4 com ≥ ~6% estourado (ΔY = 0 exato no branco): o mapa de
+    /// movimento recusava o liso parado e a junção virava uma foto só (FOTO 3×/NOITE com o ruído de 1 foto, SUPER ZOOM aguado).
+    /// FOTO 3× (fuse) e NOITE (stack robusta) contra a foto única pela mesma revelação dos testes 12 e 7; SUPER ZOOM contra a
+    /// mesma cena sem o corte (o ruído continua no branco). Placar: ruído no liso da FOTO 3× ≤ 0,6 do da foto única; NOITE
+    /// ≥ +3 dB sobre a foto única (contra a cena sem ruído); SUPER ZOOM com o ganho de sem corte − 0,5 dB e o σ ajustado
+    /// dentro de 2× do sem corte
+    func testP11Estourado() {
+        guard let url = firstRaw(), let base = scene(url, width: 1024, height: 768) else { return }
+        let e = base.extent
+        let window = CGRect(x: e.width * 0.05, y: e.height * 0.62, width: e.width * 0.40, height: e.height * 0.36).integral
+        func withWindow(_ img: CIImage) -> CIImage {
+            CIImage(color: CIColor(red: 1.5, green: 1.5, blue: 1.5, colorSpace: Developer.linearP3)!).cropped(to: window)
+                .composited(over: img).cropped(to: e)
+        }
+        // O corte do sensor: cada cor no máximo 1
+        func clipped(_ img: CIImage) -> CIImage {
+            let x = img.extent
+            return img.applyingFilter("CIMinimumCompositing", parameters: [
+                kCIInputBackgroundImageKey: CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: x)]).cropped(to: x)
+        }
+        let o = options()
+        let photoShifts: [(CGFloat, CGFloat)] = [(0, 0), (0.8, -0.5), (-1.3, 0.9), (1.7, 1.2), (-0.6, -1.8), (2.2, -0.3),
+                                                 (-1.9, 1.6), (0.4, 2.1)]
+        let nightShifts: [(CGFloat, CGFloat)] = [(0, 0), (0.7, 0.6), (1.4, 0), (0, 0.6), (0.7, 0), (1.4, 0.6), (0, 0), (0.7, 0.6)]
+
+        // FOTO 3×: luz de interior (¼) e a janela, 8 fotos, ruído e ISO do test12
+        do {
+            let lit = Developer.materialize(withWindow(Developer.scaled(base, by: 0.25).cropped(to: e)), extent: e)
+            let frames = photoShifts.enumerated().map { (i, d) -> CIImage in
+                let noisy = Developer.add(shifted(lit, dx: d.0, dy: d.1), sensorNoise(e, seed: 1500 + i, amplitude: 0.035)).cropped(to: e)
+                return Developer.materialize(clipped(noisy), extent: e).settingProperties(isoProps(800))
+            }
+            let captured = feed(frames)
+            dlog("ESTOURADO foto3x: início")
+            let single = image(Developer.develop(captured[0], options: o))
+            let fused = image(Developer.fuse(captured, options: o))
+            dlog("ESTOURADO foto3x: fim")
+            Developer.decodeOverride = nil
+            if let single, let fused {
+                savePNG(single, "estourado/foto3x_uma")
+                savePNG(fused, "estourado/foto3x_juntada")
+            } else {
+                dlog("❌ ESTOURADO foto3x: sem saída")
+            }
+        }
+
+        // NOITE: 1/16 da luz e a janela (letreiro aceso), 8 fotos, ruído e ISO do test7
+        do {
+            let dark = Developer.materialize(withWindow(Developer.scaled(base, by: 1.0 / 16).cropped(to: e)), extent: e)
+            let frames = nightShifts.enumerated().map { (i, d) -> CIImage in
+                let noisy = Developer.add(shifted(dark, dx: d.0, dy: d.1), sensorNoise(e, seed: 1600 + i)).cropped(to: e)
+                return Developer.materialize(clipped(noisy), extent: e).settingProperties(isoProps(3200))
+            }
+            let clean = Developer.materialize(clipped(dark), extent: e).settingProperties(isoProps(3200))
+            let ideal = Developer.developed(Developer.nightFinish(clean, iso: 3200, frameCount: frames.count, starPoints: 0), options: o).0
+            let single = Developer.developed(Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0), options: o).0
+            savePNG(ideal, "estourado/noite_ideal")
+            savePNG(single, "estourado/noite_uma")
+            let captured = feed(frames)
+            dlog("ESTOURADO noite: início")
+            let merged = image(Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: o))
+            dlog("ESTOURADO noite: fim")
+            Developer.decodeOverride = nil
+            if let merged { savePNG(merged, "estourado/noite_juntada") } else { dlog("❌ ESTOURADO noite: sem saída") }
+        }
+
+        // SUPER ZOOM: luz cheia e a janela, 24 fotos pelo sensor de soma 2×2 (como o P09), com e sem o corte em 1
+        do {
+            var srShifts: [(CGFloat, CGFloat)] = [(0, 0), (1.3, -0.7), (-2.1, 1.6), (0.4, 2.7), (-1.6, -2.4),
+                                                  (2.6, 0.9), (-0.8, -1.2), (1.9, 2.2), (-2.7, 0.3), (0.7, -2.9)]
+            for k in 0..<14 {
+                let a = Double(k) * 2.399963, r = 0.6 + 2.3 * (Double(k) + 0.5) / 14
+                srShifts.append((CGFloat(r * cos(a)), CGFloat(r * sin(a))))
+            }
+            let truth = Developer.materialize(withWindow(base), extent: e)
+            for cut in [true, false] {
+                let label = cut ? "corte" : "livre"
+                let frames = srShifts.enumerated().map { (i, d) -> CIImage in
+                    let low = sensor(truth, dx: d.0, dy: d.1)
+                    let le = low.extent
+                    let noisy = Developer.add(low, sensorNoise(le, seed: 1700 + i, amplitude: 0.02)).cropped(to: le)
+                    return Developer.materialize(cut ? clipped(noisy) : noisy, extent: le).settingProperties(isoProps(400))
+                }
+                // A régua: a cena (cortada em 1 no caso do corte: o melhor possível) e uma foto ampliada 2×, pela mesma revelação
+                let reference = cut ? Developer.materialize(clipped(truth), extent: e) : truth
+                savePNG(Developer.developed(reference, options: o).0, "estourado/superzoom_\(label)_verdade")
+                let up = frames[0].applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: 2, kCIInputAspectRatioKey: 1])
+                savePNG(Developer.developed(up.cropped(to: e), options: o).0, "estourado/superzoom_\(label)_uma")
+                let captured = feed(frames)
+                Developer.srTuning.enhance = false
+                dlog("ESTOURADO superzoom_\(label): início")
+                let out = image(Developer.superResolution(captured, options: o, keep: 10))
+                dlog("ESTOURADO superzoom_\(label): fim")
+                Developer.srTuning = .init()
+                Developer.decodeOverride = nil
+                if let out { savePNG(out, "estourado/superzoom_\(label)_super") } else { dlog("❌ ESTOURADO superzoom \(label): sem saída") }
+            }
+        }
     }
 }
