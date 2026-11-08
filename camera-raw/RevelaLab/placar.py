@@ -4,6 +4,7 @@ Uso: python3 placar.py <pasta do ramo revela-lab>
 Precisa de numpy e Pillow. Imprime cada meta com o número, a meta e OK / FALTA.
 """
 import os
+import re
 import sys
 
 import numpy as np
@@ -79,8 +80,402 @@ def check(area, name, value, ok, goal):
     rows.append((area, name, value, goal, "OK" if ok else "FALTA"))
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# Prevenção (RevelaLab/PrevencaoTests.swift): defeitos achados na revisão de código que não podem voltar sem ninguém
+# ver. Cada meta mede a saída de um teste; se o teste não gerou nada (não rodou, quebrou, ou o laboratório é de antes
+# dele), a meta fica FALTA com "sem saída" — nunca derruba o placar.
+
+SEM = "sem saída"
+
+
+def _png(root, rel):
+    p = os.path.join(root, rel + ".png")
+    return p if os.path.exists(p) else None
+
+
+def _log_text(root):
+    p = os.path.join(root, "log.txt")
+    return open(p, encoding="utf-8", errors="ignore").read() if os.path.exists(p) else ""
+
+
+def _same(*arrays):
+    """Recorta todas no menor tamanho comum (as saídas podem diferir de 1 px)."""
+    h = min(a.shape[0] for a in arrays)
+    w = min(a.shape[1] for a in arrays)
+    return [a[:h, :w] for a in arrays]
+
+
+def _gauss(l, sigma):
+    """Borrão gaussiano separável em ponto flutuante (sem arredondar para 8 bits)."""
+    r = max(1, int(round(3 * sigma)))
+    x = np.arange(-r, r + 1, dtype=np.float64)
+    k = np.exp(-x * x / (2 * sigma * sigma))
+    k /= k.sum()
+    p = np.pad(l, ((r, r), (0, 0)), mode="edge")
+    t = sum(k[i] * p[i:i + l.shape[0]] for i in range(2 * r + 1))
+    p = np.pad(t, ((0, 0), (r, r)), mode="edge")
+    return sum(k[i] * p[:, i:i + l.shape[1]] for i in range(2 * r + 1))
+
+
+def _edge_mean(l):
+    img = Image.fromarray((np.clip(l, 0, 1) * 255).astype(np.uint8))
+    return float(np.asarray(img.filter(ImageFilter.FIND_EDGES)).astype(np.float64)[1:-1, 1:-1].mean())
+
+
+def _maxfilt(l, r):
+    p = np.pad(l, r, mode="edge")
+    h, w = l.shape
+    out = np.full(l.shape, -np.inf)
+    for dy in range(2 * r + 1):
+        for dx in range(2 * r + 1):
+            out = np.maximum(out, p[dy:dy + h, dx:dx + w])
+    return out
+
+
+def _sem(area, metas):
+    for name, goal in metas:
+        check(area, name, SEM, False, goal)
+
+
+def _geometria(root, log):
+    meta = ("recorte por lente, ponto do Retrato, proporção", "todos")
+    m = re.search(r"GEOMETRIA: (\d+)/(\d+) casos certos", log)
+    if not m:
+        return _sem("GEOMETRIA", [meta])
+    ok, total = int(m.group(1)), int(m.group(2))
+    check("GEOMETRIA", meta[0], f"{ok}/{total}", ok == total and total > 0, meta[1])
+
+
+def _longa(root, log):
+    area = "LONGA"
+    metas = [("seda 240 quadros: erro na rampa clara (degraus)", "≤ 1 código"),
+             ("seda: níveis da rampa ÷ códigos de 8 bits", "≥ 2"),
+             ("rastros: erro na rampa clara", "≤ 0,5 código"),
+             ("rastros no escuro: quanto o preto sobe", "≤ 1 σ"),
+             ("seda no escuro: quanto o preto sobe", "≤ 0,25 σ")]
+    ctrl = re.search(r"LONGA controle \(1 quadro\): erro máximo ([\d.]+) códigos", log)
+    if not ctrl:
+        return _sem(area, metas)
+    c = float(ctrl.group(1))
+    rows.append((area, "controle da medida: 1 quadro (só informação)", f"{c:.2f} cód.", "", ""))
+    if c > 0.6:
+        # A medida em si está errada (não o app): nenhuma meta da LONGA vale nesta rodada
+        for name, goal in metas:
+            check(area, name, "medida inválida", False, goal)
+        return
+    seda = re.search(r"LONGA seda rampa \((\d+) de (\d+) quadros\): erro máximo ([\d.]+) códigos · níveis (\d+) em ([\d.]+) códigos", log)
+    if seda:
+        used, asked, err = int(seda.group(1)), int(seda.group(2)), float(seda.group(3))
+        value = f"{err:.2f} cód." + ("" if used == asked else f" ({used}/{asked} q.)")
+        check(area, metas[0][0], value, err <= 1.0 and used == asked, metas[0][1])
+        r = int(seda.group(4)) / max(float(seda.group(5)), 1e-6)
+        check(area, metas[1][0], f"{r:.1f}", r >= 2, metas[1][1])
+    else:
+        _sem(area, metas[0:2])
+    tr = re.search(r"LONGA rastros rampa \((\d+) de (\d+) quadros\): erro máximo ([\d.]+) códigos", log)
+    if tr:
+        err = float(tr.group(3))
+        check(area, metas[2][0], f"{err:.2f} cód.", err <= 0.5 and tr.group(1) == tr.group(2), metas[2][1])
+    else:
+        _sem(area, metas[2:3])
+    for style, meta, limit in (("rastros", metas[3], 1.0), ("seda", metas[4], 0.25)):
+        m = re.search(rf"LONGA {style} escuro \((\d+) de (\d+) quadros\): preto sobe ([-\d.]+) σ", log)
+        if not m:
+            _sem(area, [meta])
+            continue
+        lift = float(m.group(3))
+        check(area, meta[0], f"{lift:+.2f} σ", abs(lift) <= limit and m.group(1) == m.group(2), meta[1])
+
+
+def _panorama(root, log):
+    area = "PANORAMA"
+    metas = [("emendas vs miolo dos quadros (PSNR)", "≥ miolo − 1,5 dB"), ("salto de exposição nas emendas", "≤ 0,015")]
+    m = re.search(r"PANORAMA: emendas ([\d\- ]+) · miolos ([\d\- ]+)", log)
+    po, pt = _png(root, "panorama/emendado"), _png(root, "panorama/verdade")
+    if not (m and po and pt):
+        return _sem(area, metas)
+    seams = [(int(a), int(b)) for a, b in re.findall(r"(\d+)-(\d+)", m.group(1))]
+    cores = [(int(a), int(b)) for a, b in re.findall(r"(\d+)-(\d+)", m.group(2))]
+    out, truth = _same(luma(load(po)), luma(load(pt)))
+    h, w = out.shape
+    mg = 18
+    # Melhor encaixe inteiro (±8 px) da saída na cena revelada pelo mesmo caminho
+    best = None
+    for dy in range(-8, 9):
+        for dx in range(-8, 9):
+            e = float(((out[mg:h - mg, mg:w - mg] - truth[mg + dy:h - mg + dy, mg + dx:w - mg + dx]) ** 2).mean())
+            if best is None or e < best[0]:
+                best = (e, dx, dy)
+    _, dx, dy = best
+    aligned = np.roll(np.roll(truth, -dy, axis=0), -dx, axis=1)
+    band = slice(mg, h - mg)
+
+    def mse(zones):
+        vals = []
+        for a, b in zones:
+            a, b = max(a, mg), min(b, w - mg)
+            if b - a >= 4:
+                vals.append(float(((out[band, a:b] - aligned[band, a:b]) ** 2).mean()))
+        return float(np.mean(vals)) if vals else None
+
+    ms, mc = mse(seams), mse(cores)
+    if ms is None or mc is None:
+        return _sem(area, metas)
+    ps, pc = 10 * np.log10(1 / max(ms, 1e-12)), 10 * np.log10(1 / max(mc, 1e-12))
+    check(area, metas[0][0], f"{ps:.1f} / {pc:.1f} dB", ps >= pc - 1.5, metas[0][1])
+    jumps = []
+    for a, b in seams:
+        l0, l1, r0, r1 = max(a - 30, mg), a - 4, b + 4, min(b + 30, w - mg)
+        if l1 - l0 >= 4 and r1 - r0 >= 4:
+            dl = float((out[band, l0:l1] - aligned[band, l0:l1]).mean())
+            dr = float((out[band, r0:r1] - aligned[band, r0:r1]).mean())
+            jumps.append(abs(dr - dl))
+    if jumps:
+        check(area, metas[1][0], f"{max(jumps):.3f}", max(jumps) <= 0.015, metas[1][1])
+    else:
+        _sem(area, metas[1:])
+
+
+def _estrelas(root, log):
+    area = "ESTRELAS"
+    metas = [("pico das estrelas da borda ÷ céu parado", "≥ 0,80"), ("largura (FWHM) das estrelas ÷ céu parado", "≤ 1,5"),
+             ("pixels quentes que sobram ÷ 1 foto", "≤ 0,10")]
+    ps, pm, p1 = _png(root, "estrelas/parado"), _png(root, "estrelas/girando"), _png(root, "estrelas/uma_foto")
+    m = re.search(r"ESTRELAS: pixels quentes ((?:\d+,\d+ ?)+)", log)
+    if not (ps and pm):
+        return _sem(area, metas)
+    still, moving = _same(luma(load(ps)), luma(load(pm)))
+    h, w = still.shape
+    hot = [tuple(int(v) for v in t.split(",")) for t in m.group(1).split()] if m else []
+    # Estrelas: picos isolados no céu parado (fora do chão, das bordas, dos pixels quentes e do estourado)
+    bg = float(np.median(still[: int(h * 0.7)]))
+    cand = (still == _maxfilt(still, 3)) & (still - bg > 0.08) & (still < 0.92)
+    cand[:16] = False
+    cand[int(h * 0.72):] = False
+    cand[:, :16] = False
+    cand[:, w - 16:] = False
+    for c, r in hot:
+        cand[max(0, r - 10):r + 11, max(0, c - 10):c + 11] = False
+    ys, xs = np.nonzero(cand)
+    picked = []
+    for i in np.argsort(-still[ys, xs]):
+        y, x = int(ys[i]), int(xs[i])
+        if all((y - a) ** 2 + (x - b) ** 2 >= 144 for a, b in picked):
+            picked.append((y, x))
+        if len(picked) >= 80:
+            break
+
+    def measure(lum, y, x, search):
+        win = lum[y - search:y + search + 1, x - search:x + search + 1]
+        iy, ix = np.unravel_index(int(np.argmax(win)), win.shape)
+        py, px = y - search + int(iy), x - search + int(ix)
+        b = float(np.median(lum[max(0, py - 10):py + 11, max(0, px - 10):px + 11]))
+        peak = float(lum[py, px]) - b
+        core = lum[max(0, py - 5):py + 6, max(0, px - 5):px + 6]
+        spread = float(((core - b) > 0.5 * peak).sum()) if peak > 0 else 0.0
+        return peak, 2 * (spread / np.pi) ** 0.5
+
+    radius = (h * h + w * w) ** 0.5 / 2
+    outer = [(y, x) for y, x in picked if ((y - h / 2) ** 2 + (x - w / 2) ** 2) ** 0.5 > 0.5 * radius]
+    use = outer if len(outer) >= 5 else picked
+    peaks, widths = [], []
+    for y, x in use:
+        p0, f0 = measure(still, y, x, 1)
+        pm_, fm = measure(moving, y, x, 4)
+        if p0 > 0.05 and f0 > 0:
+            peaks.append(pm_ / p0)
+            widths.append(fm / f0)
+    if len(peaks) < 3:
+        check(area, metas[0][0], f"{len(peaks)} estrelas", False, metas[0][1])
+        check(area, metas[1][0], f"{len(peaks)} estrelas", False, metas[1][1])
+    else:
+        rp, rf = float(np.median(peaks)), float(np.median(widths))
+        check(area, metas[0][0], f"{rp:.2f} ({len(peaks)} estrelas)", rp >= 0.8, metas[0][1])
+        check(area, metas[1][0], f"{rf:.2f}", rf <= 1.5, metas[1][1])
+    if not (p1 and hot):
+        return _sem(area, metas[2:])
+    single, moving2 = _same(luma(load(p1)), moving)
+
+    def excess(lum, c, r):
+        core = float(lum[max(0, r - 1):r + 2, max(0, c - 1):c + 2].max())
+        return core - float(np.median(lum[max(0, r - 6):r + 7, max(0, c - 6):c + 7]))
+
+    worst = max(excess(moving2, c, r) / max(excess(single, c, r), 1e-6) for c, r in hot)
+    check(area, metas[2][0], f"{worst:.2f}", worst <= 0.10, metas[2][1])
+
+
+def _media(root, log):
+    area = "MÉDIA"
+    metas = [("nitidez com fração de pixel ÷ foto ideal", "≥ 0,90"), ("ruído 8 fotos ÷ 1 foto (≈ 1/√8)", "≤ 0,42")]
+    paths = [_png(root, f"media/{k}") for k in ("ideal", "uma", "nitidez", "ruido")]
+    if not all(paths):
+        return _sem(area, metas)
+    ideal, one, sharp, noisy = _same(*[luma(load(p)) for p in paths])
+    mg = 24
+
+    def inner(a):
+        return a[mg:-mg, mg:-mg]
+
+    r = _edge_mean(inner(sharp)) / max(_edge_mean(inner(ideal)), 1e-6)
+    check(area, metas[0][0], f"{r:.2f}", r >= 0.9, metas[0][1])
+    tex = inner(np.abs(_gauss(ideal, 2) - _gauss(ideal, 8)))
+    flat = tex <= np.percentile(tex, 30)
+    nz = lambda x: float(np.std(inner(x - ideal)[flat]))
+    q = nz(noisy) / max(nz(one), 1e-6)
+    check(area, metas[1][0], f"{q:.2f}", q <= 0.42, metas[1][1])
+
+
+def _foco(root, log):
+    area = "FOCO EMPILHADO"
+    metas = [("nitidez nas duas metades ÷ cena nítida (a pior)", "≥ 0,85"), ("halo na divisa ÷ erro da metade borrada", "≤ 0,5"),
+             ("degrau na divisa com a 2ª foto +0,3 EV", "≤ 0,02")]
+    p = {k: _png(root, f"foco/{k}") for k in ("nitida", "borrada", "junta", "junta_exposicao")}
+    if p["nitida"] and p["borrada"] and p["junta"]:
+        sharp, soft, merged = _same(luma(load(p["nitida"])), luma(load(p["borrada"])), luma(load(p["junta"])))
+        h, w = sharp.shape
+        mid, mg = w // 2, 24
+        left, right = (slice(mg, h - mg), slice(mg, mid - 48)), (slice(mg, h - mg), slice(mid + 48, w - mg))
+        r = min(_edge_mean(merged[left]) / max(_edge_mean(sharp[left]), 1e-6),
+                _edge_mean(merged[right]) / max(_edge_mean(sharp[right]), 1e-6))
+        check(area, metas[0][0], f"{r:.2f}", r >= 0.85, metas[0][1])
+        band = (slice(mg, h - mg), slice(mid - 16, mid + 16))
+        halo = float(np.abs(merged[band] - sharp[band]).mean()) / max(float(np.abs(soft[band] - sharp[band]).mean()), 1e-6)
+        check(area, metas[1][0], f"{halo:.2f}", halo <= 0.5, metas[1][1])
+    else:
+        _sem(area, metas[0:2])
+    if p["nitida"] and p["junta_exposicao"]:
+        sharp, bright = _same(luma(load(p["nitida"])), luma(load(p["junta_exposicao"])))
+        h, w = sharp.shape
+        mid, mg = w // 2, 24
+        d = bright - sharp
+        step = abs(float(d[mg:h - mg, mid + 20:mid + 80].mean()) - float(d[mg:h - mg, mid - 80:mid - 20].mean()))
+        check(area, metas[2][0], f"{step:.3f}", step <= 0.02, metas[2][1])
+    else:
+        _sem(area, metas[2:])
+
+
+def _foto_consistencia(root, log):
+    metas = [("luz média FOTO 3× − FOTO", "±0,03"), ("meio (p50) FOTO 3× − FOTO", "±0,03"),
+             ("saturação FOTO 3× ÷ FOTO", "0,92–1,08"), ("contraste local FOTO 3× ÷ FOTO", "0,90–1,10")]
+    d = os.path.join(root, "foto_consistencia")
+    names = sorted({f[:-4].rsplit("_", 1)[0] for f in os.listdir(d) if f.endswith(".png")}) if os.path.isdir(d) else []
+    if not names:
+        return _sem("FOTO 3× = FOTO", metas)
+    for n in names:
+        area = f"FOTO 3×=FOTO {n}"
+        pu, pj = _png(root, f"foto_consistencia/{n}_uma"), _png(root, f"foto_consistencia/{n}_juntada")
+        if not (pu and pj):
+            _sem(area, metas)
+            continue
+        one, fused = _same(load(pu), load(pj))
+        lo, lf = luma(one), luma(fused)
+        dm = float(lf.mean() - lo.mean())
+        check(area, metas[0][0], f"{dm:+.3f}", abs(dm) <= 0.03, metas[0][1])
+        dp = float(np.percentile(lf, 50) - np.percentile(lo, 50))
+        check(area, metas[1][0], f"{dp:+.3f}", abs(dp) <= 0.03, metas[1][1])
+        rs = sat(fused) / max(sat(one), 1e-6)
+        check(area, metas[2][0], f"{rs:.2f}", 0.92 <= rs <= 1.08, metas[2][1])
+        local = lambda l: float(np.abs(l - _gauss(l, 8))[16:-16, 16:-16].mean())
+        rc = local(lf) / max(local(lo), 1e-6)
+        check(area, metas[3][0], f"{rc:.2f}", 0.9 <= rc <= 1.1, metas[3][1])
+        rows.append((area, "bordas finas FOTO 3× ÷ FOTO (só informação)",
+                     f"{_edge_mean(lf[16:-16, 16:-16]) / max(_edge_mean(lo[16:-16, 16:-16]), 1e-6):.2f}", "", ""))
+
+
+def _noite_ruim(root, log):
+    area = "NOITE foto ruim"
+    base = _png(root, "noite_ruim/sem")
+    for label, name in (("ruido", "foto de puro ruído fica de fora (PSNR vs sem ela)"),
+                        ("outra_cena", "foto de outra cena fica de fora (PSNR vs sem ela)")):
+        other = _png(root, f"noite_ruim/{label}")
+        if not (base and other):
+            _sem(area, [(name, "≥ 35 dB")])
+            continue
+        v = psnr(load(other), load(base), reach=2)
+        check(area, name, f"{v:.1f} dB", v >= 35, "≥ 35 dB")
+
+
+def _ghost(obj, clean, spots):
+    """Fantasma: |com vulto − sem vulto| em cada lugar do vulto (com folga), menos o fundo. O lugar mais forte é o da
+    foto de referência (vulto inteiro); o maior dos outros, dividido por ele, é o fantasma."""
+    o, c = _same(obj, clean)
+    d = np.abs(o - c)
+    h, w = d.shape
+    mask = np.zeros(d.shape, bool)
+    vals = []
+    for x, y, sw, sh in spots:
+        x0, x1 = max(0, int((x - 0.02) * w)), min(w, int(round((x + sw + 0.02) * w)))
+        y0, y1 = max(0, int((y - 0.03) * h)), min(h, int(round((y + sh + 0.03) * h)))
+        mask[y0:y1, x0:x1] = True
+        vals.append(float(d[y0:y1, x0:x1].mean()) if y1 > y0 and x1 > x0 else 0.0)
+    base = float(np.median(d[~mask])) if (~mask).any() else 0.0
+    vals = [max(v - base, 0.0) for v in vals]
+    ref = int(np.argmax(vals))
+    ghost = max([v for i, v in enumerate(vals) if i != ref] or [0.0])
+    return ghost / max(vals[ref], 1e-9), vals[ref]
+
+
+def _fantasmas(root, log):
+    spots = {}
+    for m in re.finditer(r"FANTASMA (\w+) (\w+): vulto em ([\d.,;]+)", log):
+        spots[(m.group(1), m.group(2))] = [tuple(float(v) for v in s.split(",")) for s in m.group(3).split(";") if s]
+    for mode, label in (("noite", "NOITE"), ("foto3x", "FOTO 3×"), ("superzoom", "SUPER ZOOM")):
+        area = f"FANTASMA {label}"
+        for variant, clean, desc in (("claro", "limpo", "vulto claro andando"), ("escuro", "limpo", "vulto escuro andando"),
+                                     ("ceu", "limpo_ceu", "vulto escuro no céu claro (> 0,85)")):
+            name = f"{desc}: fantasma ÷ contraste"
+            po, pc = _png(root, f"fantasma/{mode}_{variant}"), _png(root, f"fantasma/{mode}_{clean}")
+            sp = spots.get((mode, variant))
+            if not (po and pc and sp):
+                _sem(area, [(name, "≤ 5%")])
+                continue
+            ratio, contrast = _ghost(luma(load(po)), luma(load(pc)), sp)
+            if contrast < 0.01:
+                check(area, name, "vulto sumiu", False, "≤ 5%")
+                continue
+            check(area, name, f"{ratio * 100:.1f}%", ratio <= 0.05, "≤ 5%")
+
+
+def _lua(root, log):
+    area = "LUA 48 MP"
+    metas = [("terminou, saída ≥ 40 MP", "sim"), ("usa as 5 fotos (sem corte por memória)", "5/5"),
+             ("memória: acréscimo no pico", "≤ 2500 MB")]
+    a = log.find("LUA 48 MP: início")
+    b = log.find("LUA 48 MP: fim", a + 1) if a >= 0 else -1
+    if a < 0 or b < 0:
+        return _sem(area, metas)
+    inner = log[a:b]
+    end = re.search(r"LUA 48 MP: fim · saída (.*?) · .*? · memória pico ([\d.]+) MB \(acréscimo ([\d.]+) MB\)", log[b:])
+    mp = re.search(r"\(([\d.]+) MP\)", end.group(1)) if end else None
+    out_mp = float(mp.group(1)) if mp else 0.0
+    check(area, metas[0][0], f"{out_mp:.1f} MP" if mp else SEM, out_mp >= 40, metas[0][1])
+    used = [int(x) for x in re.findall(r"Super resolução revelada: (\d+) fotos", inner)]
+    kept = [int(x) for x in re.findall(r"ficam (\d+) fotos", inner)]
+    chosen = [int(x) for x in re.findall(r"usando as (\d+) mais nítidas", inner)]
+    n = used[-1] if used else 0
+    ok = n == 5 and all(k >= 5 for k in kept) and all(c >= 5 for c in chosen)
+    value = f"{n}/5" + (f" (cortou p/ {min(kept)})" if kept and min(kept) < 5 else "")
+    check(area, metas[1][0], value, ok, metas[1][1])
+    if end:
+        extra = float(end.group(3))
+        check(area, metas[2][0], f"{extra:.0f} MB", extra <= 2500, metas[2][1])
+        rows.append((area, "memória pico do processo (só informação)", f"{float(end.group(2)):.0f} MB", "", ""))
+    else:
+        _sem(area, metas[2:])
+
+
+def prevencao(root):
+    log = _log_text(root)
+    for fn in (_geometria, _longa, _panorama, _estrelas, _media, _foco, _foto_consistencia, _noite_ruim, _fantasmas, _lua):
+        try:
+            fn(root, log)
+        except Exception as e:  # um teste com saída estranha não derruba o placar: vira FALTA com o erro
+            check(f"Prevenção {fn.__name__.strip('_')}", "erro ao medir", type(e).__name__, False, "medir")
+
+
 def main(root):
-    names = sorted({f.split("_")[0] for f in os.listdir(os.path.join(root, "foto")) if f.endswith(".jpg")})
+    foto_dir = os.path.join(root, "foto")
+    names = sorted({f.split("_")[0] for f in (os.listdir(foto_dir) if os.path.isdir(foto_dir) else []) if f.endswith(".jpg")})
     for n in names:
         f = lambda s: os.path.join(root, "foto", f"{n}_{s}.jpg")
         if not os.path.exists(f("apple")):
@@ -323,6 +718,8 @@ def main(root):
                 continue
             err = max(((a - x) ** 2 + (b - y) ** 2) ** 0.5 for (a, b), (x, y) in zip(got, expected))
             check(f"ALINHAMENTO {kind}", "erro máximo (deslocamento de mão real)", f"{err:.2f} px", err <= 0.5, "≤ 0,5 px")
+
+    prevencao(root)
 
     width = max(len(r[1]) for r in rows) if rows else 10
     ok = sum(1 for r in rows if r[4] == "OK")
