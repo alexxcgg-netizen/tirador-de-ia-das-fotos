@@ -16,9 +16,9 @@ extension Developer {
     /// Calibragem da super resolução (o laboratório testa variações; o app usa a padrão).
     struct SRTuning {
         /// Tamanho do núcleo de cada pixel na grade grande (em pixels grandes).
-        // 0,45 com 24 fotos (mais amostras pedem núcleo mais estreito; laboratório 86ab1f0: +4,12/+6,09/+4,48 dB contra
-        // +3,44/+5,53/+4,67 com 0,6 e desconvolução 0,45)
-        var splatSigma: Double = 0.45
+        // 0,6 com a desconvolução regularizada (estudo em Python); com a Richardson–Lucy 0,45 era melhor (laboratório
+        // 86ab1f0: +4,12/+6,09/+4,48 dB)
+        var splatSigma: Double = 0.6
         /// Borrão da desconvolução final, × o fator de ampliação.
         // 0,45 × fator com 3 passos (laboratório b22822c: +1,85/+2,67/+1,84 dB contra +1,66/+1,98/+1,73 com 0,35 × 2)
         var deconvScale: Double = 0.4
@@ -29,6 +29,13 @@ extension Developer {
         /// Limpeza de brilho depois da desconvolução (× o ruído medido na junção). A desconvolução realça o ruído e a
         /// super resolução não tinha limpeza nenhuma (a foto ampliada de comparação tem o ruído suavizado pela ampliação)
         var denoise: Float = 0
+        /// Desconvolução regularizada (Huber-TV, brilho/cor) em vez da Richardson–Lucy. Estudo em Python nas 24 fotos
+        /// do laboratório: +5,4 dB (RL × 3: +4,5; RL × 10: +4,9). Borradura: caixa 2×2 do sensor ⊗ gaussiana 0,45 px
+        var tv = true
+        var tvLumaLambda: Float = 2e-4
+        var tvChromaLambda: Float = 2e-3
+        var tvDelta: Float = 0.01
+        var tvIterations = 30
     }
     static var srTuning = SRTuning()
 
@@ -722,7 +729,46 @@ extension Developer {
 
     /// Richardson–Lucy numa faixa (com margem, para a borda da faixa não mudar): a estimativa é refinada
     /// comparando com o observado depois de borrar com o mesmo borrão da lente. Pouco ruído porque as fotos já foram somadas.
+    /// Desconvolução regularizada (FISTA): minimiza ‖P·x − observada‖² + Σ λ·Huber(|∇u|), u = cor em brilho/2 cores.
+    /// P = caixa 2×2 do sensor (binomial 3×3) ⊗ gaussiana 0,45 px (simétrica: a transposta é ela mesma)
+    private static func tvDeconvolved(_ image: CIImage, strip rect: CGRect, extent: CGRect) -> CIImage? {
+        let t = srTuning
+        guard t.tvIterations > 0, let tvFluxKernel, let tvStepKernel, let momentumKernel, let subKernel = srSubKernel else { return nil }
+        let margin = CGFloat(6 * t.tvIterations + 8)
+        let big = rect.insetBy(dx: 0, dy: -margin).intersection(extent).integral
+        let observed = materialize(image.cropped(to: big), extent: big)
+        func psf(_ x: CIImage) -> CIImage {
+            x.clampedToExtent()
+                .applyingFilter("CIConvolution3X3", parameters: [
+                    "inputWeights": CIVector(values: [1, 2, 1, 2, 4, 2, 1, 2, 1].map { $0 / 16 }, count: 9), "inputBias": 0])
+                .applyingGaussianBlur(sigma: 0.45)
+                .cropped(to: big)
+        }
+        let lam = CIVector(x: CGFloat(t.tvLumaLambda), y: CGFloat(t.tvChromaLambda), z: CGFloat(t.tvChromaLambda))
+        let tau = Float(1.8 / (1 + 8 * Double(t.tvChromaLambda) / Double(t.tvDelta)))
+        let roi: CIKernelROICallback = { _, r in r.insetBy(dx: -2, dy: -2) }
+        var x = observed, z = observed
+        var tk: Float = 1
+        for _ in 0..<t.tvIterations {
+            guard let residual = subKernel.apply(extent: big, arguments: [psf(z), observed]),
+                  let fx = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), t.tvDelta, Float(0)]),
+                  let fy = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), t.tvDelta, Float(1)]) else { return nil }
+            let dataGrad = materialize(psf(materialize(residual, extent: big)), extent: big)
+            guard let next = tvStepKernel.apply(extent: big, roiCallback: roi, arguments: [
+                z.clampedToExtent(), materialize(fx, extent: big).clampedToExtent(), materialize(fy, extent: big).clampedToExtent(),
+                dataGrad.clampedToExtent(), lam, tau]) else { return nil }
+            let xn = materialize(next, extent: big)
+            let tn = (1 + (1 + 4 * tk * tk).squareRoot()) / 2
+            guard let zn = momentumKernel.apply(extent: big, arguments: [xn, x, (tk - 1) / tn]) else { return nil }
+            z = materialize(zn, extent: big)
+            x = xn
+            tk = tn
+        }
+        return x.cropped(to: rect)
+    }
+
     private static func deconvolved(_ image: CIImage, strip rect: CGRect, extent: CGRect, iterations: Int, sigma: Double) -> CIImage {
+        if srTuning.tv, iterations > 0, let tv = tvDeconvolved(image, strip: rect, extent: extent) { return tv }
         guard iterations > 0, let ratioKernel, let multiplyKernel else { return image.cropped(to: rect) }
         let margin = CGFloat(ceil(sigma * 3 * 2 * Double(iterations))) + 4
         let big = rect.insetBy(dx: 0, dy: -margin).intersection(extent).integral

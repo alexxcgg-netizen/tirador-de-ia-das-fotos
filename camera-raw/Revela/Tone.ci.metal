@@ -336,6 +336,40 @@ namespace coreimage {
         return mode < 0.5f ? float4(acc * g, 1.0f) : float4(float3(wsum * g), 1.0f);
     }
 
+    // SUPER ZOOM: desconvolução regularizada (MAP com Huber-TV), como no estudo em Python (+5,4 dB contra +4,5 do
+    // Richardson–Lucy nas 24 fotos do laboratório). Cor separada em brilho e duas cores (base ortonormal): o brilho
+    // pode ter detalhe fino, a cor é mantida lisa (λ 10× maior), que é onde o ruído colorido some
+    inline float3 tvU(float3 c) {
+        return float3((c.r + c.g + c.b) * 0.57735027f, (c.r - c.g) * 0.70710678f, (c.r + c.g - 2.0f * c.b) * 0.40824829f);
+    }
+    inline float3 tvUt(float3 u) {
+        return float3(u.x * 0.57735027f + u.y * 0.70710678f + u.z * 0.40824829f,
+                      u.x * 0.57735027f - u.y * 0.70710678f + u.z * 0.40824829f,
+                      u.x * 0.57735027f - 2.0f * u.z * 0.40824829f);
+    }
+    // Fluxo de Huber: ∇u / max(|∇u|, δ), um eixo por vez (axis 0 = x, 1 = y), diferença para a frente
+    float4 revelaTVFlux(sampler x, float delta, float axis, destination dest) {
+        float2 p = dest.coord();
+        float3 u0 = tvU(x.sample(x.transform(p)).rgb);
+        float3 gx = tvU(x.sample(x.transform(p + float2(1.0f, 0.0f))).rgb) - u0;
+        float3 gy = tvU(x.sample(x.transform(p + float2(0.0f, 1.0f))).rgb) - u0;
+        float3 s = 1.0f / max(sqrt(gx * gx + gy * gy), float3(delta));
+        return float4(axis < 0.5f ? gx * s : gy * s, 1.0f);
+    }
+    // Um passo: z − τ·(gradiente dos dados + λ·gradiente da Huber-TV), sem valor negativo.
+    // A divergência é a diferença para trás (a transposta da diferença para a frente do fluxo)
+    float4 revelaTVStep(sampler z, sampler fx, sampler fy, sampler dataGrad, float3 lam, float tau, destination dest) {
+        float2 p = dest.coord();
+        float3 dv = fx.sample(fx.transform(p)).rgb - fx.sample(fx.transform(p - float2(1.0f, 0.0f))).rgb
+                  + fy.sample(fy.transform(p)).rgb - fy.sample(fy.transform(p - float2(0.0f, 1.0f))).rgb;
+        float3 g = dataGrad.sample(dataGrad.transform(p)).rgb + tvUt(-dv * lam);
+        return float4(max(z.sample(z.transform(p)).rgb - tau * g, float3(0.0f)), 1.0f);
+    }
+    // Aceleração de Nesterov (FISTA): z = x_novo + β·(x_novo − x)
+    float4 revelaMomentum(sample_t xn, sample_t x, float beta) {
+        return float4(xn.rgb + beta * (xn.rgb - x.rgb), 1.0f);
+    }
+
     // Desconvolução (Richardson–Lucy): quanto a imagem observada difere da estimativa borrada
     float4 revelaRatio(sample_t observed, sample_t blurred) {
         float3 r = max(observed.rgb, float3(0.0f)) / max(blurred.rgb, float3(1e-4f));

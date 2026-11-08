@@ -643,6 +643,11 @@ enum Developer {
     private static let shadowsHighlightsKernel = kernel("revelaShadowsHighlights")
     private static let localToneKernel = kernel("revelaLocalTone")
     static let splatKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplat", fromMetalLibraryData: $0) }
+    // SUPER ZOOM: desconvolução regularizada (Huber-TV)
+    static let tvFluxKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaTVFlux", fromMetalLibraryData: $0) }
+    static let tvStepKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaTVStep", fromMetalLibraryData: $0) }
+    static let momentumKernel = kernel("revelaMomentum")
+    static let srSubKernel = kernel("revelaSub")
     static let despeckleKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaDespeckle", fromMetalLibraryData: $0) }
     static let warpCubicKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaWarpCubic", fromMetalLibraryData: $0) }
 
