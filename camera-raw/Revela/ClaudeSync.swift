@@ -15,11 +15,18 @@ enum Keychain {
         return String(data: data, encoding: .utf8)
     }
 
-    static func set(_ key: String, _ value: String) {
+    /// Guarda e diz se deu certo. Só neste iPhone (não vai para backup nem para outro aparelho) e legível depois do
+    /// primeiro desbloqueio (a conferida do Claude roda com a tela bloqueada logo depois de abrir).
+    @discardableResult
+    static func set(_ key: String, _ value: String) -> Bool {
         delete(key)
         let item: [CFString: Any] = [kSecClass: kSecClassGenericPassword, kSecAttrService: service, kSecAttrAccount: key,
-                                     kSecValueData: Data(value.utf8), kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock]
-        SecItemAdd(item as CFDictionary, nil)
+                                     kSecValueData: Data(value.utf8),
+                                     kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly]
+        let status = SecItemAdd(item as CFDictionary, nil)
+        // Só o código do erro vai para o registro, nunca a chave
+        if status != errSecSuccess { dlog("❌ Keychain: não guardou \(key) (erro \(status))") }
+        return status == errSecSuccess
     }
 
     static func delete(_ key: String) {
@@ -38,9 +45,15 @@ final class ClaudeSync: ObservableObject {
     private static let branch = "revela-sync"
     private static let tokenKey = "githubToken"
 
-    @Published private(set) var connected = Keychain.get(ClaudeSync.tokenKey) != nil
+    @Published private(set) var connected = false
     @Published private(set) var status = ""
     @Published private(set) var sending = false
+    /// Último recado ou aviso de calibragem do Claude (fica nos Ajustes).
+    @Published private(set) var lastNotice: String?
+    /// Bolinha no botão de Ajustes até você abrir os Ajustes.
+    @Published var unreadNotice = false
+    /// Aviso esperando a câmera ficar livre para aparecer.
+    private var pendingToast: String?
 
     weak var camera: CameraModel?
     private var etags: [String: String] = [:]
@@ -50,7 +63,14 @@ final class ClaudeSync: ObservableObject {
     private var lastStatePush = Date.distantPast
     private let defaults = UserDefaults.standard
 
-    private var token: String? { Keychain.get(Self.tokenKey) }
+    /// Lida do Keychain uma vez: cada conferida faz vários pedidos, e ler o Keychain em cada um pesava na fila principal.
+    private var cachedToken: String?
+    private var token: String? { cachedToken }
+
+    init() {
+        cachedToken = Keychain.get(Self.tokenKey)
+        connected = cachedToken != nil
+    }
 
     // MARK: - Conectar
 
@@ -62,7 +82,11 @@ final class ClaudeSync: ObservableObject {
         let (code, _, _) = await request("GET", path: "LEIA-ME.md", token: token)
         switch code {
         case 200:
-            Keychain.set(Self.tokenKey, token)
+            guard Keychain.set(Self.tokenKey, token) else {
+                status = "A chave funciona, mas o iPhone não deixou guardar no Keychain. Tente de novo."
+                return false
+            }
+            cachedToken = token
             connected = true
             status = "Conectado"
             dlog("Claude: conectado pelo GitHub")
@@ -78,6 +102,7 @@ final class ClaudeSync: ObservableObject {
 
     func disconnect() {
         Keychain.delete(Self.tokenKey)
+        cachedToken = nil
         connected = false
         stop()
         etags = [:]
@@ -106,6 +131,8 @@ final class ClaudeSync: ObservableObject {
         guard connected, !pulling else { return }
         pulling = true
         defer { pulling = false }
+        // Aviso que chegou com a câmera ocupada: aparece agora, se ela já estiver livre
+        flushNotice()
         if let data = await fetchIfChanged("looks.json"),
            let looks = try? JSONDecoder().decode([CustomLook].self, from: data) {
             camera?.applyRemoteLooks(looks)
@@ -127,9 +154,9 @@ final class ClaudeSync: ObservableObject {
                 defaults.set(fingerprint, forKey: "calibragemAplicada")
                 let applied = Calibration.apply(d)
                 dlog("Claude: calibragem nova (\(applied.isEmpty ? "padrão" : applied.joined(separator: ", ")))")
-                camera?.message = applied.isEmpty
+                announce(applied.isEmpty
                     ? "O Claude voltou a revelação ao padrão."
-                    : "O Claude ajustou a revelação (\(applied.count) valor(es)). Abra a última foto em Revelar de novo para ver."
+                    : "O Claude ajustou a revelação (\(applied.count) valor(es)). Abra a última foto em Revelar de novo para ver.")
             }
         }
         if let data = await fetchIfChanged("recado.json"),
@@ -137,7 +164,7 @@ final class ClaudeSync: ObservableObject {
            let id = recado["id"] as? String, !id.isEmpty, id != defaults.string(forKey: "ultimoRecado"),
            let texto = recado["texto"] as? String, !texto.isEmpty {
             defaults.set(id, forKey: "ultimoRecado")
-            camera?.message = "Recado do Claude: \(texto)"
+            announce("Recado do Claude: \(texto)")
             dlog("Claude: recado \(id)")
         }
         if Date().timeIntervalSince(lastStatePush) > 600 {
@@ -145,6 +172,23 @@ final class ClaudeSync: ObservableObject {
             await pushState()
         }
         status = "Conectado · conferido às \(Date().formatted(date: .omitted, time: .shortened))"
+    }
+
+    /// Recado e calibragem viram um aviso curto no visor (antes era um alerta que travava a tela no meio da foto)
+    /// e uma bolinha nos Ajustes, onde o texto fica.
+    private func announce(_ text: String) {
+        lastNotice = text
+        unreadNotice = true
+        pendingToast = text
+        flushNotice()
+    }
+
+    /// Mostra o aviso só com a câmera livre: nunca no meio de uma revelação, sequência ou gravação.
+    private func flushNotice() {
+        guard let text = pendingToast, let camera else { return }
+        guard camera.processing == 0, !camera.isBusy else { return }
+        pendingToast = nil
+        camera.show(text, seconds: 6)
     }
 
     /// Baixa o arquivo só se mudou (ETag); devolve nil se não mudou ou deu erro.

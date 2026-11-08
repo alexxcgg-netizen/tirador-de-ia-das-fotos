@@ -93,6 +93,11 @@ enum SourceStore {
         queue.sync { readIndex().first }
     }
 
+    /// Arquivo do original mais novo, sem ler (pode ter 100 MB): a miniatura ao abrir o app sai dele.
+    static func latestFileURL() -> URL? {
+        queue.sync { readIndex().first.map { directory.appendingPathComponent($0.file) } }
+    }
+
     /// As últimas fotos guardadas (só o índice), da mais nova para a mais velha.
     static func recentEntries(limit: Int) -> [Entry] {
         queue.sync { Array(readIndex().prefix(limit)) }

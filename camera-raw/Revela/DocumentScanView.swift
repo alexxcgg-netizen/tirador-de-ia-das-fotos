@@ -157,7 +157,8 @@ struct DocumentScanView: View {
                 }
             }, completionHandler: { _, error in
                 DispatchQueue.main.async {
-                    message = error?.localizedDescription ?? "\(images.count) página(s) salvas na galeria."
+                    // O erro do iOS sozinho não dizia o que fazer: vai com a explicação em português na frente
+                    message = error.map { RevelaError.explained($0).localizedDescription } ?? "\(images.count) página(s) salvas na galeria."
                 }
             })
         }

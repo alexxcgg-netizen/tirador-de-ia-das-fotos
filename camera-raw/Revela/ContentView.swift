@@ -36,6 +36,11 @@ struct ContentView: View {
     @State private var pressingShutter = false
     @State private var pinchStart: CGFloat?
     @AppStorage("guideSeen") private var guideSeen = false
+    @State private var whatsNew: [String] = []
+    @State private var showWhatsNew = false
+    @State private var expiryDismissed = false
+    /// Altura dos controles do modo sobre o visor (os avisos de baixo sobem esse tanto).
+    @State private var controlsHeight: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -44,13 +49,7 @@ struct ContentView: View {
                 VStack(spacing: 14) {
                     topBar
                     viewfinder
-                        .overlay(alignment: .bottom) {
-                            if showLookStrip {
-                                LookStrip(camera: camera) { showLooks = true }
-                                    .padding(8)
-                                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                            }
-                        }
+                        .overlay(alignment: .bottom) { viewfinderBottom }
                     lensPicker
                     modePicker
                     Spacer(minLength: 0)
@@ -62,21 +61,24 @@ struct ContentView: View {
                 noAccess
             }
         }
-        .overlay(alignment: .top) {
-            if let days = Expiration.daysLeft, days <= 1 {
-                Text(days == 0 ? "O Revela vence hoje: reinstale pelo Sideloadly" : "O Revela vence amanhã: reinstale pelo Sideloadly")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.black)
-                    .padding(.horizontal, 12).padding(.vertical, 6)
-                    .background(Capsule().fill(accent))
-                    .padding(.top, 2)
-                    .allowsHitTesting(false)
-            }
-        }
+        .overlay(alignment: .top) { expiryBanner }
         .simultaneousGesture(TapGesture().onEnded { camera.userInteracted() })
         .preferredColorScheme(.dark)
         .statusBarHidden()
+        .modifier(KeepAwake(on: keepAwake))
+        .onChange(of: camera.captureMode) { _, mode in showHintIfNew(mode) }
+        .sheet(isPresented: $showWhatsNew) { WhatsNewView(items: whatsNew) }
         .onAppear {
+            // Antes do Guia marcar como visto: na primeira instalação as novidades não aparecem
+            let firstLaunch = !guideSeen
+            if let notes = WhatsNew.pending(firstLaunch: firstLaunch) {
+                whatsNew = notes
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { showWhatsNew = true }
+            }
+            // A miniatura já abre com a última foto do Revela (antes ficava vazia até a primeira foto)
+            LastPhoto.loadThumbnail { image in
+                if camera.thumbnail == nil { camera.thumbnail = image }
+            }
             camera.start()
             // O app abriu agora: o scenePhase ainda não "mudou", então liga a localização aqui
             Locator.shared.start()
@@ -115,6 +117,55 @@ struct ContentView: View {
         }
     }
 
+    /// Embaixo do visor: a faixa de filmes (quando aberta) ou os controles do modo.
+    @ViewBuilder
+    private var viewfinderBottom: some View {
+        // No CINEMÁTICO o vídeo sai sem filme: a faixa de filmes enganava
+        if showLookStrip && camera.captureMode != .cinematic {
+            LookStrip(camera: camera, paused: showStudio) { showLooks = true }
+                .padding(8)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+        } else {
+            modeControls
+        }
+    }
+
+    /// Aviso de que a instalação vence (hoje ou amanhã, pelo calendário). Pequeno, e some com um toque.
+    @ViewBuilder
+    private var expiryBanner: some View {
+        if !expiryDismissed, let days = Expiration.calendarDaysLeft, days <= 1 {
+            Button {
+                withAnimation(.easeOut(duration: 0.2)) { expiryDismissed = true }
+            } label: {
+                HStack(spacing: 6) {
+                    Text(days == 0 ? "Vence hoje: reinstale pelo Sideloadly" : "Vence amanhã: reinstale pelo Sideloadly")
+                    Image(systemName: "xmark")
+                }
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(.black)
+                .padding(.horizontal, 10).padding(.vertical, 4)
+                .background(Capsule().fill(accent))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 2)
+            .accessibilityLabel(days == 0 ? "O Revela vence hoje. Toque para fechar o aviso" : "O Revela vence amanhã. Toque para fechar o aviso")
+        }
+    }
+
+    /// Revelando, fotografando, contando ou gravando: a tela não apaga no meio.
+    private var keepAwake: Bool { camera.processing > 0 || camera.isBusy }
+
+    /// A dica do modo aparece sozinha nas 2 primeiras vezes; depois só pelo "?" (antes ela morava embaixo do visor
+    /// e empurrava o visor, que mudava de tamanho a cada modo).
+    private func showHintIfNew(_ mode: CaptureMode) {
+        guard camera.selfTestProgress == nil, !mode.hint.isEmpty else { return }
+        let key = "hintShown." + mode.rawValue
+        let shown = UserDefaults.standard.integer(forKey: key)
+        guard shown < 2 else { return }
+        UserDefaults.standard.set(shown + 1, forKey: key)
+        camera.show(mode.hint, seconds: 4.5)
+    }
+
     // MARK: - Topo: look, proporção e Ajustes
 
     private var anyManual: Bool {
@@ -125,6 +176,11 @@ struct ContentView: View {
         HStack(spacing: 10) {
             // Toque: abre/fecha a faixa de filmes ao vivo no visor
             Button {
+                // O CINEMÁTICO grava direto do sistema, sem o filme: a faixa só enganaria
+                if camera.captureMode == .cinematic {
+                    camera.show("O CINEMÁTICO grava com a cor da Apple, sem filme. Os filmes valem nos outros modos.")
+                    return
+                }
                 withAnimation(.snappy(duration: 0.22)) { showLookStrip.toggle() }
                 UISelectionFeedbackGenerator().selectionChanged()
             } label: {
@@ -139,9 +195,12 @@ struct ContentView: View {
                 .background(Capsule().fill(showLookStrip ? panelOn : panelFill))
             }
             .buttonStyle(.plain)
+            .opacity(camera.captureMode == .cinematic ? 0.45 : 1)
             .accessibilityLabel("Filme: \(camera.lookName). Toque para escolher outro")
 
             Spacer(minLength: 0)
+
+            timerButton
 
             Button {
                 camera.cycleAspect()
@@ -163,11 +222,41 @@ struct ContentView: View {
                     .frame(width: 48, height: 48)
                     .foregroundStyle(anyManual ? accent : Color.white)
                     .background(Circle().fill(panelFill))
+                    .overlay(alignment: .topTrailing) {
+                        // Recado ou ajuste novo do Claude esperando nos Ajustes
+                        if sync.unreadNotice {
+                            Circle().fill(accent).frame(width: 11, height: 11)
+                                .overlay(Circle().stroke(Color.black, lineWidth: 2))
+                        }
+                    }
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Ajustes")
+            .accessibilityLabel(sync.unreadNotice ? "Ajustes, com recado novo do Claude" : "Ajustes")
         }
         .padding(.top, 6)
+    }
+
+    /// Timer à mão no topo: sem timer → 3 s → 10 s. Durante a contagem, tocar no botão de foto cancela.
+    private var timerButton: some View {
+        let on = camera.timerSeconds > 0
+        return Button {
+            camera.cycleTimer()
+            UISelectionFeedbackGenerator().selectionChanged()
+            camera.show(camera.timerSeconds == 0 ? "Sem timer"
+                        : "Timer de \(camera.timerSeconds) s. Na contagem, toque no botão de foto para cancelar.")
+        } label: {
+            HStack(spacing: 2) {
+                Image(systemName: "timer").font(.system(size: on ? 14 : 18, weight: .semibold))
+                if on { Text("\(camera.timerSeconds)").font(.system(size: 13, weight: .bold)) }
+            }
+            .frame(width: 48, height: 48)
+            .foregroundStyle(on ? accent : Color.white)
+            .background(Circle().fill(panelFill))
+        }
+        .buttonStyle(.plain)
+        .disabled(camera.countdown > 0)
+        .accessibilityLabel(on ? "Timer de \(camera.timerSeconds) segundos" : "Sem timer")
+        .accessibilityHint("Toque para trocar entre sem timer, 3 e 10 segundos")
     }
 
     // MARK: - Lentes e modos
@@ -212,6 +301,7 @@ struct ContentView: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Zoom 8×")
+                    .selectedTrait(eightOn)
                 }
             }
         }
@@ -239,6 +329,7 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(on ? "Sair do macro" : "Macro")
+        .selectedTrait(on)
     }
 
     /// Este botão mostra o zoom atual? (o exato, ou o mais perto quando a pinça parou entre dois)
@@ -265,6 +356,7 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Zoom \(zoomLabel(z))")
+        .selectedTrait(isCurrent(z))
     }
 
     /// O botão mais perto do zoom atual mostra o valor exato (ex.: 2,7×) quando você usa a pinça.
@@ -273,10 +365,18 @@ struct ContentView: View {
         return presets.last(where: { $0 <= camera.zoom + 0.01 }) ?? presets.first ?? 1
     }
 
+    /// Botão do modo (abre a grade) e o "?" com a explicação. Altura fixa: o visor fica do mesmo tamanho em todos
+    /// os modos (antes os controles e a dica moravam aqui embaixo e o visor encolhia e crescia a cada troca).
     private var modePicker: some View {
-        VStack(spacing: 6) {
+        HStack(spacing: 8) {
             // Modos numa telinha: um botão com o modo atual abre a grade com todos
             Button {
+                // Gravando ou fotografando uma sequência: a troca estragaria o que está saindo
+                if camera.isBusy {
+                    camera.show("Espere terminar…")
+                    UINotificationFeedbackGenerator().notificationOccurred(.warning)
+                    return
+                }
                 showModeGrid = true
                 UISelectionFeedbackGenerator().selectionChanged()
             } label: {
@@ -290,27 +390,64 @@ struct ContentView: View {
                 .background(Capsule().fill(panelFill))
             }
             .buttonStyle(.plain)
+            .opacity(camera.isBusy ? 0.4 : 1)
             .accessibilityLabel("Modo \(camera.captureMode.rawValue). Toque para ver todos os modos")
-            if camera.captureMode == .freeze { freezeControls }
-            if camera.captureMode == .portrait { apertureControls }
-            if camera.lens == .macro && camera.captureMode == .photo { macroControls }
-            if camera.captureMode == .night { nightControls }
-            if CameraModel.dayStarModes.contains(camera.captureMode), camera.lens != .macro {
-                HStack(spacing: 8) {
-                    starMenu
-                    Text("Estrela no sol e nas luzes fortes, como o iPhone 18 com a lente fechada")
-                        .font(.caption2).opacity(0.6)
+            Button {
+                camera.show(camera.captureMode.hint, seconds: 5)
+            } label: {
+                Image(systemName: "questionmark")
+                    .font(.system(size: 15, weight: .bold))
+                    .frame(width: 40, height: 40)
+                    .background(Circle().fill(panelFill))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("O que o modo \(camera.captureMode.rawValue) faz")
+        }
+        .frame(height: 40)
+    }
+
+    /// O modo atual tem controles próprios (que ficam por cima da parte de baixo do visor)?
+    private var hasModeControls: Bool {
+        let mode = camera.captureMode
+        let withControls: [CaptureMode] = [.freeze, .portrait, .night, .longExposure, .video, .cinematic]
+        if withControls.contains(mode) { return true }
+        if camera.lens == .macro && mode == .photo { return true }
+        return CameraModel.dayStarModes.contains(mode) && camera.lens != .macro
+    }
+
+    /// Controles do modo por cima da parte de baixo do visor, num degradê escuro. Os avisos de baixo do visor
+    /// sobem a altura deles (`controlsHeight`).
+    @ViewBuilder
+    private var modeControls: some View {
+        if hasModeControls {
+            VStack(spacing: 6) {
+                if camera.captureMode == .freeze { freezeControls }
+                if camera.captureMode == .portrait { apertureControls }
+                if camera.lens == .macro && camera.captureMode == .photo { macroControls }
+                if camera.captureMode == .night { nightControls }
+                // Estrela no sol e nas luzes fortes, como o iPhone 18 com a lente fechada
+                if CameraModel.dayStarModes.contains(camera.captureMode), camera.lens != .macro { starMenu }
+                if camera.captureMode == .longExposure { longControls }
+                if camera.captureMode == .video { videoControls }
+                if camera.captureMode == .cinematic { cinematicControls }
+            }
+            .padding(.horizontal, 8)
+            .padding(.top, 14)
+            .padding(.bottom, 8)
+            .frame(maxWidth: .infinity)
+            .background(
+                LinearGradient(colors: [Color.black.opacity(0), Color.black.opacity(0.5)], startPoint: .top, endPoint: .bottom)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .allowsHitTesting(false)
+            )
+            .background(
+                GeometryReader { g in
+                    Color.clear
+                        .onAppear { controlsHeight = g.size.height }
+                        .onChange(of: g.size.height) { _, h in controlsHeight = h }
                 }
-            }
-            if camera.captureMode == .longExposure { longControls }
-            if camera.captureMode == .video { videoControls }
-            if camera.captureMode == .cinematic { cinematicControls }
-            if !camera.captureMode.hint.isEmpty {
-                Text(camera.captureMode.hint)
-                    .font(.caption).opacity(0.6)
-                    .multilineTextAlignment(.center)
-                    .transition(.opacity)
-            }
+            )
+            .onDisappear { controlsHeight = 0 }
         }
     }
 
@@ -344,6 +481,7 @@ struct ContentView: View {
                 .foregroundStyle(camera.portraitAperture == f ? Color.black : Color.white)
                 .background(Capsule().fill(camera.portraitAperture == f ? accent : panelFill))
                 .buttonStyle(.plain)
+                .selectedTrait(camera.portraitAperture == f)
             }
         }
     }
@@ -396,11 +534,12 @@ struct ContentView: View {
                 .background(Capsule().fill(on ? accent : panelFill))
         }
         .buttonStyle(.plain)
+        .selectedTrait(on)
     }
 
     private func apertureLabel(_ f: Float) -> String {
         if f == f.rounded() { return "f/\(Int(f))" }
-        return "f/" + String(format: "%.1f", f).replacingOccurrences(of: ".", with: ",")
+        return "f/" + ptNumber(f)
     }
 
     /// Vídeo: quadros por segundo.
@@ -416,6 +555,7 @@ struct ContentView: View {
                 .foregroundStyle(camera.videoFPS == fps ? Color.black : Color.white)
                 .background(Capsule().fill(camera.videoFPS == fps ? accent : panelFill))
                 .buttonStyle(.plain)
+                .selectedTrait(camera.videoFPS == fps)
                 .disabled(camera.isRecordingVideo)
             }
             Menu {
@@ -446,6 +586,7 @@ struct ContentView: View {
                 .foregroundStyle(camera.cinematicAperture == f ? Color.black : Color.white)
                 .background(Capsule().fill(camera.cinematicAperture == f ? accent : panelFill))
                 .buttonStyle(.plain)
+                .selectedTrait(camera.cinematicAperture == f)
                 .disabled(camera.isRecordingVideo)
             }
         }
@@ -464,6 +605,7 @@ struct ContentView: View {
                 .foregroundStyle(camera.longSecondsChoice == sec ? Color.black : Color.white)
                 .background(Capsule().fill(camera.longSecondsChoice == sec ? accent : panelFill))
                 .buttonStyle(.plain)
+                .selectedTrait(camera.longSecondsChoice == sec)
             }
             ForEach(LongExposure.Style.allCases) { style in
                 Button(style.rawValue) {
@@ -475,6 +617,7 @@ struct ContentView: View {
                 .foregroundStyle(camera.longStyle == style ? Color.black : Color.white)
                 .background(Capsule().fill(camera.longStyle == style ? accent : panelFill))
                 .buttonStyle(.plain)
+                .selectedTrait(camera.longStyle == style)
             }
         }
     }
@@ -493,6 +636,7 @@ struct ContentView: View {
                     .foregroundStyle(camera.nightTime == t ? Color.black : Color.white)
                     .background(Capsule().fill(camera.nightTime == t ? accent : panelFill))
                     .buttonStyle(.plain)
+                    .selectedTrait(camera.nightTime == t)
                 }
             }
             HStack(spacing: 6) {
@@ -506,6 +650,7 @@ struct ContentView: View {
                     .foregroundStyle(camera.nightFrames == n ? Color.black : Color.white)
                     .background(Capsule().fill(camera.nightFrames == n ? accent : panelFill))
                     .buttonStyle(.plain)
+                    .selectedTrait(camera.nightFrames == n)
                 }
                 starMenu
                 Label(camera.isSteady ? "Apoiado" : "Na mão", systemImage: camera.isSteady ? "checkmark.circle.fill" : "hand.raised.fill")
@@ -528,6 +673,7 @@ struct ContentView: View {
                 .foregroundStyle(camera.freezeShutter == speed ? Color.black : Color.white)
                 .background(Capsule().fill(camera.freezeShutter == speed ? accent : panelFill))
                 .buttonStyle(.plain)
+                .selectedTrait(camera.freezeShutter == speed)
             }
             Button("MÁX") {
                 camera.freezeMax.toggle()
@@ -540,6 +686,7 @@ struct ContentView: View {
             .foregroundStyle(camera.freezeMax ? Color.black : accent)
             .background(Capsule().fill(camera.freezeMax ? accent : panelFill))
             .buttonStyle(.plain)
+            .selectedTrait(camera.freezeMax)
         }
     }
 
@@ -584,12 +731,13 @@ struct ContentView: View {
                     .allowsHitTesting(false)
                 }
                 if camera.ettrActive, abs(camera.ettrBias) > 0.05 {
-                    Text(String(format: "ETTR %+.1f", camera.ettrBias).replacingOccurrences(of: ".", with: ","))
+                    Text("ETTR " + ptNumber(camera.ettrBias, sign: true))
                         .font(.caption2.weight(.bold).monospacedDigit())
                         .padding(.horizontal, 8).padding(.vertical, 4)
                         .background(.black.opacity(0.55), in: Capsule())
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                         .padding(10)
+                        .padding(.bottom, controlsHeight)
                         .allowsHitTesting(false)
                 }
                 if let test = camera.selfTestProgress {
@@ -616,6 +764,15 @@ struct ContentView: View {
                         .position(x: p.x * geo.size.width, y: p.y * geo.size.height)
                         .id(p)
                 }
+                // Revelação longa: avisa o que está revelando (e que dá para seguir fotografando)
+                if camera.processing > 0, camera.stackProgress == nil,
+                   let label = camera.developingLabel, let since = camera.developingSince {
+                    DevelopingPill(label: label, since: since, count: camera.processing)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .padding(.top, camera.recordingStarted != nil ? 92 : 54)
+                        .padding(.leading, 8)
+                        .allowsHitTesting(false)
+                }
                 if let toast = camera.toast {
                     Text(toast)
                         .font(.footnote.weight(.semibold))
@@ -631,8 +788,11 @@ struct ContentView: View {
                 }
                 VStack {
                     HStack {
-                        LiveHistogram(live: camera.live, rgb: camera.rgbHistogram)
-                            .frame(width: 96, height: 40)
+                        // No CINEMÁTICO o visor é o do sistema: o histograma do nosso visor ficava parado
+                        if camera.captureMode != .cinematic {
+                            LiveHistogram(live: camera.live, rgb: camera.rgbHistogram)
+                                .frame(width: 96, height: 40)
+                        }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
                             Text(statusText.replacingOccurrences(of: "\n", with: " ") + (camera.mirror ? " · ESPELHO" : ""))
@@ -646,6 +806,8 @@ struct ContentView: View {
                                     .padding(.horizontal, 8).padding(.vertical, 4)
                                     .background(.black.opacity(0.45), in: Capsule())
                             }
+                            FusionBadge(live: camera.live, eligible: camera.fusionEligible,
+                                        manualISO: camera.manualExposure ? camera.selectedISO : nil)
                         }
                     }
                     Spacer()
@@ -658,10 +820,11 @@ struct ContentView: View {
                         .background(accent, in: Capsule())
                         .foregroundStyle(.black)
                         .frame(maxHeight: .infinity, alignment: .bottom)
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 10 + controlsHeight)
                 }
-                if camera.stackProgress == nil {
-                    FaceOverlay(live: camera.live, zoom: camera.crop, size: geo.size)
+                // No CINEMÁTICO o quadro do rosto vinha do nosso visor (parado): o do sistema já segue as pessoas
+                if camera.stackProgress == nil, camera.captureMode != .cinematic {
+                    FaceOverlay(live: camera.live, zoom: camera.crop, size: geo.size, bottomInset: controlsHeight)
                 }
                 if camera.lens == .macro && camera.stackProgress == nil {
                     Text("Macro: aproxime até 2 cm")
@@ -669,10 +832,10 @@ struct ContentView: View {
                         .padding(.horizontal, 10).padding(.vertical, 5)
                         .background(.black.opacity(0.5), in: Capsule())
                         .frame(maxHeight: .infinity, alignment: .bottom)
-                        .padding(.bottom, camera.loupe ? 40 : 10)
+                        .padding(.bottom, macroHintBottom)
                 }
                 if camera.stackProgress != nil, let end = camera.nightEnd {
-                    NightAim(offset: camera.aimOffset, end: end, progress: camera.stackProgress ?? "")
+                    NightAimLive(aim: camera.aim, end: end, progress: camera.stackProgress ?? "")
                         .allowsHitTesting(false)
                 } else if let progress = camera.stackProgress {
                     VStack(spacing: 6) {
@@ -716,7 +879,7 @@ struct ContentView: View {
                     .padding(.horizontal, 10).padding(.vertical, 6)
                     .background(.black.opacity(0.6), in: Capsule())
                     .frame(maxHeight: .infinity, alignment: .bottom)
-                    .padding(.bottom, 44)
+                    .padding(.bottom, 44 + controlsHeight)
                     .allowsHitTesting(false)
                 }
                 if camera.countdown > 0 {
@@ -743,7 +906,9 @@ struct ContentView: View {
                 MagnificationGesture()
                     .onChanged { scale in
                         if pinchStart == nil { pinchStart = camera.lens == .macro ? camera.macroZoom : camera.zoom }
+                        let before = camera.zoom
                         camera.pinchZoom((pinchStart ?? 1) * scale)
+                        if camera.lens != .macro { tickIfCrossed(from: before, to: camera.zoom) }
                     }
                     .onEnded { _ in
                         pinchStart = nil
@@ -786,6 +951,27 @@ struct ContentView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .animation(.snappy(duration: 0.25), value: camera.countdown)
         .animation(.easeOut(duration: 0.2), value: camera.toast)
+    }
+
+    /// Aviso do macro acima da lupa e dos controles do modo.
+    private var macroHintBottom: CGFloat { (camera.loupe ? 40 : 10) + controlsHeight }
+
+    /// Pinça passando por 0,5×, 1×, 2× ou 4×: um toquinho, como na câmera do iPhone.
+    private func tickIfCrossed(from a: CGFloat, to b: CGFloat) {
+        guard a != b else { return }
+        let crossed = zoomPresets.contains { p in (a < p && b >= p) || (a > p && b <= p) }
+        if crossed { UISelectionFeedbackGenerator().selectionChanged() }
+    }
+
+    /// O que o botão de foto faz agora, para o leitor de tela.
+    private var shutterLabel: String {
+        if camera.countdown > 0 { return "Cancelar o timer" }
+        if shutterIsStop { return camera.panoramaProgress != nil ? "Terminar o panorama" : "Parar a gravação" }
+        switch camera.captureMode {
+        case .video, .cinematic: return "Gravar"
+        case .panorama: return "Começar o panorama"
+        default: return camera.timerSeconds > 0 ? "Fotografar com timer de \(camera.timerSeconds) segundos" : "Fotografar"
+        }
     }
 
     private func sliderRow(_ label: String, value: Binding<Double>, range: ClosedRange<Double>, text: String) -> some View {
@@ -832,6 +1018,8 @@ struct ContentView: View {
                     .clipShape(RoundedRectangle(cornerRadius: shutterIsStop ? 8 : 34))
             }
             .scaleEffect(pressingShutter ? 0.9 : 1)
+            // Sequência saindo: o toque não vale agora (apagado, e vibra se tocar)
+            .opacity(camera.stackProgress != nil ? 0.45 : 1)
             .animation(.spring(response: 0.2, dampingFraction: 0.6), value: pressingShutter)
             .animation(.snappy(duration: 0.2), value: shutterIsStop)
             .contentShape(Circle())
@@ -848,7 +1036,12 @@ struct ContentView: View {
                     }
             )
             .accessibilityAddTraits(.isButton)
-            .accessibilityLabel("Fotografar")
+            .accessibilityLabel(shutterLabel)
+            // O leitor de tela não faz o gesto de arrastar: o toque duplo dispara como um toque no botão
+            .accessibilityAction {
+                camera.beginHold()
+                camera.endHold()
+            }
 
             Spacer()
 
@@ -875,230 +1068,12 @@ struct ContentView: View {
     private var settingsSheet: some View {
         NavigationStack {
             ScrollView {
+                // Fotografia primeiro; Claude, laboratório e instalação no fim
                 VStack(spacing: 14) {
-                    settingsSection("Formato da foto") {
-                        Picker("Formato", selection: Binding(get: { camera.rawMode }, set: { camera.select(mode: $0) })) {
-                            ForEach(RawMode.allCases) { mode in Text(mode.rawValue).tag(mode) }
-                        }
-                        .pickerStyle(.segmented)
-                        Text(camera.rawMode == .proRAW
-                             ? "ProRAW: 48 MP, muito detalhe e pouco ruído. O melhor no dia a dia."
-                             : "RAW puro: o sinal cru do sensor, 12 MP, sem nada da Apple. Mais ruído, mais controle.")
-                            .font(.footnote).foregroundStyle(.secondary)
-                    }
-
-                    settingsSection("Luz") {
-                        Toggle("ISO e tempo na mão", isOn: $camera.manualExposure)
-                        if camera.manualExposure {
-                            sliderRow("ISO", value: $camera.isoIndex,
-                                      range: 0...Double(max(camera.isoStops.count - 1, 1)),
-                                      text: "\(Int(camera.selectedISO))")
-                            sliderRow("Tempo", value: $camera.shutterIndex,
-                                      range: 0...Double(max(camera.shutterStops.count - 1, 1)),
-                                      text: shutterText(camera.selectedShutter))
-                        } else {
-                            HStack {
-                                Text("Mais clara / escura").frame(width: 120, alignment: .leading)
-                                Slider(value: $camera.evBias, in: -3...3, step: 1 / 3)
-                                Text(String(format: "%+.1f", camera.evBias))
-                                    .font(.system(.footnote, design: .monospaced))
-                                    .frame(width: 44, alignment: .trailing)
-                            }
-                            ReadoutText(live: camera.live)
-                        }
-                    }
-
-                    settingsSection("Foco") {
-                        Toggle("Foco na mão", isOn: $camera.manualFocus)
-                        if camera.manualFocus {
-                            HStack {
-                                Text("Perto").font(.footnote)
-                                Slider(value: $camera.lensPosition, in: 0...1) { editing in
-                                    withAnimation(.snappy(duration: 0.2)) { camera.loupe = editing }
-                                }
-                                Text("Longe").font(.footnote)
-                            }
-                            Text("Enquanto arrasta, o visor amplia 4×.").font(.footnote).foregroundStyle(.secondary)
-                        }
-                    }
-
-                    settingsSection("Cor da luz") {
-                        Toggle("Cor na mão", isOn: $camera.manualWB)
-                        if camera.manualWB {
-                            HStack {
-                                Text("Kelvin").frame(width: 60, alignment: .leading)
-                                Slider(value: $camera.kelvin, in: 2500...10000, step: 100)
-                                Text("\(Int(camera.kelvin))K")
-                                    .font(.system(.footnote, design: .monospaced))
-                                    .frame(width: 56, alignment: .trailing)
-                            }
-                            Text("Baixo deixa a foto azulada, alto deixa alaranjada.").font(.footnote).foregroundStyle(.secondary)
-                        }
-                    }
-
-                    settingsSection("Exposição para RAW (ETTR)") {
-                        Toggle("Expor o mais claro possível sem estourar", isOn: $camera.ettr)
-                        Text("A câmera expõe mais claro (mais luz no sensor, menos ruído nas sombras) e a revelação escurece de volta. O visor e a foto ficam com a exposição de sempre. Vale nos modos de foto, no automático.")
-                            .font(.footnote).foregroundStyle(.secondary)
-                    }
-
-                    settingsSection("Ajudas") {
-                        Toggle("Peaking (bordas em foco em laranja)", isOn: $camera.peaking)
-                        Toggle("Zebra (listras onde estourou)", isOn: $camera.zebra)
-                        Toggle("Grade de terços", isOn: $camera.showGrid)
-                        Toggle("Nível (horizonte e de cima para baixo)", isOn: $camera.showLevel)
-                        Toggle("Macro automático (chegou perto, troca sozinho)", isOn: $camera.autoMacro)
-                        Toggle("Visor a 60 quadros/s (gasta mais bateria)", isOn: $camera.preview60)
-                        Button {
-                            showSettings = false
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { showModes = true }
-                        } label: {
-                            Label("Escolher e ordenar os modos", systemImage: "list.bullet")
-                        }
-                        Button {
-                            showSettings = false
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { camera.runModeSelfTest() }
-                        } label: {
-                            Label("Testar todos os modos (uns 2 min)", systemImage: "checklist")
-                        }
-                        Toggle("Histograma colorido (R, G, B)", isOn: $camera.rgbHistogram)
-                        Toggle("Cor falsa (exposição por cores)", isOn: $camera.falseColor)
-                        if camera.falseColor {
-                            Text("Roxo: preto sem detalhe · azul: sombra · verde: cinza médio · rosa: pele bem exposta · amarelo: quase estourando · vermelho: estourado")
-                                .font(.footnote).foregroundStyle(.secondary)
-                        }
-                        Picker("Timer", selection: $camera.timerSeconds) {
-                            Text("Sem timer").tag(0)
-                            Text("3 s").tag(3)
-                            Text("10 s").tag(10)
-                        }
-                        .pickerStyle(.segmented)
-                    }
-
-                    settingsSection("Conectar ao Claude") {
-                        if sync.connected {
-                            Label("Conectado", systemImage: "checkmark.circle.fill").foregroundStyle(accent)
-                            Text("O Claude manda filmes, ajustes e recados; o app manda relatórios. Confere ao abrir e a cada 15 s.")
-                                .font(.footnote).foregroundStyle(.secondary)
-                            Button("Conferir agora") { Task { await sync.pull() } }
-                            Button("Desconectar", role: .destructive) { sync.disconnect() }
-                        } else {
-                            SecureField("Cole aqui a chave do GitHub (github_pat_…)", text: $githubToken)
-                                .textInputAutocapitalization(.never)
-                                .autocorrectionDisabled()
-                            Button("Conectar") {
-                                let token = githubToken
-                                Task {
-                                    if await sync.connect(token: token) { githubToken = "" }
-                                }
-                            }
-                            .disabled(githubToken.trimmingCharacters(in: .whitespaces).isEmpty)
-                            Text("Chave \"fine-grained\" só do repositório tirador-de-ia-das-fotos, com Contents: Read and write. Fica guardada no Keychain do iPhone.")
-                                .font(.footnote).foregroundStyle(.secondary)
-                        }
-                        if !sync.status.isEmpty { Text(sync.status).font(.footnote).foregroundStyle(.secondary) }
-                    }
-
-                    settingsSection("FOTO 3×") {
-                        Toggle("Juntar várias fotos em cada toque", isOn: $camera.photoFusion)
-                        Text("Com pouca luz (interior, fim de tarde, ISO 320 ou mais), cada toque na FOTO tira várias fotos do mesmo instante (8 em RAW puro, 4 em ProRAW), alinha e junta: um terço do ruído e sombra limpa, como o Deep Fusion. Com sol fica a foto única de 48 MP, que tem mais detalhe. Desligado: sempre uma foto só.")
-                            .font(.footnote).foregroundStyle(.secondary)
-                    }
-
-                    settingsSection("Laboratório do Claude") {
-                        Toggle("Guardar para o laboratório", isOn: $camera.labCapture)
-                        Text("Cada disparo guarda também todas as fotos cruas da sequência (NOITE, SUPER ZOOM, HDR…) em Arquivos → No meu iPhone → Revela → laboratorio · \(labSize). Mande a pasta para o Google Drive e o Claude testa a revelação nas suas fotos de verdade, sem você fotografar de novo. Uma NOITE ocupa uns 200–400 MB: deixe ligado só para testar.")
-                            .font(.footnote).foregroundStyle(.secondary)
-                        Button("Apagar o laboratório", role: .destructive) {
-                            LabCapture.clear()
-                            labSize = "0 MB"
-                        }
-                    }
-                    .task {
-                        let bytes = await Task.detached { LabCapture.totalBytes() }.value
-                        labSize = String(format: "%.0f MB", Double(bytes) / 1_048_576)
-                    }
-
-                    settingsSection("Claude analisa as fotos") {
-                        if critic.hasKey {
-                            Button(critic.running ? "Analisando…" : "Analisar as últimas 6 fotos") {
-                                Task { await critic.analyzeRecent(count: 6) }
-                            }
-                            .disabled(critic.running)
-                            Text("O Claude Opus 5.5 olha cada foto inteira e um recorte 100% do centro, e escreve o que a revelação precisa melhorar. A análise vai junto no relatório. Cada análise custa uns US$ 0,20–0,40.")
-                                .font(.footnote).foregroundStyle(.secondary)
-                            Button("Remover a chave", role: .destructive) { critic.disconnect() }
-                        } else {
-                            SecureField("Cole aqui a chave da API do Claude (sk-ant-…)", text: $anthropicKey)
-                                .textInputAutocapitalization(.never)
-                                .autocorrectionDisabled()
-                            Button("Conectar") {
-                                let key = anthropicKey
-                                Task { if await critic.connect(key: key) { anthropicKey = "" } }
-                            }
-                            .disabled(anthropicKey.trimmingCharacters(in: .whitespaces).isEmpty)
-                            Text("Chave do console.anthropic.com. Fica guardada no Keychain do iPhone e só é usada quando você pede uma análise.")
-                                .font(.footnote).foregroundStyle(.secondary)
-                        }
-                        if !critic.status.isEmpty { Text(critic.status).font(.footnote).foregroundStyle(.secondary) }
-                    }
-
-                    settingsSection("Instalação") {
-                        Text("Vale até \(Expiration.text)" + (Expiration.daysLeft.map { " · faltam \($0) dia(s)" } ?? ""))
-                        Text("Conta grátis da Apple: reinstale pelo Sideloadly a cada 7 dias. O app avisa um dia antes.")
-                            .font(.footnote).foregroundStyle(.secondary)
-                    }
-
-                    settingsSection("Três looks por foto") {
-                        Toggle("Salvar cada foto em mais 2 looks", isOn: $camera.multiLook)
-                        if camera.multiLook {
-                            ForEach(0..<2, id: \.self) { i in
-                                Picker("Look extra \(i + 1)", selection: Binding(
-                                    get: { camera.extraLookIDs.indices.contains(i) ? camera.extraLookIDs[i] : "" },
-                                    set: { value in
-                                        var ids = camera.extraLookIDs
-                                        while ids.count < 2 { ids.append("b:" + Look.neutro.rawValue) }
-                                        ids[i] = value
-                                        camera.extraLookIDs = ids
-                                    })) {
-                                    ForEach(camera.lookChoices) { choice in
-                                        Text(choice.name).tag(choice.id)
-                                    }
-                                }
-                            }
-                            Text("Vale para FOTO, RÁPIDO, FLASH, CONGELAR e RETRATO. As 3 versões vão para a galeria.")
-                                .font(.footnote).foregroundStyle(.secondary)
-                        }
-                    }
-
-                    settingsSection("Ao salvar") {
-                        Toggle("Espelhar (como no espelho)", isOn: $camera.mirror)
-                        Toggle("Guardar também o DNG (RAW)", isOn: $camera.saveDNG)
-                        Toggle("Localização nas fotos", isOn: Binding(
-                            get: { locationOn },
-                            set: { locationOn = $0; Locator.shared.enabled = $0 }))
-                        if locationOn {
-                            Text("Localização: \(Locator.shared.statusText)").font(.footnote).foregroundStyle(.secondary)
-                        }
-                        HStack {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Originais para revelar de novo")
-                                Text("Últimas \(SourceStore.limit) fotos · \(originalsSize)").font(.footnote).foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Button("Apagar", role: .destructive) {
-                                SourceStore.clear()
-                                originalsSize = "0 MB"
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                        .onAppear {
-                            DispatchQueue.global(qos: .utility).async {
-                                let mb = "\(SourceStore.totalBytes() / 1_048_576) MB"
-                                DispatchQueue.main.async { originalsSize = mb }
-                            }
-                        }
-                    }
+                    captureSettings
+                    viewfinderSettings
+                    saveSettings
+                    claudeSettings
 
                     VStack(spacing: 10) {
                         Button {
@@ -1128,6 +1103,255 @@ struct ContentView: View {
         .presentationDetents([.medium, .large])
         .presentationBackgroundInteraction(.enabled(upThrough: .medium))
         .presentationDragIndicator(.visible)
+        // Abriu os Ajustes: o recado novo do Claude foi visto
+        .onAppear { sync.unreadNotice = false }
+    }
+
+    /// Formato, FOTO 3× (logo ao lado: os dois decidem o que cada toque salva), luz, foco e cor.
+    private var captureSettings: some View {
+        VStack(spacing: 14) {
+            settingsSection("Formato da foto") {
+                Picker("Formato", selection: Binding(get: { camera.rawMode }, set: { camera.select(mode: $0) })) {
+                    ForEach(RawMode.allCases) { mode in Text(mode.rawValue).tag(mode) }
+                }
+                .pickerStyle(.segmented)
+                Text(camera.rawMode == .proRAW
+                     ? "ProRAW: 48 MP, muito detalhe e pouco ruído. O melhor no dia a dia."
+                     : "RAW puro: o sinal cru do sensor, 12 MP, sem nada da Apple. Mais ruído, mais controle.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+
+            settingsSection("FOTO 3×") {
+                Toggle("Juntar várias fotos em cada toque", isOn: $camera.photoFusion)
+                Text("Com pouca luz (interior, fim de tarde, ISO 320 ou mais), cada toque na FOTO tira várias fotos do mesmo instante (8 em RAW puro, 4 em ProRAW), alinha e junta: um terço do ruído e sombra limpa, como o Deep Fusion. O selo 3× no canto do visor avisa quando vai acontecer. Com sol fica a foto única de 48 MP, que tem mais detalhe. Desligado: sempre uma foto só.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+
+            settingsSection("Luz") {
+                Toggle("ISO e tempo na mão", isOn: $camera.manualExposure)
+                if camera.manualExposure {
+                    sliderRow("ISO", value: $camera.isoIndex,
+                              range: 0...Double(max(camera.isoStops.count - 1, 1)),
+                              text: "\(Int(camera.selectedISO))")
+                    sliderRow("Tempo", value: $camera.shutterIndex,
+                              range: 0...Double(max(camera.shutterStops.count - 1, 1)),
+                              text: shutterText(camera.selectedShutter))
+                } else {
+                    HStack {
+                        Text("Mais clara / escura").frame(width: 120, alignment: .leading)
+                        Slider(value: $camera.evBias, in: -3...3, step: 1 / 3)
+                        Text(ptNumber(camera.evBias, sign: true))
+                            .font(.system(.footnote, design: .monospaced))
+                            .frame(width: 44, alignment: .trailing)
+                    }
+                    ReadoutText(live: camera.live)
+                }
+            }
+
+            settingsSection("Foco") {
+                Toggle("Foco na mão", isOn: $camera.manualFocus)
+                if camera.manualFocus {
+                    HStack {
+                        Text("Perto").font(.footnote)
+                        Slider(value: $camera.lensPosition, in: 0...1) { editing in
+                            withAnimation(.snappy(duration: 0.2)) { camera.loupe = editing }
+                        }
+                        Text("Longe").font(.footnote)
+                    }
+                    Text("Enquanto arrasta, o visor amplia 4×.").font(.footnote).foregroundStyle(.secondary)
+                }
+            }
+
+            settingsSection("Cor da luz") {
+                Toggle("Cor na mão", isOn: $camera.manualWB)
+                if camera.manualWB {
+                    HStack {
+                        Text("Kelvin").frame(width: 60, alignment: .leading)
+                        Slider(value: $camera.kelvin, in: 2500...10000, step: 100)
+                        Text("\(Int(camera.kelvin))K")
+                            .font(.system(.footnote, design: .monospaced))
+                            .frame(width: 56, alignment: .trailing)
+                    }
+                    Text("Baixo deixa a foto azulada, alto deixa alaranjada.").font(.footnote).foregroundStyle(.secondary)
+                }
+            }
+
+            settingsSection("Exposição para RAW (ETTR)") {
+                Toggle("Expor o mais claro possível sem estourar", isOn: $camera.ettr)
+                Text("A câmera expõe mais claro (mais luz no sensor, menos ruído nas sombras) e a revelação escurece de volta. O visor e a foto ficam com a exposição de sempre. Vale nos modos de foto, no automático.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// Ajudas do visor, timer e modos.
+    private var viewfinderSettings: some View {
+        settingsSection("Ajudas") {
+            Toggle("Peaking (bordas em foco em laranja)", isOn: $camera.peaking)
+            Toggle("Zebra (listras onde estourou)", isOn: $camera.zebra)
+            Toggle("Grade de terços", isOn: $camera.showGrid)
+            Toggle("Nível (horizonte e de cima para baixo)", isOn: $camera.showLevel)
+            Toggle("Macro automático (chegou perto, troca sozinho)", isOn: $camera.autoMacro)
+            Toggle("Visor a 60 quadros/s (gasta mais bateria)", isOn: $camera.preview60)
+            Button {
+                showSettings = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { showModes = true }
+            } label: {
+                Label("Escolher e ordenar os modos", systemImage: "list.bullet")
+            }
+            Button {
+                showSettings = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { camera.runModeSelfTest() }
+            } label: {
+                Label("Testar todos os modos (uns 2 min)", systemImage: "checklist")
+            }
+            Toggle("Histograma colorido (R, G, B)", isOn: $camera.rgbHistogram)
+            Toggle("Cor falsa (exposição por cores)", isOn: $camera.falseColor)
+            if camera.falseColor {
+                Text("Roxo: preto sem detalhe · azul: sombra · verde: cinza médio · rosa: pele bem exposta · amarelo: quase estourando · vermelho: estourado")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+            Picker("Timer", selection: $camera.timerSeconds) {
+                Text("Sem timer").tag(0)
+                Text("3 s").tag(3)
+                Text("10 s").tag(10)
+            }
+            .pickerStyle(.segmented)
+            Text("O timer também fica no botão de relógio no topo. Na contagem, toque no botão de foto para cancelar.")
+                .font(.footnote).foregroundStyle(.secondary)
+        }
+    }
+
+    /// Três looks e o que vai junto ao salvar.
+    private var saveSettings: some View {
+        VStack(spacing: 14) {
+            settingsSection("Três looks por foto") {
+                Toggle("Salvar cada foto em mais 2 looks", isOn: $camera.multiLook)
+                if camera.multiLook {
+                    ForEach(0..<2, id: \.self) { i in
+                        Picker("Look extra \(i + 1)", selection: Binding(
+                            get: { camera.extraLookIDs.indices.contains(i) ? camera.extraLookIDs[i] : "" },
+                            set: { value in
+                                var ids = camera.extraLookIDs
+                                while ids.count < 2 { ids.append("b:" + Look.neutro.rawValue) }
+                                ids[i] = value
+                                camera.extraLookIDs = ids
+                            })) {
+                            ForEach(camera.lookChoices) { choice in
+                                Text(choice.name).tag(choice.id)
+                            }
+                        }
+                    }
+                    Text("Vale para FOTO, RÁPIDO, FLASH, CONGELAR e RETRATO. As 3 versões vão para a galeria.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+            }
+
+            settingsSection("Ao salvar") {
+                Toggle("Espelhar (como no espelho)", isOn: $camera.mirror)
+                Toggle("Guardar também o DNG (RAW)", isOn: $camera.saveDNG)
+                Toggle("Localização nas fotos", isOn: Binding(
+                    get: { locationOn },
+                    set: { locationOn = $0; Locator.shared.enabled = $0 }))
+                if locationOn {
+                    Text("Localização: \(Locator.shared.statusText)").font(.footnote).foregroundStyle(.secondary)
+                }
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Originais para revelar de novo")
+                        Text("Últimas \(SourceStore.limit) fotos · \(originalsSize)").font(.footnote).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button("Apagar", role: .destructive) {
+                        SourceStore.clear()
+                        originalsSize = "0 MB"
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .onAppear {
+                    DispatchQueue.global(qos: .utility).async {
+                        let mb = "\(SourceStore.totalBytes() / 1_048_576) MB"
+                        DispatchQueue.main.async { originalsSize = mb }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Ponte com o Claude, análise das fotos, laboratório e instalação (o que não é fotografia fica no fim).
+    private var claudeSettings: some View {
+        VStack(spacing: 14) {
+            settingsSection("Conectar ao Claude") {
+                if sync.connected {
+                    Label("Conectado", systemImage: "checkmark.circle.fill").foregroundStyle(accent)
+                    Text("O Claude manda filmes, ajustes e recados; o app manda relatórios. Confere ao abrir e a cada 15 s.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                    if let notice = sync.lastNotice {
+                        Text(notice).font(.footnote.weight(.semibold))
+                    }
+                    Button("Conferir agora") { Task { await sync.pull() } }
+                    Button("Desconectar", role: .destructive) { sync.disconnect() }
+                } else {
+                    SecureField("Cole aqui a chave do GitHub (github_pat_…)", text: $githubToken)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    Button("Conectar") {
+                        let token = githubToken
+                        Task {
+                            if await sync.connect(token: token) { githubToken = "" }
+                        }
+                    }
+                    .disabled(githubToken.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Text("Chave \"fine-grained\" só do repositório tirador-de-ia-das-fotos, com Contents: Read and write. Fica guardada no Keychain do iPhone.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+                if !sync.status.isEmpty { Text(sync.status).font(.footnote).foregroundStyle(.secondary) }
+            }
+
+            settingsSection("Claude analisa as fotos") {
+                if critic.hasKey {
+                    Button(critic.running ? "Analisando…" : "Analisar as últimas 6 fotos") {
+                        Task { await critic.analyzeRecent(count: 6) }
+                    }
+                    .disabled(critic.running)
+                    Text("O Claude Opus 5.5 olha cada foto inteira e um recorte 100% do centro, e escreve o que a revelação precisa melhorar. A análise vai junto no relatório. Leva 1 a 3 min: deixe o app aberto até terminar. Cada análise custa uns US$ 0,20–0,40.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                    Button("Remover a chave", role: .destructive) { critic.disconnect() }
+                } else {
+                    SecureField("Cole aqui a chave da API do Claude (sk-ant-…)", text: $anthropicKey)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    Button("Conectar") {
+                        let key = anthropicKey
+                        Task { if await critic.connect(key: key) { anthropicKey = "" } }
+                    }
+                    .disabled(anthropicKey.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Text("Chave do console.anthropic.com. Fica guardada no Keychain do iPhone e só é usada quando você pede uma análise.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+                if !critic.status.isEmpty { Text(critic.status).font(.footnote).foregroundStyle(.secondary) }
+            }
+
+            settingsSection("Laboratório do Claude") {
+                Toggle("Guardar para o laboratório", isOn: $camera.labCapture)
+                Text("Cada disparo guarda também todas as fotos cruas da sequência (NOITE, SUPER ZOOM, HDR…) em Arquivos → No meu iPhone → Revela → laboratorio · \(labSize). Mande a pasta para o Google Drive e o Claude testa a revelação nas suas fotos de verdade, sem você fotografar de novo. Uma NOITE ocupa uns 200–400 MB: deixe ligado só para testar.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                Button("Apagar o laboratório", role: .destructive) {
+                    LabCapture.clear()
+                    labSize = "0 MB"
+                }
+            }
+            .task {
+                let bytes = await Task.detached { LabCapture.totalBytes() }.value
+                labSize = String(format: "%.0f MB", Double(bytes) / 1_048_576)
+            }
+
+            settingsSection("Instalação") {
+                Text("Vale até \(Expiration.text)" + (Expiration.calendarDaysLeft.map { " · faltam \($0) dia(s)" } ?? ""))
+                Text("Conta grátis da Apple: reinstale pelo Sideloadly a cada 7 dias. O app avisa um dia antes.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+        }
     }
 
     private func settingsSection<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
@@ -1156,7 +1380,7 @@ struct ContentView: View {
                         HStack {
                             Text("Grão").frame(width: 90, alignment: .leading)
                             Slider(value: $camera.grainAmount, in: 0...2, step: 0.1)
-                            Text(String(format: "%.1f×", camera.grainAmount))
+                            Text(ptNumber(camera.grainAmount) + "×")
                                 .font(.system(.footnote, design: .monospaced)).frame(width: 44, alignment: .trailing)
                         }
                         Toggle("Proteger a pele nos filmes fortes", isOn: $camera.skinProtection)
@@ -1350,7 +1574,7 @@ struct ContentView: View {
 
     private func shutterText(_ seconds: Double) -> String {
         guard seconds > 0 else { return "—" }
-        if seconds >= 0.5 { return String(format: "%.1fs", seconds) }
+        if seconds >= 0.5 { return ptNumber(seconds) + " s" }
         return "1/\(Int((1 / seconds).rounded()))"
     }
 }
@@ -1473,7 +1697,7 @@ private struct ReadoutText: View {
 
     static func shutter(_ seconds: Double) -> String {
         guard seconds > 0 else { return "—" }
-        if seconds >= 1 { return String(format: "%.1f s", seconds).replacingOccurrences(of: ".", with: ",") }
+        if seconds >= 1 { return ptNumber(seconds) + " s" }
         return "1/\(Int((1 / seconds).rounded()))"
     }
 }
@@ -1483,6 +1707,8 @@ private struct FaceOverlay: View {
     @ObservedObject var live: LiveStats
     let zoom: CGFloat
     let size: CGSize
+    /// Controles do modo por cima do visor: o aviso de distância sobe esse tanto.
+    var bottomInset: CGFloat = 0
 
     var body: some View {
         if let face = live.face {
@@ -1502,7 +1728,7 @@ private struct FaceOverlay: View {
                         .foregroundStyle(advice.good ? Color.black : Color.white)
                         .background(advice.good ? Color.green : Color.black.opacity(0.6), in: Capsule())
                         .frame(maxHeight: .infinity, alignment: .bottom)
-                        .padding(.bottom, 10)
+                        .padding(.bottom, 10 + bottomInset)
                 }
             }
             .allowsHitTesting(false)
@@ -1642,6 +1868,71 @@ private struct AngleLayerView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: Host, context: Context) {}
+}
+
+/// A mira da NOITE observando só o `AimState` (muda 10×/s): o resto da tela não se redesenha junto.
+private struct NightAimLive: View {
+    @ObservedObject var aim: AimState
+    let end: Date
+    let progress: String
+
+    var body: some View {
+        NightAim(offset: aim.offset, end: end, progress: progress)
+    }
+}
+
+/// Selo "3×" no visor quando o próximo toque na FOTO vai juntar várias fotos (FOTO 3×). Segue o ISO ao vivo.
+private struct FusionBadge: View {
+    @ObservedObject var live: LiveStats
+    let eligible: Bool
+    let manualISO: Float?
+
+    var body: some View {
+        if eligible && (manualISO ?? live.iso) >= CameraModel.fusionMinISO {
+            Text("3×")
+                .font(.caption2.weight(.heavy))
+                .foregroundStyle(.black)
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(Capsule().fill(accent))
+                .accessibilityLabel("FOTO 3×: cada toque junta várias fotos")
+        }
+    }
+}
+
+/// "Revelando SUPER ZOOM… 12 s": as revelações longas seguem enquanto você fotografa. Some nas rápidas (< 2 s).
+private struct DevelopingPill: View {
+    let label: String
+    let since: Date
+    let count: Int
+
+    var body: some View {
+        TimelineView(.periodic(from: since, by: 1)) { context in
+            let seconds = max(0, Int(context.date.timeIntervalSince(since)))
+            if seconds >= 2 {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        ProgressView().controlSize(.mini).tint(.white)
+                        Text(count > 1 ? "Revelando \(count) fotos… \(seconds) s" : "Revelando \(label)… \(seconds) s")
+                            .font(.caption2.weight(.bold))
+                    }
+                    Text("pode continuar fotografando").font(.caption2).opacity(0.75)
+                }
+                .padding(.horizontal, 10).padding(.vertical, 6)
+                .background(.black.opacity(0.55), in: RoundedRectangle(cornerRadius: 10))
+            }
+        }
+    }
+}
+
+/// Revelando, fotografando ou gravando: a tela não apaga no meio (e volta ao normal quando termina).
+private struct KeepAwake: ViewModifier {
+    let on: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear { UIApplication.shared.isIdleTimerDisabled = on }
+            .onChange(of: on) { _, value in UIApplication.shared.isIdleTimerDisabled = value }
+    }
 }
 
 

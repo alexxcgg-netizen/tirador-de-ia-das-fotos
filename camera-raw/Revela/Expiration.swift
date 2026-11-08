@@ -20,6 +20,15 @@ enum Expiration {
         return max(0, Int(floor(date.timeIntervalSinceNow / 86_400)))
     }
 
+    /// Dias de calendário até vencer (0 = hoje, 1 = amanhã), pela data e não por blocos de 24 h: com 40 h faltando
+    /// o `daysLeft` dava 1 ("vence amanhã") e o app só vencia depois de amanhã.
+    static var calendarDaysLeft: Int? {
+        guard let date else { return nil }
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: date)).day ?? 0
+        return max(0, days)
+    }
+
     static var text: String {
         guard let date else { return "sem data (instalação sem perfil)" }
         return date.formatted(date: .abbreviated, time: .shortened)

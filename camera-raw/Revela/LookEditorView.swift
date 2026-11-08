@@ -50,7 +50,7 @@ struct LookEditorView: View {
                     }
 
                     group("Luz e cor") {
-                        slider("Exposição", $draft.exposure, -1...1, format: { String(format: "%+.1f", $0) })
+                        slider("Exposição", $draft.exposure, -1...1, format: { ptNumber($0, sign: true) })
                         slider("Contraste", $draft.contrast, 0.6...1.6, format: percent)
                         slider("Saturação", $draft.saturation, 0...1.8, format: percent)
                         slider("Temperatura", $draft.warmth, -1...1, format: { $0 > 0.02 ? "quente" : ($0 < -0.02 ? "frio" : "—") })
@@ -62,7 +62,7 @@ struct LookEditorView: View {
 
                     group("Textura do filme") {
                         slider("Grão", $draft.grain, 0...0.2, format: { String(format: "%.0f", $0 * 500) })
-                        slider("Tamanho do grão", $draft.grainSize, 0.8...3, format: { String(format: "%.1f", $0) })
+                        slider("Tamanho do grão", $draft.grainSize, 0.8...3, format: { ptNumber($0) })
                         slider("Vinheta", $draft.vignette, 0...0.6, format: { String(format: "%.0f", $0 * 100 / 0.6) })
                         slider("Halo nas luzes", $draft.halation, 0...0.6, format: { String(format: "%.0f", $0 * 100 / 0.6) })
                         slider("Brilho suave", $draft.bloom, 0...0.5, format: { String(format: "%.0f", $0 * 200) })

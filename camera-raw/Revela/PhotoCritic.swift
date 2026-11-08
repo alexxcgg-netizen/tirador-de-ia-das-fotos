@@ -41,7 +41,10 @@ final class PhotoCritic: ObservableObject {
         let (code, json) = await send(body, key: key, timeout: 60)
         switch code {
         case 200:
-            Keychain.set(Self.keyName, key)
+            guard Keychain.set(Self.keyName, key) else {
+                status = "A chave funciona, mas o iPhone não deixou guardar no Keychain. Tente de novo."
+                return false
+            }
             hasKey = true
             status = "Chave do Claude conectada"
             dlog("Claude API: chave conectada")
@@ -67,7 +70,12 @@ final class PhotoCritic: ObservableObject {
     func analyzeRecent(count: Int = 6) async -> String? {
         guard let key, !running else { return nil }
         running = true
-        defer { running = false }
+        // Se for para o fundo no meio, o iOS dá um tempinho (o pedido leva minutos: o certo é deixar o app aberto)
+        BackgroundWork.shared.begin("analise")
+        defer {
+            running = false
+            BackgroundWork.shared.end("analise")
+        }
         status = "Pedindo acesso às fotos…"
         let auth = await withCheckedContinuation { cont in
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { cont.resume(returning: $0) }
@@ -97,7 +105,7 @@ final class PhotoCritic: ObservableObject {
             return nil
         }
         content.append(["type": "text", "text": Self.request(count: used)])
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "model": Self.model,
             "max_tokens": 16000,
             "output_config": ["effort": "high"],
@@ -105,9 +113,16 @@ final class PhotoCritic: ObservableObject {
             "system": Self.systemPrompt,
             "messages": [["role": "user", "content": content]],
         ]
-        status = "O Claude está olhando \(used) foto(s) nos mínimos detalhes… (leva 1 a 3 min)"
+        status = "O Claude está olhando \(used) foto(s) nos mínimos detalhes… (leva 1 a 3 min; deixe o app aberto)"
         let t0 = CFAbsoluteTimeGetCurrent()
-        let (code, json) = await send(body, key: key, timeout: 600, beta: "server-side-fallback-2026-07-01")
+        var (code, json) = await send(body, key: key, timeout: 600, beta: "server-side-fallback-2026-07-01")
+        // Passou do limite de tamanho e veio cortada: pede de novo uma vez, com o dobro de espaço
+        if code == 200, (json?["stop_reason"] as? String) == "max_tokens" {
+            dlog("Claude API: análise cortada no limite (16000 tokens); pedindo de novo com 32000")
+            status = "A análise ficou longa e veio cortada; pedindo de novo com mais espaço… (deixe o app aberto)"
+            body["max_tokens"] = 32000
+            (code, json) = await send(body, key: key, timeout: 900, beta: "server-side-fallback-2026-07-01")
+        }
         guard code == 200, let json else {
             status = code == 0 ? "Sem internet (ou demorou demais)." : "A API respondeu \(code): \(Self.errorMessage(json))"
             dlog("❌ Claude API: análise falhou (\(code))")
@@ -123,16 +138,20 @@ final class PhotoCritic: ObservableObject {
             status = "A resposta veio vazia."
             return nil
         }
+        // Mesmo com o dobro de espaço veio cortada: guarda o que veio, avisando
+        let truncated = (json["stop_reason"] as? String) == "max_tokens"
         let usage = json["usage"] as? [String: Any]
         let input = usage?["input_tokens"] as? Int ?? 0, output = usage?["output_tokens"] as? Int ?? 0
         let dollars = Double(input) * 4 / 1_000_000 + Double(output) * 20 / 1_000_000
         let seconds = CFAbsoluteTimeGetCurrent() - t0
         let header = "_\(used) foto(s) · \(Self.model) · \(Date().formatted(date: .abbreviated, time: .shortened)) · " +
             String(format: "%d tokens de entrada, %d de saída · ~US$ %.2f · %.0f s_\n\n", input, output, dollars, seconds)
-        let full = header + text
+        let full = header + text + (truncated ? "\n\n_(a análise veio cortada no fim: passou do limite de tamanho da resposta)_" : "")
         try? full.write(to: Self.analysisURL, atomically: true, encoding: .utf8)
-        dlog(String(format: "Claude API: análise de %d fotos pronta (%.0f s, ~US$ %.2f)", used, seconds, dollars))
-        status = String(format: "Análise pronta (~US$ %.2f). Ela vai junto no relatório.", dollars)
+        dlog(String(format: "Claude API: análise de %d fotos pronta (%.0f s, ~US$ %.2f)%@", used, seconds, dollars,
+                    truncated ? " · cortada no limite" : ""))
+        status = "Análise pronta (~US$ \(ptNumber(dollars, digits: 2))). Ela vai junto no relatório."
+            + (truncated ? " Veio cortada no fim (longa demais)." : "")
         return full
     }
 
@@ -194,9 +213,12 @@ final class PhotoCritic: ObservableObject {
     fílmica ACES com saturação e filmes (matriz de cor, CDL, tons de sombra e luz, grão em três tamanhos, halo, vinheta), \
     nitidez fina leve, redução de ruído (cor borrada + ondaletas no brilho). Modos com várias fotos: NOITE (alinhamento \
     em fração de pixel, junção em duas faixas como o HDR+, foto curta −3 EV para as luzes, clareamento automático até \
-    3 paradas, ponto de preto medido, estrela nas luzes imitando o iPhone 18 Pro), HDR (−2/0/+2), SUPER ZOOM e SUPER RES \
-    (alinhamento por região, junção robusta, desconvolução Richardson–Lucy), RETRATO (profundidade do LiDAR + máscaras, \
-    desfoque em camadas). O objetivo é ficar melhor que a câmera nativa do iPhone.
+    3 paradas, ponto de preto medido, na mão fotos de 1/15 a 1/8 s e o borrão que sobra desfeito com Huber-TV, estrela \
+    nas luzes imitando o iPhone 18 Pro), FOTO 3× (com pouca luz, várias fotos do mesmo instante alinhadas e juntadas), \
+    HDR (−2/0/+2), SUPER ZOOM (24 fotos na mão) e SUPER RES (alinhamento por região e todas as fotos nítidas resolvidas \
+    juntas num MAP: cada foto é a cena ampliada 2× borrada e deslocada, com regularização Huber-TV conjunta de brilho e \
+    cor e anti-fantasma; o MAP já desfaz o borrão do sensor e da lente, sem desconvolução depois), RETRATO (profundidade \
+    do LiDAR + máscaras, desfoque em camadas). O objetivo é ficar melhor que a câmera nativa do iPhone.
 
     Para cada foto você recebe a foto inteira e um recorte 100% do centro. Olhe nos mínimos detalhes. Para cada foto, \
     diga o que está bom e liste cada problema com: o quê, onde na foto, quão grave (leve/médio/forte) e qual parte da \

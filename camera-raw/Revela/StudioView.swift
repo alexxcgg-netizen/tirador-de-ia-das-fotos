@@ -426,6 +426,7 @@ struct StudioView: View {
             Button { dismiss() } label: {
                 Image(systemName: "xmark").font(.body.weight(.bold)).frame(width: 44, height: 44)
             }
+            .accessibilityLabel("Fechar")
             VStack(alignment: .leading, spacing: 0) {
                 Text("Revelar de novo").font(.headline)
                 if !model.title.isEmpty { Text(model.title).font(.caption).opacity(0.6) }
@@ -564,7 +565,7 @@ struct StudioView: View {
 
     private var adjustControls: some View {
         VStack(spacing: 4) {
-            row("Exposição", value: String(format: "%+.1f", model.adjust.exposure)) {
+            row("Exposição", value: ptNumber(model.adjust.exposure, sign: true)) {
                 Slider(value: $model.adjust.exposure, in: -3...3, step: 0.1)
             }
             row("Temperatura", value: String(format: "%+.0f", model.adjust.temperature * 100)) {
@@ -579,10 +580,10 @@ struct StudioView: View {
             row("Altas luzes", value: String(format: "%+.0f", model.adjust.highlights * 100)) {
                 Slider(value: $model.adjust.highlights, in: -1...1, step: 0.02)
             }
-            row("Endireitar", value: String(format: "%+.1f°", model.adjust.straighten)) {
+            row("Endireitar", value: ptNumber(model.adjust.straighten, sign: true) + "°") {
                 Slider(value: $model.adjust.straighten, in: -10...10, step: 0.1)
             }
-            row("Recorte", value: String(format: "%.1f×", model.adjust.crop)) {
+            row("Recorte", value: ptNumber(model.adjust.crop) + "×") {
                 Slider(value: $model.adjust.crop, in: 1...3, step: 0.05)
             }
             HStack {
@@ -643,11 +644,11 @@ struct StudioView: View {
                 row("Intensidade", value: "\(Int((model.amount * 100).rounded()))%") {
                     Slider(value: $model.amount, in: 0...1, step: 0.05)
                 }
-                row("Grão", value: String(format: "%.1f×", model.grain)) {
+                row("Grão", value: ptNumber(model.grain) + "×") {
                     Slider(value: $model.grain, in: 0...2, step: 0.1)
                 }
                 if model.hasDepth {
-                    row("Desfoque", value: String(format: "f/%.1f", model.aperture)) {
+                    row("Desfoque", value: "f/" + ptNumber(model.aperture)) {
                         Slider(value: Binding(get: { -model.aperture }, set: { model.aperture = -$0 }), in: -16.0 ... -1.4)
                     }
                     Text("Toque na foto para escolher o que fica em foco.").font(.caption).opacity(0.55)
@@ -694,6 +695,7 @@ struct StudioView: View {
                 .background(Capsule().fill(on ? accent : Color.white.opacity(0.1)))
         }
         .buttonStyle(.plain)
+        .selectedTrait(on)
     }
 
     private func row<C: View>(_ label: String, value: String, @ViewBuilder control: () -> C) -> some View {

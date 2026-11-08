@@ -6,11 +6,18 @@ private let accent = Color(red: 0.96, green: 0.64, blue: 0.24)
 /// Um toque troca o filme e o visor já mostra; não precisa abrir lista nem voltar.
 struct LookStrip: View {
     @ObservedObject var camera: CameraModel
+    /// Revelar de novo aberto por cima: as miniaturas param (a GPU fica para a revelação).
+    var paused = false
     var onMore: () -> Void
 
     /// "todos", "meus" ou o nome de um tipo (Cor, Fuji…).
     @AppStorage("lookStripFilter") private var filter = "todos"
     @State private var thumbs: [String: UIImage] = [:]
+    /// Miniaturas na tela agora (só elas, mais 2 de cada lado, são refeitas).
+    @State private var visible: Set<String> = []
+    /// Quadro do visor da última rodada: sem quadro novo não refaz nada.
+    @State private var lastFrame = -1
+    @State private var rendering = false
 
     private var items: [CameraModel.LookChoice] {
         let mine = camera.customLooks.map { CameraModel.LookChoice(id: "c:" + $0.id.uuidString, name: $0.name) }
@@ -47,6 +54,7 @@ struct LookStrip: View {
                         .foregroundStyle(filter == f.id ? Color.black : Color.white)
                         .background(Capsule().fill(filter == f.id ? accent : Color.white.opacity(0.12)))
                         .buttonStyle(.plain)
+                        .selectedTrait(filter == f.id)
                     }
                 }
                 .padding(.horizontal, 10)
@@ -54,10 +62,13 @@ struct LookStrip: View {
 
             ScrollViewReader { proxy in
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
+                    // Preguiçosa: só as miniaturas perto da tela existem (e avisam quando aparecem)
+                    LazyHStack(spacing: 8) {
                         ForEach(items) { item in
                             thumbnail(item)
                                 .id(item.id)
+                                .onAppear { visible.insert(item.id) }
+                                .onDisappear { visible.remove(item.id) }
                         }
                     }
                     .padding(.horizontal, 10)
@@ -85,18 +96,40 @@ struct LookStrip: View {
         }
         .padding(.vertical, 10)
         .background(.black.opacity(0.62), in: RoundedRectangle(cornerRadius: 18))
-        // Miniaturas ao vivo: refeitas a cada segundo com o que a câmera vê
+        // Miniaturas ao vivo: as da tela refeitas a cada ~2 s com o que a câmera vê; as que acabaram de
+        // aparecer sem imagem saem em meio segundo. Antes eram todas (31+) a cada 1,1 s, mesmo fora da tela
         .task(id: filter) {
+            var tick = 0
             while !Task.isCancelled {
-                refresh()
-                try? await Task.sleep(nanoseconds: 1_100_000_000)
+                refresh(full: tick % 4 == 0)
+                tick += 1
+                try? await Task.sleep(nanoseconds: 500_000_000)
             }
         }
     }
 
-    private func refresh() {
-        camera.lookThumbnails(ids: items.map(\.id)) { images in
+    /// As miniaturas na tela e 2 de cada lado (antes de ver nada, as primeiras).
+    private func wantedIDs() -> [String] {
+        let all = items.map(\.id)
+        let shown = all.indices.filter { visible.contains(all[$0]) }
+        guard let first = shown.first, let last = shown.last else { return Array(all.prefix(6)) }
+        return Array(all[max(0, first - 2)...min(all.count - 1, last + 2)])
+    }
+
+    private func refresh(full: Bool) {
+        // Revelar de novo aberto, sequência saindo ou iPhone quente: a revelação e o visor vêm primeiro
+        guard !paused, !rendering, camera.stackProgress == nil,
+              ProcessInfo.processInfo.thermalState.rawValue < ProcessInfo.ThermalState.serious.rawValue else { return }
+        let wanted = wantedIDs()
+        let frame = camera.renderer.enqueuedCount
+        // Sem quadro novo (câmera parada) só faz as que ainda não têm imagem
+        let ids = full && frame != lastFrame ? wanted : wanted.filter { thumbs[$0] == nil }
+        guard !ids.isEmpty else { return }
+        if full { lastFrame = frame }
+        rendering = true
+        camera.lookThumbnails(ids: ids) { images in
             thumbs.merge(images) { _, new in new }
+            rendering = false
         }
     }
 
@@ -125,6 +158,7 @@ struct LookStrip: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Filme \(item.name)")
+        .selectedTrait(selected)
     }
 }
 
@@ -136,29 +170,46 @@ struct ModeGrid: View {
 
     private let columns = [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)]
 
+    /// Um modo na grade, com a primeira frase da dica embaixo. Gravando ou numa sequência a troca não vale
+    /// (o select avisa "Espere terminar…" e a grade fica aberta).
+    private func modeCell(_ mode: CaptureMode) -> some View {
+        let on = camera.captureMode == mode
+        let busy = camera.isBusy
+        return Button {
+            camera.select(captureMode: mode)
+            guard !busy || on else { return }
+            UISelectionFeedbackGenerator().selectionChanged()
+            dismiss()
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: mode.symbol).font(.system(size: 22, weight: .semibold))
+                Text(mode.rawValue)
+                    .font(.system(size: 12, weight: .bold)).tracking(0.4)
+                    .lineLimit(1).minimumScaleFactor(0.7)
+                Text(mode.shortHint)
+                    .font(.system(size: 9, weight: .medium))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .opacity(0.7)
+            }
+            .padding(.horizontal, 6)
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .foregroundStyle(on ? Color.black : Color.white)
+            .background(RoundedRectangle(cornerRadius: 14).fill(on ? accent : Color.white.opacity(0.08)))
+        }
+        .buttonStyle(.plain)
+        .opacity(busy && !on ? 0.4 : 1)
+        .accessibilityLabel("Modo \(mode.rawValue)")
+        .accessibilityHint(mode.shortHint)
+        .selectedTrait(on)
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(camera.visibleModes) { mode in
-                        let on = camera.captureMode == mode
-                        Button {
-                            camera.select(captureMode: mode)
-                            UISelectionFeedbackGenerator().selectionChanged()
-                            dismiss()
-                        } label: {
-                            VStack(spacing: 8) {
-                                Image(systemName: mode.symbol).font(.system(size: 22, weight: .semibold))
-                                Text(mode.rawValue)
-                                    .font(.system(size: 12, weight: .bold)).tracking(0.4)
-                                    .lineLimit(1).minimumScaleFactor(0.7)
-                            }
-                            .frame(maxWidth: .infinity, minHeight: 76)
-                            .foregroundStyle(on ? Color.black : Color.white)
-                            .background(RoundedRectangle(cornerRadius: 14).fill(on ? accent : Color.white.opacity(0.08)))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Modo \(mode.rawValue)")
+                        modeCell(mode)
                     }
                 }
                 .padding(16)

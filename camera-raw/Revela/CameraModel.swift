@@ -146,7 +146,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var hint: String {
         switch self {
-        case .photo: return ""
+        case .photo: return "Com pouca luz (ISO 320 ou mais) cada toque junta várias fotos do mesmo instante: FOTO 3×, um terço do ruído. O selo 3× no visor avisa. Com sol, uma foto de 48 MP."
         case .fast: return "Disparo sem atraso em 12 MP (HEIC, ou RAW no RAW puro). Toque várias vezes ou segure para rajada."
         case .action: return "4K a 120 fps: toque grava 1 s, segure para mais. O app salva as 8 fotos mais nítidas e o vídeo."
         case .freeze: return "Obturador rapidíssimo para congelar movimento. Precisa de muita luz; segure para rajada."
@@ -159,8 +159,8 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .panorama: return "Toque e gire o iPhone devagar para a direita, sem subir nem descer. Toque de novo para terminar."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
         case .longExposure: return "Junta segundos de vídeo numa foto: Seda deixa água e nuvens lisas, Rastros desenha as luzes. Funciona na mão (o app alinha cada quadro); apoiado fica ainda mais nítido."
-        case .superRes: return "8 fotos de 48 MP (fica com as 6 mais nítidas), alinhadas por região em fração de pixel: até 100 MP com mais detalhe real. Segure firme; leva uns segundos."
-        case .superZoom: return "Zoom de 8× a 25× na mão: 16 fotos rápidas e sem tremido (fica com as 10 mais nítidas), alinhadas e desconvoluídas."
+        case .superRes: return "8 fotos de 48 MP, todas as nítidas (pelo menos 6) alinhadas por região em fração de pixel e resolvidas juntas: até 100 MP com mais detalhe real. Segure firme; leva uns segundos."
+        case .superZoom: return "Zoom de 8× a 25× na mão: 24 fotos rápidas e sem tremido; todas as nítidas são alinhadas e resolvidas juntas numa conta só, que tira o borrão sem inventar detalhe."
         case .night: return "Fotos alinhadas em fração de pixel e somadas sem fantasma, mais uma curta para os postes não estourarem. Apoiado no escuro: 1 s por foto. ✦ põe estrela nas luzes."
         case .stars: return "16 exposições de 1 s com foco no infinito, sem aviões nem satélites. Use tripé ou apoie o iPhone."
         case .moon: return "Zoom 8×, foco no infinito e exposição para a Lua. 5 fotos de 48 MP juntadas no sub-pixel: mais detalhe nas crateras."
@@ -184,13 +184,22 @@ enum RevelaError: LocalizedError {
     case noRawData
     case developFailed
     case photosDenied
+    case saveFailed(String)
 
     var errorDescription: String? {
         switch self {
         case .noRawData: return "A câmera não entregou o arquivo RAW."
         case .developFailed: return "Não foi possível revelar o RAW. O DNG foi salvo mesmo assim."
         case .photosDenied: return "Sem permissão para salvar na galeria. Libere em Ajustes → Revela → Fotos."
+        case .saveFailed(let detail):
+            return "A galeria não aceitou salvar (\(detail)). Confira o espaço livre do iPhone e a permissão em Ajustes → Revela → Fotos."
         }
+    }
+
+    /// Erro do sistema que vai para a tela: com a explicação em português na frente (o texto do iOS sozinho não dizia o que fazer).
+    static func explained(_ error: Error) -> Error {
+        if error is RevelaError { return error }
+        return RevelaError.saveFailed(error.localizedDescription)
     }
 }
 
@@ -295,7 +304,29 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var hasFront = false
     @Published var lens: Lens = .wide
     /// Zoom em relação à 1× (0,5× a 25×). A pinça e os botões mexem aqui.
-    @Published private(set) var zoom: CGFloat = 1
+    /// Sem @Published: na pinça e na rampa dos botões ele muda a 120 Hz e redesenhava a tela inteira a cada passo.
+    /// A tela é avisada no máximo 20 vezes por segundo, e sempre com o valor final
+    private(set) var zoom: CGFloat = 1 {
+        didSet { if zoom != oldValue { announceZoom() } }
+    }
+    private var zoomAnnouncePending = false
+    private var lastZoomAnnounce: CFTimeInterval = 0
+
+    private func announceZoom() {
+        guard !zoomAnnouncePending else { return }
+        let now = CACurrentMediaTime()
+        if now - lastZoomAnnounce >= 0.05 {
+            lastZoomAnnounce = now
+            objectWillChange.send()
+            return
+        }
+        zoomAnnouncePending = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.zoomAnnouncePending = false
+            self.lastZoomAnnounce = CACurrentMediaTime()
+            self.objectWillChange.send()
+        }
+    }
     /// Retrato: abertura simulada (f/1.4 borra muito, f/16 quase nada).
     static let apertures: [Float] = [1.4, 2, 2.8, 4, 8, 16]
     /// f/4 de começo: desfoque bonito sem "recortado" (f/1,4 continua a um toque).
@@ -318,15 +349,22 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let y: CGFloat = 0.5 + (point.y - 0.5) / c
         return CGPoint(x: x, y: y)
     }
-    @Published var nightTime: NightTime = .auto
+    // Escolhas do dia a dia guardadas entre aberturas (como a estabilização e o ETTR)
+    @Published var nightTime: NightTime = NightTime(rawValue: UserDefaults.standard.string(forKey: "nightTime") ?? "") ?? .auto {
+        didSet { defaults.set(nightTime.rawValue, forKey: "nightTime") }
+    }
     static let longSeconds: [Double] = [1, 2, 4, 8]
     @Published var longSecondsChoice: Double = 2
     @Published var longStyle: LongExposure.Style = .silk
     /// Segundos que faltam na exposição longa (nil = parada).
     @Published var longRemaining: Double?
-    @Published var rgbHistogram = false
+    @Published var rgbHistogram = UserDefaults.standard.bool(forKey: "rgbHistogram") {
+        didSet { defaults.set(rgbHistogram, forKey: "rgbHistogram") }
+    }
     static let videoRates = [24, 30, 60]
-    @Published var videoFPS = 30
+    @Published var videoFPS = UserDefaults.standard.object(forKey: "videoFPS") as? Int ?? 30 {
+        didSet { defaults.set(videoFPS, forKey: "videoFPS") }
+    }
     @Published var isRecordingVideo = false
     /// Scanner 3D aberto (a câmera normal fica parada, porque o ARKit usa o sensor).
     @Published var showScanner = false
@@ -336,15 +374,24 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var cinematicRange: ClosedRange<Float> = 2...16
     /// Números que mudam o tempo todo: publicados à parte (ver LiveStats).
     let live = LiveStats()
-    @Published var falseColor = false { didSet { renderer.options.falseColor = falseColor } }
-    @Published var nightFrames = 8
+    @Published var falseColor = UserDefaults.standard.bool(forKey: "falseColor") {
+        didSet {
+            renderer.options.falseColor = falseColor
+            defaults.set(falseColor, forKey: "falseColor")
+        }
+    }
+    @Published var nightFrames = UserDefaults.standard.object(forKey: "nightFrames") as? Int ?? 8 {
+        didSet { defaults.set(nightFrames, forKey: "nightFrames") }
+    }
     /// NOITE: raios nas luzes fortes (0 = sem; 6 ou 8 pontas).
     @Published var nightStarPoints = UserDefaults.standard.object(forKey: "nightStarPoints") as? Int ?? 6 {
         didSet { defaults.set(nightStarPoints, forKey: "nightStarPoints") }
     }
     /// iPhone parado (apoiado ou no tripé), pelo giroscópio.
     @Published var isSteady = false
-    @Published var rawMode: RawMode = .proRAW
+    @Published var rawMode: RawMode = RawMode(rawValue: UserDefaults.standard.string(forKey: "rawMode") ?? "") ?? .proRAW {
+        didSet { defaults.set(rawMode.rawValue, forKey: "rawMode") }
+    }
     @Published var proRAWSupported = true
     @Published private(set) var captureMode: CaptureMode = .photo
     /// Ajustes que uma cena (Lua, Estrelas) ligou sozinha e que voltam ao sair dela.
@@ -431,15 +478,31 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var aspect: AspectRatio = .r43 { didSet { optionsChanged() } }
 
     // Ajudas do visor
-    @Published var zebra = false { didSet { renderer.options.zebra = zebra } }
-    @Published var peaking = false { didSet { renderer.options.peaking = peaking } }
+    @Published var zebra = UserDefaults.standard.bool(forKey: "zebra") {
+        didSet {
+            renderer.options.zebra = zebra
+            defaults.set(zebra, forKey: "zebra")
+        }
+    }
+    @Published var peaking = UserDefaults.standard.bool(forKey: "peaking") {
+        didSet {
+            renderer.options.peaking = peaking
+            // O macro liga o peaking sozinho: isso não vira preferência
+            if lens != .macro { defaults.set(peaking, forKey: "peaking") }
+        }
+    }
     @Published var loupe = false { didSet { renderer.loupe = loupe } }
-    @Published var showGrid = true
+    @Published var showGrid = UserDefaults.standard.object(forKey: "showGrid") as? Bool ?? true {
+        didSet { defaults.set(showGrid, forKey: "showGrid") }
+    }
     @Published var showLevel = UserDefaults.standard.object(forKey: "showLevel") as? Bool ?? true {
         didSet { defaults.set(showLevel, forKey: "showLevel") }
     }
     /// Foco e exposição travados (segurar o dedo no visor). Um toque solta.
-    @Published var aeafLocked = false
+    @Published var aeafLocked = false {
+        // A trava acabou (toque, troca de lente, fim de sequência): o quadrado do foco não fica parado no visor
+        didSet { if oldValue, !aeafLocked, focusPoint != nil { focusPoint = nil } }
+    }
 
     // Modos na fileira: ordem e quais aparecem
     @Published var modeOrder: [CaptureMode] = CameraModel.loadModeOrder()
@@ -578,7 +641,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let advice = distanceAdvice.map { LiveStats.FaceAdvice(text: $0.text, good: $0.good) }
         if advice != live.advice { live.advice = advice }
     }
-    @Published var timerSeconds = 0
+    @Published var timerSeconds = UserDefaults.standard.integer(forKey: "timerSeconds") {
+        didSet { defaults.set(timerSeconds, forKey: "timerSeconds") }
+    }
     @Published var countdown = 0
     @Published var flash = false
     /// Ponto do último toque para focar, em coordenadas normalizadas do visor.
@@ -609,13 +674,39 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
     @Published var processing = 0 {
         // Revelar de novo pediu para a câmera descansar enquanto a foto ainda saía: descansa agora
-        didSet { if processing == 0, oldValue > 0, pauseWanted { pauseSession() } }
+        didSet {
+            if processing == 0, oldValue > 0, pauseWanted { pauseSession() }
+            developingChanged(from: oldValue)
+        }
+    }
+    /// O que está revelando agora e desde quando (aviso no visor nas revelações longas).
+    @Published private(set) var developingLabel: String?
+    @Published private(set) var developingSince: Date?
+
+    private func developingChanged(from old: Int) {
+        if processing > old {
+            developingLabel = fusionWillTrigger ? "FOTO 3×" : (lens == .macro && captureMode == .photo ? "MACRO" : captureMode.rawValue)
+        }
+        if processing > 0, old <= 0 {
+            developingSince = Date()
+            // Foi para o fundo no meio da revelação: o iOS dá um tempo para a foto terminar de sair
+            BackgroundWork.shared.begin("revelar")
+        } else if processing <= 0, old > 0 {
+            developingLabel = nil
+            developingSince = nil
+            BackgroundWork.shared.end("revelar")
+        }
     }
     private var pauseWanted = false
     /// "3/7" enquanto uma sequência está sendo fotografada.
     @Published var stackProgress: String?
     /// NOITE: mira como a do iPhone. Quanto o iPhone saiu de onde estava no disparo (pontos de tela) e quando acaba
-    @Published var aimOffset: CGSize = .zero
+    /// Muda 10×/s: mora no `aim` (só a mira se redesenha)
+    let aim = AimState()
+    var aimOffset: CGSize {
+        get { aim.offset }
+        set { if aim.offset != newValue { aim.offset = newValue } }
+    }
     @Published var nightEnd: Date?
     @Published var message: String?
     @Published var thumbnail: UIImage?
@@ -741,6 +832,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if defaults.object(forKey: "grainAmount") != nil { grainAmount = defaults.float(forKey: "grainAmount") }
         mirror = defaults.bool(forKey: "mirror")
         saveDNG = defaults.bool(forKey: "saveDNG")
+        // Ajudas do visor guardadas: o didSet não roda no init, então o visor recebe aqui
+        renderer.options.zebra = zebra
+        renderer.options.peaking = peaking
+        renderer.options.falseColor = falseColor
         optionsChanged()
         renderer.onHistogram = { [weak self] bins, rgb in
             self?.live.histogram = bins
@@ -897,10 +992,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         syncLooksUp()
     }
 
-    func show(_ text: String) {
+    func show(_ text: String, seconds: Double = 2.6) {
         toast = text
         let current = text
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
             if self.toast == current { self.toast = nil }
         }
     }
@@ -1071,6 +1166,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Cada cena ajusta a câmera para o que ela pede.
     func select(captureMode mode: CaptureMode) {
+        // Gravando, numa sequência, contando o timer ou no meio do panorama: trocar de modo estragava o que estava
+        // saindo. Espera terminar (o teste de modos troca sozinho e passa)
+        if mode != captureMode, isBusy, selfTestProgress == nil {
+            show("Espere terminar…")
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            return
+        }
         if mode == .scan {
             openScanner()
             return
@@ -1628,9 +1730,22 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         tick()
     }
 
+    /// Cada contagem tem um número: cancelar e começar outra no mesmo segundo não deixa a antiga contar junto.
+    private var countdownRun = 0
+
+    /// Toque no botão durante a contagem do timer: cancela.
+    func cancelCountdown() {
+        guard countdown > 0 else { return }
+        countdown = 0
+        countdownRun += 1
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        show("Timer cancelado")
+    }
+
     private func tick() {
+        let run = countdownRun
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            guard self.countdown > 0 else { return }
+            guard self.countdown > 0, run == self.countdownRun else { return }
             self.countdown -= 1
             if self.countdown == 0 { self.capture() } else {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -1642,6 +1757,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     // MARK: - Segurar o botão: rajada e AÇÃO
 
     func beginHold() {
+        // Toque durante a contagem do timer: cancela a foto
+        if countdown > 0 {
+            cancelCountdown()
+            return
+        }
+        // Sequência ainda saindo: o toque não vale (vibra avisando, em vez de ignorar calado)
+        if stackProgress != nil, !holding {
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            return
+        }
         guard !holding, countdown == 0, stackProgress == nil else { return }
         holding = true
         if captureMode == .action {
@@ -2862,7 +2987,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         guard left > 0, longRemaining != nil else { return }
         longRemaining = left
         stackProgress = String(format: "%.1f s", left).replacingOccurrences(of: ".", with: ",")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.tickLongExposure(until: end) }
+        // 4×/s basta para a contagem (10×/s redesenhava a tela inteira à toa)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { self.tickLongExposure(until: end) }
     }
 
     private func finishLongExposure(_ image: CIImage?, frames: Int, options: DevelopOptions, started t0: CFAbsoluteTime) {
@@ -3539,7 +3665,7 @@ enum Library {
                 let request = PHAssetCreationRequest.forAsset()
                 request.addResource(with: .video, fileURL: url, options: nil)
                 request.location = location
-            }, completionHandler: { _, error in completion(error) })
+            }, completionHandler: { _, error in completion(error.map(RevelaError.explained)) })
         }
     }
 
@@ -3561,7 +3687,8 @@ enum Library {
             var createdID: String?
             func finished(_ error: Error?) {
                 if error == nil, let createdID { onSaved?(createdID) }
-                completion(error)
+                // O erro do iOS vai para a tela: com a explicação em português na frente
+                completion(error.map(RevelaError.explained))
             }
             func saveSeparately() {
                 PHPhotoLibrary.shared().performChanges({
