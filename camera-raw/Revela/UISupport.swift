@@ -99,7 +99,9 @@ extension CameraModel {
 
     /// A FOTO 3× vale neste modo e nesta lente (só falta a luz): FOTO, junção ligada, nem macro nem frontal.
     var fusionEligible: Bool {
-        captureMode == .photo && photoFusion && lens != .macro && lens != .front
+        // No zoom com ProRAW a FOTO 3× não entra (as fotos da junção são de 12 MP; a única de 48 MP dá mais detalhe)
+        let zoomedProRAW = rawMode == .proRAW && max(1, zoom / lens.baseZoom) >= 1.5
+        return captureMode == .photo && photoFusion && lens != .macro && lens != .front && !zoomedProRAW
     }
 
     /// O próximo toque na FOTO vai sair FOTO 3× (mesma condição do capture()).
