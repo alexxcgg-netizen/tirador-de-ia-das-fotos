@@ -55,8 +55,8 @@ extension Developer {
         /// "fantasma" e a referência ampliada (borrada) entrava (laboratório ea18328: XS +1,93, iPhone 12 +3,65)
         var mapGhostK: Float = 0.5
         /// λ pelo ruído medido e pelo número de fotos (o dado é ÷ K: λ ∝ σ²/K). Calibrado no laboratório com 24 fotos; o ruído
-        /// é o da diferença borrada dos mapas de movimento (em ½), estimado ≈ mapNoiseRef no laboratório (ruído ±0,01 nas fotos
-        /// pequenas). O registro mostra o medido para acertar este número
+        /// é o do modelo ajustado na rajada (diferença borrada dos mapas de movimento, na luz média), estimado ≈ mapNoiseRef no
+        /// laboratório (ruído ±0,01 nas fotos pequenas). O registro mostra o medido para acertar este número
         var mapAutoLambda = true
         var mapNoiseRef: Float = 0.0016
         /// Tons locais, cor pela luz e nitidez da FOTO (enhanced), com o ISO de uma foto com a luz de todas. O laboratório
@@ -116,7 +116,6 @@ extension Developer {
         let factor = CGFloat(min(2, max(1, (superResolutionTarget / Double(region.width * region.height)).squareRoot())))
         let outExtent = CGRect(x: 0, y: 0, width: (region.width * factor).rounded(.down), height: (region.height * factor).rounded(.down))
         let outPixels = Double(outExtent.width * outExtent.height)
-        let outBytes = outPixels * 8
         // MAP (ampliação 2×) na foto inteira até 25 MP; acima (SUPER RES no 2×, XPAN, RAW puro na 1×, LUA de 48 MP: 48–96 MP)
         // em faixas com margem. Na foto inteira ele guardava 5–6 imagens do tamanho da final em meia precisão (2,3–3,8 GB),
         // fora da conta de memória
@@ -134,10 +133,11 @@ extension Developer {
         let padFull = 0.1 * max(full.width, full.height)
         let sourceFit = region.insetBy(dx: -padFull, dy: -padFull).intersection(full).integral
         let perFrame = Double(sourceFit.width * sourceFit.height) * 8
-        let refBytes = !stripMAP && outBytes < 450_000_000 ? outBytes : 0
+        // (a referência ampliada só entra na reserva: o MAP tira a amostra recusada em vez de trocá-la por ela)
+        let refBytes = 0.0
         let mapBytes = useMAP ? 6 * 8 * (stripMAP ? stripPixels * 1.3 : outPixels) : 0
         let workBytes = stripPixels * 8 * (useMAP ? 3 : 5)
-        let motionBytes = 150_000_000.0
+        let motionBytes = 300_000_000.0
         // Proporcional à memória livre de verdade (o 17 Pro Max tem bem mais que os 700 MB fixos de antes, que cortavam para
         // 12 fotos uma cena de 12 MP), até 1,5 GB só de fotos
         #if targetEnvironment(simulator)
@@ -205,41 +205,63 @@ extension Developer {
             }
             return out.cropped(to: outExtent)
         }
-        guard let refUp = upscaled(refIndex) else { return nil }
 
-        // 2) Mapa de movimento de cada foto, numa escala menor e guardado: a foto alinhada e borrada (1,5 px da foto) contra a
-        // referência borrada. Borrado, o serrilhado (que muda de foto para foto e é o que a super resolução aproveita) some;
-        // só recusa o que passa de 4× o ruído medido na diferença + 3% da luz + ±1 px de encaixe nas bordas das duas
+        // 2) Mapa de movimento de cada foto (guardado): a foto alinhada na grade da referência e borrada 1,25 px contra a
+        // referência borrada (estudo em Python no SUPER ZOOM: 1–1,5 px; com 0,7 o serrilhado passava). z = |ΔY| / √var,
+        // var = ruído da rajada pela luz (a·Y + b, ajustado em até 2 fotos) + (0,1 px de erro de encaixe × gradiente)²;
+        // g = 1 até z = 3 e 0 a partir de 5, recusa alargada 2 px e alisada 1 px. Sem exceção para o estourado.
+        // Na escala da foto quando cabe (laboratório, rajadas pequenas); na de 24 fotos do SUPER ZOOM, ~0,7
         let tolerance = useMAP ? srTuning.mapGhostK / 0.5 : srTuning.ghostK / 0.1
         let regionPixels = Double(region.width * region.height)
-        let ms = CGFloat(min(0.5, max(0.125, (motionBytes / (Double(frames.count) * regionPixels * 8)).squareRoot())))
+        let ms = CGFloat(min(1, max(0.25, (motionBytes / (Double(frames.count) * regionPixels * 8)).squareRoot())))
         let mRegion = CGRect(x: region.minX * ms, y: region.minY * ms, width: region.width * ms, height: region.height * ms).integral
         let mGrid = CIVector(x: centers[0].x * ms, y: centers[0].y * ms, z: (centers[1].x - centers[0].x) * ms,
                              w: (centers[3].y - centers[0].y) * ms)
-        let mBlur = Double(max(0.6, 1.5 * ms))
+        let mBlur = Double(max(0.6, 1.25 * ms))
         var motions = [CIImage?](repeating: nil, count: frames.count)
-        var motionNoise: [Float] = []
+        // Ruído para o λ do MAP: o do modelo ajustado, na luz média da referência (fotos alinhadas: a textura não conta, ao
+        // contrário do ruído medido numa foto só; borradas: o serrilhado, que muda de foto para foto, também não)
+        var frameNoise: Float = 0
         if let small = image(from: frames[refIndex], scale: Float(ms)) {
             let refSmall = materialize(small.clampedToExtent().applyingGaussianBlur(sigma: mBlur).cropped(to: mRegion), extent: mRegion)
-            for i in frames.indices where i != refIndex {
+            func blurredFrame(_ i: Int) -> CIImage? {
+                guard let a = alignments[i], let img = image(from: frames[i], scale: Float(ms)) else { return nil }
+                let toSmall = CGAffineTransform(scaleX: 1 / ms, y: 1 / ms).concatenating(a.transform)
+                    .concatenating(CGAffineTransform(scaleX: ms, y: ms))
+                let r = a.residuals.map { CGPoint(x: $0.x * ms, y: $0.y * ms) }
+                guard let warped = warpCubic(img, transform: toSmall, residuals: r, grid: mGrid, extent: mRegion) else { return nil }
+                return warped.clampedToExtent().applyingGaussianBlur(sigma: mBlur).cropped(to: mRegion)
+            }
+            var fits: [(a: Float, b: Float)] = []
+            for i in frames.indices where i != refIndex && fits.count < 2 {
                 autoreleasepool {
-                    guard let a = alignments[i], let img = image(from: frames[i], scale: Float(ms)) else { return }
-                    let toSmall = CGAffineTransform(scaleX: 1 / ms, y: 1 / ms).concatenating(a.transform)
-                        .concatenating(CGAffineTransform(scaleX: ms, y: ms))
-                    let r = a.residuals.map { CGPoint(x: $0.x * ms, y: $0.y * ms) }
-                    guard let warped = warpCubic(img, transform: toSmall, residuals: r, grid: mGrid, extent: mRegion) else { return }
-                    let frameSmall = materialize(warped.clampedToExtent().applyingGaussianBlur(sigma: mBlur).cropped(to: mRegion), extent: mRegion)
-                    let noise = diffNoise(frameSmall, refSmall, extent: mRegion)
-                    guard let g = motionWeights(frameSmall, refSmall, extent: mRegion, noise: noise, edge: Float(ms),
-                                                tolerance: tolerance) else { return }
-                    motions[i] = materialize(g, extent: mRegion)
-                    motionNoise.append(noise)
+                    if let f = blurredFrame(i), let m = noiseModel(f, refSmall, extent: mRegion) { fits.append(m) }
                 }
             }
+            if !fits.isEmpty {
+                let model = (a: fits.map(\.a).reduce(0, +) / Float(fits.count), b: fits.map(\.b).reduce(0, +) / Float(fits.count))
+                for i in frames.indices where i != refIndex {
+                    autoreleasepool {
+                        guard let f = blurredFrame(i),
+                              let g = motionWeights(f, refSmall, extent: mRegion, model: model, misregistration: Float(0.1 * ms),
+                                                    lo: 3 * tolerance, hi: 5 * tolerance, erosion: Float(max(1, 2 * ms)),
+                                                    smooth: Double(max(0.5, ms))) else { return }
+                        motions[i] = materialize(g, extent: mRegion)
+                    }
+                }
+                let average = refSmall.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: mRegion)])
+                let one = average.transformed(by: CGAffineTransform(translationX: -average.extent.minX, y: -average.extent.minY))
+                var pixel = [Float](repeating: 0, count: 4)
+                context.render(one, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                               format: .RGBAf, colorSpace: nil)
+                let meanY = max(0, 0.2126 * pixel[0] + 0.7152 * pixel[1] + 0.0722 * pixel[2])
+                frameNoise = (model.a * (meanY.isFinite ? meanY : 0) + model.b).squareRoot()
+                dlog(String(format: "Super resolução: mapas de movimento em %.2f× · ruído a %.2e b %.2e · σ na luz média %.4f · %@",
+                            ms, model.a, model.b, frameNoise, Diagnostics.ms(since: t0)))
+            } else {
+                dlog("Super resolução: sem medida de ruído na rajada: nenhuma foto recusada por movimento")
+            }
         }
-        let sortedNoise = motionNoise.sorted()
-        dlog(String(format: "Super resolução: mapas de movimento em %.2f× · ruído típico da diferença %.4f · %@", ms,
-                    sortedNoise.isEmpty ? 0 : sortedNoise[sortedNoise.count / 2], Diagnostics.ms(since: t0)))
         let smallToOut = CGAffineTransform(scaleX: 1 / ms, y: 1 / ms)
             .concatenating(CGAffineTransform(translationX: -region.minX, y: -region.minY))
             .concatenating(CGAffineTransform(scaleX: factor, y: factor))
@@ -249,19 +271,13 @@ extension Developer {
             return m.clampedToExtent().transformed(by: smallToOut).cropped(to: outExtent)
         }
 
-        // Ruído para o λ do MAP: o da diferença borrada dos mapas de movimento (fotos alinhadas: a textura não conta, ao
-        // contrário do ruído medido numa foto só; borrada: o serrilhado, que muda de foto para foto, também não)
-        let frameNoise: Float = sortedNoise.isEmpty ? 0 : sortedNoise[sortedNoise.count / 2]
-
         // 3) Junção. MAP (2×): todas as fotos de uma vez; senão regressão de núcleo (cada pixel no lugar exato) + RL
         var scene: ((CGRect) -> CIImage?)?
         var used = 1
         var solved = false, splatted = false
         var merged: CIImage?
         if useMAP {
-            // A referência ampliada é lida por foto em cada pixel: guardada pronta quando cabe na memória
-            let refReady = refBytes > 0 ? materialize(refUp, extent: outExtent) : refUp
-            if let plan = mapSolver(frames: frames, decoded: decoded, alignments: alignments, refUp: refReady, motion: motionOut,
+            if let plan = mapSolver(frames: frames, decoded: decoded, alignments: alignments, motion: motionOut,
                                     region: region, factor: factor, grid: grid, centers: centers, noise: frameNoise) {
                 if stripMAP {
                     // Cada faixa resolvida com margem: cada passo olha ±3 px, 16 passos = 48 px; a margem é maior
@@ -291,7 +307,7 @@ extension Developer {
                 merged = splat.image
                 used = splat.used
                 splatted = true
-            } else if let robustColorKernel, let robustWeightKernel, let divideKernel {
+            } else if let robustColorKernel, let robustWeightKernel, let divideKernel, let refUp = upscaled(refIndex) {
                 // Reserva (kernel novo não carregou): cada foto ampliada, junção robusta (onde algo se mexeu fica a referência)
                 let refBlur = blurred(refUp, extent: outExtent)
                 var sumColor = refUp
@@ -463,7 +479,7 @@ extension Developer {
     /// Devolve quem resolve uma região (a foto inteira, ou uma faixa com margem: o resultado no meio da faixa é o mesmo da
     /// foto inteira, porque cada passo só olha ±3 px), e quantas fotos entraram
     private static func mapSolver(frames: [CapturedFrame], decoded: (Int) -> CIImage?, alignments: [Alignment?],
-                                  refUp: CIImage, motion: (Int) -> CIImage, region: CGRect, factor: CGFloat,
+                                  motion: (Int) -> CIImage, region: CGRect, factor: CGFloat,
                                   grid: CIVector, centers: [CGPoint], noise: Float) -> (solve: (CGRect) -> CIImage?, used: Int)? {
         guard let splatHKernel, let splatHWeightKernel, let mapStepKernel, let momentumKernel, let divideKernel,
               centers.count == 9 else { return nil }
@@ -548,7 +564,7 @@ extension Developer {
         let tableExtent = tableImage.extent
         let stepROI: CIKernelROICallback = { index, rect in
             switch index {
-            case 1: return rect
+            case 1, 3: return rect
             case 2: return tableExtent
             default: return rect.insetBy(dx: -4, dy: -4)
             }
@@ -570,9 +586,9 @@ extension Developer {
                     return CGRect(x: xs.min()!, y: ys.min()!, width: xs.max()! - xs.min()!, height: ys.max()! - ys.min()!)
                         .insetBy(dx: -reach, dy: -reach)
                 }
-                let colorArgs: [Any] = ([input.src, refUp, input.gm] as [Any]) + input.geometry
+                let colorArgs: [Any] = ([input.src, input.gm] as [Any]) + input.geometry
                 guard let color = splatHKernel.apply(extent: e, roiCallback: roi, arguments: colorArgs),
-                      let weight = splatHWeightKernel.apply(extent: e, arguments: ([weightSum] as [Any]) + input.geometry) else { return nil }
+                      let weight = splatHWeightKernel.apply(extent: e, arguments: ([weightSum, input.gm] as [Any]) + input.geometry) else { return nil }
                 colorSum = colorSum.map { add($0, color) } ?? color
                 weightSum = weight
                 pending += 1
@@ -584,19 +600,20 @@ extension Developer {
                     pending = 0
                 }
             }
-            // b e o começo Σh·y/Σh; as somas saem da memória antes dos passos (ficam b, x, anterior, z e o próximo)
-            func prepared() -> (b: CIImage, x0: CIImage)? {
+            // b = Σh·g·y/K, começo Σh·g·y/Σh·g, e as somas de peso (r = Σh·g, g = Σh) para o W do passo; a soma de cor sai
+            // da memória antes dos passos (ficam b, pesos, x, anterior, z e o próximo)
+            func prepared() -> (b: CIImage, ws: CIImage, x0: CIImage)? {
                 guard let cs = colorSum,
                       let b = materializedOrNil(scaled(cs, by: 1 / k).cropped(to: e), extent: e),
                       let ws = materializedOrNil(weightSum.cropped(to: e), extent: e),
                       let start = divideKernel.apply(extent: e, arguments: [scaled(b, by: k), ws]),
                       let x0 = materializedOrNil(start, extent: e) else { return nil }
-                return (b, x0)
+                return (b, ws, x0)
             }
             guard let ready = prepared() else { return nil }
             colorSum = nil
             weightSum = CIImage.empty()
-            let b = ready.b
+            let b = ready.b, ws = ready.ws
             var x = ready.x0, previous = ready.x0
             var tk: Double = 1, beta: Double = 0
             for _ in 0..<iterations {
@@ -607,11 +624,11 @@ extension Developer {
                         z = x
                     } else {
                         guard let momentum = momentumKernel.apply(extent: e, arguments: [x, previous, Float(beta)]),
-                              let ready = materializedOrNil(momentum, extent: e) else { return false }
-                        z = ready
+                              let zReady = materializedOrNil(momentum, extent: e) else { return false }
+                        z = zReady
                     }
                     guard let next = mapStepKernel.apply(extent: e, roiCallback: stepROI, arguments: [
-                        z.clampedToExtent(), b, tableImage, grid, lam, tau, delta, w,
+                        z.clampedToExtent(), b, tableImage, ws, grid, lam, tau, delta, w,
                     ]), let xn = materializedOrNil(next, extent: e) else { return false }
                     previous = x
                     x = xn
@@ -701,15 +718,106 @@ extension Developer {
         return abs(gain - 1) < 0.01 ? 1 : gain
     }
 
-    /// Mapa de movimento (1 = igual, 0 = mexeu) entre duas versões já borradas e alinhadas: recusa só acima de 4× o ruído
-    /// medido na diferença + 3% da luz + o que ±`edge` px de encaixe explica numa borda das duas. `tolerance` escala tudo
-    static func motionWeights(_ frame: CIImage, _ reference: CIImage, extent: CGRect, noise: Float, edge: Float,
-                              tolerance: Float = 1) -> CIImage? {
+    /// Ruído da diferença de duas versões borradas e alinhadas, pela luz: var = a·Y + b, ajustado na própria rajada. Numa
+    /// versão de ~0,25 MP: 8 faixas de luz com o mesmo número de pixels, σ de cada uma pela mediana do |ΔY| ÷ 0,6745 (quem se
+    /// mexeu é minoria e a mediana não liga), mínimos quadrados com peso 1/var² (o erro de cada σ² é relativo)
+    static func noiseModel(_ frame: CIImage, _ reference: CIImage, extent: CGRect) -> (a: Float, b: Float)? {
+        let s = CGFloat(min(1, (250_000 / max(1, Double(extent.width * extent.height))).squareRoot()))
+        let w = Int((extent.width * s).rounded(.down)), h = Int((extent.height * s).rounded(.down))
+        guard w >= 16, h >= 16 else { return nil }
+        let bounds = CGRect(x: 0, y: 0, width: w, height: h)
+        let toSmall = CGAffineTransform(translationX: -extent.minX, y: -extent.minY).concatenating(CGAffineTransform(scaleX: s, y: s))
+        func lumas(_ image: CIImage) -> [Float] {
+            var pixels = [Float](repeating: 0, count: w * h * 4)
+            context.render(image.cropped(to: extent).transformed(by: toSmall), toBitmap: &pixels, rowBytes: w * 16, bounds: bounds,
+                           format: .RGBAf, colorSpace: nil)
+            var out = [Float](repeating: 0, count: w * h)
+            for k in 0..<(w * h) {
+                let o = k * 4
+                let l: Float = 0.2126 * max(pixels[o], 0) + 0.7152 * max(pixels[o + 1], 0) + 0.0722 * max(pixels[o + 2], 0)
+                out[k] = l
+            }
+            return out
+        }
+        let yf = lumas(frame), yr = lumas(reference)
+        var samples: [(y: Float, d: Float)] = []
+        samples.reserveCapacity(w * h)
+        for k in 0..<(w * h) where yf[k].isFinite && yr[k].isFinite {
+            samples.append((yr[k], abs(yf[k] - yr[k])))
+        }
+        guard samples.count >= 800 else { return nil }
+        samples.sort { $0.y < $1.y }
+        var ys: [Float] = [], vs: [Float] = []
+        for bin in 0..<8 {
+            let lo = samples.count * bin / 8, hi = samples.count * (bin + 1) / 8
+            guard hi - lo >= 50 else { continue }
+            var ds = [Float]()
+            ds.reserveCapacity(hi - lo)
+            var sumY: Float = 0
+            for k in lo..<hi {
+                ds.append(samples[k].d)
+                sumY += samples[k].y
+            }
+            ds.sort()
+            let sigma = ds[ds.count / 2] / 0.6745
+            ys.append(sumY / Float(hi - lo))
+            vs.append(max(sigma * sigma, 1e-12))
+        }
+        guard ys.count >= 2 else { return nil }
+        var sw: Float = 0, sy: Float = 0, sv: Float = 0
+        for k in ys.indices {
+            let wk = 1 / (vs[k] * vs[k])
+            sw += wk
+            sy += wk * ys[k]
+            sv += wk * vs[k]
+        }
+        let my = sy / sw, mv = sv / sw
+        var sxx: Float = 0, sxv: Float = 0
+        for k in ys.indices {
+            let wk = 1 / (vs[k] * vs[k])
+            sxx += wk * (ys[k] - my) * (ys[k] - my)
+            sxv += wk * (ys[k] - my) * (vs[k] - mv)
+        }
+        var a: Float = sxx > 0 ? sxv / sxx : 0
+        var b: Float = mv - a * my
+        if !a.isFinite || a < 0 {
+            a = 0
+            b = mv
+        }
+        if !b.isFinite || b < 1e-8 { b = max(1e-8, vs.min() ?? 1e-8) }
+        return (a, b)
+    }
+
+    /// Mapa de movimento (1 = igual, 0 = mexeu) entre duas versões já borradas e alinhadas: z = |ΔY| / √(a·Y + b +
+    /// (misregistration·|∇Y_ref|)²), g = 1 até z = lo e 0 a partir de hi; depois a recusa alargada (mínimo em `erosion` px:
+    /// a borda de quem se mexe também sai) e alisada (σ `smooth`)
+    static func motionWeights(_ frame: CIImage, _ reference: CIImage, extent: CGRect, model: (a: Float, b: Float),
+                              misregistration: Float, lo: Float, hi: Float, erosion: Float, smooth: Double) -> CIImage? {
         guard let motionKernel else { return nil }
-        let p = CIVector(x: CGFloat(4 * noise * tolerance), y: CGFloat(0.03 * tolerance), z: CGFloat(edge * tolerance),
-                         w: CGFloat(0.0005 * tolerance))
-        return motionKernel.apply(extent: extent, roiCallback: { _, r in r.insetBy(dx: -1, dy: -1) },
-                                  arguments: [frame.clampedToExtent(), reference.clampedToExtent(), p])
+        let p = CIVector(x: CGFloat(model.a), y: CGFloat(model.b), z: CGFloat(misregistration), w: 0)
+        let lim = CIVector(x: CGFloat(lo), y: CGFloat(hi))
+        guard let raw = motionKernel.apply(extent: extent, roiCallback: { _, r in r.insetBy(dx: -1, dy: -1) },
+                                           arguments: [frame.clampedToExtent(), reference.clampedToExtent(), p, lim]) else { return nil }
+        var g = raw
+        if erosion >= 0.5 {
+            g = g.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: erosion]).cropped(to: extent)
+        }
+        if smooth > 0.05 { g = g.clampedToExtent().applyingGaussianBlur(sigma: smooth).cropped(to: extent) }
+        return g
+    }
+
+    /// NOITE: onde poucas fotos entraram (quem se mexeu ficou só com a referência) sobra o ruído de uma foto só no meio da
+    /// noite lisa. Lá a limpeza é mais forte, pelo que falta de 1/√N_eff (N_eff = Σ g dos mapas de movimento); onde entraram
+    /// todas nada muda
+    static func coverageDenoise(_ scene: CIImage, coverage: CIImage?, frames: Int) -> CIImage {
+        guard let coverage, frames >= 3, let coverageMaskKernel else { return scene }
+        let e = scene.extent
+        guard let mask = coverageMaskKernel.apply(extent: e, arguments: [coverage.clampedToExtent().cropped(to: e), Float(frames)])
+        else { return scene }
+        let noise = measuredNoise(scene)
+        let strong = lumaDenoise(nightDenoise(scene, strength: 1), strength: 1, noise: noise * 2.5)
+        return strong.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: scene, kCIInputMaskImageKey: mask])
+            .cropped(to: e)
     }
 
     /// ISO do EXIF da imagem (100 sem EXIF)
@@ -846,15 +954,15 @@ extension Developer {
 
     /// ESTRELAS (tripé, 16 fotos): o céu gira (~0,35 px por foto de 1,5 s na 1×, ~5,5 px na sequência) e o chão fica parado.
     /// Antes: só deslocamento pelo centro (num céu de estrelas não achava nada, ou grudava no chão), o corte de passageiros
-    /// (avião) contra a média das fotos desalinhadas apagava ~55% das estrelas, que andam, e os pixels quentes ficavam.
-    /// Agora: (1) pixel quente pelo mínimo das fotos sem alinhar (as estrelas andam, o quente fica) e tirado de cada foto;
-    /// (2) céu alinhado pelos pedaços (giro + deslocamento, ajuste robusto: o céu é a maioria) e chão sem alinhar; (3) corte
-    /// do avião depois de alinhar; (4) máscara pelo que explica melhor cada lugar: o céu girando ou o chão parado.
-    /// nil se não der (fica a média de antes)
+    /// (avião) em 1,6 × a média das fotos desalinhadas apagava ~55% das estrelas, que andam, e os pixels quentes ficavam.
+    /// Agora: (1) céu alinhado pelos pedaços (giro + deslocamento, ajuste robusto: o céu é a maioria); (2) pixel quente pelo
+    /// mínimo das fotos sem alinhar (as estrelas andam ≥ 3 px e somem dele, o quente fica), trocado pela mediana 3×3 em cada
+    /// foto antes de alinhar; (3) corte do avião depois de alinhar, acima de média + 3·max(desvio, ruído); (4) chão sem
+    /// alinhar, por uma máscara do que explica melhor cada lugar: o céu girando ou o chão parado. nil se não der
     static func starStack(_ frames: [CapturedFrame], options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
-        guard frames.count >= 3, let hotMapKernel, let subPosKernel, let starClipKernel, let skyEvidenceKernel,
-              let skyMaskKernel else { return nil }
+        guard frames.count >= 3, let hotMaskKernel, let hotFixKernel, let sigmaClipKernel, let squareKernel,
+              let skyEvidenceKernel, let skyMaskKernel else { return nil }
         // Referência no meio da sequência: o céu anda no máximo metade do total em relação a ela
         let mid = frames.count / 2
         let ordered = [frames[mid]] + frames.indices.filter { $0 != mid }.map { frames[$0] }
@@ -863,12 +971,26 @@ extension Developer {
         let n = ordered.count
         dlog("Estrelas: \(n) fotos · \(Int(extent.width))×\(Int(extent.height)) · memória livre \(Diagnostics.freeMemory)")
         // 1) Céu: o alinhamento fino da NOITE (o chão, minoria, sai como pedaço que discorda)
-        let warps = fineWarps(ordered, reference: reference)
-        dlog("Estrelas: céu alinhado em \(Diagnostics.ms(since: t0)) (\(warps.compactMap { $0 }.count)/\(n) fotos)")
+        let centers = tileCenters(in: extent)
+        let alignments = alignTransforms(frames: ordered, refIndex: 0, reference: reference, centers: centers)
+        let grid = CIVector(x: centers[0].x, y: centers[0].y, z: centers[1].x - centers[0].x, w: centers[3].y - centers[0].y)
+        func warp(_ i: Int, _ image: CIImage) -> CIImage? {
+            guard let a = alignments[i] else { return nil }
+            return warpCubic(image, transform: a.transform, residuals: a.residuals, grid: grid, extent: extent)?.cropped(to: extent)
+        }
+        // Quanto o céu andou na sequência (no centro da foto): abaixo de 3 px as estrelas não somem do mínimo
+        let center = CGPoint(x: extent.midX, y: extent.midY)
+        let moves = alignments.compactMap { $0 }.map { a -> CGPoint in
+            let q = center.applying(a.transform)
+            return CGPoint(x: q.x - center.x, y: q.y - center.y)
+        }
+        var span: CGFloat = 0
+        for p in moves { for q in moves { span = max(span, hypot(p.x - q.x, p.y - q.y)) } }
+        dlog(String(format: "Estrelas: céu alinhado em %@ (%d/%d fotos) · andou %.1f px", Diagnostics.ms(since: t0), moves.count, n, span))
         // 2) Sem alinhar: o mínimo (só o pixel quente sobra) e a média (o chão)
         let noise = measuredNoise(reference)
-        var hot: CIImage?
-        var stillMean: CIImage?
+        var hotMask: CIImage?
+        var stillRaw: CIImage?
         do {
             var minimum: CIImage?
             var stillSum: CIImage?
@@ -877,37 +999,48 @@ extension Developer {
                 autoreleasepool {
                     guard let img = image(from: ordered[i]) else { return }
                     let frame = materialize(img.cropped(to: extent), extent: extent)
-                    let lower = minimum.map { frame.applyingFilter("CIMinimumCompositing", parameters: [kCIInputBackgroundImageKey: $0]) } ?? frame
-                    minimum = materialize(lower.cropped(to: extent), extent: extent)
+                    if span >= 3 {
+                        let lower = minimum.map { frame.applyingFilter("CIMinimumCompositing", parameters: [kCIInputBackgroundImageKey: $0]) } ?? frame
+                        minimum = materialize(lower.cropped(to: extent), extent: extent)
+                    }
                     stillSum = materialize(stillSum.map { add($0, frame) } ?? frame, extent: extent)
                     stillCount += 1
                 }
             }
-            guard let minimum, let stillSum, stillCount >= 3,
-                  let hotImage = hotMapKernel.apply(extent: extent, roiCallback: { _, r in r.insetBy(dx: -3, dy: -3) },
-                                                    arguments: [minimum.clampedToExtent(), max(0.002, 3 * noise)]) else { return nil }
-            let hotReady = materialize(hotImage, extent: extent)
-            hot = hotReady
-            stillMean = subPosKernel.apply(extent: extent, arguments: [scaled(stillSum, by: 1 / Float(stillCount)), hotReady])
-                .map { materialize($0, extent: extent) }
+            guard let stillSum, stillCount >= 3 else { return nil }
+            stillRaw = scaled(stillSum, by: 1 / Float(stillCount)).cropped(to: extent)
+            if let minimum {
+                hotMask = hotMaskKernel.apply(extent: extent, roiCallback: { _, r in r.insetBy(dx: -1, dy: -1) },
+                                              arguments: [minimum.clampedToExtent(), max(Float(1e-4), noise)])
+                    .map { materialize($0, extent: extent) }
+            }
         }
-        guard let hot, let stillMean else { return nil }
+        guard let stillRaw else { return nil }
+        func fixHot(_ image: CIImage) -> CIImage {
+            guard let hotMask else { return image }
+            return hotFixKernel.apply(extent: extent, roiCallback: { index, r in index == 0 ? r.insetBy(dx: -1, dy: -1) : r },
+                                      arguments: [image.clampedToExtent(), hotMask])?.cropped(to: extent) ?? image
+        }
+        let stillMean = materialize(fixHot(stillRaw), extent: extent)
         func fixed(_ i: Int) -> CIImage? {
-            image(from: ordered[i]).flatMap { subPosKernel.apply(extent: extent, arguments: [$0.cropped(to: extent), hot]) }
+            image(from: ordered[i]).map { fixHot($0.cropped(to: extent)) }
         }
-        // 3) Céu: média das fotos alinhadas (sem os quentes)
-        var skySum: CIImage?
+        // 3) Céu: média e média dos quadrados das fotos alinhadas (sem os quentes)
+        var skySum: CIImage?, skySquares: CIImage?
         var skyCount = 0
         for i in 0..<n {
             autoreleasepool {
-                guard let warp = warps[i], let f = fixed(i) else { return }
-                let aligned = warp(f).cropped(to: extent)
-                skySum = materialize(skySum.map { add($0, aligned) } ?? aligned, extent: extent)
+                guard let f = fixed(i), let aligned = warp(i, f) else { return }
+                let ready = materialize(aligned, extent: extent)
+                guard let square = squareKernel.apply(extent: extent, arguments: [ready, ready]) else { return }
+                skySum = materialize(skySum.map { add($0, ready) } ?? ready, extent: extent)
+                skySquares = materialize(skySquares.map { add($0, square) } ?? square, extent: extent)
                 skyCount += 1
             }
         }
-        guard let skySum, skyCount >= 3 else { return nil }
+        guard let skySum, let skySquares, skyCount >= 3 else { return nil }
         let skyMean = materialize(scaled(skySum, by: 1 / Float(skyCount)), extent: extent)
+        let skyMeanSquare = materialize(scaled(skySquares, by: 1 / Float(skyCount)), extent: extent)
         // 4) Corte do que passou (avião, satélite) contra a média já alinhada (as estrelas não são cortadas: estão no mesmo
         // lugar em todas) e, ao mesmo tempo, a evidência céu × chão em ½ (borrada 1,5 px)
         let half: CGFloat = 0.5
@@ -925,10 +1058,11 @@ extension Developer {
         var evidence: CIImage?
         for i in 0..<n {
             autoreleasepool {
-                guard let warp = warps[i], let f0 = fixed(i) else { return }
+                guard let f0 = fixed(i) else { return }
                 let f = materialize(f0, extent: extent)
-                let aligned = warp(f).cropped(to: extent)
-                if let clipped = starClipKernel.apply(extent: extent, arguments: [aligned, skyMean, Float(0.6)]) {
+                guard let aligned = warp(i, f) else { return }
+                if let clipped = sigmaClipKernel.apply(extent: extent, arguments: [aligned, skyMean, skyMeanSquare, Float(3),
+                                                                                    max(Float(1e-4), noise)]) {
                     clippedSum = materialize(clippedSum.map { add($0, clipped) } ?? clipped, extent: extent)
                     clippedCount += 1
                 }
@@ -960,8 +1094,8 @@ extension Developer {
         out = localTone(out, strength: 0.85)
         if effectiveISO >= 200 { out = nightDenoise(out, strength: min(0.6, log2(effectiveISO / 100) / 6)) }
         let output = finish(out.settingProperties(reference.properties), options: options)
-        dlog(String(format: "Estrelas: %d fotos (céu alinhado, chão parado, quentes tirados) · %@%@", clippedCount,
-                    Diagnostics.ms(since: t0), output == nil ? " · FALHOU" : ""))
+        dlog(String(format: "Estrelas: %d fotos (céu alinhado, chão parado%@) · %@%@", clippedCount,
+                    hotMask == nil ? "" : ", quentes tirados", Diagnostics.ms(since: t0), output == nil ? " · FALHOU" : ""))
         return output
     }
 

@@ -400,33 +400,32 @@ namespace coreimage {
     }
     inline float srH(float d) { return 0.5f * (srMitchell(d + 0.5f) + srMitchell(d - 0.5f)); }
 
-    // Retroprojeção de uma foto (Aᵀy): cada pixel grande soma h·valor dos pixels da foto em volta. Onde a foto não bate
-    // com a referência (mapa de movimento gm < 1) o valor dela vira a referência (o modelo conta com todas as amostras).
-    // O mapa compara versões borradas: o serrilhado das bordas (que a super resolução aproveita) não conta como movimento
-    float4 revelaSplatH(sampler src, sampler ref, sampler gm, float3 inv0, float3 inv1, float4 m, float4 a, float4 b,
-                        float4 c, float4 d, float2 e, float4 grid, float4 valid, destination dest) {
+    // Retroprojeção de uma foto (Aᵀy): cada pixel grande soma h·valor dos pixels da foto em volta, × o mapa de movimento:
+    // onde a foto não bate com a referência a amostra SAI (antes virava a referência ampliada, borrada: no estudo em Python a
+    // pessoa andando ia de +4,26 para +6,31 dB tirando em vez de trocar). O mapa compara versões borradas: o serrilhado das
+    // bordas (que a super resolução aproveita) fica com peso 1
+    float4 revelaSplatH(sampler src, sampler gm, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
+                        float4 d, float2 e, float4 grid, float4 valid, destination dest) {
         float2 p = dest.coord();
         float2 q = srSource(p, inv0, inv1, m, a, b, c, d, e, grid);
         float2 base = floor(q - 0.5f);
         float3 acc = float3(0.0f);
-        float wsum = 0.0f;
         for (int j = -1; j <= 2; j++) {
             for (int i = -1; i <= 2; i++) {
                 float2 cpos = base + float2(float(i), float(j)) + 0.5f;
                 float2 dd = (cpos - q) * m.x;
                 float w = srH(dd.x) * srH(dd.y) * srValid(cpos, valid);
                 acc += max(src.sample(src.transform(cpos)).rgb, float3(0.0f)) * w;
-                wsum += w;
             }
         }
-        float3 refc = max(ref.sample(ref.transform(p)).rgb, float3(0.0f));
         float g = clamp(gm.sample(gm.transform(p)).r, 0.0f, 1.0f);
-        return float4(acc * g + refc * (wsum * (1.0f - g)), 1.0f);
+        return float4(acc * g, 1.0f);
     }
 
-    // Σh da mesma foto (só a geometria: não abre a foto), somado ao acumulado (para a estimativa inicial Σh·y/Σh)
-    float4 revelaSplatHWeight(sample_t accum, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
-                              float4 d, float2 e, float4 grid, float4 valid, destination dest) {
+    // Σh da mesma foto (só a geometria: não abre a foto), somado ao acumulado: r = Σh·g (para o começo Σh·g·y/Σh·g),
+    // g = Σh (para W = Σh·g/Σh, a fração das amostras que ficou em cada pixel). Fora da transparência (pré-multiplicação)
+    float4 revelaSplatHWeight(sample_t accum, sample_t gm, float3 inv0, float3 inv1, float4 m, float4 a, float4 b,
+                              float4 c, float4 d, float2 e, float4 grid, float4 valid, destination dest) {
         float2 p = dest.coord();
         float2 q = srSource(p, inv0, inv1, m, a, b, c, d, e, grid);
         float2 base = floor(q - 0.5f);
@@ -438,7 +437,8 @@ namespace coreimage {
                 wsum += srH(dd.x) * srH(dd.y) * srValid(cpos, valid);
             }
         }
-        return float4(accum.rgb + float3(wsum), 1.0f);
+        float g = clamp(gm.r, 0.0f, 1.0f);
+        return float4(accum.r + wsum * g, accum.g + wsum, 0.0f, 1.0f);
     }
 
     // Um passo de FISTA do MAP sobre z (= x + β(x − x_anterior), calculado uma vez por passo antes; antes era refeito
@@ -456,7 +456,8 @@ namespace coreimage {
         f.y = gy * s;
         return f;
     }
-    float4 revelaMAPStep(sampler z, sampler b, sampler tab, float4 grid, float3 lam, float3 tau,
+    // ws: as somas de peso (r = Σh·g, g = Σh); o dado vira W·AᵀA·z − b, W = r/g (só as amostras que ficaram contam)
+    float4 revelaMAPStep(sampler z, sampler b, sampler tab, sampler ws, float4 grid, float3 lam, float3 tau,
                          float delta, float w, destination dest) {
         float2 p = dest.coord();
         float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
@@ -480,7 +481,9 @@ namespace coreimage {
             }
         }
         float3 z0 = z.sample(z.transform(p)).rgb;
-        float3 G = conv - b.sample(b.transform(p)).rgb;
+        float4 wsp = ws.sample(ws.transform(p));
+        float W = clamp(wsp.r / max(wsp.g, 1e-6f), 0.0f, 1.0f);
+        float3 G = W * conv - b.sample(b.transform(p)).rgb;
         float3 u0 = tvU(z0);
         float3 uxp = tvU(z.sample(z.transform(p + float2(1.0f, 0.0f))).rgb), uyp = tvU(z.sample(z.transform(p + float2(0.0f, 1.0f))).rgb);
         float3 uxm = tvU(z.sample(z.transform(p - float2(1.0f, 0.0f))).rgb), uym = tvU(z.sample(z.transform(p - float2(0.0f, 1.0f))).rgb);
@@ -671,27 +674,22 @@ namespace coreimage {
         return float4(min(frame.rgb, limit), 1.0f);
     }
 
-    // Mapa de movimento das junções de fotos iguais (NOITE, FOTO 3×, SUPER ZOOM/RES): compara as versões já borradas (o
-    // borrão mata o serrilhado e o ruído fino) e só recusa onde a diferença passa de p.x (4× o ruído medido na diferença
-    // borrada) + p.y × a luz + o que um encaixe de ±p.z px explica numa borda que as DUAS têm (gradiente menor das duas:
-    // borda que só uma tem é movimento) + piso p.w. 1 = igual; cai a 0 entre 1× e 2× o limite.
-    // Antes: tolerância k·√L + 0,004, ~25× o ruído que sobra no escuro (pessoa e carro translúcidos), e referência acima
-    // de 0,85 aceitava tudo (céu claro, carro branco). Agora só não compara onde as duas estouraram
-    float4 revelaMotion(sampler a, sampler r, float4 p, destination dest) {
+    // Mapa de movimento das junções de fotos iguais (NOITE, FOTO 3×, SUPER ZOOM/RES), nas versões já borradas (o borrão
+    // mata o serrilhado e o ruído fino): z = |ΔY| / √var, var = p.x·Y + p.y (ruído ajustado na própria rajada) +
+    // (p.z·|∇Y_ref|)² (o que um erro de encaixe de p.z px explica numa borda: sem isso a borda serrilhada parada virava
+    // movimento — estudo em Python no SUPER ZOOM: 0,15 px de erro derrubava +6,36 para +2,34 dB). g = 1 até z = lim.x e
+    // 0 a partir de lim.y. Sem exceção para o estourado: antes a referência acima de 0,85 aceitava tudo (céu claro, carro
+    // branco passando) e a pessoa escura na frente do céu saía translúcida
+    float4 revelaMotion(sampler f, sampler r, float4 p, float2 lim, destination dest) {
         float2 q = dest.coord();
-        float3 ca = max(a.sample(a.transform(q)).rgb, float3(0.0f));
-        float3 cr = max(r.sample(r.transform(q)).rgb, float3(0.0f));
-        float pa = max(ca.r, max(ca.g, ca.b)), pr = max(cr.r, max(cr.g, cr.b));
-        if (min(pa, pr) > 0.85f) return float4(1.0f, 1.0f, 1.0f, 1.0f);
-        float la = dot(ca, revela::kLuma), lr = dot(cr, revela::kLuma);
+        float yf = dot(max(f.sample(f.transform(q)).rgb, float3(0.0f)), revela::kLuma);
+        float yr = dot(max(r.sample(r.transform(q)).rgb, float3(0.0f)), revela::kLuma);
         float2 ex = float2(1.0f, 0.0f), ey = float2(0.0f, 1.0f);
-        float gax = dot(a.sample(a.transform(q + ex)).rgb - a.sample(a.transform(q - ex)).rgb, revela::kLuma);
-        float gay = dot(a.sample(a.transform(q + ey)).rgb - a.sample(a.transform(q - ey)).rgb, revela::kLuma);
-        float grx = dot(r.sample(r.transform(q + ex)).rgb - r.sample(r.transform(q - ex)).rgb, revela::kLuma);
-        float gry = dot(r.sample(r.transform(q + ey)).rgb - r.sample(r.transform(q - ey)).rgb, revela::kLuma);
-        float grad = 0.5f * min(sqrt(gax * gax + gay * gay), sqrt(grx * grx + gry * gry));
-        float t = p.x + p.y * lr + p.z * grad + p.w;
-        float g = 1.0f - smoothstep(t, 2.0f * t, abs(la - lr));
+        float gx = 0.5f * dot(r.sample(r.transform(q + ex)).rgb - r.sample(r.transform(q - ex)).rgb, revela::kLuma);
+        float gy = 0.5f * dot(r.sample(r.transform(q + ey)).rgb - r.sample(r.transform(q - ey)).rgb, revela::kLuma);
+        float var = p.x * yr + p.y + p.z * p.z * (gx * gx + gy * gy);
+        float z = abs(yf - yr) / sqrt(max(var, 1e-12f));
+        float g = clamp((lim.y - z) / max(lim.y - lim.x, 1e-3f), 0.0f, 1.0f);
         return float4(g, g, g, 1.0f);
     }
 
@@ -705,45 +703,60 @@ namespace coreimage {
         return float4((s.rgb - low.rgb) * g.r, 1.0f);
     }
 
-    // a − b sem negativo (pixel quente tirado de cada foto)
-    float4 revelaSubPos(sample_t a, sample_t b) {
-        return float4(max(a.rgb - b.rgb, float3(0.0f)), 1.0f);
+    // Mediana de 9 (rede de trocas de Paeth/Devillard, cada cor à parte)
+    inline float3 median9(float3 p0, float3 p1, float3 p2, float3 p3, float3 p4, float3 p5, float3 p6, float3 p7, float3 p8) {
+#define REVELA_CX(a, b) { float3 t_ = min(a, b); b = max(a, b); a = t_; }
+        REVELA_CX(p1, p2); REVELA_CX(p4, p5); REVELA_CX(p7, p8);
+        REVELA_CX(p0, p1); REVELA_CX(p3, p4); REVELA_CX(p6, p7);
+        REVELA_CX(p1, p2); REVELA_CX(p4, p5); REVELA_CX(p7, p8);
+        REVELA_CX(p0, p3); REVELA_CX(p5, p8); REVELA_CX(p4, p7);
+        REVELA_CX(p3, p6); REVELA_CX(p1, p4); REVELA_CX(p2, p5);
+        REVELA_CX(p4, p7); REVELA_CX(p4, p2); REVELA_CX(p6, p4);
+        REVELA_CX(p4, p2);
+#undef REVELA_CX
+        return p4;
+    }
+    inline float3 median3x3(sampler s, float2 p) {
+        return median9(s.sample(s.transform(p + float2(-1.0f, -1.0f))).rgb, s.sample(s.transform(p + float2(0.0f, -1.0f))).rgb,
+                       s.sample(s.transform(p + float2(1.0f, -1.0f))).rgb, s.sample(s.transform(p + float2(-1.0f, 0.0f))).rgb,
+                       s.sample(s.transform(p)).rgb, s.sample(s.transform(p + float2(1.0f, 0.0f))).rgb,
+                       s.sample(s.transform(p + float2(-1.0f, 1.0f))).rgb, s.sample(s.transform(p + float2(0.0f, 1.0f))).rgb,
+                       s.sample(s.transform(p + float2(1.0f, 1.0f))).rgb);
     }
 
-    // ESTRELAS: pixel quente (fixo no sensor). No mínimo das fotos sem alinhar as estrelas somem (o céu anda) e o quente
-    // fica. É quente onde um canal passa de 1,8× todos os 8 vizinhos + thr (uma luz de verdade se espalha pela lente)
-    inline bool hotCenter(sampler mn, float2 q, float thr) {
-        float3 c = mn.sample(mn.transform(q)).rgb;
-        float3 mx = float3(0.0f);
-        for (int j = -1; j <= 1; j++) {
-            for (int i = -1; i <= 1; i++) {
-                if (i == 0 && j == 0) continue;
-                mx = max(mx, mn.sample(mn.transform(q + float2(float(i), float(j)))).rgb);
-            }
-        }
-        float3 lim = 1.8f * mx + thr;
-        return c.r > lim.r || c.g > lim.g || c.b > lim.b;
-    }
-    // O excesso do quente sobre o fundo em volta (anel a 2 px), na pegada 3×3 dele (o demosaico espalha o quente para os
-    // vizinhos); 0 no resto. Esse excesso está em todas as fotos e é tirado de cada uma antes de alinhar
-    float4 revelaHotMap(sampler mn, float thr, destination dest) {
+    // ESTRELAS: pixel quente (fixo no sensor). No mínimo das fotos sem alinhar as estrelas somem (o céu anda ≥ 3 px) e o
+    // quente fica. Quente = passa da mediana 3×3 em volta por mais de 6σ do ruído (noise) e por mais de metade do nível
+    // dela (uma luz de verdade se espalha pela lente e os vizinhos sobem junto)
+    float4 revelaHotMask(sampler mn, float noise, destination dest) {
         float2 p = dest.coord();
-        bool nearHot = false;
-        for (int j = -1; j <= 1; j++) {
-            for (int i = -1; i <= 1; i++) {
-                if (hotCenter(mn, p + float2(float(i), float(j)), thr)) nearHot = true;
-            }
-        }
-        if (!nearHot) return float4(0.0f, 0.0f, 0.0f, 1.0f);
-        float3 bg = float3(1e9f);
-        for (int j = -2; j <= 2; j += 2) {
-            for (int i = -2; i <= 2; i += 2) {
-                if (i == 0 && j == 0) continue;
-                bg = min(bg, mn.sample(mn.transform(p + float2(float(i), float(j)))).rgb);
-            }
-        }
-        float3 c = mn.sample(mn.transform(p)).rgb;
-        return float4(max(c - max(bg, float3(0.0f)), float3(0.0f)), 1.0f);
+        float c = dot(max(mn.sample(mn.transform(p)).rgb, float3(0.0f)), revela::kLuma);
+        float med = dot(max(median3x3(mn, p), float3(0.0f)), revela::kLuma);
+        float excess = c - med;
+        float hot = (excess > 6.0f * noise && excess > 0.5f * med) ? 1.0f : 0.0f;
+        return float4(hot, hot, hot, 1.0f);
+    }
+
+    // O quente vira a mediana 3×3 (cada cor) em cada foto, antes de alinhar
+    float4 revelaHotFix(sampler f, sampler mask, destination dest) {
+        float2 p = dest.coord();
+        if (mask.sample(mask.transform(p)).r < 0.5f) return float4(f.sample(f.transform(p)).rgb, 1.0f);
+        return float4(median3x3(f, p), 1.0f);
+    }
+
+    // ESTRELAS: corte do que passou (avião, satélite) depois de alinhar: acima de média + κ·max(desvio entre as fotos,
+    // ruído), em vez de 1,6 × a média (que com as fotos desalinhadas apagava ~55% das estrelas, que andam)
+    float4 revelaSigmaClip(sample_t x, sample_t mean, sample_t meanSq, float kappa, float noise) {
+        float3 m = mean.rgb;
+        float3 s = sqrt(max(meanSq.rgb - m * m, float3(0.0f)));
+        float3 limit = m + kappa * max(s, float3(noise));
+        return float4(min(x.rgb, limit), 1.0f);
+    }
+
+    // NOITE: onde poucas fotos entraram (quem se mexeu ficou só com a referência) a limpeza é mais forte, pelo que falta de
+    // 1/√N_eff: 0 onde entraram todas, perto de 1 onde só a referência
+    float4 revelaCoverageMask(sample_t coverage, float frames) {
+        float m = clamp(1.0f - sqrt(max(coverage.r, 0.0f) / max(frames, 1.0f)), 0.0f, 1.0f);
+        return float4(m, m, m, 1.0f);
     }
 
     // ESTRELAS: qual jeito explica melhor esta foto aqui, parado (chão) ou girando com o céu. > 0 = céu

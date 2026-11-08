@@ -663,11 +663,13 @@ enum Developer {
     static let motionKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaMotion", fromMetalLibraryData: $0) }
     static let mulGKernel = kernel("revelaMulG")
     static let highGKernel = kernel("revelaHighG")
-    static let subPosKernel = kernel("revelaSubPos")
-    static let hotMapKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaHotMap", fromMetalLibraryData: $0) }
+    static let hotMaskKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaHotMask", fromMetalLibraryData: $0) }
+    static let hotFixKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaHotFix", fromMetalLibraryData: $0) }
     static let skyEvidenceKernel = kernel("revelaSkyEvidence")
     static let skyMaskKernel = kernel("revelaSkyMask")
-    static let starClipKernel = kernel("revelaClip")
+    static let sigmaClipKernel = kernel("revelaSigmaClip")
+    static let squareKernel = kernel("revelaMultiply")
+    static let coverageMaskKernel = kernel("revelaCoverageMask")
     static let focusWeightKernel = kernel("revelaFocusWeight")
     static let focusSharpnessKernel = kernel("revelaSharpness")
     static let fusionDivideAddKernel = kernel("revelaDivideAdd")
@@ -1218,7 +1220,10 @@ enum Developer {
         switch kind {
         case .average where robust:
             let nightMode = night
-            merged = robustMerge(count: frames.count, extent: extent, frame: aligned).map { night in
+            // Onde quem se mexeu ficou só com a referência: limpeza mais forte por 1/√N_eff (sem isso a pessoa andando saía
+            // com o ruído de uma foto só no meio da noite lisa)
+            var coverage: CIImage?
+            merged = robustMerge(count: frames.count, extent: extent, frame: aligned, coverage: { coverage = $0 }).map { night in
                 let exif = reference.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
                 let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 800
                 var out = materialize(night, extent: extent)
@@ -1240,7 +1245,8 @@ enum Developer {
                     let gain = Float(min(measured, asked * 1.5))
                     guard gain >= 2 else {
                         dlog(String(format: "Noite: a foto curta saiu sem ser curta (%.1f×): fica de fora", measured))
-                        return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady)
+                        return coverageDenoise(nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady),
+                                               coverage: coverage, frames: frames.count)
                     }
                     let warp = alignment(of: scaled(smallShort, by: gain), to: smallReference, scale: CGFloat(alignScale),
                                          fullExtent: extent, homography: false)
@@ -1248,7 +1254,8 @@ enum Developer {
                     out = recoverKernel.apply(extent: extent, arguments: [out, alignedShort, gain]) ?? out
                     dlog(String(format: "Noite: luzes fortes recuperadas da foto curta (%.0f×)", gain))
                 }
-                return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady)
+                return coverageDenoise(nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady),
+                                       coverage: coverage, frames: frames.count)
             }
         case .average:
             var mean = average(count: frames.count, extent: extent, frame: aligned)
@@ -1587,12 +1594,14 @@ enum Developer {
 
     /// NOITE sem fantasma: o primeiro quadro é a referência; os outros só somam onde batem com ela.
     /// Onde algo se mexeu (pessoa, carro, folha), fica a referência (com um pouco mais de ruído ali, sem duplicar).
-    private static func robustMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+    /// `coverage`: recebe N_eff (quantas fotos entraram em cada lugar, pelos mapas de movimento), quando a junção o tem
+    private static func robustMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?,
+                                    coverage: ((CIImage) -> Void)? = nil) -> CIImage? {
         guard let reference = frame(0) else { return nil }
         guard let robustColorKernel, let robustWeightKernel, let divideKernel, count > 1 else {
             return average(count: count, extent: extent, frame: frame)
         }
-        if let merged = twoBandMerge(count: count, extent: extent, reference: reference, frame: frame) { return merged }
+        if let merged = twoBandMerge(count: count, extent: extent, reference: reference, frame: frame, coverage: coverage) { return merged }
         let refBlur = materialize(blurred(reference, extent: extent), extent: extent)
         var sumColor = materialize(reference, extent: extent)
         var sumWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: extent)
@@ -1615,7 +1624,8 @@ enum Developer {
     /// Junção em duas faixas, como o HDR+ do Google: parte lisa e detalhe somados à parte, cada foto só onde o mapa de
     /// movimento diz que ela bate com a referência. Onde alguém se mexeu fica a referência (o liso dela, borrado 6 px, quase
     /// não tem ruído; antes o liso de todas entrava e a pessoa saía translúcida).
-    private static func twoBandMerge(count: Int, extent: CGRect, reference: CIImage, frame: (Int) -> CIImage?) -> CIImage? {
+    private static func twoBandMerge(count: Int, extent: CGRect, reference: CIImage, frame: (Int) -> CIImage?,
+                                     coverage: ((CIImage) -> Void)? = nil) -> CIImage? {
         guard let mulGKernel, let highGKernel, motionKernel != nil, let subKernel, let divideAddKernel else { return nil }
         // Memória: só o detalhe fica no tamanho cheio. A parte lisa (borrão de 6 px) vive em ¼ do tamanho e a
         // comparação de movimento (borrão de 2,5 px) em ½ — já são borradas, não perdem nada. Antes eram ~15 imagens
@@ -1644,6 +1654,8 @@ enum Developer {
         var lowWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: small(quarter))
         var highSum = materialize(refHigh, extent: extent)
         var highWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: small(half))
+        // Ruído da rajada pela luz (var = a·Y + b) em cada faixa, ajustado na 1ª foto que chegar
+        var highModel: (a: Float, b: Float)?, lowModel: (a: Float, b: Float)?
         for i in 1..<count {
             autoreleasepool {
                 guard let opened = frame(i) else { return }
@@ -1658,16 +1670,25 @@ enum Developer {
                     imageLow = scaled(imageLow, by: gain)
                     imageBlur = scaled(imageBlur, by: gain)
                 }
-                // Movimento por um mapa: diferença das versões borradas (½) acima de 4× o ruído medido nelas + 3% da luz + o
-                // que ±1 px de encaixe explica nas bordas. Antes a tolerância k·√L + 0,004 era ~25× o ruído que sobra no escuro:
-                // pessoa e carro saíam translúcidos (o "carro" do laboratório vazava 19% na parte lisa, que aceitava quase tudo)
-                let noise = diffNoise(imageBlur, refBlur, extent: small(half))
-                guard let motion = motionWeights(imageBlur, refBlur, extent: small(half), noise: noise, edge: 0.5) else { return }
+                // Movimento por um mapa nas versões borradas: z = |ΔY| / √(ruído da rajada pela luz + (0,1 px de erro de encaixe
+                // × gradiente)²); detalhe (½) recusado de z 3 a 5, parte lisa (¼) com folga maior, de 4 a 6; recusa alargada 2 px e
+                // alisada 1 px. Antes a tolerância k·√L + 0,004 era ~25× o ruído que sobra no escuro e a parte lisa entrava sempre:
+                // pessoa e carro saíam translúcidos (o "carro" do laboratório vazava 19% no liso)
+                if highModel == nil {
+                    let sigma = diffNoise(imageBlur, refBlur, extent: small(half))
+                    highModel = noiseModel(imageBlur, refBlur, extent: small(half)) ?? (a: 0, b: max(1e-8, sigma * sigma))
+                }
+                if lowModel == nil {
+                    let sigma = diffNoise(imageLow, refLow, extent: small(quarter))
+                    lowModel = noiseModel(imageLow, refLow, extent: small(quarter)) ?? (a: 0, b: max(1e-8, sigma * sigma))
+                }
+                guard let highModel, let lowModel,
+                      let motion = motionWeights(imageBlur, refBlur, extent: small(half), model: highModel, misregistration: 0.1,
+                                                 lo: 3, hi: 5, erosion: 2, smooth: 1),
+                      let motionLow = motionWeights(imageLow, refLow, extent: small(quarter), model: lowModel, misregistration: 0.1,
+                                                    lo: 4, hi: 6, erosion: 2, smooth: 1) else { return }
                 let g = materialize(motion, extent: small(half))
-                // Parte lisa: a mesma recusa (o liso de uma foto parada é igual ao da referência, aceitar não ganhava nada lá
-                // e o de quem se mexeu vazava), alargada 3 px de ½ (o borrão de 6 px espalha quem se mexe) e levada a ¼
-                let gLow = materialize(g.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 3])
-                    .transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5)).cropped(to: small(quarter)), extent: small(quarter))
+                let gLow = materialize(motionLow, extent: small(quarter))
                 guard let lc = mulGKernel.apply(extent: small(quarter), arguments: [imageLow, gLow]),
                       let hc = highGKernel.apply(extent: extent, arguments: [image, grow(imageLow, by: quarter), grow(g, by: half)]) else { return }
                 lowSum = materialize(add(lowSum, lc), extent: small(quarter))
@@ -1679,6 +1700,8 @@ enum Developer {
         dlog("Noite: junção em duas faixas (cada foto só onde o mapa de movimento diz que nada se mexeu) · memória livre \(Diagnostics.freeMemory)")
         guard let merged = divideAddKernel.apply(extent: extent, arguments: [grow(lowSum, by: quarter), grow(lowWeight, by: quarter),
                                                                            highSum, grow(highWeight, by: half)]) else { return nil }
+        // Σ g do detalhe (com a referência) = quantas fotos entraram em cada lugar
+        coverage?(grow(highWeight, by: half))
         return materialize(merged, extent: extent)
     }
 
