@@ -675,10 +675,30 @@ extension Developer {
                 beta = (tk - 1) / tn
                 tk = tn
             }
-            return x
+            return floorNearClip(x, start: ready.x0, extent: e)
         }
         dlog("Super resolução: \(used) fotos resolvidas juntas (MAP, \(iterations) passos)")
         return (solve, used)
+    }
+
+    /// Borda do estourado (janela, céu branco): as amostras cortadas em 1 não batem com o modelo linear do MAP, que cavava
+    /// um anel escuro em volta (laboratório P11: −1,1 dB com 14% estourado; na simulação, o chão local +2,1 dB no corte e
+    /// +2 dB na janela sem corte; nas 3 cenas do test6, 0 a −0,09 dB). Só perto do platô estourado: o resto fica igual
+    private static func floorNearClip(_ x: CIImage, start x0: CIImage, extent e: CGRect) -> CIImage {
+        guard let clipMaskKernel, let floorNearClipKernel else { return x }
+        let maxImage = x0.applyingFilter("CIAreaMaximum", parameters: [kCIInputExtentKey: CIVector(cgRect: e)])
+        var pixel = [Float](repeating: 0, count: 4)
+        let at = maxImage.extent
+        gpu.render(maxImage, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: at.minX, y: at.minY, width: 1, height: 1),
+                   format: .RGBAf, colorSpace: nil)
+        let top = max(pixel[0], max(pixel[1], pixel[2]))
+        guard top.isFinite, top > 0,
+              let mask = clipMaskKernel.apply(extent: e, roiCallback: { _, r in r.insetBy(dx: -1, dy: -1) },
+                                              arguments: [x0.clampedToExtent(), top * 0.97]) else { return x }
+        let near = mask.clampedToExtent().applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 8]).cropped(to: e)
+        let low = x0.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 2]).cropped(to: e)
+        guard let floored = floorNearClipKernel.apply(extent: e, arguments: [x, low, near]) else { return x }
+        return materializedOrNil(floored, extent: e) ?? x
     }
 
     // MARK: - Ferramentas das junções

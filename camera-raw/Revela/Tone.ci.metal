@@ -465,6 +465,31 @@ namespace coreimage {
     // que ficaram contam; a que caiu fora da foto também sai do modelo)
     // tab: por célula da grade (célula = j·2 + i), R/G/B = os pedaços (i, j), (i + 1, j), (i, j + 1); corner: R = (i + 1, j + 1).
     // Duas leituras por toque em vez de quatro (era o passo mais pesado do SUPER ZOOM)
+    // SUPER ZOOM perto do estourado: as amostras cortadas não seguem o modelo linear e o MAP cava um anel escuro na
+    // borda da janela/céu estourado. Máscara do platô estourado (o mais claro e liso: variação 3×3 < 0,2%)
+    float4 revelaClipMask(sampler s, float t, destination dest) {
+        float2 p = dest.coord();
+        float3 c = s.sample(s.transform(p)).rgb;
+        float m = max(c.r, max(c.g, c.b));
+        if (m < t) return float4(0.0f, 0.0f, 0.0f, 1.0f);
+        float lo = m, hi = m;
+        for (int j = -1; j <= 1; j++) {
+            for (int i = -1; i <= 1; i++) {
+                float3 q = s.sample(s.transform(p + float2(float(i), float(j)))).rgb;
+                float v = max(q.r, max(q.g, q.b));
+                lo = min(lo, v);
+                hi = max(hi, v);
+            }
+        }
+        float flat = (hi - lo) < 0.002f * m ? 1.0f : 0.0f;
+        return float4(flat, flat, flat, 1.0f);
+    }
+
+    // ... e ali o resultado não desce abaixo do mínimo 5×5 da retroprojeção (lisa, sem anel). Fora dali nada muda
+    float4 revelaFloorNearClip(sample_t x, sample_t lo, sample_t near) {
+        return float4(mix(x.rgb, max(x.rgb, lo.rgb), clamp(near.r, 0.0f, 1.0f)), 1.0f);
+    }
+
     float4 revelaMAPStep(sampler z, sampler b, sampler tab, sampler corner, sampler ws, float4 grid, float3 lam, float3 tau,
                          float delta, float w, destination dest) {
         float2 p = dest.coord();

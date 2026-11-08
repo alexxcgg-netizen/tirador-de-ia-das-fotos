@@ -663,6 +663,9 @@ enum Developer {
     // SUPER ZOOM 3×: retroprojeção com o modelo do sensor e o passo do MAP
     static let splatHKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplatH", fromMetalLibraryData: $0) }
     static let mapStepKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaMAPStep", fromMetalLibraryData: $0) }
+    // SUPER ZOOM: sem anel escuro na borda do estourado
+    static let clipMaskKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaClipMask", fromMetalLibraryData: $0) }
+    static let floorNearClipKernel = kernel("revelaFloorNearClip")
     // Junções de várias fotos (SuperResolution.swift): peso da SUPER RES sem abrir a foto, Σh do MAP, mapa de movimento,
     // pixel quente e máscara do céu das ESTRELAS, peso do FOCO EMPILHADO, rastros da LONGA
     static let splatWeightKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplatWeight", fromMetalLibraryData: $0) }
