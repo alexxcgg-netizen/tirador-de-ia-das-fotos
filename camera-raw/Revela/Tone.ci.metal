@@ -463,7 +463,9 @@ namespace coreimage {
     }
     // ws: as somas de peso (r = Σh·g dentro da foto, b = Σh de todas); o dado vira W·AᵀA·z − b, W = r/b (só as amostras
     // que ficaram contam; a que caiu fora da foto também sai do modelo)
-    float4 revelaMAPStep(sampler z, sampler b, sampler tab, sampler ws, float4 grid, float3 lam, float3 tau,
+    // tab: por célula da grade (célula = j·2 + i), R/G/B = os pedaços (i, j), (i + 1, j), (i, j + 1); corner: R = (i + 1, j + 1).
+    // Duas leituras por toque em vez de quatro (era o passo mais pesado do SUPER ZOOM)
+    float4 revelaMAPStep(sampler z, sampler b, sampler tab, sampler corner, sampler ws, float4 grid, float3 lam, float3 tau,
                          float delta, float w, destination dest) {
         float2 p = dest.coord();
         float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
@@ -472,17 +474,15 @@ namespace coreimage {
         float fu = u - float(i0), fv = v - float(j0);
         float w00 = (1.0f - fu) * (1.0f - fv), w10 = fu * (1.0f - fv), w01 = (1.0f - fu) * fv, w11 = fu * fv;
         int ax = int(floor(p.x)) & 1, ay = int(floor(p.y)) & 1;
-        // Tabela: x = fase x·7 + dx, y = (pedaço·2 + fase y)·7 + dy; pedaço = j·3 + i (o vizinho em x soma 14 linhas, em y 42)
+        // Tabela: x = fase x·7 + dx, y = (célula·2 + fase y)·7 + dy
         float tx = float(ax * 7) + 3.5f;
-        float y00 = float((j0 * 3 + i0) * 14 + ay * 7) + 3.5f;
+        float y00 = float((j0 * 2 + i0) * 14 + ay * 7) + 3.5f;
+        float3 mix3 = float3(w00, w10, w01);
         float3 conv = float3(0.0f);
         for (int dy = -3; dy <= 3; dy++) {
             for (int dx = -3; dx <= 3; dx++) {
-                float kx = tx + float(dx), ky = y00 + float(dy);
-                float kv = w00 * tab.sample(tab.transform(float2(kx, ky))).r
-                         + w10 * tab.sample(tab.transform(float2(kx, ky + 14.0f))).r
-                         + w01 * tab.sample(tab.transform(float2(kx, ky + 42.0f))).r
-                         + w11 * tab.sample(tab.transform(float2(kx, ky + 56.0f))).r;
+                float2 kp = float2(tx + float(dx), y00 + float(dy));
+                float kv = dot(mix3, tab.sample(tab.transform(kp)).rgb) + w11 * corner.sample(corner.transform(kp)).r;
                 conv += kv * z.sample(z.transform(p + float2(float(dx), float(dy)))).rgb;
             }
         }
@@ -833,14 +833,6 @@ namespace coreimage {
         float r = clamp((max(s.r, 0.0f) + eps) / (max(best.r, 0.0f) + eps), 0.0f, 2.0f);
         float w = pow(r, power);
         return float4(w, w, w, 1.0f);
-    }
-
-    // LONGA rastros: a luz que passou acima da média até aqui (e do ruído: t.x + t.y × média), o maior de todos. No fim:
-    // média + isso. O máximo puro das fotos com ruído subia o preto ~3σ (céu cinza)
-    float4 revelaTrail(sample_t previous, sample_t frame, sample_t total, float invCount, float2 t) {
-        float3 mean = max(total.rgb, float3(0.0f)) * invCount;
-        float3 e = max(frame.rgb - mean - (t.x + t.y * mean), float3(0.0f));
-        return float4(max(previous.rgb, e), 1.0f);
     }
 }
 }

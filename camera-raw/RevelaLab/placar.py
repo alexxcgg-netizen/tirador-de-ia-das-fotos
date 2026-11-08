@@ -405,8 +405,12 @@ def _media(root, log):
     check(area, metas[0][0], f"{r:.2f}", r >= 0.9, metas[0][1])
     tex = inner(np.abs(_gauss(ideal, 2) - _gauss(ideal, 8)))
     flat = tex <= np.percentile(tex, 30)
-    nz = lambda x: float(np.std(inner(x - ideal)[flat]))
-    q = nz(noisy) / max(nz(one), 1e-6)
+    # Ruído = a saída com ruído menos a MESMA saída sem ruído (as 8 fotos limpas pela MÉDIA), e a foto única menos a ideal.
+    # Antes era (MÉDIA com ruído − ideal): entrava a diferença entre a média de 8 fotos encaixadas com fração de pixel e uma
+    # foto só (o serrilhado de cada uma), que não é ruído e não cai com mais fotos (nas saídas da rodada dd633dc: ruído puro
+    # 0,32, mas a medida antiga dava 0,6 mesmo com a revelação igual). A nitidez continua medida à parte, contra a ideal
+    nz = lambda x, clean: float(np.std(inner(x - clean)[flat]))
+    q = nz(noisy, sharp) / max(nz(one, ideal), 1e-6)
     check(area, metas[1][0], f"{q:.2f}", q <= 0.42, metas[1][1])
 
 
@@ -494,20 +498,40 @@ def _noite_ruim(root, log):
 
 
 def _ghost(obj, clean, spots):
-    """Fantasma: |com vulto − sem vulto| em cada lugar do vulto (com folga), menos o fundo. O lugar mais forte é o da
-    foto de referência (vulto inteiro); o maior dos outros, dividido por ele, é o fantasma."""
+    """Fantasma: em cada lugar do vulto, a média COM SINAL de (com vulto − sem vulto) no retângulo dele, menos a mediana de um
+    anel em volta (fora de todos os lugares). O lugar mais forte é o da foto de referência (vulto inteiro); o maior dos outros,
+    dividido por ele, é o fantasma.
+    Antes era a média de |com − sem| na janela menos a mediana da foto inteira: (1) o ruído que muda entre as duas rodadas
+    (a foto recusada onde o vulto passou, a referência escolhida pela nitidez) entrava como "fantasma" sem ter sinal nenhum
+    (SUPER ZOOM: 10,9% com a média com sinal em 0,1–0,9%); (2) a revelação que clareia a foto inteira e em volta do vulto da
+    referência (luz média e tons locais da NOITE no céu: +0,027 no céu todo) também, porque a mediana da foto inteira cai no
+    chão. Um fantasma de verdade é uma cópia do vulto no lugar dele: muda a média do retângulo e não o anel. Conferido nas
+    saídas da rodada dd633dc com um fantasma de 10% colado de propósito: a medida nova dá 9,5–11,7% nos 9 casos (a antiga,
+    5,9–15,9%)."""
     o, c = _same(obj, clean)
-    d = np.abs(o - c)
+    d = o - c
     h, w = d.shape
-    mask = np.zeros(d.shape, bool)
-    vals = []
+    windows = []
     for x, y, sw, sh in spots:
         x0, x1 = max(0, int((x - 0.02) * w)), min(w, int(round((x + sw + 0.02) * w)))
         y0, y1 = max(0, int((y - 0.03) * h)), min(h, int(round((y + sh + 0.03) * h)))
-        mask[y0:y1, x0:x1] = True
-        vals.append(float(d[y0:y1, x0:x1].mean()) if y1 > y0 and x1 > x0 else 0.0)
-    base = float(np.median(d[~mask])) if (~mask).any() else 0.0
-    vals = [max(v - base, 0.0) for v in vals]
+        windows.append((x0, x1, y0, y1))
+    taken = np.zeros(d.shape, bool)
+    for x0, x1, y0, y1 in windows:
+        taken[y0:y1, x0:x1] = True
+    vals = []
+    for (x, y, sw, sh), (x0, x1, y0, y1) in zip(spots, windows):
+        # O vulto sem 2 px de borda (o encaixe de fração de pixel mexe na borda) e o anel: a janela alargada 3% × 4%
+        ix0, ix1 = int(x * w) + 2, int(round((x + sw) * w)) - 2
+        iy0, iy1 = int(y * h) + 2, int(round((y + sh) * h)) - 2
+        rx0, rx1 = max(0, x0 - int(0.03 * w)), min(w, x1 + int(0.03 * w))
+        ry0, ry1 = max(0, y0 - int(0.04 * h)), min(h, y1 + int(0.04 * h))
+        ring = np.zeros(d.shape, bool)
+        ring[ry0:ry1, rx0:rx1] = True
+        ring &= ~taken
+        base = float(np.median(d[ring])) if ring.any() else 0.0
+        inner = d[iy0:iy1, ix0:ix1]
+        vals.append(abs(float(inner.mean()) - base) if inner.size else 0.0)
     ref = int(np.argmax(vals))
     ghost = max([v for i, v in enumerate(vals) if i != ref] or [0.0])
     return ghost / max(vals[ref], 1e-9), vals[ref]

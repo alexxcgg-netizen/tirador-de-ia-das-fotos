@@ -14,7 +14,7 @@ final class LongExposure {
     /// Soma em 32 bits: em meia precisão a soma passava de 128 em ~300 quadros e cada quadro novo era arredondado
     /// (o que somava menos de 0,06 sumia). Dois que se alternam, para não ler e escrever no mesmo
     private var sumBuffers: [CVPixelBuffer] = []
-    /// Rastros: o maior excesso sobre a média de cada ponto (máximo não acumula erro: meia precisão basta)
+    /// Rastros: o máximo de cada ponto (máximo não acumula erro: meia precisão basta)
     private var trailBuffers: [CVPixelBuffer] = []
     private var current = 0
     private var sum: CIImage?
@@ -30,8 +30,8 @@ final class LongExposure {
     private var referenceSmall: CIImage?
     private var maxShift = CGSize.zero
     private let alignScale: CGFloat = 0.2
-    /// Rastros: o que passa da média menos que isso é ruído (medido no 1º quadro), não luz que passou
-    private var trailThreshold: Float = 0.01
+    /// Rastros: quanto o máximo de N quadros de puro ruído sobe acima da média (medido no 1º quadro): sai do máximo no fim
+    private var trailThreshold: Float = 0.002
 
     /// Conta em 32 bits: o contexto de sempre trabalha em meia precisão e arredondaria a soma de novo no caminho
     private static let floatContext = CIContext(options: [
@@ -82,19 +82,21 @@ final class LongExposure {
         var shifted = frame.transformed(by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY))
         if handheld { shifted = align(shifted) }
         if count == 0 {
-            // Ruído do quadro (detalhe de 1 px, mediana): o limite dos rastros fica em 3× ele
-            trailThreshold = max(0.004, 3 * Developer.measuredNoise(shifted.cropped(to: bounds)))
+            // Ruído do quadro (detalhe de 1 px, mediana; ~0,87σ no ruído branco): o máximo de 60 quadros de ruído sobe ~2,3σ.
+            // 2,3× o medido (= 2σ) tira quase tudo disso. Antes: o maior excesso sobre a média corrente, menos max(0,004;
+            // 3× o ruído) + 5% da média — na rampa clara do laboratório isso passava de 1 código (o pontilhado de 1 código
+            // nunca chegava ao limite: erro 1,03 códigos, meta 0,5). Estudo em Python nos quadros do teste: rampa 0,35
+            // código, escuro sobe 0,64σ (máximo puro: 2,33σ). Piso 0,0005: quadro de vídeo quase sem ruído medido
+            trailThreshold = max(0.0005, 2.3 * Developer.measuredNoise(shifted.cropped(to: bounds)))
         }
-        // Rastros: antes da soma nova, o excesso deste quadro sobre a média até aqui (o máximo puro das fotos com ruído
-        // subia o preto ~3σ e o céu ficava cinza). No fim: média + o maior excesso
-        if style == .trails, let sum, let trailKernel = Developer.trailKernel, count > 0 {
-            let previous = trail ?? CIImage(color: CIColor(red: 0, green: 0, blue: 0)).cropped(to: bounds)
-            if let nextTrail = trailKernel.apply(extent: bounds, arguments: [previous, shifted, sum, Float(1) / Float(count),
-                                                                         CIVector(x: CGFloat(trailThreshold), y: 0.05)]) {
-                let trailTarget = trailBuffers[current]
-                renderContext.render(nextTrail, to: trailTarget, bounds: bounds, colorSpace: Developer.linearP3)
-                trail = CIImage(cvPixelBuffer: trailTarget, options: [.colorSpace: Developer.linearP3])
-            }
+        // Rastros: o máximo de cada ponto (no fim: o maior entre a média e máximo − limite). A luz que passou fica inteira
+        // (menos o limite, que é do tamanho do ruído); onde nada passou fica a média, sem o preto subir
+        if style == .trails {
+            let nextTrail = trail.map { shifted.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: $0]) }
+                ?? shifted
+            let trailTarget = trailBuffers[current]
+            renderContext.render(nextTrail.cropped(to: bounds), to: trailTarget, bounds: bounds, colorSpace: Developer.linearP3)
+            trail = CIImage(cvPixelBuffer: trailTarget, options: [.colorSpace: Developer.linearP3])
         }
         let next: CIImage
         if let sum {
@@ -186,9 +188,14 @@ final class LongExposure {
                 "inputBVector": CIVector(x: 0, y: 0, z: k, w: 0),
                 "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
             ])
-            // Rastros: média (preto no lugar) + o que passou de luz acima dela
+            // Rastros: o maior entre a média (preto no lugar onde nada passou) e o máximo menos o quanto o ruído sozinho subiria
             if style == .trails, let trail {
-                result = Developer.sumKernel?.apply(extent: mean.extent, arguments: [mean, trail]) ?? mean
+                let t = CGFloat(trailThreshold)
+                let lowered = trail.applyingFilter("CIColorMatrix", parameters: [
+                    "inputBiasVector": CIVector(x: -t, y: -t, z: -t, w: 0),
+                ])
+                result = lowered.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: mean])
+                    .cropped(to: mean.extent)
             } else {
                 result = mean
             }

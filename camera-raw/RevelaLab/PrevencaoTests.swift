@@ -156,6 +156,23 @@ final class PrevencaoTests: XCTestCase {
         return low.cropped(to: le)
     }
 
+    /// A versão em ⅛ que o app pede da 1ª foto para os tons locais (o mesmo encolhimento do `feed`)
+    private func preview(of img: CIImage) -> CIImage {
+        let scale: Float = 0.125
+        return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
+            .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),
+                                height: (img.extent.height * CGFloat(scale)).rounded(.down)))
+    }
+
+    /// Régua das junções que saem como a FOTO (MÉDIA, FOCO EMPILHADO): `multiFrameEnhanced` (tons locais, cor pela luz, realce
+    /// de detalhe ×1,08) com a mesma pré-visualização da 1ª foto e o mesmo número de fotos que a junção diz, e `finish`.
+    /// Antes a régua passava só pelo `finish`: a junção saía +0,02 mais clara e com o detalhe 1,08× (a MÉDIA ficava com
+    /// "ruído" 1,36× o de uma foto e o FOCO com "halo" 1,07 só pela diferença de revelação; no estudo em Python o FOCO dá 0,07)
+    private func asMerged(_ scene: CIImage, frames: Int, preview first: CIImage, props: [String: Any], options o: DevelopOptions) -> CIImage? {
+        image(Developer.finish(Developer.multiFrameEnhanced(scene.settingProperties(props), frames: frames, preview: preview(of: first)),
+                               options: o))
+    }
+
     /// Desloca uma imagem por fração de pixel (bicúbico do app; sem ele, a transformação comum).
     private func shifted(_ image: CIImage, dx: CGFloat, dy: CGFloat) -> CIImage {
         let e = image.extent
@@ -809,9 +826,10 @@ final class PrevencaoTests: XCTestCase {
             noisy.append(Developer.materialize(withNoise, extent: le).settingProperties(props))
         }
         let o = options()
-        // Régua e foto única pela mesma revelação que a MÉDIA usa no fim (finish)
-        if let ideal = image(Developer.finish(clean[0], options: o)) { savePNG(ideal, "media/ideal") }
-        if let one = image(Developer.finish(noisy[0], options: o)) { savePNG(one, "media/uma") }
+        // Régua e foto única pela mesma revelação que a MÉDIA usa no fim (multiFrameEnhanced com o ISO de 8 fotos + finish; a
+        // foto única com o ISO dela), as duas com a mesma pré-visualização: a diferença entre elas é só o ruído
+        if let ideal = asMerged(clean[0], frames: shifts.count, preview: clean[0], props: props, options: o) { savePNG(ideal, "media/ideal") }
+        if let one = asMerged(noisy[0], frames: 1, preview: clean[0], props: props, options: o) { savePNG(one, "media/uma") }
         for (frames, label) in [(clean, "nitidez"), (noisy, "ruido")] {
             let captured = feed(frames)
             let t0 = CFAbsoluteTimeGetCurrent()
@@ -841,8 +859,9 @@ final class PrevencaoTests: XCTestCase {
         let b = Developer.materialize(blurred.cropped(to: leftHalf).composited(over: sharp).cropped(to: e), extent: e).settingProperties(props)
         let brighter = Developer.materialize(Developer.scaled(b, by: Float(pow(2.0, 0.3))).cropped(to: e), extent: e).settingProperties(props)
         let o = options()
-        if let ideal = image(Developer.finish(sharp.settingProperties(props), options: o)) { savePNG(ideal, "foco/nitida") }
-        if let soft = image(Developer.finish(blurred.settingProperties(props), options: o)) { savePNG(soft, "foco/borrada") }
+        // Réguas pela mesma revelação do FOCO (multiFrameEnhanced de 1 foto com a pré-visualização da 1ª foto + finish)
+        if let ideal = asMerged(sharp, frames: 1, preview: a, props: props, options: o) { savePNG(ideal, "foco/nitida") }
+        if let soft = asMerged(blurred, frames: 1, preview: a, props: props, options: o) { savePNG(soft, "foco/borrada") }
         // Quatro fotos, a 1ª toda fora de foco (σ 3) e as outras cada vez mais nítidas numa faixa (terços): em cada terço uma
         // nítida, uma vizinha com σ 1 e outra com σ 2. O peso antigo (relativo a 2× a média da 1ª, preso em 6,7) prendia a
         // nítida e a de σ 1 juntas (estudo em Python: 0,83 no terço do meio); o placar quer ≥ 0,85 da nítida em cada terço

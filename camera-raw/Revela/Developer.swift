@@ -683,7 +683,6 @@ enum Developer {
     static let focusWeightKernel = kernel("revelaFocusWeight")
     static let focusSharpnessKernel = kernel("revelaSharpness")
     static let fusionDivideAddKernel = kernel("revelaDivideAdd")
-    static let trailKernel = kernel("revelaTrail")
     // SUPER ZOOM: desconvolução regularizada (Huber-TV)
     static let tvFluxKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaTVFlux", fromMetalLibraryData: $0) }
     static let tvStepKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaTVStep", fromMetalLibraryData: $0) }
@@ -1255,10 +1254,14 @@ enum Developer {
         let alignScale: Float = 0.25
         guard let smallReference = image(from: frames[0], scale: alignScale) else { return nil }
         var warps: [((CIImage) -> CIImage)?] = [{ $0 }]
+        // Quanto o encaixe com fração de pixel amolece a MÉDIA (0 = todas em pixel inteiro, ~1 = todas em meio pixel)
+        var softening: Float = 0
         // MÉDIA (e ESTRELAS sem a junção própria) também: só deslocamento com encaixe bilinear amolecia a foto, e o grosso
         // no centro não achava nada num céu de estrelas. Foto que não encaixou em nada fica de fora (nil)
         if robust || kind == .average {
-            warps = fineWarps(frames, reference: reference)
+            var report: ((Float) -> Void)?
+            if !robust { report = { softening = $0 } }
+            warps = fineWarps(frames, reference: reference, softening: report)
         } else {
             for frame in frames.dropFirst() {
                 guard let small = image(from: frame, scale: alignScale) else { warps.append({ $0 }); continue }
@@ -1334,6 +1337,13 @@ enum Developer {
                     aligned(i).flatMap { clipKernel.apply(extent: extent, arguments: [$0, first, Float(0.6)]) }
                 })
                 dlog("Estrelas: pontos que apareceram em poucos quadros removidos")
+            }
+            // MÉDIA: o encaixe Catmull-Rom de cada foto com fração de pixel amolece a média (estudo em Python nas 8 fotos do P05:
+            // nitidez 0,73 da foto ideal; com o deslocamento ideal pela FFT, 1,02 — o que falta é o encaixe, não o serrilhado).
+            // Devolve isso com uma nitidez fina (σ 1 px) na medida das frações: 0,5 × o amolecimento (0,73 no P05 → 0,37:
+            // nitidez 0,95, ruído 0,36 da foto única). No tripé (pixel inteiro) quase nada
+            if !removeOutliers, let soft = mean {
+                mean = interpolationRestored(soft, amount: min(0.5, 0.5 * softening), extent: extent)
             }
             // MÉDIA: revelada como a FOTO (tons locais, cor pela luz, nitidez), com o ISO de uma foto com a luz de todas
             // (céu de estrelas não: o ajuste de luz da FOTO clarearia o céu inteiro)
@@ -1825,6 +1835,19 @@ enum Developer {
             "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 1),
         ])
         return materialize(mean, extent: extent)
+    }
+
+    /// Nitidez fina (imagem + amount × (imagem − borrão de σ 1 px)), sem valor negativo: devolve o que o encaixe com fração de
+    /// pixel tirou da MÉDIA. Abaixo de 0,02 não mexe
+    private static func interpolationRestored(_ image: CIImage, amount: Float, extent: CGRect) -> CIImage {
+        guard amount > 0.02, let subKernel, let maxKernel else { return image }
+        let soft = image.clampedToExtent().applyingGaussianBlur(sigma: 1).cropped(to: extent)
+        guard let detail = subKernel.apply(extent: extent, arguments: [image, soft]) else { return image }
+        let sharpened = add(image, scaled(detail, by: amount).cropped(to: extent)).cropped(to: extent)
+        let black = CIImage(color: CIColor(red: 0, green: 0, blue: 0)).cropped(to: extent)
+        guard let positive = maxKernel.apply(extent: extent, arguments: [sharpened, black]) else { return image }
+        dlog(String(format: "MÉDIA: nitidez %.2f devolve o que o encaixe com fração de pixel amoleceu", amount))
+        return materialize(positive, extent: extent)
     }
 
     private static func sharpness(_ image: CIImage) -> CIImage? {

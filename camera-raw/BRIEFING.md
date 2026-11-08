@@ -75,7 +75,7 @@ Nenhuma IPA sai sem estes passos, nesta ordem (a revisão profunda achou bugs qu
 
 Regra para teste novo no laboratório: a régua (ideal / foto única / cena limpa) passa pelo **mesmo caminho de
 revelação** que o app usa no modo (mesmo ruído, mesmos deslocamentos, mesmo ISO no EXIF); cada meta tem que falhar
-com o defeito e passar sem ele; cenas pequenas (o laboratório inteiro cabe em ~1 h, timeout 90 min). Workflow novo de
+com o defeito e passar sem ele; cenas pequenas (o laboratório inteiro hoje leva ~100 min, timeout 130 min). Workflow novo de
 Mac em todo push, nunca (cota 10×): o `revela-placar.yml` (Linux) só confere que o placar compila e não quebra sem saídas.
 
 **Que teste cobre cada modo** (LabTests = `LabTests.swift`, P = `PrevencaoTests.swift`):
@@ -191,3 +191,20 @@ Mac em todo push, nunca (cota 10×): o `revela-placar.yml` (Linux) só confere q
   - Revisão de código: fundo do RETRATO sem preto, memória (pools por passo, FOTO 3× no disco, SUPER ZOOM pelo livre),
     FISTA 1/L, HDR com calibração 0,9, travas de concorrência, FOTO 3× sequencial com luz/cor/foco travados.
   - → 0.29.
+- **Rodada dd633dc (Prevenção nova): 94/106.** As 54 metas antigas OK; o que faltava e o porquê (correções aguardando o
+  laboratório):
+  - ESTRELAS: o céu nunca foi alinhado. A regra de "pedaço liso" (variância > 0,0004 na raiz do brilho) recusava o céu de
+    estrelas inteiro; só os 4 pedaços do chão parado passavam ("andou 0,0 px") → rastro (pico 0,66) e o caminho dos quentes
+    nem rodava (1,12). Agora, só nas ESTRELAS: liso = abaixo de 3× o ruído do pedaço, mediana 3×3 (o quente puxava o encaixe
+    para o zero) e giro pelo consenso dos pedaços (Python nos quadros do teste: 16/16, erro ≤ 0,29 px nos cantos).
+  - MÉDIA e FOCO: a régua passava só pelo `finish` e a junção pelo `multiFrameEnhanced` (+0,02 de luz, detalhe 1,08×): o
+    "ruído" 1,36 da MÉDIA e o "halo" 1,07 do FOCO eram diferença de revelação (FOCO em Python: halo 0,07). Régua consertada; o
+    ruído da MÉDIA medido contra a mesma MÉDIA sem ruído (puro: 0,32; o antigo somava o serrilhado de uma foto só). Com a régua
+    justa a MÉDIA tem 0,73 da nitidez (encaixe Catmull-Rom com fração de pixel; pela FFT seria 1,02) → nitidez fina pela fração
+    (Python: 0,95 e ruído 0,36). FOCO: brilho de cada foto igualado ao da 1ª (degrau +0,3 EV: 0,026 → 0).
+  - LONGA rastros: máximo − 2,3× o ruído medido, nunca abaixo da média (Python: rampa 0,35 código, escuro 0,64σ).
+  - FANTASMA: a medida (|com − sem| menos a mediana da foto) contava ruído e o clarão da revelação como fantasma; agora média
+    com sinal menos um anel em volta (fantasma de 10% colado nas saídas: 9,5–11,7%; sem colar: 0,3–2,3% em tudo).
+  - Velocidade: o "mapas de movimento … 14–63 s" do registro era o tempo desde o começo; os mapas levam 1–6 s. O alinhamento é
+    ~70% do SUPER ZOOM no laboratório (leituras da GPU): os pedaços da referência são lidos uma vez (3 leituras por foto em vez
+    de 5–7) e a tabela do MAP vai em 2 leituras por toque (antes 4). O laboratório inteiro já leva ~100 min (timeout 130).
