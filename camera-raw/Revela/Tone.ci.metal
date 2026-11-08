@@ -239,6 +239,14 @@ namespace coreimage {
         return float4(sum.rgb / max(weight.r, 1e-4f), 1.0f);
     }
 
+    // Divide, mas onde quase nada de peso chegou (fundo longe de qualquer pixel "fundo de verdade") usa a reserva:
+    // dividir quase zero por quase zero dava preto ou ruído
+    float4 revelaDivideFallback(sample_t sum, sample_t weight, sample_t fallback) {
+        float w = weight.r;
+        float3 c = sum.rgb / max(w, 1e-4f);
+        return float4(mix(max(fallback.rgb, float3(0.0f)), c, smoothstep(0.02f, 0.2f, w)), 1.0f);
+    }
+
     // Panorama: projeta a foto num cilindro (girar a câmera vira só deslizar para o lado).
     float2 revelaCylinder(float f, float2 center, destination dest) {
         float2 d = dest.coord() - center;

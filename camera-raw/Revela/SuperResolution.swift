@@ -4,6 +4,7 @@ import ImageIO
 import UIKit
 import UniformTypeIdentifiers
 import Vision
+import os
 
 /// Super resolução de verdade: várias fotos de 48 MP com o tremido natural da mão. Cada uma vê o detalhe
 /// num lugar um pouquinho diferente; alinhadas com precisão de fração de pixel, ampliadas e somadas,
@@ -71,9 +72,9 @@ extension Developer {
             chosen = ranked.enumerated().filter { $0.offset < max(2, keep) || allScores[$0.element] >= 0.85 * best }.map(\.element).sorted()
             dlog("Super resolução: usando as \(chosen.count) mais nítidas de \(allFrames.count)")
         }
-        let frames = chosen.map { allFrames[$0] }
-        let scores = chosen.map { allScores[$0] }
-        let refIndex = scores.indices.max { scores[$0] < scores[$1] } ?? 0
+        var frames = chosen.map { allFrames[$0] }
+        var scores = chosen.map { allScores[$0] }
+        var refIndex = scores.indices.max { scores[$0] < scores[$1] } ?? 0
         guard let reference = image(from: frames[refIndex]) else { return nil }
         let full = reference.extent
         var cropOptions = options
@@ -83,6 +84,23 @@ extension Developer {
         let outExtent = CGRect(x: 0, y: 0, width: (region.width * factor).rounded(.down), height: (region.height * factor).rounded(.down))
         dlog(String(format: "Super resolução: %d fotos (referência %d) · recorte %.0f×%.0f · ampliação %.2f× → %.0f×%.0f",
                     frames.count, refIndex + 1, region.width, region.height, factor, outExtent.width, outExtent.height))
+
+        // Memória: cada foto guardada pronta custa recorte × 8 bytes, e a referência ampliada e as faixas da desconvolução
+        // somam por cima. Com 24 fotos a 8× chegava a ~1,4 GB (o iPhone mata o app). Fica com as mais nítidas que cabem
+        let padFull = 0.1 * max(full.width, full.height)
+        let sourceFit = region.insetBy(dx: -padFull, dy: -padFull).intersection(full).integral
+        let perFrame = Double(sourceFit.width * sourceFit.height) * 8
+        let outBytes = Double(outExtent.width * outExtent.height) * 8
+        let available = Double(os_proc_available_memory())
+        let budget = min(700_000_000, (available > 0 ? available : 1_400_000_000) * 0.45) - outBytes * 4
+        let fit = max(min(frames.count, max(2, keep ?? 2)), Int(max(0, budget) / max(perFrame, 1)))
+        if frames.count > fit {
+            let ranked = frames.indices.sorted { scores[$0] > scores[$1] }.prefix(fit).sorted()
+            frames = ranked.map { frames[$0] }
+            scores = ranked.map { scores[$0] }
+            refIndex = scores.indices.max { scores[$0] < scores[$1] } ?? 0
+            dlog("Super resolução: memória livre \(Int(available / 1e6)) MB → ficam \(fit) fotos")
+        }
 
         // 1) Alinhamento: grosso pelo Vision, fino (fração de pixel) em 9 pedaços, e o que sobra em cada região
         let centers = tileCenters(in: region)
@@ -751,24 +769,30 @@ extension Developer {
             return y.cropped(to: big)
         }
         let lam = CIVector(x: CGFloat(luma), y: CGFloat(chroma), z: CGFloat(chroma))
-        let tau = Float(1.8 / (1 + 8 * Double(max(luma, chroma)) / Double(delta)))
+        // FISTA só converge com passo ≤ 1/L (L = 1 do borrão normalizado + 8λ/δ da Huber-TV); 1,8/L estourava com λ pequeno
+        let tau = Float(1 / (1 + 8 * Double(max(luma, chroma)) / Double(delta)))
         let roi: CIKernelROICallback = { _, r in r.insetBy(dx: -2, dy: -2) }
         var x = observed, z = observed
         var tk: Float = 1
         for _ in 0..<iterations {
-            guard let residual = subKernel.apply(extent: big, arguments: [psf(z), observed]),
-                  let fx = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), delta, Float(0)]),
-                  let fy = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), delta, Float(1)]) else { return nil }
-            let dataGrad = materialize(psf(materialize(residual, extent: big)), extent: big)
-            guard let next = tvStepKernel.apply(extent: big, roiCallback: roi, arguments: [
-                z.clampedToExtent(), materialize(fx, extent: big).clampedToExtent(), materialize(fy, extent: big).clampedToExtent(),
-                dataGrad.clampedToExtent(), lam, tau]) else { return nil }
-            let xn = materialize(next, extent: big)
-            let tn = (1 + (1 + 4 * tk * tk).squareRoot()) / 2
-            guard let zn = momentumKernel.apply(extent: big, arguments: [xn, x, (tk - 1) / tn]) else { return nil }
-            z = materialize(zn, extent: big)
-            x = xn
-            tk = tn
+            // Cada passo num pool próprio: os buffers de render de um passo não se acumulam até o fim da faixa
+            let ok: Bool = autoreleasepool {
+                guard let residual = subKernel.apply(extent: big, arguments: [psf(z), observed]),
+                      let fx = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), delta, Float(0)]),
+                      let fy = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), delta, Float(1)]) else { return false }
+                let dataGrad = materialize(psf(materialize(residual, extent: big)), extent: big)
+                guard let next = tvStepKernel.apply(extent: big, roiCallback: roi, arguments: [
+                    z.clampedToExtent(), materialize(fx, extent: big).clampedToExtent(), materialize(fy, extent: big).clampedToExtent(),
+                    dataGrad.clampedToExtent(), lam, tau]) else { return false }
+                let xn = materialize(next, extent: big)
+                let tn = (1 + (1 + 4 * tk * tk).squareRoot()) / 2
+                guard let zn = momentumKernel.apply(extent: big, arguments: [xn, x, (tk - 1) / tn]) else { return false }
+                z = materialize(zn, extent: big)
+                x = xn
+                tk = tn
+                return true
+            }
+            guard ok else { return nil }
         }
         return x.cropped(to: rect)
     }
@@ -807,9 +831,13 @@ extension Developer {
         var estimate = observed
         func blur(_ x: CIImage) -> CIImage { x.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: big) }
         for _ in 0..<iterations {
-            guard let ratio = ratioKernel.apply(extent: big, arguments: [observed, blur(estimate)]),
-                  let next = multiplyKernel.apply(extent: big, arguments: [estimate, blur(ratio)]) else { break }
-            estimate = materialize(next, extent: big)
+            let ok: Bool = autoreleasepool {
+                guard let ratio = ratioKernel.apply(extent: big, arguments: [observed, blur(estimate)]),
+                      let next = multiplyKernel.apply(extent: big, arguments: [estimate, blur(ratio)]) else { return false }
+                estimate = materialize(next, extent: big)
+                return true
+            }
+            guard ok else { break }
         }
         if t.chromaClean > 0, let clean = tvRestore(estimate, strip: rect, extent: big, box: false, sigma: 0, luma: 0,
                                                      chroma: t.chromaClean, iterations: 20) {

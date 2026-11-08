@@ -250,8 +250,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var portraitPreviewOn = false
     private let motion = CMMotionManager()
     private var recentRotation: [Double] = []
-    /// O que o app sabia na hora do disparo (vai no info.json do laboratório)
-    private var shotContext: [String: Any] = [:]
+    // O que o app sabia na hora do disparo (vai no info.json do laboratório). Escrito na fila principal e lido na fila
+    // da câmera: com trava (um Dictionary lido no meio da escrita derruba o app)
+    private let shotLock = NSLock()
+    private var storedShotContext: [String: Any] = [:]
+    private var shotContext: [String: Any] {
+        get { shotLock.lock(); defer { shotLock.unlock() }; return storedShotContext }
+        set { shotLock.lock(); storedShotContext = newValue; shotLock.unlock() }
+    }
     /// Cópia do giroscópio para a fila da câmera (o original é da fila principal)
     private let rotationLock = NSLock()
     private var sharedRotation: [Double] = []
@@ -1969,7 +1975,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // ruído já é mínimo e a foto única de 48 MP tem mais detalhe que a junção em 12 MP: fica a de sempre
         if mode == .photo, photoFusion, lens != .macro, lens != .front, manualExposure ? selectedISO >= 320 : readoutISO >= 320 {
             let raw = rawMode
-            sessionQueue.async { self.captureFusion(raw: raw, options: options, started: t0) }
+            let locks = (exposure: !manualExposure, whiteBalance: !manualWB, focus: !manualFocus)
+            // Botão parado até as fotos chegarem (cada toque segurava mais 8 RAW na memória enquanto a junção corria)
+            stackProgress = "FOTO 3×"
+            // Se a câmera parar no meio (ligação, Central de Controle) a resposta pode nunca vir: solta o botão
+            DispatchQueue.main.asyncAfter(deadline: .now() + 8) { if self.stackProgress == "FOTO 3×" { self.stackProgress = nil } }
+            sessionQueue.async { self.captureFusion(raw: raw, options: options, locks: locks, started: t0) }
             return
         }
         guard mode.frameCount > 1 || mode == .night else {
@@ -2929,7 +2940,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// FOTO 3×. RAW puro: 8 fotos num disparo só (bracketing do sensor, ~0,25 s; o iPhone 17 Pro Max faz até 8).
     /// ProRAW (cada uma já vem com a junção da Apple): 4 seguidas, e a nossa junção por cima.
-    private func captureFusion(raw: RawMode, options: DevelopOptions, started t0: CFAbsoluteTime) {
+    private func captureFusion(raw: RawMode, options: DevelopOptions, locks: (exposure: Bool, whiteBalance: Bool, focus: Bool),
+                               started t0: CFAbsoluteTime) {
         let bayer = photoOutput.availableRawPhotoPixelFormatTypes.first { AVCapturePhotoOutput.isBayerRAWPixelFormat($0) }
         let count = min(8, photoOutput.maxBracketedCapturePhotoCount)
         if raw == .bayer, !photoOutput.isAppleProRAWEnabled, let bayer, count >= 4 {
@@ -2943,20 +2955,52 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             dlog("FOTO 3×: \(count) RAW puro num disparo")
             let id = settings.uniqueID
             let delegate = BracketCaptureDelegate { result in
-                self.sessionQueue.async { self.inFlight[id] = nil }
-                dlog("FOTO 3×: fotos recebidas: \(Diagnostics.ms(since: t0))")
-                self.process(result, mode: .photo, options: options, started: t0)
+                self.sessionQueue.async {
+                    self.inFlight[id] = nil
+                    switch result {
+                    case .success(let frames):
+                        dlog("FOTO 3×: fotos recebidas: \(Diagnostics.ms(since: t0))")
+                        // Para o disco (mapeadas): na fila de revelação elas não ocupam a memória do app
+                        let stored = frames.map(self.spilled)
+                        DispatchQueue.main.async { self.stackProgress = nil }
+                        self.process(.success(stored), mode: .photo, options: options, started: t0)
+                    case .failure(let error):
+                        // Recusa que só chega depois (no fim da captura): tenta as fotos seguidas em vez de perder a foto
+                        dlog("FOTO 3×: o bracketing falhou (\(error.localizedDescription)); fotos seguidas")
+                        self.fusionSequence(raw: raw, options: options, locks: locks, started: t0)
+                    }
+                }
             }
             inFlight[id] = delegate
             if attempt("Tirar a FOTO 3×", { photoOutput.capturePhoto(with: settings, delegate: delegate) }) { return }
             inFlight[id] = nil
             dlog("FOTO 3×: o iPhone recusou o bracketing; fotos seguidas")
         }
+        fusionSequence(raw: raw, options: options, locks: locks, started: t0)
+    }
+
+    /// FOTO 3× em fotos seguidas: luz, cor e foco travados na primeira (sem isso cada foto saía com um brilho e uma cor,
+    /// e a junção robusta tratava a diferença como movimento e quase não tirava ruído)
+    private func fusionSequence(raw: RawMode, options: DevelopOptions, locks: (exposure: Bool, whiteBalance: Bool, focus: Bool),
+                                started t0: CFAbsoluteTime) {
         let n = 4
         dlog("FOTO 3×: \(n) fotos seguidas (\(raw.rawValue))")
         DispatchQueue.main.async { self.stackProgress = "0/\(n)" }
+        if let d = device, (try? d.lockForConfiguration()) != nil {
+            _ = attempt("Travar a FOTO 3×") {
+                if locks.exposure, d.isExposureModeSupported(.locked) { d.exposureMode = .locked }
+                if locks.whiteBalance, d.isWhiteBalanceModeSupported(.locked) { d.whiteBalanceMode = .locked }
+                if locks.focus, d.isFocusModeSupported(.locked) { d.focusMode = .locked }
+            }
+            d.unlockForConfiguration()
+        }
         shootSequence(index: 0, count: n, positions: nil, frames: []) { result in
-            DispatchQueue.main.async { self.stackProgress = nil }
+            DispatchQueue.main.async {
+                self.stackProgress = nil
+                self.updateFocus()
+                self.updateExposure()
+                self.updateWhiteBalance()
+            }
             dlog("FOTO 3×: fotos recebidas: \(Diagnostics.ms(since: t0))")
             self.process(result, mode: .photo, options: options, started: t0)
         }

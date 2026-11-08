@@ -640,6 +640,7 @@ enum Developer {
     private static let subKernel = kernel("revelaSub")
     private static let divideAddKernel = kernel("revelaDivideAdd")
     private static let bokehWeightKernel = kernel("revelaBokehWeight")
+    private static let divideFallbackKernel = kernel("revelaDivideFallback")
     private static let bokehSourceKernel = kernel("revelaBokehSource")
     private static let shrinkKernel = kernel("revelaShrink")
     private static let recoverKernel = kernel("revelaRecover")
@@ -740,7 +741,10 @@ enum Developer {
 
     /// Valor de cena em que o vídeo do iPhone já chega estourado (0,97 na tela), para a zebra.
     /// Luz da cena que a curva filmica leva ao valor `x` na tela (antes da abertura do branco)
-    static func sceneValue(forDisplay x: Float) -> Float {
+    static func sceneValue(forDisplay display: Float) -> Float {
+        // A curva só chega a 2,51/2,43 ≈ 1,03 no infinito: acima de ~0,985 a conta inverte de sinal (a calibração com
+        // branco 0,9 pedia 1,033 e o HDR saía preto)
+        let x = min(max(display, 0), 0.985)
         let a: Float = 2.51, b: Float = 0.03, c: Float = 2.43, d: Float = 0.59, e: Float = 0.14
         let A = x * c - a, B = x * d - b, C = x * e
         return (-B - (B * B - 4 * A * C).squareRoot()) / (2 * A) / tuning.filmicGain
@@ -1304,7 +1308,7 @@ enum Developer {
         // Junção de várias fotos: devolve o detalhe que o movimento da mão tirou de cada uma (com uma foto só, desfazer
         // borrão realçaria o ruído)
         if frameCount >= 4, nightTuning.deblurIterations > 0, nightTuning.deblurSigma > 0.05,
-           let sharp = tvRestoreStrips(out, extent: extent, box: false, sigma: nightTuning.deblurSigma,
+           let sharp = tvRestoreStrips(materialize(out, extent: extent.integral), extent: extent, box: false, sigma: nightTuning.deblurSigma,
                                        luma: 1e-4, chroma: 1e-3, iterations: nightTuning.deblurIterations) {
             out = sharp
             dlog(String(format: "Noite: borrão de %.2f px desfeito (%d passos)", nightTuning.deblurSigma, nightTuning.deblurIterations))
@@ -1979,11 +1983,14 @@ enum Developer {
                     .transformed(by: CGAffineTransform(scaleX: 1 / k, y: 1 / k))
             }
             let layer: CIImage
-            if let weighted, let divideKernel, let bokehWeightKernel,
+            if let weighted, let divideFallbackKernel, let bokehWeightKernel,
                let weight = bokehWeightKernel.apply(extent: extent, arguments: [map, threshold]) {
                 // Cor (já × peso) e peso borrados em separado e divididos: não depende de o desfoque respeitar a
-                // transparência (laboratório: o fundo ainda vazava 0,45–0,86 do sujeito com a divisão pelo alfa)
-                layer = divideKernel.apply(extent: extent, arguments: [disc(weighted).cropped(to: extent), disc(weight).cropped(to: extent)]) ?? scene
+                // transparência (laboratório: o fundo ainda vazava 0,45–0,86 do sujeito com a divisão pelo alfa).
+                // Onde o peso borrado é quase zero (faixa do mapa sem fundo de verdade por perto) fica a camada anterior
+                layer = divideFallbackKernel.apply(extent: extent, arguments: [
+                    disc(weighted).cropped(to: extent), disc(weight).cropped(to: extent), result,
+                ]) ?? result
             } else {
                 layer = disc(scene).settingAlphaOne(in: extent).cropped(to: extent)
             }
