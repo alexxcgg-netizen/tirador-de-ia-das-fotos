@@ -326,7 +326,8 @@ final class LabTests: XCTestCase {
                 // Estudo em Python nas 24 fotos do teste: núcleo 0,6 + RL 0,9 px (0,45 × 2) com 10 passos = +4,90 dB
                 // A junção de antes (regressão de núcleo + RL × 3), para comparar com o MAP
                 ("rl_antigo", .init(map: false)),
-                ("map_lambda_metade", .init(mapLumaLambda: 1e-4, mapChromaLambda: 3e-4)),
+                ("map_sem_fantasma", .init(mapGhostK: 1000)),
+                ("map_fantasma_0_2", .init(mapGhostK: 0.2)),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning

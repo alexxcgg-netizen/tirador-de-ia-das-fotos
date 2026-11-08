@@ -47,6 +47,10 @@ extension Developer {
         var mapLumaLambda: Float = 2e-4
         var mapChromaLambda: Float = 6e-4
         var mapDelta: Float = 0.003
+        /// Anti-fantasma do MAP (troca a amostra pela referência, em vez de só tirar peso): bem mais tolerante que o da
+        /// junção antiga, só para movimento de verdade. Com 0,1 o serrilhado das bordas virava "fantasma" e a referência
+        /// ampliada (borrada) entrava no lugar (laboratório ea18328: XS +1,93, iPhone 12 +3,65)
+        var mapGhostK: Float = 0.5
     }
     static var srTuning = SRTuning()
 
@@ -347,7 +351,7 @@ extension Developer {
                 CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y),
                 CIVector(x: r[6].x, y: r[6].y, z: r[7].x, w: r[7].y),
                 CIVector(x: r[8].x, y: r[8].y),
-                grid, t.ghostK,
+                grid, t.mapGhostK,
             ]
             guard let color = splatHKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(0)]),
                   let weight = splatHKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(1)]) else { continue }
