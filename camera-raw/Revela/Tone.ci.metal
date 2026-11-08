@@ -355,6 +355,92 @@ namespace coreimage {
                       u.x * 0.57735027f - u.y * 0.70710678f + u.z * 0.40824829f,
                       u.x * 0.57735027f - 2.0f * u.z * 0.40824829f);
     }
+    // SUPER ZOOM 3× (MAP com as 24 fotos de uma vez). Cada pixel de cada foto = média de 2×2 pixels grandes da cena,
+    // já borrada pela lente/interpolação (Mitchell): h(d) = ½[m(d + ½) + m(d − ½)], alcance 2,5 px grandes
+    inline float srMitchell(float x) {
+        x = fabs(x);
+        if (x < 1.0f) return (7.0f * x * x * x - 12.0f * x * x + 16.0f / 3.0f) / 6.0f;
+        if (x < 2.0f) return ((-7.0f / 3.0f) * x * x * x + 12.0f * x * x - 20.0f * x + 32.0f / 3.0f) / 6.0f;
+        return 0.0f;
+    }
+    inline float srH(float d) { return 0.5f * (srMitchell(d + 0.5f) + srMitchell(d - 0.5f)); }
+
+    // Retroprojeção de uma foto (Aᵀy): cada pixel grande soma h·valor dos pixels da foto em volta. Onde a foto não bate
+    // com a referência (algo se mexeu) o valor dela vira a referência (o modelo conta com todas as amostras presentes).
+    // mode 0 = Σ h·y, 1 = Σ h (para a estimativa inicial)
+    float4 revelaSplatH(sampler src, sampler ref, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
+                        float4 d, float2 e, float4 grid, float k, float mode, destination dest) {
+        float2 o[9] = { a.xy, a.zw, b.xy, b.zw, c.xy, c.zw, d.xy, d.zw, e };
+        float2 p = dest.coord();
+        float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
+        float v = clamp((p.y - grid.y) / grid.w, 0.0f, 2.0f);
+        int i0 = min(int(u), 1), j0 = min(int(v), 1);
+        float fu = u - float(i0), fv = v - float(j0);
+        float2 residual = mix(mix(o[j0 * 3 + i0], o[j0 * 3 + i0 + 1], fu), mix(o[(j0 + 1) * 3 + i0], o[(j0 + 1) * 3 + i0 + 1], fu), fv);
+        float2 r = (p - residual) / m.x + m.yz;
+        float2 q = float2(dot(inv0, float3(r, 1.0f)), dot(inv1, float3(r, 1.0f)));
+        float2 base = floor(q - 0.5f);
+        float3 acc = float3(0.0f);
+        float wsum = 0.0f;
+        for (int j = -1; j <= 2; j++) {
+            for (int i = -1; i <= 2; i++) {
+                float2 cpos = base + float2(float(i), float(j)) + 0.5f;
+                float2 dd = (cpos - q) * m.x;
+                float w = srH(dd.x) * srH(dd.y);
+                acc += max(src.sample(src.transform(cpos)).rgb, float3(0.0f)) * w;
+                wsum += w;
+            }
+        }
+        float3 refc = max(ref.sample(ref.transform(p)).rgb, float3(0.0f));
+        float g = revela::ghost(acc / max(wsum, 1e-5f), refc, k);
+        return mode < 0.5f ? float4(acc * g + refc * (wsum * (1.0f - g)), 1.0f) : float4(float3(wsum), 1.0f);
+    }
+
+    // Um passo de FISTA do MAP: z = x + β(x − x_anterior) calculado na hora; dado = AᵀA·z − b, com AᵀA exato para
+    // deslocamento (núcleo 7×7 por fase do pixel e por pedaço da grade 3×3, na tabela); Huber-TV conjunta brilho/cor
+    // (as bordas da cor seguem as do brilho). Passo diagonal 1/(‖AᵀA‖ + 8λ/δ) em cada canal: converge
+    inline float3 srZ(sampler x, sampler xp, float2 q, float beta) {
+        float3 a = x.sample(x.transform(q)).rgb;
+        return a + beta * (a - xp.sample(xp.transform(q)).rgb);
+    }
+    struct SRFlux { float3 x; float3 y; };
+    inline SRFlux srFlux(float3 u0, float3 ux, float3 uy, float w, float delta) {
+        float3 gx = ux - u0, gy = uy - u0;
+        float n = sqrt(gx.x * gx.x + gy.x * gy.x + w * (gx.y * gx.y + gy.y * gy.y + gx.z * gx.z + gy.z * gy.z));
+        float s = 1.0f / max(n, delta);
+        SRFlux f;
+        f.x = gx * s;
+        f.y = gy * s;
+        return f;
+    }
+    float4 revelaMAPStep(sampler x, sampler xp, sampler b, sampler tab, float4 grid, float beta, float3 lam, float3 tau,
+                         float delta, float w, destination dest) {
+        float2 p = dest.coord();
+        int ti = int(clamp(round((p.x - grid.x) / grid.z), 0.0f, 2.0f));
+        int tj = int(clamp(round((p.y - grid.y) / grid.w), 0.0f, 2.0f));
+        int ax = int(floor(p.x)) & 1, ay = int(floor(p.y)) & 1;
+        float2 t0 = float2(float(ax * 7) + 0.5f, float((tj * 3 + ti) * 14 + ay * 7) + 0.5f);
+        float3 conv = float3(0.0f);
+        for (int dy = -3; dy <= 3; dy++) {
+            for (int dx = -3; dx <= 3; dx++) {
+                float kv = tab.sample(tab.transform(t0 + float2(float(dx + 3), float(dy + 3)))).r;
+                conv += kv * srZ(x, xp, p + float2(float(dx), float(dy)), beta);
+            }
+        }
+        float3 z0 = srZ(x, xp, p, beta);
+        float3 G = conv - b.sample(b.transform(p)).rgb;
+        float3 u0 = tvU(z0);
+        float3 uxp = tvU(srZ(x, xp, p + float2(1.0f, 0.0f), beta)), uyp = tvU(srZ(x, xp, p + float2(0.0f, 1.0f), beta));
+        float3 uxm = tvU(srZ(x, xp, p - float2(1.0f, 0.0f), beta)), uym = tvU(srZ(x, xp, p - float2(0.0f, 1.0f), beta));
+        float3 uxmyp = tvU(srZ(x, xp, p + float2(-1.0f, 1.0f), beta)), uymxp = tvU(srZ(x, xp, p + float2(1.0f, -1.0f), beta));
+        SRFlux f0 = srFlux(u0, uxp, uyp, w, delta);
+        SRFlux fl = srFlux(uxm, u0, uxmyp, w, delta);
+        SRFlux fd = srFlux(uym, uymxp, u0, w, delta);
+        float3 dv = (f0.x - fl.x) + (f0.y - fd.y);
+        float3 stepU = tau * (tvU(G) - lam * dv);
+        return float4(max(z0 - tvUt(stepU), float3(0.0f)), 1.0f);
+    }
+
     // Fluxo de Huber: ∇u / max(|∇u|, δ), um eixo por vez (axis 0 = x, 1 = y), diferença para a frente
     float4 revelaTVFlux(sampler x, float delta, float axis, destination dest) {
         float2 p = dest.coord();

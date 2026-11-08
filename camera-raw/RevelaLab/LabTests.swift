@@ -324,8 +324,9 @@ final class LabTests: XCTestCase {
             // Variações da calibragem (para escolher a melhor no placar)
             let variants: [(String, Developer.SRTuning)] = [
                 // Estudo em Python nas 24 fotos do teste: núcleo 0,6 + RL 0,9 px (0,45 × 2) com 10 passos = +4,90 dB
-                ("limpeza_cor", .init(chromaClean: 2e-3)),
-                ("tv_desconv", .init(splatSigma: 0.6, tv: true)),
+                // A junção de antes (regressão de núcleo + RL × 3), para comparar com o MAP
+                ("rl_antigo", .init(map: false)),
+                ("map_lambda_metade", .init(mapLumaLambda: 1e-4, mapChromaLambda: 3e-4)),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning

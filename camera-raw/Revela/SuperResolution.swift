@@ -39,6 +39,14 @@ extension Developer {
         var tvIterations = 30
         /// Limpeza só da cor depois da Richardson–Lucy (Huber-TV sem desfazer borrão: o detalhe do brilho fica)
         var chromaClean: Float = 0
+        /// MAP com as fotos todas de uma vez (ampliação 2×): resolve o problema inteiro (cada foto = média 2×2 da cena
+        /// borrada, deslocada) com Huber-TV conjunta brilho/cor. Estudo nas fotos das três câmeras do laboratório:
+        /// +6,3/+7,7/+6,8 dB contra +4,1/+5,3/+5,6 da regressão de núcleo + RL (simulação do app)
+        var map = true
+        var mapIterations = 16
+        var mapLumaLambda: Float = 2e-4
+        var mapChromaLambda: Float = 6e-4
+        var mapDelta: Float = 0.003
     }
     static var srTuning = SRTuning()
 
@@ -179,8 +187,16 @@ extension Developer {
         var splatted = false
         // A referência ampliada é lida 16 vezes por foto (cor e peso): guardada pronta quando cabe na memória
         let refReady = Double(outExtent.width * outExtent.height) * 8 < 450_000_000 ? materialize(refUp, extent: outExtent) : refUp
-        if let splat = splatMerge(frames: frames, decoded: decoded, alignments: alignments, refUp: refReady,
-                                  region: region, factor: factor, outExtent: outExtent, grid: grid) {
+        var solved = false
+        if srTuning.map, factor > 1.99,
+           let map = mapMerge(frames: frames, decoded: decoded, alignments: alignments, refUp: refReady,
+                              region: region, factor: factor, outExtent: outExtent, grid: grid, centers: centers) {
+            merged = map.image
+            used = map.used
+            splatted = true
+            solved = true
+        } else if let splat = splatMerge(frames: frames, decoded: decoded, alignments: alignments, refUp: refReady,
+                                         region: region, factor: factor, outExtent: outExtent, grid: grid) {
             merged = splat.image
             used = splat.used
             splatted = true
@@ -197,7 +213,8 @@ extension Developer {
         // Do 5º passo em diante quase não muda nada e cada passo custa o mesmo: 4 bastam (Lua: 6)
         // Depois da regressão de núcleo só falta um pouco: 2 passos com borrão de 0,35 × o fator (protótipo:
         // o borrão antigo de 1,35 px com 4 passos tirava 1,5 dB). Lua um passo a mais
-        let iterations = splatted ? srTuning.deconvIterations + (sharpen >= 0.8 ? 1 : 0) : (sharpen >= 0.8 ? 6 : 4)
+        // O MAP já desfez o borrão do sensor e da lente: sem desconvolução depois
+        let iterations = solved ? 0 : (splatted ? srTuning.deconvIterations + (sharpen >= 0.8 ? 1 : 0) : (sharpen >= 0.8 ? 6 : 4))
         let sigma = splatted ? srTuning.deconvScale * Double(factor) : Double(0.55 * factor + 0.25)
         // Ruído da junção (antes da desconvolução, que o realça ~1,5×) para a limpeza final
         let cleanup = srTuning.denoise
@@ -261,6 +278,147 @@ extension Developer {
               let merged = divideKernel.apply(extent: outExtent, arguments: [colorSum, weightSum]) else { return nil }
         dlog("Super resolução: \(used) fotos juntadas por regressão de núcleo (cada pixel no lugar exato)")
         return (merged, used)
+    }
+
+    /// Se a 1ª linha de um CIImage(bitmapData:) vira o topo (y maior): medido uma vez, para a tabela do MAP não sair de
+    /// ponta-cabeça (trocaria pedaço e fase)
+    private static let bitmapFirstRowIsTop: Bool = {
+        let data: [Float] = [1, 1, 1, 1, 0, 0, 0, 1]
+        let img = CIImage(bitmapData: data.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: 16,
+                          size: CGSize(width: 1, height: 2), format: .RGBAf, colorSpace: nil)
+        var probe = [Float](repeating: -1, count: 4)
+        context.render(img, toBitmap: &probe, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBAf, colorSpace: nil)
+        let top = probe[0] < 0.5
+        dlog("Super resolução: 1ª linha do bitmap = \(top ? "topo" : "base")")
+        return top
+    }()
+
+    private static func srMitchell(_ v: Double) -> Double {
+        let x = abs(v)
+        if x < 1 { return (7 * x * x * x - 12 * x * x + 16.0 / 3) / 6 }
+        if x < 2 { return ((-7.0 / 3) * x * x * x + 12 * x * x - 20 * x + 32.0 / 3) / 6 }
+        return 0
+    }
+    private static func srH(_ d: Double) -> Double { 0.5 * (srMitchell(d + 0.5) + srMitchell(d - 0.5)) }
+
+    /// Núcleo 1D de AᵀA para uma foto cujas amostras caem em o + 2i (pixels grandes), no pixel grande de fase `a`
+    /// (centro em a + ½): k[d] = Σᵢ h(a + ½ − pᵢ)·h(a + ½ + d − pᵢ), d = −3…3
+    private static func phaseKernel(offset o: Double, phase a: Int) -> [Double] {
+        (-3...3).map { d in
+            (-8...8).reduce(0.0) { sum, i in
+                let p = o + 2 * Double(i)
+                return sum + srH(Double(a) + 0.5 - p) * srH(Double(a) + 0.5 + Double(d) - p)
+            }
+        }
+    }
+
+    /// SUPER ZOOM 3×: MAP com todas as fotos. b = Aᵀy/K (retroprojeção), começa em Σh·y/Σh e faz FISTA com AᵀA exato
+    /// para deslocamento (por pedaço da grade 3×3, a fase de cada foto vem do alinhamento dela ali) e Huber-TV conjunta.
+    private static func mapMerge(frames: [CapturedFrame], decoded: (Int) -> CIImage?, alignments: [Alignment?],
+                                 refUp: CIImage, region: CGRect, factor: CGFloat, outExtent: CGRect,
+                                 grid: CIVector, centers: [CGPoint]) -> (image: CIImage, used: Int)? {
+        guard let splatHKernel, let mapStepKernel, let divideKernel, centers.count == 9 else { return nil }
+        let t = srTuning
+        var colorSum: CIImage?, weightSum: CIImage?
+        var used = 0
+        // Núcleos de AᵀA: 9 pedaços × 4 fases × 7×7 (somados nas fotos, ÷ K no fim)
+        var table = [Double](repeating: 0, count: 9 * 4 * 49)
+        for i in frames.indices {
+            guard let a = alignments[i], let src = decoded(i) else { continue }
+            let inv = a.transform.inverted()
+            var r = a.residuals.map { CGPoint(x: $0.x * factor, y: $0.y * factor) }
+            if r.count != 9 { r = Array(repeating: .zero, count: 9) }
+            let reach = (r.map { max(abs($0.x), abs($0.y)) }.max() ?? 0) / factor + 4
+            let roi: CIKernelROICallback = { index, rect in
+                if index == 1 { return rect.insetBy(dx: -2, dy: -2) }
+                let corners = [CGPoint(x: rect.minX, y: rect.minY), CGPoint(x: rect.maxX, y: rect.minY),
+                               CGPoint(x: rect.minX, y: rect.maxY), CGPoint(x: rect.maxX, y: rect.maxY)]
+                    .map { CGPoint(x: $0.x / factor + region.minX, y: $0.y / factor + region.minY).applying(inv) }
+                let xs = corners.map(\.x), ys = corners.map(\.y)
+                return CGRect(x: xs.min()!, y: ys.min()!, width: xs.max()! - xs.min()!, height: ys.max()! - ys.min()!)
+                    .insetBy(dx: -reach, dy: -reach)
+            }
+            let common: [Any] = [
+                src, refUp,
+                CIVector(x: inv.a, y: inv.c, z: inv.tx), CIVector(x: inv.b, y: inv.d, z: inv.ty),
+                CIVector(x: factor, y: region.minX, z: region.minY, w: 0),
+                CIVector(x: r[0].x, y: r[0].y, z: r[1].x, w: r[1].y),
+                CIVector(x: r[2].x, y: r[2].y, z: r[3].x, w: r[3].y),
+                CIVector(x: r[4].x, y: r[4].y, z: r[5].x, w: r[5].y),
+                CIVector(x: r[6].x, y: r[6].y, z: r[7].x, w: r[7].y),
+                CIVector(x: r[8].x, y: r[8].y),
+                grid, t.ghostK,
+            ]
+            guard let color = splatHKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(0)]),
+                  let weight = splatHKernel.apply(extent: outExtent, roiCallback: roi, arguments: common + [Float(1)]) else { continue }
+            colorSum = colorSum.map { add($0, color) } ?? color
+            weightSum = weightSum.map { add($0, weight) } ?? weight
+            used += 1
+            // Fase desta foto em cada pedaço: onde cai o centro do pixel da foto mais perto do centro do pedaço
+            for tile in 0..<9 {
+                let c = CGPoint(x: grid.x + CGFloat(tile % 3) * grid.z, y: grid.y + CGFloat(tile / 3) * grid.w)
+                let q = CGPoint(x: (c.x - r[tile].x) / factor + region.minX, y: (c.y - r[tile].y) / factor + region.minY).applying(inv)
+                let qc = CGPoint(x: floor(q.x) + 0.5, y: floor(q.y) + 0.5).applying(a.transform)
+                let px = Double((qc.x - region.minX) * factor + r[tile].x), py = Double((qc.y - region.minY) * factor + r[tile].y)
+                let ox = px - 2 * floor(px / 2), oy = py - 2 * floor(py / 2)
+                for ay in 0..<2 {
+                    let ky = phaseKernel(offset: oy, phase: ay)
+                    for ax in 0..<2 {
+                        let kx = phaseKernel(offset: ox, phase: ax)
+                        let base = ((tile * 2 + ay) * 2 + ax) * 49
+                        for dy in 0..<7 { for dx in 0..<7 { table[base + dy * 7 + dx] += ky[dy] * kx[dx] } }
+                    }
+                }
+            }
+        }
+        guard used >= 2, let colorSum, let weightSum else { return nil }
+        let k = Float(used)
+        let e = outExtent
+        let b = materialize(scaled(colorSum, by: 1 / k).cropped(to: e), extent: e)
+        let wsum = materialize(weightSum.cropped(to: e), extent: e)
+        guard let start = divideKernel.apply(extent: e, arguments: [scaled(b, by: k), wsum]) else { return nil }
+        // Tabela como imagem (14 × 126): x = fase x·7 + dx, y = (pedaço·2 + fase y)·7 + dy (linhas da imagem de baixo para cima)
+        let tw = 14, th = 126
+        var pixels = [Float](repeating: 0, count: tw * th * 4)
+        for tile in 0..<9 { for ay in 0..<2 { for ax in 0..<2 { for dy in 0..<7 { for dx in 0..<7 {
+            let v = Float(table[((tile * 2 + ay) * 2 + ax) * 49 + dy * 7 + dx] / Double(used))
+            let x = ax * 7 + dx, y = (tile * 2 + ay) * 7 + dy
+            let row = bitmapFirstRowIsTop ? th - 1 - y : y
+            let o = (row * tw + x) * 4
+            pixels[o] = v; pixels[o + 1] = v; pixels[o + 2] = v; pixels[o + 3] = 1
+        } } } } }
+        let tableImage = CIImage(bitmapData: pixels.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: tw * 16,
+                                 size: CGSize(width: tw, height: th), format: .RGBAf, colorSpace: nil).samplingNearest()
+        let delta = t.mapDelta, w = t.mapChromaLambda / max(t.mapLumaLambda, 1e-9)
+        let lam = CIVector(x: CGFloat(t.mapLumaLambda), y: CGFloat(t.mapChromaLambda), z: CGFloat(t.mapChromaLambda))
+        let tauY = 1 / (0.25 + 8 * t.mapLumaLambda / delta), tauC = 1 / (0.25 + 8 * t.mapChromaLambda / delta)
+        let tau = CIVector(x: CGFloat(tauY), y: CGFloat(tauC), z: CGFloat(tauC))
+        let tableExtent = tableImage.extent
+        let roi: CIKernelROICallback = { index, rect in
+            switch index {
+            case 2: return rect
+            case 3: return tableExtent
+            default: return rect.insetBy(dx: -4, dy: -4)
+            }
+        }
+        var x = materialize(start, extent: e), previous = x
+        var tk: Double = 1, beta: Double = 0
+        for _ in 0..<t.mapIterations {
+            let ok: Bool = autoreleasepool {
+                guard let next = mapStepKernel.apply(extent: e, roiCallback: roi, arguments: [
+                    x.clampedToExtent(), previous.clampedToExtent(), b, tableImage, grid, Float(beta), lam, tau, delta, w,
+                ]) else { return false }
+                previous = x
+                x = materialize(next, extent: e)
+                return true
+            }
+            guard ok else { return nil }
+            let tn = (1 + (1 + 4 * tk * tk).squareRoot()) / 2
+            beta = (tk - 1) / tn
+            tk = tn
+        }
+        dlog("Super resolução: \(used) fotos resolvidas juntas (MAP, \(t.mapIterations) passos)")
+        return (x, used)
     }
 
     /// Alinhamento fino para a NOITE: para cada foto, uma função que a coloca em cima da referência (a primeira).
