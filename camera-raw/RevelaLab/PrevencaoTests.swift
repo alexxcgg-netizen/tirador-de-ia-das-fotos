@@ -850,7 +850,7 @@ final class PrevencaoTests: XCTestCase {
 
     // MARK: - 10. Saída grande (LUA / SUPER RES de 48 MP)
 
-    /// LUA como o app chama (`superResolution(sharpen: 0.9)`, 5 fotos) com fotos de 12 MP: a saída é 2× = 48 MP. Tem que
+    /// LUA como o app chama (`superResolution(keep: 8, moon: true)`, 5 fotos) com fotos de 12 MP: a saída é 2× = 48 MP. Tem que
     /// terminar, usar as 5 fotos (a conta de memória cortava para 2) e caber na memória (pico medido pelo
     /// phys_footprint; placar: acréscimo ≤ 2500 MB).
     func testP10LuaGrande() {
@@ -867,7 +867,7 @@ final class PrevencaoTests: XCTestCase {
         let meter = LabMemoryPeak()
         meter.start()
         let t0 = CFAbsoluteTimeGetCurrent()
-        let out = Developer.superResolution(captured, options: options(), sharpen: 0.9)
+        let out = Developer.superResolution(captured, options: options(), keep: 8, moon: true)
         let elapsed = Diagnostics.ms(since: t0)
         let peak = meter.stop()
         var size = "sem saída"
