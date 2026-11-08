@@ -91,12 +91,14 @@ extension Developer {
         let sourceFit = region.insetBy(dx: -padFull, dy: -padFull).intersection(full).integral
         let perFrame = Double(sourceFit.width * sourceFit.height) * 8
         let outBytes = Double(outExtent.width * outExtent.height) * 8
+        // Proporcional à memória livre de verdade (o 17 Pro Max tem bem mais que os 700 MB fixos de antes, que cortavam para
+        // 12 fotos uma cena de 12 MP), até 1,5 GB
         #if targetEnvironment(simulator)
-        let available = 2_000_000_000.0  // o simulador não tem limite (e devolve ~0)
+        let available = 4_000_000_000.0  // o simulador não tem limite (e devolve ~0)
         #else
         let available = Double(os_proc_available_memory())
         #endif
-        let budget = min(700_000_000, (available > 0 ? available : 2_000_000_000) * 0.45) - outBytes * 4
+        let budget = min(1_500_000_000, (available > 0 ? available : 1_500_000_000) * 0.45) - outBytes * 4
         let fit = max(min(frames.count, max(2, keep ?? 2)), Int(max(0, budget) / max(perFrame, 1)))
         if frames.count > fit {
             let ranked = frames.indices.sorted { scores[$0] > scores[$1] }.prefix(fit).sorted()
@@ -117,7 +119,7 @@ extension Developer {
         // foto gigante abria as 10 fotos de novo. Só quando cabe (no SUPER ZOOM o recorte é pequeno)
         let pad = 0.1 * max(full.width, full.height)
         let source = region.insetBy(dx: -pad, dy: -pad).intersection(full).integral
-        let prepare = Double(source.width * source.height) * 8 * Double(frames.count) < 700_000_000
+        let prepare = Double(source.width * source.height) * 8 * Double(frames.count) <= budget
         // Guardado: a junção nova e a antiga (reserva) pedem a mesma foto, e ela é aberta uma vez só
         var cache: [Int: CIImage] = [:]
         func decoded(_ i: Int) -> CIImage? {
