@@ -203,8 +203,17 @@ def main(root):
     if os.path.exists(real(os.path.join(mao, "mao_100pct.jpg"))) and os.path.exists(real(os.path.join(mao, "tripe_100pct.jpg"))):
         em, _ = edges(os.path.join(mao, "mao_100pct.jpg"))
         et, _ = edges(os.path.join(mao, "tripe_100pct.jpg"))
-        r = em / max(et, 1e-6)
-        check("NOITE na mão", "detalhe na mão ÷ tripé (centro 100%)", f"{r:.2f}", r >= 0.9, "≥ 0,90")
+        ideal_path = os.path.join(mao, "ideal_100pct.jpg")
+        if os.path.exists(real(ideal_path)):
+            # Erro contra a cena sem ruído e sem mexer: na mão no máximo 1 dB pior que no tripé (a soma das bordas
+            # subia com o repique de qualquer filtro e não servia de régua). A referência da mão pode estar ~25 px deslocada
+            ideal = load(ideal_path)
+            pm, pt = psnr(load(os.path.join(mao, "mao_100pct.jpg")), ideal, reach=26), psnr(load(os.path.join(mao, "tripe_100pct.jpg")), ideal, reach=4)
+            check("NOITE na mão", "erro na mão vs tripé (contra a cena sem ruído)", f"{pm - pt:+.2f} dB", pm >= pt - 1, "≥ −1 dB")
+            rows.append(("NOITE na mão", "detalhe (bordas) mão ÷ tripé (só informação)", f"{em / max(et, 1e-6):.2f}", "", ""))
+        else:
+            r = em / max(et, 1e-6)
+            check("NOITE na mão", "detalhe na mão ÷ tripé (centro 100%)", f"{r:.2f}", r >= 0.9, "≥ 0,90")
 
     # HDR 3×: 3× a faixa de luz da foto normal = ⅓ do estourado e ⅓ do ruído (relativo) nas sombras
     hd = os.path.join(root, "hdr")
