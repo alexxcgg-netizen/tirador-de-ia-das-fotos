@@ -239,7 +239,8 @@ extension Developer {
                 }
             }
             if !fits.isEmpty {
-                let model = (a: fits.map(\.a).reduce(0, +) / Float(fits.count), b: fits.map(\.b).reduce(0, +) / Float(fits.count))
+                let sumA = fits.reduce(Float(0)) { $0 + $1.a }, sumB = fits.reduce(Float(0)) { $0 + $1.b }
+                let model: (a: Float, b: Float) = (a: sumA / Float(fits.count), b: sumB / Float(fits.count))
                 for i in frames.indices where i != refIndex {
                     autoreleasepool {
                         guard let f = blurredFrame(i),
