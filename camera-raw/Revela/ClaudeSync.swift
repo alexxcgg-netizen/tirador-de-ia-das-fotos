@@ -48,12 +48,16 @@ final class ClaudeSync: ObservableObject {
     @Published private(set) var connected = false
     @Published private(set) var status = ""
     @Published private(set) var sending = false
-    /// Último recado ou aviso de calibragem do Claude (fica nos Ajustes).
-    @Published private(set) var lastNotice: String?
+    /// Últimos recados e avisos do Claude, o mais novo primeiro (ficam listados nos Ajustes).
+    @Published private(set) var notices: [String] = []
+    /// Último recado ou aviso de calibragem do Claude.
+    var lastNotice: String? { notices.first }
     /// Bolinha no botão de Ajustes até você abrir os Ajustes.
     @Published var unreadNotice = false
-    /// Aviso esperando a câmera ficar livre para aparecer.
-    private var pendingToast: String?
+    /// Avisos esperando a câmera ficar livre para aparecer, na ordem (antes um segundo aviso apagava o primeiro)
+    private var pendingToasts: [String] = []
+    /// Um aviso está na tela agora: o próximo espera ele sair
+    private var showingNotice = false
 
     weak var camera: CameraModel?
     private var etags: [String: String] = [:]
@@ -134,8 +138,9 @@ final class ClaudeSync: ObservableObject {
         // Aviso que chegou com a câmera ocupada: aparece agora, se ela já estiver livre
         flushNotice()
         if let data = await fetchIfChanged("looks.json"),
-           let looks = try? JSONDecoder().decode([CustomLook].self, from: data) {
-            camera?.applyRemoteLooks(looks)
+           let looks = try? JSONDecoder().decode([CustomLook].self, from: data),
+           camera?.applyRemoteLooks(looks) == true {
+            announce("Filmes atualizados pelo Claude")
         }
         if let data = await fetchIfChanged("ajustes.json"),
            let settings = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any], !settings.isEmpty {
@@ -143,7 +148,8 @@ final class ClaudeSync: ObservableObject {
             let fingerprint = shas["ajustes.json"] ?? ""
             if !fingerprint.isEmpty, fingerprint != defaults.string(forKey: "ajustesAplicados") {
                 defaults.set(fingerprint, forKey: "ajustesAplicados")
-                camera?.applyRemoteSettings(settings)
+                // Pelo aviso com fila: antes aparecia na hora, mesmo no meio de uma sequência ou gravação
+                if camera?.applyRemoteSettings(settings) == true { announce("Ajustes atualizados pelo Claude") }
             }
         }
         // Calibragem da revelação (tom, NOITE, estrela, SUPER ZOOM): vale na hora, sem versão nova
@@ -177,18 +183,25 @@ final class ClaudeSync: ObservableObject {
     /// Recado e calibragem viram um aviso curto no visor (antes era um alerta que travava a tela no meio da foto)
     /// e uma bolinha nos Ajustes, onde o texto fica.
     private func announce(_ text: String) {
-        lastNotice = text
+        notices = Array(([text] + notices).prefix(5))
         unreadNotice = true
-        pendingToast = text
+        pendingToasts.append(text)
         flushNotice()
     }
 
-    /// Mostra o aviso só com a câmera livre: nunca no meio de uma revelação, sequência ou gravação.
+    /// Mostra o aviso só com a câmera livre: nunca no meio de uma revelação, sequência ou gravação. Um de cada vez.
     private func flushNotice() {
-        guard let text = pendingToast, let camera else { return }
+        guard !showingNotice, let text = pendingToasts.first, let camera else { return }
         guard camera.processing == 0, !camera.isBusy else { return }
-        pendingToast = nil
+        pendingToasts.removeFirst()
+        showingNotice = true
         camera.show(text, seconds: 6)
+        // O próximo da fila aparece quando este sai da tela
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 6_500_000_000)
+            self?.showingNotice = false
+            self?.flushNotice()
+        }
     }
 
     /// Baixa o arquivo só se mudou (ETag); devolve nil se não mudou ou deu erro.

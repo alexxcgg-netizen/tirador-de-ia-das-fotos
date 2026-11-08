@@ -116,8 +116,13 @@ final class PhotoCritic: ObservableObject {
         status = "O Claude está olhando \(used) foto(s) nos mínimos detalhes… (leva 1 a 3 min; deixe o app aberto)"
         let t0 = CFAbsoluteTimeGetCurrent()
         var (code, json) = await send(body, key: key, timeout: 600, beta: "server-side-fallback-2026-07-01")
+        // O pedido cortado também é cobrado: entra na conta junto com o segundo
+        var firstInput = 0, firstOutput = 0
         // Passou do limite de tamanho e veio cortada: pede de novo uma vez, com o dobro de espaço
         if code == 200, (json?["stop_reason"] as? String) == "max_tokens" {
+            let firstUsage = json?["usage"] as? [String: Any]
+            firstInput = firstUsage?["input_tokens"] as? Int ?? 0
+            firstOutput = firstUsage?["output_tokens"] as? Int ?? 0
             dlog("Claude API: análise cortada no limite (16000 tokens); pedindo de novo com 32000")
             status = "A análise ficou longa e veio cortada; pedindo de novo com mais espaço… (deixe o app aberto)"
             body["max_tokens"] = 32000
@@ -141,11 +146,13 @@ final class PhotoCritic: ObservableObject {
         // Mesmo com o dobro de espaço veio cortada: guarda o que veio, avisando
         let truncated = (json["stop_reason"] as? String) == "max_tokens"
         let usage = json["usage"] as? [String: Any]
-        let input = usage?["input_tokens"] as? Int ?? 0, output = usage?["output_tokens"] as? Int ?? 0
+        let input = (usage?["input_tokens"] as? Int ?? 0) + firstInput
+        let output = (usage?["output_tokens"] as? Int ?? 0) + firstOutput
         let dollars = Double(input) * 4 / 1_000_000 + Double(output) * 20 / 1_000_000
         let seconds = CFAbsoluteTimeGetCurrent() - t0
+        let requests = firstInput + firstOutput > 0 ? " (2 pedidos)" : ""
         let header = "_\(used) foto(s) · \(Self.model) · \(Date().formatted(date: .abbreviated, time: .shortened)) · " +
-            String(format: "%d tokens de entrada, %d de saída · ~US$ %.2f · %.0f s_\n\n", input, output, dollars, seconds)
+            String(format: "%d tokens de entrada, %d de saída%@ · ~US$ %.2f · %.0f s_\n\n", input, output, requests, dollars, seconds)
         let full = header + text + (truncated ? "\n\n_(a análise veio cortada no fim: passou do limite de tamanho da resposta)_" : "")
         try? full.write(to: Self.analysisURL, atomically: true, encoding: .utf8)
         dlog(String(format: "Claude API: análise de %d fotos pronta (%.0f s, ~US$ %.2f)%@", used, seconds, dollars,

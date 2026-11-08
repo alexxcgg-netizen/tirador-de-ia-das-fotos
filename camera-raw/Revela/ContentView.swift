@@ -34,6 +34,9 @@ struct ContentView: View {
     @State private var showReport = false
     @State private var showGuide = false
     @State private var pressingShutter = false
+    /// Dedo no botão, segundo o próprio gesto: volta a false sozinho quando o gesto é cancelado (um alerta aparece com o
+    /// dedo no botão) e aí o onEnded não vem
+    @GestureState private var shutterTouch = false
     @State private var pinchStart: CGFloat?
     @AppStorage("guideSeen") private var guideSeen = false
     @State private var whatsNew: [String] = []
@@ -41,6 +44,8 @@ struct ContentView: View {
     @State private var expiryDismissed = false
     /// Altura dos controles do modo sobre o visor (os avisos de baixo sobem esse tanto).
     @State private var controlsHeight: CGFloat = 0
+    /// Altura da faixa de filmes aberta (os avisos de baixo também sobem esse tanto).
+    @State private var stripHeight: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -117,38 +122,49 @@ struct ContentView: View {
         }
     }
 
-    /// Embaixo do visor: a faixa de filmes (quando aberta) ou os controles do modo.
-    @ViewBuilder
+    /// Embaixo do visor: os controles do modo e, embaixo deles, a faixa de filmes (quando aberta). Antes a faixa aberta
+    /// escondia os controles (sem f/ no RETRATO, sem tempo na NOITE)
     private var viewfinderBottom: some View {
-        // No CINEMÁTICO o vídeo sai sem filme: a faixa de filmes enganava
-        if showLookStrip && camera.captureMode != .cinematic {
-            LookStrip(camera: camera, paused: showStudio) { showLooks = true }
-                .padding(8)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-        } else {
+        VStack(spacing: 0) {
             modeControls
+            // No CINEMÁTICO o vídeo sai sem filme: a faixa de filmes enganava
+            if showLookStrip && camera.captureMode != .cinematic {
+                LookStrip(camera: camera, paused: showStudio) { showLooks = true }
+                    .padding(8)
+                    .background(
+                        GeometryReader { g in
+                            Color.clear
+                                .onAppear { stripHeight = g.size.height }
+                                .onChange(of: g.size.height) { _, h in stripHeight = h }
+                        }
+                    )
+                    .onDisappear { stripHeight = 0 }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
     }
 
-    /// Aviso de que a instalação vence (hoje ou amanhã, pelo calendário). Pequeno, e some com um toque.
+    /// Quanto os avisos de baixo do visor sobem: controles do modo + faixa de filmes.
+    private var bottomInset: CGFloat { controlsHeight + stripHeight }
+
+    /// Aviso de que a instalação vence (hoje ou amanhã, pelo calendário). Pequeno, não pega toques (ficava por cima dos
+    /// botões do topo) e some sozinho em 6 s; a validade fica nos Ajustes
     @ViewBuilder
     private var expiryBanner: some View {
         if !expiryDismissed, let days = Expiration.calendarDaysLeft, days <= 1 {
-            Button {
-                withAnimation(.easeOut(duration: 0.2)) { expiryDismissed = true }
-            } label: {
-                HStack(spacing: 6) {
-                    Text(days == 0 ? "Vence hoje: reinstale pelo Sideloadly" : "Vence amanhã: reinstale pelo Sideloadly")
-                    Image(systemName: "xmark")
-                }
+            Text(days == 0 ? "Vence hoje: reinstale pelo Sideloadly" : "Vence amanhã: reinstale pelo Sideloadly")
                 .font(.caption2.weight(.bold))
                 .foregroundStyle(.black)
                 .padding(.horizontal, 10).padding(.vertical, 4)
                 .background(Capsule().fill(accent))
-            }
-            .buttonStyle(.plain)
-            .padding(.top, 2)
-            .accessibilityLabel(days == 0 ? "O Revela vence hoje. Toque para fechar o aviso" : "O Revela vence amanhã. Toque para fechar o aviso")
+                .padding(.top, 2)
+                .allowsHitTesting(false)
+                .accessibilityLabel(days == 0 ? "O Revela vence hoje" : "O Revela vence amanhã")
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                        withAnimation(.easeOut(duration: 0.3)) { expiryDismissed = true }
+                    }
+                }
         }
     }
 
@@ -357,6 +373,7 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Zoom \(zoomLabel(z))")
+        .accessibilityValue(current ? camera.zoomText : "")
         .selectedTrait(isCurrent(z))
     }
 
@@ -374,7 +391,7 @@ struct ContentView: View {
             Button {
                 // Gravando ou fotografando uma sequência: a troca estragaria o que está saindo
                 if camera.isBusy {
-                    camera.show("Espere terminar…")
+                    camera.show(camera.busyReason ?? "Espere terminar…")
                     UINotificationFeedbackGenerator().notificationOccurred(.warning)
                     return
                 }
@@ -416,6 +433,12 @@ struct ContentView: View {
         return CameraModel.dayStarModes.contains(mode) && camera.lens != .macro
     }
 
+    /// Só o ✦ (FOTO, RÁPIDO, HDR): sem degradê (escurecia a parte de baixo do visor por causa de um botão só)
+    private var onlyStarMenu: Bool {
+        let mode = camera.captureMode
+        return [.photo, .fast, .hdr].contains(mode) && camera.lens != .macro
+    }
+
     /// Controles do modo por cima da parte de baixo do visor, num degradê escuro. Os avisos de baixo do visor
     /// sobem a altura deles (`controlsHeight`).
     @ViewBuilder
@@ -439,6 +462,7 @@ struct ContentView: View {
             .background(
                 LinearGradient(colors: [Color.black.opacity(0), Color.black.opacity(0.5)], startPoint: .top, endPoint: .bottom)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .opacity(onlyStarMenu ? 0 : 1)
                     .allowsHitTesting(false)
             )
             .background(
@@ -739,7 +763,7 @@ struct ContentView: View {
                         .background(.black.opacity(0.55), in: Capsule())
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                         .padding(10)
-                        .padding(.bottom, controlsHeight)
+                        .padding(.bottom, bottomInset)
                         .allowsHitTesting(false)
                 }
                 if let test = camera.selfTestProgress {
@@ -767,7 +791,8 @@ struct ContentView: View {
                         .id(p)
                 }
                 // Revelação longa: avisa o que está revelando (e que dá para seguir fotografando)
-                if camera.processing > 0, camera.stackProgress == nil,
+                // Com um aviso curto na tela ele some (os dois moravam no mesmo lugar, um por cima do outro)
+                if camera.processing > 0, camera.stackProgress == nil, camera.toast == nil,
                    let label = camera.developingLabel, let since = camera.developingSince {
                     DevelopingPill(label: label, since: since, count: camera.processing)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -824,11 +849,11 @@ struct ContentView: View {
                         .background(accent, in: Capsule())
                         .foregroundStyle(.black)
                         .frame(maxHeight: .infinity, alignment: .bottom)
-                        .padding(.bottom, 10 + controlsHeight)
+                        .padding(.bottom, 10 + bottomInset)
                 }
                 // Nos vídeos o quadro fica encaixado (e no CINEMÁTICO o rosto nem é procurado): o quadro do rosto sairia fora do lugar
                 if camera.stackProgress == nil, !camera.showsWholeFrame {
-                    FaceOverlay(live: camera.live, zoom: camera.crop, size: geo.size, bottomInset: controlsHeight)
+                    FaceOverlay(live: camera.live, zoom: camera.crop, size: geo.size, bottomInset: bottomInset)
                 }
                 if camera.lens == .macro && camera.stackProgress == nil {
                     Text("Macro: aproxime até 2 cm")
@@ -883,7 +908,7 @@ struct ContentView: View {
                     .padding(.horizontal, 10).padding(.vertical, 6)
                     .background(.black.opacity(0.6), in: Capsule())
                     .frame(maxHeight: .infinity, alignment: .bottom)
-                    .padding(.bottom, 44 + controlsHeight)
+                    .padding(.bottom, 44 + bottomInset)
                     .allowsHitTesting(false)
                 }
                 if camera.countdown > 0 {
@@ -958,7 +983,7 @@ struct ContentView: View {
     }
 
     /// Aviso do macro acima da lupa e dos controles do modo.
-    private var macroHintBottom: CGFloat { (camera.loupe ? 40 : 10) + controlsHeight }
+    private var macroHintBottom: CGFloat { (camera.loupe ? 40 : 10) + bottomInset }
 
     /// Pinça passando por 0,5×, 1×, 2× ou 4×: um toquinho, como na câmera do iPhone.
     private func tickIfCrossed(from a: CGFloat, to b: CGFloat) {
@@ -1029,6 +1054,7 @@ struct ContentView: View {
             .contentShape(Circle())
             .gesture(
                 DragGesture(minimumDistance: 0)
+                    .updating($shutterTouch) { _, touching, _ in touching = true }
                     .onChanged { _ in
                         guard !pressingShutter else { return }
                         pressingShutter = true
@@ -1039,6 +1065,16 @@ struct ContentView: View {
                         camera.endHold()
                     }
             )
+            .onChange(of: shutterTouch) { _, touching in
+                guard !touching else { return }
+                // Gesto cancelado sem onEnded (alerta por cima do dedo): solta aqui, senão o botão parava de responder.
+                // Na volta seguinte da fila: no fim normal o onEnded já soltou e isto não faz nada
+                DispatchQueue.main.async {
+                    guard pressingShutter, !shutterTouch else { return }
+                    pressingShutter = false
+                    camera.cancelHold()
+                }
+            }
             .accessibilityAddTraits(.isButton)
             .accessibilityLabel(shutterLabel)
             // O leitor de tela não faz o gesto de arrastar: o toque duplo dispara como um toque no botão
@@ -1127,7 +1163,7 @@ struct ContentView: View {
 
             settingsSection("FOTO 3×") {
                 Toggle("Juntar várias fotos em cada toque", isOn: $camera.photoFusion)
-                Text("Com pouca luz (interior, fim de tarde, ISO 320 ou mais), cada toque na FOTO tira várias fotos do mesmo instante (8 em RAW puro, 4 em ProRAW), alinha e junta: um terço do ruído e sombra limpa, como o Deep Fusion. O selo 3× no canto do visor avisa quando vai acontecer. Com sol fica a foto única de 48 MP, que tem mais detalhe. Desligado: sempre uma foto só.")
+                Text("Com pouca luz (interior, fim de tarde, ISO 320 ou mais), cada toque na FOTO tira várias fotos do mesmo instante (8 em RAW puro, 4 em ProRAW), alinha e junta: menos ruído (até um terço no RAW puro) e sombra limpa, como o Deep Fusion. O selo 3× no canto do visor avisa quando vai acontecer. Com sol fica a foto única de 48 MP, que tem mais detalhe. Desligado: sempre uma foto só.")
                     .font(.footnote).foregroundStyle(.secondary)
             }
 
@@ -1290,8 +1326,9 @@ struct ContentView: View {
                     Label("Conectado", systemImage: "checkmark.circle.fill").foregroundStyle(accent)
                     Text("O Claude manda filmes, ajustes e recados; o app manda relatórios. Confere ao abrir e a cada 15 s.")
                         .font(.footnote).foregroundStyle(.secondary)
-                    if let notice = sync.lastNotice {
-                        Text(notice).font(.footnote.weight(.semibold))
+                    // Os últimos avisos, o mais novo em cima (antes só o último ficava)
+                    ForEach(Array(sync.notices.enumerated()), id: \.offset) { item in
+                        Text(item.element).font(.footnote.weight(item.offset == 0 ? .semibold : .regular))
                     }
                     Button("Conferir agora") { Task { await sync.pull() } }
                     Button("Desconectar", role: .destructive) { sync.disconnect() }

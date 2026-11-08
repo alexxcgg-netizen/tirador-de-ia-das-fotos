@@ -89,10 +89,22 @@ final class AimState: ObservableObject {
 
 extension CameraModel {
     /// Algo saindo agora que uma troca de modo estragaria: gravação (até o arquivo do CINEMÁTICO fechar), rajada,
-    /// sequência, contagem ou panorama.
+    /// sequência, contagem, panorama ou uma foto que ainda não chegou da câmera (reabrir a sessão a perdia).
     var isBusy: Bool {
         isRecordingVideo || recordingFinishing || actionRecording || bursting || stackProgress != nil || longRemaining != nil
-            || countdown > 0 || panoramaProgress != nil
+            || countdown > 0 || panoramaProgress != nil || capturesInFlight > 0
+    }
+
+    /// O que fazer para poder trocar de modo (antes era sempre "Espere terminar…", que não dizia como).
+    var busyReason: String? {
+        if isRecordingVideo || actionRecording { return "Pare a gravação para trocar de modo" }
+        if recordingFinishing { return "Espere o vídeo terminar de salvar" }
+        if panoramaProgress != nil { return "Toque no botão para terminar o panorama" }
+        if countdown > 0 { return "Toque no botão de foto para cancelar o timer" }
+        if bursting { return "Solte o botão para terminar a rajada" }
+        if stackProgress != nil || longRemaining != nil { return "Espere a sequência terminar" }
+        if capturesInFlight > 0 { return "Espere a foto chegar da câmera" }
+        return nil
     }
 
     /// ISO a partir do qual a FOTO junta várias fotos (FOTO 3×). O mesmo número do capture().
@@ -112,9 +124,29 @@ extension CameraModel {
 }
 
 extension CaptureMode {
-    /// Primeira frase da dica, para a telinha de modos.
+    /// Uma linha para a telinha de modos (até ~40 letras: a primeira frase da dica era cortada no meio).
     var shortHint: String {
-        hint.split(separator: ".", maxSplits: 1).first.map { String($0) } ?? hint
+        switch self {
+        case .photo: return "Pouca luz: junta várias fotos (3×)"
+        case .fast: return "Sem atraso, 12 MP; segure: rajada"
+        case .action: return "4K 120 fps; segure para gravar mais"
+        case .freeze: return "Congela o movimento (obturador rápido)"
+        case .video: return "Vídeo com o look gravado junto"
+        case .moon: return "Zoom 8× e exposição para a Lua"
+        case .portrait: return "2×, fundo desfocado (LiDAR)"
+        case .cinematic: return "Vídeo com fundo desfocado"
+        case .document: return "Várias páginas num PDF só"
+        case .panorama: return "Gire devagar para a direita"
+        case .hdr: return "3 fotos: céu e sombra com detalhe"
+        case .longExposure: return "Água lisa ou rastros de luz"
+        case .superRes: return "8 fotos de 48 MP: até 100 MP"
+        case .superZoom: return "8× a 25× na mão, 24 fotos"
+        case .night: return "Fotos somadas, sem fantasma"
+        case .stars: return "16 × 1 s com foco no infinito"
+        case .focusStack: return "Tudo nítido, do perto ao longe"
+        case .average: return "8 fotos somadas: menos ruído"
+        default: return hint.split(separator: ".", maxSplits: 1).first.map { String($0) } ?? hint
+        }
     }
 }
 
