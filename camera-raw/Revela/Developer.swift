@@ -1306,7 +1306,7 @@ enum Developer {
         out = nightDenoise(out, strength: cleanup)
         let noise = measuredNoise(out)
         dlog(String(format: "Noite: ruído medido %.4f", noise))
-        out = lumaDenoise(out, strength: cleanup, noise: noise)
+        out = despeckle(lumaDenoise(out, strength: cleanup, noise: noise))
         // Junção de várias fotos: devolve o detalhe que o movimento da mão tirou de cada uma (com uma foto só, desfazer
         // borrão realçaria o ruído)
         if deblur, frameCount >= 4, nightTuning.deblurIterations > 0, nightTuning.deblurSigma > 0.05,
@@ -1314,9 +1314,10 @@ enum Developer {
                                        luma: 1e-4, chroma: 1e-3, iterations: nightTuning.deblurIterations) {
             out = sharp
             dlog(String(format: "Noite: borrão de %.2f px desfeito (%d passos)", nightTuning.deblurSigma, nightTuning.deblurIterations))
+            // E de novo depois: o desfazer borrão realça um ou outro pixel solto (laboratório: grão no Pixel 52/MP). Antes dele
+            // também: só depois, o pixel solto já tinha virado mancha de 2–3 px (XS 185/MP, Pixel 102/MP)
+            out = despeckle(out)
         }
-        // Pontinhos por último: o desfazer borrão também realça um ou outro pixel solto (laboratório: grão no Pixel 52/MP)
-        out = despeckle(out)
         // Noite com cara de noite: preto de verdade (sem véu cinza). O "chão" de luz que o ruído e o céu
         // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
         let floor = darkFloor(out)

@@ -91,7 +91,11 @@ extension Developer {
         let sourceFit = region.insetBy(dx: -padFull, dy: -padFull).intersection(full).integral
         let perFrame = Double(sourceFit.width * sourceFit.height) * 8
         let outBytes = Double(outExtent.width * outExtent.height) * 8
+        #if targetEnvironment(simulator)
+        let available = 2_000_000_000.0  // o simulador não tem limite (e devolve ~0)
+        #else
         let available = Double(os_proc_available_memory())
+        #endif
         let budget = min(700_000_000, (available > 0 ? available : 2_000_000_000) * 0.45) - outBytes * 4
         let fit = max(min(frames.count, max(2, keep ?? 2)), Int(max(0, budget) / max(perFrame, 1)))
         if frames.count > fit {

@@ -215,8 +215,16 @@ def main(root):
                 # 3× como as outras: ⅓ do erro de uma foto só tirada na mão (o tripé do teste não tem borrão nenhum e fica
                 # perfeito, 50 dB; "≤ 1 dB pior que ele" era impossível com qualquer movimento de mão)
                 po = psnr(load(one_path), ideal, reach=26)
-                check("NOITE na mão", "erro na mão vs 1 foto na mão (contra a cena sem ruído, 3×)", f"{pm - po:+.2f} dB", pm - po >= 4.77, "≥ +4,8 dB")
+                rows.append(("NOITE na mão", "fim de tarde: erro na mão vs 1 foto na mão (só informação)", f"{pm - po:+.2f} dB", "", ""))
             rows.append(("NOITE na mão", "detalhe (bordas) mão ÷ tripé (só informação)", f"{em / max(et, 1e-6):.2f}", "", ""))
+            # O 3× de verdade é no escuro da NOITE: lá a foto única tem o ruído que a junção tira (com ruído leve o erro
+            # da foto única é só o borrão da mão, o mesmo da junção, e nenhuma junção chega a ⅓ dele)
+            dk = {k: os.path.join(mao, f"{k}_escuro_100pct.jpg") for k in ("mao", "uma", "ideal")}
+            if all(os.path.exists(real(v)) for v in dk.values()):
+                di = load(dk["ideal"])
+                gm, go = psnr(load(dk["mao"]), di, reach=26), psnr(load(dk["uma"]), di, reach=26)
+                check("NOITE na mão", "escuro: erro na mão vs 1 foto na mão (contra a cena sem ruído, 3×)", f"{gm - go:+.2f} dB",
+                      gm - go >= 4.77, "≥ +4,8 dB")
         else:
             r = em / max(et, 1e-6)
             check("NOITE na mão", "detalhe na mão ÷ tripé (centro 100%)", f"{r:.2f}", r >= 0.9, "≥ 0,90")

@@ -559,8 +559,10 @@ final class LabTests: XCTestCase {
         let truth = Developer.materialize(base.cropped(to: e), extent: e)
         let path: [(CGFloat, CGFloat)] = [(0, 0), (-6.5, -15), (-7.5, -16), (-15.5, -0.5), (-13, 5), (-2.5, 5.5),
                                           (-5, 12), (-5.5, 19.5), (3, 8), (6, -4), (10, 2), (14, 9)]
-        // Três: tripé, mão e a mesma cena sem ruído e sem mexer (a régua: o erro de cada uma contra ela)
-        for (handheld, clean) in [(false, false), (true, false), (false, true)] {
+        // Três: tripé, mão e a mesma cena sem ruído e sem mexer (a régua: o erro de cada uma contra ela). Em luz de fim de
+        // tarde (ruído leve: mede a nitidez) e no escuro de verdade da NOITE (1/16 da luz, ruído de ISO 3200: o 3× contra 1 foto
+        // na mão). Com ruído leve a foto única quase não tem ruído e o erro dela é só o borrão da mão, igual ao da junção
+        for (handheld, clean, dark) in [(false, false, false), (true, false, false), (false, true, false), (true, false, true), (false, true, true)] {
             var frames: [CIImage] = []
             for (i, (px, py)) in path.enumerated() {
                 var img = truth.clampedToExtent()
@@ -589,7 +591,8 @@ final class LabTests: XCTestCase {
                 }
                 // Luz de fim de tarde e ruído leve: aqui mede-se a nitidez (alinhamento + fotos tremidas fora); o ruído do
                 // escuro já tem o teste da pilha. No escuro total a medida de borda contava o ruído como "detalhe"
-                img = Developer.add(Developer.scaled(img.cropped(to: e), by: 0.25), sensorNoise(e, seed: 100 + i, amplitude: clean ? 0 : 0.01)).cropped(to: e)
+                img = Developer.add(Developer.scaled(img.cropped(to: e), by: dark ? 1.0 / 16 : 0.25),
+                                    sensorNoise(e, seed: 100 + i, amplitude: clean ? 0 : (dark ? 0.03 : 0.01))).cropped(to: e)
                 frames.append(Developer.materialize(img, extent: e).settingProperties(iso3200))
             }
             Developer.decodeOverride = { frame, scale in
@@ -611,7 +614,7 @@ final class LabTests: XCTestCase {
             defer { Developer.nightTuning = savedNight }
             guard let out = Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: options(.neutro)),
                   let img = CIImage(data: out.heic) else { continue }
-            let name = clean ? "ideal" : (handheld ? "mao" : "tripe")
+            let name = (clean ? "ideal" : (handheld ? "mao" : "tripe")) + (dark ? "_escuro" : "")
             dlog("NOITE \(name): \(path.count) fotos em \(Diagnostics.ms(since: t0))")
             let ie = img.extent
             if handheld {
@@ -620,7 +623,7 @@ final class LabTests: XCTestCase {
                                                  options: options(.neutro)).0
                 let se = single.extent
                 save(single.cropped(to: CGRect(x: se.midX - 400, y: se.midY - 300, width: 800, height: 600).integral),
-                     "noite_mao/uma_100pct", maxSide: 800)
+                     "noite_mao/uma\(dark ? "_escuro" : "")_100pct", maxSide: 800)
             }
             // Centro em 100% (sem reduzir): é onde a nitidez aparece
             save(img.cropped(to: CGRect(x: ie.midX - 400, y: ie.midY - 300, width: 800, height: 600).integral), "noite_mao/\(name)_100pct", maxSide: 800)
