@@ -135,3 +135,14 @@ laboratório: o que aparecer lá entra no topo da fila.
     0%, sombra 0,15–0,29. RETRATO: fundo só com fundo (cor×peso e peso separados): vazamento 0,36/0,12/0,10.
   - Faltam: SUPER ZOOM (+3,1/+4,5/+3,5 dB; Python +5 a +6,8 — fotos do teste exportadas para comparar), NOITE na mão
     (0,78), RETRATO do iPhone 12 Pro (0,36).
+- **Rodada 0897ae1: 54/54 metas (todos os modos 3×).** O que fechou:
+  - SUPER ZOOM: MAP com as fotos todas de uma vez (modelo do sensor: média 2×2 da cena borrada, AᵀA exato por fase do
+    pixel e pedaço 3×3, Huber-TV conjunta brilho/cor, FISTA 16 passos, um passe por passo). +6,07/+8,49/+4,91 dB (antes
+    +4,12/+6,09/+4,48). Anti-fantasma do MAP tolerante (0,5): com 0,1 o serrilhado virava "fantasma" e a referência
+    borrada entrava (+3,65/+1,93). HEIC do SUPER ZOOM 0,98 (o Pixel estava no limite do HEIC). Memória pela livre.
+  - NOITE na mão: 3× medido no escuro de verdade (1/16 da luz, ISO 3200): +8,09 dB contra 1 foto na mão. Em fim de
+    tarde (ruído leve) o erro da foto única é só o borrão da mão, o mesmo da junção (fica como informação). Desfazer
+    borrão (Huber-TV, gaussiana 0,5) só na mão; pontos soltos tirados antes e depois.
+  - Revisão de código: fundo do RETRATO sem preto, memória (pools por passo, FOTO 3× no disco, SUPER ZOOM pelo livre),
+    FISTA 1/L, HDR com calibração 0,9, travas de concorrência, FOTO 3× sequencial com luz/cor/foco travados.
+  - → 0.29.

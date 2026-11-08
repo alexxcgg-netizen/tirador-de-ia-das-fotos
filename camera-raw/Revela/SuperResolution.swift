@@ -902,8 +902,8 @@ extension Developer {
                                 provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent) else { return nil }
         let out = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(out, UTType.heic.identifier as CFString, 1, nil) else { return nil }
-        // 0,95: no SUPER ZOOM o HEIC 0,9 sozinho errava quase o que a super resolução ganha (Pixel: 42 dB vs 40 dB)
-        var props: [CFString: Any] = [kCGImageDestinationLossyCompressionQuality: 0.95]
+        // 0,98: no SUPER ZOOM o HEIC já era o limite (Pixel: super resolução 42,0 dB, HEIC 0,9 sozinho 42,2 dB)
+        var props: [CFString: Any] = [kCGImageDestinationLossyCompressionQuality: 0.98]
         if let exif = properties[kCGImagePropertyExifDictionary as String] { props[kCGImagePropertyExifDictionary] = exif }
         if let tiff = properties[kCGImagePropertyTIFFDictionary as String] as? [String: Any] {
             var t = tiff
