@@ -44,6 +44,10 @@ struct NightTuning {
     var blackCap: Float = 0.06
     /// Força dos tons locais na noite (1 = não mexe; menor = sombras sobem mais).
     var shadowStrength: Float = 0.86
+    /// Desfazer o borrão que sobra na junção (movimento da mão em cada foto + encaixe ≈ gaussiana de 0,5 px), com
+    /// Huber-TV para não realçar ruído. Laboratório: a NOITE na mão equivalia à cena borrada 0,6 px. 0 desliga
+    var deblurSigma: Double = 0.5
+    var deblurIterations = 20
 }
 
 /// Calibragem da estrela nas luzes (pode vir do Claude pela ponte).
@@ -1297,6 +1301,14 @@ enum Developer {
         let noise = measuredNoise(out)
         dlog(String(format: "Noite: ruído medido %.4f", noise))
         out = despeckle(lumaDenoise(out, strength: cleanup, noise: noise))
+        // Junção de várias fotos: devolve o detalhe que o movimento da mão tirou de cada uma (com uma foto só, desfazer
+        // borrão realçaria o ruído)
+        if frameCount >= 4, nightTuning.deblurIterations > 0, nightTuning.deblurSigma > 0.05,
+           let sharp = tvRestoreStrips(out, extent: extent, box: false, sigma: nightTuning.deblurSigma,
+                                       luma: 1e-4, chroma: 1e-3, iterations: nightTuning.deblurIterations) {
+            out = sharp
+            dlog(String(format: "Noite: borrão de %.2f px desfeito (%d passos)", nightTuning.deblurSigma, nightTuning.deblurIterations))
+        }
         // Noite com cara de noite: preto de verdade (sem véu cinza). O "chão" de luz que o ruído e o céu
         // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
         let floor = darkFloor(out)

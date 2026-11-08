@@ -16,9 +16,9 @@ extension Developer {
     /// Calibragem da super resolução (o laboratório testa variações; o app usa a padrão).
     struct SRTuning {
         /// Tamanho do núcleo de cada pixel na grade grande (em pixels grandes).
-        // 0,6 com a desconvolução regularizada (estudo em Python); com a Richardson–Lucy 0,45 era melhor (laboratório
-        // 86ab1f0: +4,12/+6,09/+4,48 dB)
-        var splatSigma: Double = 0.6
+        // 0,45 com a Richardson–Lucy (laboratório 86ab1f0: +4,12/+6,09/+4,48 dB). A desconvolução regularizada (tv) só
+        // ganhava no iPhone 12 Pro (+4,77) e perdia no XS (+4,72) e no Pixel (+4,30): fica desligada
+        var splatSigma: Double = 0.45
         /// Borrão da desconvolução final, × o fator de ampliação.
         // 0,45 × fator com 3 passos (laboratório b22822c: +1,85/+2,67/+1,84 dB contra +1,66/+1,98/+1,73 com 0,35 × 2)
         var deconvScale: Double = 0.4
@@ -31,11 +31,13 @@ extension Developer {
         var denoise: Float = 0
         /// Desconvolução regularizada (Huber-TV, brilho/cor) em vez da Richardson–Lucy. Estudo em Python nas 24 fotos
         /// do laboratório: +5,4 dB (RL × 3: +4,5; RL × 10: +4,9). Borradura: caixa 2×2 do sensor ⊗ gaussiana 0,45 px
-        var tv = true
+        var tv = false
         var tvLumaLambda: Float = 2e-4
         var tvChromaLambda: Float = 2e-3
         var tvDelta: Float = 0.01
         var tvIterations = 30
+        /// Limpeza só da cor depois da Richardson–Lucy (Huber-TV sem desfazer borrão: o detalhe do brilho fica)
+        var chromaClean: Float = 0
     }
     static var srTuning = SRTuning()
 
@@ -731,28 +733,32 @@ extension Developer {
     /// comparando com o observado depois de borrar com o mesmo borrão da lente. Pouco ruído porque as fotos já foram somadas.
     /// Desconvolução regularizada (FISTA): minimiza ‖P·x − observada‖² + Σ λ·Huber(|∇u|), u = cor em brilho/2 cores.
     /// P = caixa 2×2 do sensor (binomial 3×3) ⊗ gaussiana 0,45 px (simétrica: a transposta é ela mesma)
-    private static func tvDeconvolved(_ image: CIImage, strip rect: CGRect, extent: CGRect) -> CIImage? {
-        let t = srTuning
-        guard t.tvIterations > 0, let tvFluxKernel, let tvStepKernel, let momentumKernel, let subKernel = srSubKernel else { return nil }
-        let margin = CGFloat(6 * t.tvIterations + 8)
+    /// Restauração com Huber-TV (FISTA): minimiza ‖P·x − observada‖² + Σ λ·Huber(|∇u|), u = cor em brilho/2 cores.
+    /// P = (caixa 2×2 do sensor, se `box`) ⊗ gaussiana `sigma` (0 = nenhuma: só tira ruído). Faixa `rect` com margem.
+    static func tvRestore(_ image: CIImage, strip rect: CGRect, extent: CGRect, box: Bool, sigma: Double,
+                          luma: Float, chroma: Float, delta: Float = 0.01, iterations: Int) -> CIImage? {
+        guard iterations > 0, let tvFluxKernel, let tvStepKernel, let momentumKernel, let subKernel = srSubKernel else { return nil }
+        let margin = CGFloat(6 * iterations + 8)
         let big = rect.insetBy(dx: 0, dy: -margin).intersection(extent).integral
         let observed = materialize(image.cropped(to: big), extent: big)
         func psf(_ x: CIImage) -> CIImage {
-            x.clampedToExtent()
-                .applyingFilter("CIConvolution3X3", parameters: [
+            var y = x.clampedToExtent()
+            if box {
+                y = y.applyingFilter("CIConvolution3X3", parameters: [
                     "inputWeights": CIVector(values: [1, 2, 1, 2, 4, 2, 1, 2, 1].map { $0 / 16 }, count: 9), "inputBias": 0])
-                .applyingGaussianBlur(sigma: 0.45)
-                .cropped(to: big)
+            }
+            if sigma > 0.05 { y = y.applyingGaussianBlur(sigma: sigma) }
+            return y.cropped(to: big)
         }
-        let lam = CIVector(x: CGFloat(t.tvLumaLambda), y: CGFloat(t.tvChromaLambda), z: CGFloat(t.tvChromaLambda))
-        let tau = Float(1.8 / (1 + 8 * Double(t.tvChromaLambda) / Double(t.tvDelta)))
+        let lam = CIVector(x: CGFloat(luma), y: CGFloat(chroma), z: CGFloat(chroma))
+        let tau = Float(1.8 / (1 + 8 * Double(max(luma, chroma)) / Double(delta)))
         let roi: CIKernelROICallback = { _, r in r.insetBy(dx: -2, dy: -2) }
         var x = observed, z = observed
         var tk: Float = 1
-        for _ in 0..<t.tvIterations {
+        for _ in 0..<iterations {
             guard let residual = subKernel.apply(extent: big, arguments: [psf(z), observed]),
-                  let fx = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), t.tvDelta, Float(0)]),
-                  let fy = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), t.tvDelta, Float(1)]) else { return nil }
+                  let fx = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), delta, Float(0)]),
+                  let fy = tvFluxKernel.apply(extent: big, roiCallback: roi, arguments: [z.clampedToExtent(), delta, Float(1)]) else { return nil }
             let dataGrad = materialize(psf(materialize(residual, extent: big)), extent: big)
             guard let next = tvStepKernel.apply(extent: big, roiCallback: roi, arguments: [
                 z.clampedToExtent(), materialize(fx, extent: big).clampedToExtent(), materialize(fy, extent: big).clampedToExtent(),
@@ -767,8 +773,33 @@ extension Developer {
         return x.cropped(to: rect)
     }
 
+    /// A mesma restauração na foto inteira, em faixas de 512 linhas (memória: cada faixa só vive dentro do laço)
+    static func tvRestoreStrips(_ image: CIImage, extent: CGRect, box: Bool, sigma: Double, luma: Float, chroma: Float,
+                                iterations: Int) -> CIImage? {
+        let e = extent.integral
+        var out = CIImage(color: .clear).cropped(to: e)
+        var y = e.minY
+        while y < e.maxY {
+            let rows = min(512, e.maxY - y)
+            let rect = CGRect(x: e.minX, y: y, width: e.width, height: rows)
+            var ok = true
+            autoreleasepool {
+                if let strip = tvRestore(image, strip: rect, extent: e, box: box, sigma: sigma, luma: luma, chroma: chroma,
+                                         iterations: iterations) {
+                    out = strip.composited(over: out)
+                } else { ok = false }
+            }
+            guard ok else { return nil }
+            y += rows
+        }
+        return materialize(out, extent: e)
+    }
+
     private static func deconvolved(_ image: CIImage, strip rect: CGRect, extent: CGRect, iterations: Int, sigma: Double) -> CIImage {
-        if srTuning.tv, iterations > 0, let tv = tvDeconvolved(image, strip: rect, extent: extent) { return tv }
+        let t = srTuning
+        if t.tv, iterations > 0, let tv = tvRestore(image, strip: rect, extent: extent, box: true, sigma: 0.45,
+                                                    luma: t.tvLumaLambda, chroma: t.tvChromaLambda, delta: t.tvDelta,
+                                                    iterations: t.tvIterations) { return tv }
         guard iterations > 0, let ratioKernel, let multiplyKernel else { return image.cropped(to: rect) }
         let margin = CGFloat(ceil(sigma * 3 * 2 * Double(iterations))) + 4
         let big = rect.insetBy(dx: 0, dy: -margin).intersection(extent).integral
@@ -779,6 +810,10 @@ extension Developer {
             guard let ratio = ratioKernel.apply(extent: big, arguments: [observed, blur(estimate)]),
                   let next = multiplyKernel.apply(extent: big, arguments: [estimate, blur(ratio)]) else { break }
             estimate = materialize(next, extent: big)
+        }
+        if t.chromaClean > 0, let clean = tvRestore(estimate, strip: rect, extent: big, box: false, sigma: 0, luma: 0,
+                                                     chroma: t.chromaClean, iterations: 20) {
+            return clean
         }
         return estimate.cropped(to: rect)
     }
