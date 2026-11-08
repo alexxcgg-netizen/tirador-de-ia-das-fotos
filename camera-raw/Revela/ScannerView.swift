@@ -51,7 +51,8 @@ struct ScannerView: View {
         .preferredColorScheme(.dark)
         .tint(accent)
         .onAppear { scanner.startPreview() }
-        .onDisappear { scanner.stop() }
+        // Fechou no meio da gravação: salva o escaneamento (ou apaga a pasta vazia) em vez de deixar pela metade
+        .onDisappear { scanner.close() }
         .onChange(of: mode) { _, newMode in
             // O OBJETO usa a câmera do jeito dele: a sessão da CENA precisa parar
             if newMode == 0 { scanner.startPreview() } else { scanner.stop() }

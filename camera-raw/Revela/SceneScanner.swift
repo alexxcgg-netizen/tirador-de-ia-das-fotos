@@ -72,12 +72,35 @@ final class SceneScanner: NSObject, ObservableObject, ARSessionDelegate {
         arView.session.pause()
     }
 
+    /// Tela fechada (X ou gesto) no meio de um escaneamento: termina e salva o que já foi visto (antes sobrava uma pasta
+    /// sem transforms.json, que não abria em lugar nenhum). Sem nenhuma foto ainda, apaga a pasta vazia.
+    func close() {
+        if recording {
+            if frameEntries.isEmpty {
+                recording = false
+                if let folder { try? FileManager.default.removeItem(at: folder) }
+                folder = nil
+                dlog("Scanner: fechado antes da primeira foto, pasta apagada")
+            } else {
+                dlog("Scanner: fechado no meio, salvando \(frameEntries.count) fotos")
+                // Antes de pausar: o fim lê a malha do quadro atual do ARKit
+                finish()
+            }
+        }
+        stop()
+    }
+
+    /// Só avisa a tela quando o texto muda (o ARKit chama 60 vezes por segundo e cada aviso redesenhava a tela).
+    private func setStatus(_ text: String) {
+        if status != text { status = text }
+    }
+
     func session(_ session: ARSession, didFailWithError error: Error) {
         dlog("Scanner: ARKit falhou (\(error.localizedDescription))")
         if usingFourK {
             run(fourK: false)
         } else {
-            status = "O ARKit parou: \(error.localizedDescription)"
+            setStatus("O ARKit parou: \(error.localizedDescription)")
         }
     }
 
@@ -106,17 +129,17 @@ final class SceneScanner: NSObject, ObservableObject, ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         switch frame.camera.trackingState {
         case .normal:
-            if !recording { status = "Pronto. Toque em gravar e ande devagar em volta" }
+            if !recording { setStatus("Pronto. Toque em gravar e ande devagar em volta") }
         case .limited(let reason):
             switch reason {
-            case .excessiveMotion: status = "Mais devagar"
-            case .insufficientFeatures: status = "Pouca textura: aponte para algo com detalhes"
-            case .initializing, .relocalizing: status = "Reconhecendo o ambiente…"
-            @unknown default: status = "Rastreamento limitado"
+            case .excessiveMotion: setStatus("Mais devagar")
+            case .insufficientFeatures: setStatus("Pouca textura: aponte para algo com detalhes")
+            case .initializing, .relocalizing: setStatus("Reconhecendo o ambiente…")
+            @unknown default: setStatus("Rastreamento limitado")
             }
             return
         case .notAvailable:
-            status = "Rastreamento indisponível"
+            setStatus("Rastreamento indisponível")
             return
         }
         guard recording, let folder, pending < 3, let depth = frame.sceneDepth else { return }
@@ -187,8 +210,10 @@ final class SceneScanner: NSObject, ObservableObject, ARSessionDelegate {
         var rgba = [UInt8](repeating: 0, count: w * h * 4)
         context.render(small, toBitmap: &rgba, rowBytes: w * 4, bounds: CGRect(x: 0, y: 0, width: w, height: h),
                        format: .RGBA8, colorSpace: CGColorSpace(name: CGColorSpace.sRGB))
-        let s = Float(w) / Float(resolution.width)
-        let fx = k[0][0] * s, fy = k[1][1] * s, cx = k[2][0] * s, cy = k[2][1] * s
+        // Intrínsecos levados ao tamanho do mapa de profundidade com a escala de cada eixo (a cor acima também é por eixo)
+        let sx = Float(w) / Float(resolution.width), sy = Float(h) / Float(resolution.height)
+        let fx = k[0][0] * sx, fy = k[1][1] * sy, cx = k[2][0] * sx, cy = k[2][1] * sy
+        let firstRowIsTop = bitmapFirstRowIsTop
         for v in stride(from: 0, to: h, by: 2) {
             for u in stride(from: 0, to: w, by: 2) {
                 let i = v * w + u
@@ -201,13 +226,26 @@ final class SceneScanner: NSObject, ObservableObject, ARSessionDelegate {
                 let key = Self.voxelKey(world)
                 guard voxels.insert(key).inserted else { continue }
                 cloudPoints.append(SIMD3(world.x, world.y, world.z))
-                // O bitmap renderizado vem de baixo para cima
-                let row = h - 1 - v
+                // A linha v da profundidade é contada de cima; a do bitmap depende do Core Image (medido uma vez)
+                let row = firstRowIsTop ? v : h - 1 - v
                 let p = (row * w + u) * 4
                 cloudColors.append(SIMD3(rgba[p], rgba[p + 1], rgba[p + 2]))
             }
         }
     }
+
+    /// Se a 1ª linha do bitmap que o Core Image devolve é o topo da imagem. A conta antiga supunha de baixo para cima e
+    /// pintava cada ponto com a cor da linha espelhada. Medido com uma imagem de 1×2 (branco em cima). Na fila de escrita.
+    private lazy var bitmapFirstRowIsTop: Bool = {
+        let white = CIImage(color: CIColor.white).cropped(to: CGRect(x: 0, y: 1, width: 1, height: 1))
+        let probe = white.composited(over: CIImage(color: CIColor.black).cropped(to: CGRect(x: 0, y: 0, width: 1, height: 2)))
+        var pixels = [UInt8](repeating: 0, count: 8)
+        self.context.render(probe, toBitmap: &pixels, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 2),
+                       format: .RGBA8, colorSpace: nil)
+        let top = pixels[0] > 127
+        dlog("Scanner: 1ª linha do bitmap = \(top ? "topo" : "base")")
+        return top
+    }()
 
     private static func voxelKey(_ p: SIMD4<Float>) -> Int64 {
         let ix = Int64((p.x * 100).rounded(.down)) & 0x1FFFFF
