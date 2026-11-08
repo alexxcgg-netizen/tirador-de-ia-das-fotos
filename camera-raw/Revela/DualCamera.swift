@@ -14,12 +14,54 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
     private let queue = DispatchQueue(label: "revela.dual", qos: .userInteractive)
     private var latestFront: CIImage?
     private var configured = false
+    private var backDevice: AVCaptureDevice?
+    private var frontDevice: AVCaptureDevice?
 
     /// Imagem montada + horário do quadro (na fila da câmera dupla).
     var onFrame: ((CIImage, CMTime) -> Void)?
     var onAudio: ((CMSampleBuffer) -> Void)?
     /// A dupla não abriu (no main): o app volta para a foto em vez de ficar com a tela preta.
     var onFailure: (() -> Void)?
+    /// Ligação, outro app na câmera ou erro (no main): o app fecha a gravação e salva o que deu.
+    var onInterrupted: (() -> Void)?
+
+    override init() {
+        super.init()
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(sessionInterrupted(_:)),
+                           name: AVCaptureSession.wasInterruptedNotification, object: session)
+        center.addObserver(self, selector: #selector(sessionFailed(_:)),
+                           name: AVCaptureSession.runtimeErrorNotification, object: session)
+    }
+
+    @objc private func sessionInterrupted(_ note: Notification) {
+        dlog("Câmera dupla interrompida")
+        DispatchQueue.main.async { self.onInterrupted?() }
+    }
+
+    @objc private func sessionFailed(_ note: Notification) {
+        let error = note.userInfo?[AVCaptureSessionErrorKey] as? AVError
+        dlog("❌ Câmera dupla: \(error?.localizedDescription ?? "erro")")
+        DispatchQueue.main.async { self.onInterrupted?() }
+        // Os serviços de mídia reiniciaram: liga de novo
+        guard let error, error.code == .mediaServicesWereReset else { return }
+        queue.async {
+            if self.configured, !self.session.isRunning { self.session.startRunning() }
+        }
+    }
+
+    /// Revelar de novo aberto: a dupla descansa junto com a câmera principal.
+    func pause() {
+        queue.async {
+            if self.session.isRunning { self.session.stopRunning() }
+        }
+    }
+
+    func resume() {
+        queue.async {
+            if self.configured, !self.session.isRunning { self.session.startRunning() }
+        }
+    }
 
     func start(withAudio: Bool) {
         queue.async {
@@ -31,6 +73,8 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
                     DispatchQueue.main.async { self.onFailure?() }
                     return
                 }
+                // As duas câmeras juntas passaram da cota do hardware: volta aos formatos de antes
+                if self.session.hardwareCost > 1 { self.useLighterFormats() }
             }
             self.session.startRunning()
             dlog("Câmera dupla ligada · custo de hardware \(String(format: "%.2f", self.session.hardwareCost))")
@@ -44,6 +88,8 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
             latestFront = nil
             releaseEverything()
             configured = false
+            backDevice = nil
+            frontDevice = nil
             dlog("Câmera dupla desligada e câmeras soltas")
         }
     }
@@ -66,19 +112,16 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
             dlog("❌ Câmera dupla: câmeras não encontradas")
             return false
         }
+        backDevice = back
+        frontDevice = front
+        // O som fica por conta do app (CameraModel.prepareAudioSession): a configuração automática calava outros apps
+        session.automaticallyConfiguresApplicationAudioSession = false
         session.beginConfiguration()
         defer { session.commitConfiguration() }
         // Cada câmera num formato que aceita rodar junto com a outra, no máximo 1920 de largura
-        for device in [back, front] {
-            let formats = device.formats.filter {
-                let d = CMVideoFormatDescriptionGetDimensions($0.formatDescription)
-                return $0.isMultiCamSupported && d.width <= 1920
-            }
-            if let best = formats.max(by: {
-                CMVideoFormatDescriptionGetDimensions($0.formatDescription).width < CMVideoFormatDescriptionGetDimensions($1.formatDescription).width
-            }), (try? device.lockForConfiguration()) != nil {
-                device.activeFormat = best
-                device.unlockForConfiguration()
+        for (device, isFront) in [(back, false), (front, true)] {
+            if let best = Self.format(for: device, front: isFront, fourByThree: true) {
+                Self.use(best, on: device)
             }
         }
         var connected = false
@@ -120,6 +163,48 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
             connection.isVideoMirrored = true
         }
         return true
+    }
+
+    /// Formato de uma câmera da dupla. Traseira em 4:3 (1920×1440): a foto e o visor 3:4 mostram o quadro inteiro, sem
+    /// cortar a selfie do canto. Frontal no menor 4:3 com 1280 ou mais (o quadrinho usa 30% da largura: mais que isso só
+    /// gastava a cota de hardware das duas juntas). `fourByThree: false`: o maior até 1920, como antes.
+    private static func format(for device: AVCaptureDevice, front: Bool, fourByThree: Bool) -> AVCaptureDevice.Format? {
+        func dims(_ f: AVCaptureDevice.Format) -> CMVideoDimensions { CMVideoFormatDescriptionGetDimensions(f.formatDescription) }
+        let usable = device.formats.filter { $0.isMultiCamSupported && dims($0).width <= 1920 }
+        if fourByThree {
+            let fours = usable.filter {
+                let d = dims($0)
+                return d.height > 0 && abs(Double(d.width) / Double(d.height) - 4.0 / 3.0) < 0.02
+            }
+            if front, let small = fours.filter({ dims($0).width >= 1280 }).min(by: { dims($0).width < dims($1).width }) {
+                return small
+            }
+            if let big = fours.max(by: { dims($0).width < dims($1).width }) { return big }
+        }
+        return usable.max(by: { dims($0).width < dims($1).width })
+    }
+
+    private static func use(_ format: AVCaptureDevice.Format, on device: AVCaptureDevice) {
+        guard (try? device.lockForConfiguration()) != nil else { return }
+        attempt("Formato da câmera dupla") {
+            device.activeFormat = format
+            // Sem zoom: o objeto da câmera é o mesmo da sessão principal e podia vir com o zoom do VÍDEO
+            if device.videoZoomFactor != 1 { device.videoZoomFactor = 1 }
+        }
+        device.unlockForConfiguration()
+        let d = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+        dlog("Câmera dupla: \(device.localizedName) em \(d.width)×\(d.height)")
+    }
+
+    /// Volta aos formatos antigos (o maior até 1920 de cada câmera) quando o 4:3 passou da cota de hardware.
+    private func useLighterFormats() {
+        dlog(String(format: "Câmera dupla: custo de hardware %.2f com 4:3, voltando aos formatos de antes", session.hardwareCost))
+        session.beginConfiguration()
+        for (device, isFront) in [(backDevice, false), (frontDevice, true)] {
+            guard let device, let format = Self.format(for: device, front: isFront, fourByThree: false) else { continue }
+            Self.use(format, on: device)
+        }
+        session.commitConfiguration()
     }
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {

@@ -45,7 +45,8 @@ struct ContentView: View {
                     topBar
                     viewfinder
                         .overlay(alignment: .bottom) {
-                            if showLookStrip {
+                            // No CINEMÁTICO o visor é o do sistema, sem o look: as miniaturas não valeriam
+                            if showLookStrip && camera.captureMode != .cinematic {
                                 LookStrip(camera: camera) { showLooks = true }
                                     .padding(8)
                                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -558,7 +559,8 @@ struct ContentView: View {
                 if camera.showGrid {
                     ThirdsGrid().stroke(.white.opacity(0.22), lineWidth: 0.5)
                 }
-                AspectMask(aspect: camera.aspect)
+                // Vídeo: o visor mostra o quadro inteiro do arquivo; a proporção da foto não se aplica
+                if !camera.showsWholeFrame { AspectMask(aspect: camera.aspect) }
                 // No panorama o giroscópio fica só para ele
                 if camera.showLevel, camera.panoramaProgress == nil { LevelOverlay() }
                 if let progress = camera.panoramaProgress {
@@ -631,8 +633,13 @@ struct ContentView: View {
                 }
                 VStack {
                     HStack {
-                        LiveHistogram(live: camera.live, rgb: camera.rgbHistogram)
-                            .frame(width: 96, height: 40)
+                        if camera.captureMode == .cinematic {
+                            // O CINEMÁTICO não passa pelo visor do app: o histograma ficaria parado no último quadro
+                            Color.clear.frame(width: 96, height: 40)
+                        } else {
+                            LiveHistogram(live: camera.live, rgb: camera.rgbHistogram)
+                                .frame(width: 96, height: 40)
+                        }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
                             Text(statusText.replacingOccurrences(of: "\n", with: " ") + (camera.mirror ? " · ESPELHO" : ""))
@@ -660,7 +667,8 @@ struct ContentView: View {
                         .frame(maxHeight: .infinity, alignment: .bottom)
                         .padding(.bottom, 10)
                 }
-                if camera.stackProgress == nil {
+                // Nos vídeos o quadro fica encaixado (e no CINEMÁTICO o rosto nem é procurado): o quadro do rosto sairia fora do lugar
+                if camera.stackProgress == nil, !camera.showsWholeFrame {
                     FaceOverlay(live: camera.live, zoom: camera.crop, size: geo.size)
                 }
                 if camera.lens == .macro && camera.stackProgress == nil {
@@ -1309,7 +1317,7 @@ struct ContentView: View {
         case .action: return "4K\n120"
         case .freeze: return camera.freezeMax ? "1/\(Int((1 / camera.freezeShutter).rounded()))\nMÁX" : "1/\(Int((1 / camera.freezeShutter).rounded()))\n12MP"
         case .hdr: return "HDR\n3× RAW"
-        case .video: return "1080p\n\(camera.videoFPS) fps"
+        case .video: return camera.videoFormatLabel
         case .cinematic: return apertureLabel(camera.cinematicAperture) + "\nCINEMA"
         case .dual: return "DUPLA\nFOTO · VÍDEO"
         case .scan: return "3D\nLIDAR"
