@@ -423,22 +423,27 @@ namespace coreimage {
     }
 
     // Σh da mesma foto (só a geometria: não abre a foto), somado ao acumulado: r = Σh·g (para o começo Σh·g·y/Σh·g),
-    // g = Σh (para W = Σh·g/Σh, a fração das amostras que ficou em cada pixel). Fora da transparência (pré-multiplicação)
+    // g = Σh das amostras dentro da foto, b = Σh de todas (para W = Σh·g/Σh_todas, a fração das amostras que ficou em cada
+    // pixel). O AᵀA da tabela conta todas as amostras: com o Σh só das de dentro no W, a amostra que caiu fora da foto
+    // sumia do dado (b) mas não do modelo, e a beirada escurecia nos 16 passos quando o recorte encostava na borda.
+    // Fora da transparência (pré-multiplicação)
     float4 revelaSplatHWeight(sample_t accum, sample_t gm, float3 inv0, float3 inv1, float4 m, float4 a, float4 b,
                               float4 c, float4 d, float2 e, float4 grid, float4 valid, destination dest) {
         float2 p = dest.coord();
         float2 q = srSource(p, inv0, inv1, m, a, b, c, d, e, grid);
         float2 base = floor(q - 0.5f);
-        float wsum = 0.0f;
+        float wsum = 0.0f, wall = 0.0f;
         for (int j = -1; j <= 2; j++) {
             for (int i = -1; i <= 2; i++) {
                 float2 cpos = base + float2(float(i), float(j)) + 0.5f;
                 float2 dd = (cpos - q) * m.x;
-                wsum += srH(dd.x) * srH(dd.y) * srValid(cpos, valid);
+                float h = srH(dd.x) * srH(dd.y);
+                wsum += h * srValid(cpos, valid);
+                wall += h;
             }
         }
         float g = clamp(gm.r, 0.0f, 1.0f);
-        return float4(accum.r + wsum * g, accum.g + wsum, 0.0f, 1.0f);
+        return float4(accum.r + wsum * g, accum.g + wsum, accum.b + wall, 1.0f);
     }
 
     // Um passo de FISTA do MAP sobre z (= x + β(x − x_anterior), calculado uma vez por passo antes; antes era refeito
@@ -456,7 +461,8 @@ namespace coreimage {
         f.y = gy * s;
         return f;
     }
-    // ws: as somas de peso (r = Σh·g, g = Σh); o dado vira W·AᵀA·z − b, W = r/g (só as amostras que ficaram contam)
+    // ws: as somas de peso (r = Σh·g dentro da foto, b = Σh de todas); o dado vira W·AᵀA·z − b, W = r/b (só as amostras
+    // que ficaram contam; a que caiu fora da foto também sai do modelo)
     float4 revelaMAPStep(sampler z, sampler b, sampler tab, sampler ws, float4 grid, float3 lam, float3 tau,
                          float delta, float w, destination dest) {
         float2 p = dest.coord();
@@ -482,7 +488,7 @@ namespace coreimage {
         }
         float3 z0 = z.sample(z.transform(p)).rgb;
         float4 wsp = ws.sample(ws.transform(p));
-        float W = clamp(wsp.r / max(wsp.g, 1e-6f), 0.0f, 1.0f);
+        float W = clamp(wsp.r / max(wsp.b, 1e-6f), 0.0f, 1.0f);
         float3 G = W * conv - b.sample(b.transform(p)).rgb;
         float3 u0 = tvU(z0);
         float3 uxp = tvU(z.sample(z.transform(p + float2(1.0f, 0.0f))).rgb), uyp = tvU(z.sample(z.transform(p + float2(0.0f, 1.0f))).rgb);
@@ -724,15 +730,33 @@ namespace coreimage {
                        s.sample(s.transform(p + float2(1.0f, 1.0f))).rgb);
     }
 
-    // ESTRELAS: pixel quente (fixo no sensor). No mínimo das fotos sem alinhar as estrelas somem (o céu anda ≥ 3 px) e o
-    // quente fica. Quente = passa da mediana 3×3 em volta por mais de 6σ do ruído (noise) e por mais de metade do nível
-    // dela (uma luz de verdade se espalha pela lente e os vizinhos sobem junto)
-    float4 revelaHotMask(sampler mn, float noise, destination dest) {
+    // ESTRELAS: pixel quente (fixo no sensor), no mínimo das fotos sem alinhar (as estrelas que andam somem dele, o quente
+    // fica). Quente só se:
+    // (1) o céu andou ≥ 3 px NAQUELE pixel da 1ª à última foto (|M·p + c|; o giro é pequeno e o caminho é quase reta).
+    //     Antes era medido só no centro: perto do polo a estrela quase não anda, fica no mínimo e era apagada como quente;
+    // (2) sozinho: passa do MAIOR dos 8 vizinhos por 6σ e por 40% da altura dele sobre o fundo. Antes era a mediana 3×3,
+    //     que apagava a luz parada de 2×2 (4 de 9 claros: a mediana é o fundo) e a estrela fina;
+    // (3) parado: a média das fotos quase não passa do mínimo (até 3σ + ¼ do excesso). Estrela que cruza o pixel em
+    //     algumas fotos sobe a média; o quente é igual em todas
+    float4 revelaHotMask(sampler mn, sampler mean, float noise, float4 m, float2 c, destination dest) {
         float2 p = dest.coord();
-        float c = dot(max(mn.sample(mn.transform(p)).rgb, float3(0.0f)), revela::kLuma);
-        float med = dot(max(median3x3(mn, p), float3(0.0f)), revela::kLuma);
-        float excess = c - med;
-        float hot = (excess > 6.0f * noise && excess > 0.5f * med) ? 1.0f : 0.0f;
+        float2 moved = float2(m.x * p.x + m.y * p.y + c.x, m.z * p.x + m.w * p.y + c.y);
+        if (length(moved) < 3.0f) return float4(0.0f, 0.0f, 0.0f, 1.0f);
+        float v = dot(max(mn.sample(mn.transform(p)).rgb, float3(0.0f)), revela::kLuma);
+        float hi = -1e9f, lo = 1e9f;
+        for (int j = -1; j <= 1; j++) {
+            for (int i = -1; i <= 1; i++) {
+                if (i == 0 && j == 0) continue;
+                float q = dot(max(mn.sample(mn.transform(p + float2(float(i), float(j)))).rgb, float3(0.0f)), revela::kLuma);
+                hi = max(hi, q);
+                lo = min(lo, q);
+            }
+        }
+        float excess = v - hi;
+        float avg = dot(max(mean.sample(mean.transform(p)).rgb, float3(0.0f)), revela::kLuma);
+        float alone = (excess > 6.0f * noise && excess > 0.4f * (v - lo)) ? 1.0f : 0.0f;
+        float steady = (avg - v < 3.0f * noise + 0.25f * excess) ? 1.0f : 0.0f;
+        float hot = alone * steady;
         return float4(hot, hot, hot, 1.0f);
     }
 
@@ -743,13 +767,42 @@ namespace coreimage {
         return float4(median3x3(f, p), 1.0f);
     }
 
-    // ESTRELAS: corte do que passou (avião, satélite) depois de alinhar: acima de média + κ·max(desvio entre as fotos,
-    // ruído), em vez de 1,6 × a média (que com as fotos desalinhadas apagava ~55% das estrelas, que andam)
-    float4 revelaSigmaClip(sample_t x, sample_t mean, sample_t meanSq, float kappa, float noise) {
-        float3 m = mean.rgb;
-        float3 s = sqrt(max(meanSq.rgb - m * m, float3(0.0f)));
-        float3 limit = m + kappa * max(s, float3(noise));
+    // ESTRELAS: corte do que passou (avião, satélite) depois de alinhar: acima de média + κ·max(desvio, ruído), com a média e
+    // o desvio SEM as duas maiores de cada pixel (revelaTrimmedMean/Spread). Antes a média e o desvio incluíam o próprio
+    // avião: com 16 fotos o z dele não passa de √15 = 3,87 e a trilha ficava com 79% (1 foto) a 100% (2 fotos). Conta em
+    // Python: tirando as 2 maiores sobra 0,2σ (1 foto) e 0,46σ (2 fotos); tirando só a própria (deixa-uma-fora), 17,9σ
+    // com 2 fotos
+    float4 revelaSigmaClip(sample_t x, sample_t mean, sample_t spread, float kappa, float noise) {
+        float3 limit = mean.rgb + kappa * max(spread.rgb, float3(noise));
         return float4(min(x.rgb, limit), 1.0f);
+    }
+
+    // ESTRELAS: a 2ª maior de cada pixel até aqui (m1 = a maior de antes, m2 = a 2ª de antes, x = a foto nova)
+    float4 revelaSecondMax(sample_t m1, sample_t m2, sample_t x) {
+        return float4(max(m2.rgb, min(m1.rgb, x.rgb)), 1.0f);
+    }
+
+    // ESTRELAS: média de cada pixel sem as duas maiores (avião ou satélite em até 2 fotos não entra). unbias: quanto do desvio
+    // aparado volta para a média (tirar as 2 maiores de 16 puxa a média 0,22σ para baixo e o desvio fica 0,79σ: com 0,275 ×
+    // o desvio aparado ela volta ao lugar). O chão usa 0,275 (sem isso o preto do chão escurecia 0,22σ); o limite do corte do
+    // céu usa 0, como na conta em Python
+    float4 revelaTrimmedMean(sample_t sum, sample_t sumSq, sample_t m1, sample_t m2, float count, float unbias) {
+        float k = max(count - 2.0f, 1.0f);
+        float3 a = max(m1.rgb, float3(0.0f)), b = max(m2.rgb, float3(0.0f));
+        float3 m = (sum.rgb - m1.rgb - m2.rgb) / k;
+        float3 v = (sumSq.rgb - a * a - b * b) / k - m * m;
+        return float4(m + unbias * sqrt(max(v, float3(0.0f))), 1.0f);
+    }
+
+    // ESTRELAS: desvio sem as duas maiores × 1,25 (tirar as 2 maiores de 16 encolhe o desvio para 0,79 dele: conta em
+    // Python). Guardado como desvio, não variância: o σ² do céu (~3e-6) cai abaixo do menor número normal da meia precisão.
+    // O quadrado da soma é max(x, 0)·x (revelaMultiply): o das maiores também
+    float4 revelaTrimmedSpread(sample_t sum, sample_t sumSq, sample_t m1, sample_t m2, float count) {
+        float k = max(count - 2.0f, 1.0f);
+        float3 a = max(m1.rgb, float3(0.0f)), b = max(m2.rgb, float3(0.0f));
+        float3 m = (sum.rgb - m1.rgb - m2.rgb) / k;
+        float3 v = (sumSq.rgb - a * a - b * b) / k - m * m;
+        return float4(1.25f * sqrt(max(v, float3(0.0f))), 1.0f);
     }
 
     // NOITE: onde poucas fotos entraram (quem se mexeu ficou só com a referência) a limpeza é mais forte, pelo que falta de
@@ -772,10 +825,12 @@ namespace coreimage {
         return float4(m, m, m, 1.0f);
     }
 
-    // FOCO EMPILHADO: peso pela nitidez relativa (s ÷ nitidez típica), preso para caber na meia precisão (a soma de 7 fotos
-    // não estoura). Potência alta = quase sempre a mais nítida, mas sem a troca dura (0/1) que fazia auréola
-    float4 revelaFocusWeight(sample_t s, float typical, float power) {
-        float r = clamp(max(s.r, 0.0f) / max(typical, 1e-6f), 0.18f, 6.7f);
+    // FOCO EMPILHADO: peso pela nitidez relativa à MAIS nítida das fotos naquele lugar (best), r = (s + ε)/(best + ε) em
+    // (0, 1] (até 2 onde o best em ¼ ficou um pouco abaixo do detalhe; 2⁸ = 256 cabe na meia precisão, 4⁸ estouraria),
+    // w = r^power. Antes era s ÷ (2× a média da 1ª foto), preso em 0,18–6,7: com a 1ª toda fora de foco a melhor e a
+    // vizinha prendiam em 6,7 e pesavam igual (borda amolecida). ε: no liso todas valem quase igual (média, sem manchas)
+    float4 revelaFocusWeight(sample_t s, sample_t best, float eps, float power) {
+        float r = clamp((max(s.r, 0.0f) + eps) / (max(best.r, 0.0f) + eps), 0.0f, 2.0f);
         float w = pow(r, power);
         return float4(w, w, w, 1.0f);
     }
