@@ -16,9 +16,12 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
     private var configured = false
     private var backDevice: AVCaptureDevice?
     private var frontDevice: AVCaptureDevice?
+    /// Já chegou quadro da traseira desde o último start (na fila da dupla): erro antes disso é "não abriu".
+    private var gotFrame = false
 
-    /// Imagem montada + horário do quadro (na fila da câmera dupla).
-    var onFrame: ((CIImage, CMTime) -> Void)?
+    /// Imagem montada para o visor (selfie espelhada, como num espelho), as duas câmeras separadas (para a foto e o
+    /// vídeo montarem com o espelho dos Ajustes) e o horário do quadro. Na fila da câmera dupla.
+    var onFrame: ((_ preview: CIImage, _ back: CIImage, _ front: CIImage?, _ time: CMTime) -> Void)?
     var onAudio: ((CMSampleBuffer) -> Void)?
     /// A dupla não abriu (no main): o app volta para a foto em vez de ficar com a tela preta.
     var onFailure: (() -> Void)?
@@ -42,10 +45,16 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
     @objc private func sessionFailed(_ note: Notification) {
         let error = note.userInfo?[AVCaptureSessionErrorKey] as? AVError
         dlog("❌ Câmera dupla: \(error?.localizedDescription ?? "erro")")
-        DispatchQueue.main.async { self.onInterrupted?() }
-        // Os serviços de mídia reiniciaram: liga de novo
-        guard let error, error.code == .mediaServicesWereReset else { return }
         queue.async {
+            // Erro antes do primeiro quadro: a dupla não chegou a abrir. O app volta para a FOTO, como numa montagem
+            // recusada (antes ficava na DUPLA com a tela preta)
+            guard self.gotFrame else {
+                DispatchQueue.main.async { self.onFailure?() }
+                return
+            }
+            DispatchQueue.main.async { self.onInterrupted?() }
+            // Os serviços de mídia reiniciaram: liga de novo
+            guard let error, error.code == .mediaServicesWereReset else { return }
             if self.configured, !self.session.isRunning { self.session.startRunning() }
         }
     }
@@ -65,6 +74,7 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
 
     func start(withAudio: Bool) {
         queue.async {
+            self.gotFrame = false
             if !self.configured {
                 self.configured = self.configure(withAudio: withAudio)
                 guard self.configured else {
@@ -86,6 +96,7 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
         queue.sync {
             if session.isRunning { session.stopRunning() }
             latestFront = nil
+            gotFrame = false
             releaseEverything()
             configured = false
             backDevice = nil
@@ -125,6 +136,7 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
             }
         }
         var connected = false
+        // A frontal chega espelhada, como no visor; a foto e o vídeo desespelham com fileFront (sem perda)
         attempt("Ligar as duas câmeras") {
             connected = connect(back, to: backOutput, mirrored: false) && connect(front, to: frontOutput, mirrored: true)
         }
@@ -181,6 +193,10 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
             }
             if let big = fours.max(by: { dims($0).width < dims($1).width }) { return big }
         }
+        // Frontal no recurso (a cota já estourou): o menor com 1280 ou mais. O maior até 1920 era justo o mais pesado
+        if front, let small = usable.filter({ dims($0).width >= 1280 }).min(by: { dims($0).width < dims($1).width }) {
+            return small
+        }
         return usable.max(by: { dims($0).width < dims($1).width })
     }
 
@@ -196,7 +212,7 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
         dlog("Câmera dupla: \(device.localizedName) em \(d.width)×\(d.height)")
     }
 
-    /// Volta aos formatos antigos (o maior até 1920 de cada câmera) quando o 4:3 passou da cota de hardware.
+    /// Formatos mais leves quando o 4:3 passou da cota de hardware: traseira no maior até 1920, frontal no menor com 1280.
     private func useLighterFormats() {
         dlog(String(format: "Câmera dupla: custo de hardware %.2f com 4:3, voltando aos formatos de antes", session.hardwareCost))
         session.beginConfiguration()
@@ -218,11 +234,23 @@ final class DualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, 
             latestFront = image
             return
         }
-        onFrame?(compose(back: image, front: latestFront), CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+        gotFrame = true
+        let front = latestFront
+        onFrame?(Self.compose(back: image, front: front), image, front, CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+    }
+
+    /// Selfie da foto e do vídeo. Ela chega espelhada (como no visor) e gira junto com a traseira quando a foto/vídeo
+    /// é posta em pé (`degrees`, o giro da traseira). Com o espelho dos Ajustes ligado fica assim; desligado, é
+    /// desespelhada no eixo que vira o horizontal depois do giro (com o iPhone deitado, o vertical do quadro): antes
+    /// saía sempre espelhada, e o espelho dos Ajustes espelhava a cena de trás inteira.
+    static func fileFront(_ front: CIImage, mirrored: Bool, degrees: CGFloat) -> CIImage {
+        guard !mirrored else { return front }
+        let quarterTurns = (Int((degrees / 90).rounded()) % 2 + 2) % 2
+        return front.oriented(quarterTurns == 0 ? .upMirrored : .downMirrored)
     }
 
     /// A frontal ocupa 30% da largura, no canto de cima à direita, com cantos arredondados.
-    private func compose(back: CIImage, front: CIImage?) -> CIImage {
+    static func compose(back: CIImage, front: CIImage?) -> CIImage {
         guard let front else { return back }
         let b = back.extent
         let width = b.width * 0.3

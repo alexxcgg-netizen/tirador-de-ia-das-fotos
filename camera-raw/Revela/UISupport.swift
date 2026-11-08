@@ -88,9 +88,10 @@ final class AimState: ObservableObject {
 }
 
 extension CameraModel {
-    /// Algo saindo agora que uma troca de modo estragaria: gravação, rajada, sequência, contagem ou panorama.
+    /// Algo saindo agora que uma troca de modo estragaria: gravação (até o arquivo do CINEMÁTICO fechar), rajada,
+    /// sequência, contagem ou panorama.
     var isBusy: Bool {
-        isRecordingVideo || actionRecording || bursting || stackProgress != nil || longRemaining != nil
+        isRecordingVideo || recordingFinishing || actionRecording || bursting || stackProgress != nil || longRemaining != nil
             || countdown > 0 || panoramaProgress != nil
     }
 

@@ -281,7 +281,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private let recorder = VideoRecorder()
     private let dual = DualCamera()
     private let dualLock = NSLock()
-    private var latestDualFrame: CIImage?
+    /// Último quadro da DUPLA: as duas câmeras separadas e quando chegou (CFAbsoluteTime). Apagado ao entrar e sair da
+    /// DUPLA: a foto usava um quadro velho da visita anterior.
+    private var latestDualFrame: (back: CIImage, front: CIImage?, arrived: CFAbsoluteTime)?
+    /// Selfie do arquivo da gravação DUPLA em andamento: espelhada? e o giro do vídeo. Escrito na principal, lido na fila da dupla.
+    private var dualRecordingInset: (mirrored: Bool, degrees: CGFloat) = (false, 0)
+    /// Número da gravação atual do VideoRecorder: o começo atrasado de uma gravação já parada não grava escondido.
+    private var recordingID = 0
+    /// CINEMÁTICO: arquivo da gravação atual (um fim atrasado de outro arquivo não mexe no estado da nova).
+    private var cinematicURL: URL?
     /// Lado da sessão: modo de vídeo comum, modo cinema (fundo desfocado) e câmera dupla.
     private var videoWanted = false
     private var cinematicWanted = false
@@ -421,9 +429,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
     /// VÍDEO: resolução e quadros por segundo que a câmera aceitou de fato (ex.: "4K\n30 fps").
     @Published private(set) var videoFormatLabel = "1080p\n30 fps"
-    /// Quadros por segundo que a câmera aceitou (vai para o arquivo).
-    private var videoActualFPS = 30
     @Published var isRecordingVideo = false
+    /// CINEMÁTICO: do toque de parar até o arquivo fechar. Conta como ocupado: trocar de modo ou descansar a câmera
+    /// nesse meio tirava o AVCaptureMovieFileOutput da sessão com o arquivo ainda aberto.
+    @Published private(set) var recordingFinishing = false
     /// Scanner 3D aberto (a câmera normal fica parada, porque o ARKit usa o sensor).
     @Published var showScanner = false
     @Published var recordingStarted: Date?
@@ -1293,11 +1302,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         applySensorZoom()
     }
 
-    /// Cada cena ajusta a câmera para o que ela pede.
-    func select(captureMode mode: CaptureMode) {
+    /// Cada cena ajusta a câmera para o que ela pede. `force`: só para as voltas internas (modo que falhou volta para a
+    /// FOTO), que não podem ficar presas na guarda de "ocupado".
+    func select(captureMode mode: CaptureMode, force: Bool = false) {
         // Gravando, numa sequência, contando o timer ou no meio do panorama: trocar de modo estragava o que estava
         // saindo. Espera terminar (o teste de modos troca sozinho e passa)
-        if mode != captureMode, isBusy, selfTestProgress == nil {
+        if mode != captureMode, isBusy, selfTestProgress == nil, !force {
             show("Espere terminar…")
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
             return
@@ -1567,13 +1577,15 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 DispatchQueue.main.async {
                     // Só força FOTO se o modo pedido ainda é um desses (você pode já ter trocado)
                     guard [.portrait, .video, .cinematic, .hdr].contains(self.captureMode) else { return }
-                    self.select(captureMode: .photo)
+                    self.select(captureMode: .photo, force: true)
                     self.message = "A câmera recusou esse modo agora. Voltei para FOTO; o relatório mostra o motivo."
                 }
             }
             return
         }
         dlog("Configuração aceita")
+        // O microfone já saiu da captura: fora dos modos de vídeo a sessão de áudio é solta
+        if !videoWanted, !cinematicWanted { Self.releaseAudioSession() }
         if formatWasSpecial {
             // O modo anterior (AÇÃO, CINEMÁTICO, DUPLA) mexeu no formato: o tamanho da foto é refeito agora
             formatWasSpecial = false
@@ -2057,7 +2069,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let mirrored = activeLens == .front
         let degrees = captureDelta
         actionUpright = (degrees, mirrored)
-        let transform = Self.playbackRotation(degrees: degrees, mirrored: mirrored)
+        // O vídeo segue o espelho dos Ajustes, como as fotos e o VÍDEO: o quadro (espelhado só na frente) é virado na
+        // reprodução quando não bate com o espelho. Antes a frente saía sempre espelhada e as fotos não
+        let rotation = Self.playbackRotation(degrees: degrees, mirrored: mirror)
+        let transform = mirrored != mirror ? CGAffineTransform(scaleX: -1, y: 1).concatenating(rotation) : rotation
         videoQueue.async { self.actionRecorder.start(transform: transform) }
         // Segurando demais: para sozinho no limite (a escolha das fotos e o arquivo cresciam sem fim)
         DispatchQueue.main.asyncAfter(deadline: .now() + ActionRecorder.maxSeconds) {
@@ -3068,8 +3083,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Revelar de novo aberto: a câmera descansa (bateria e GPU livres para revelar).
     func pauseSession() {
         pauseWanted = true
-        // Com foto ainda saindo da câmera, parar a sessão perderia a foto (para quando ela terminar)
-        guard !isRecordingVideo, panoramaProgress == nil, processing == 0 else { return }
+        // Com foto ainda saindo da câmera, parar a sessão perderia a foto (para quando ela terminar). O arquivo do
+        // CINEMÁTICO fechando também (o cinematicFinished chama de novo)
+        guard !isRecordingVideo, !recordingFinishing, panoramaProgress == nil, processing == 0 else { return }
         pauseWanted = false
         sessionQueue.async {
             if self.session.isRunning { self.session.stopRunning() }
@@ -3192,7 +3208,6 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let name = short >= 2160 ? "4K" : "\(short)p"
         dlog("Vídeo: sensor em \(dims.width)×\(dims.height) a \(actual) fps")
         DispatchQueue.main.async {
-            self.videoActualFPS = actual
             self.videoFormatLabel = "\(name)\n\(actual) fps"
             if actual != fps { self.show("Esta câmera não grava a \(fps) fps neste formato: gravando a \(actual)") }
             // Formato novo: o zoom do sensor é aplicado de novo
@@ -3355,15 +3370,42 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Sessão de áudio do app para gravar sem calar a música de outro app (a configuração automática da câmera
-    /// parava o Spotify só de entrar no VÍDEO). Em qualquer fila.
+    /// parava o Spotify só de entrar no VÍDEO). A2DP: fone Bluetooth continua tocando com qualidade. Na fila da sessão.
     static func prepareAudioSession() {
         let audio = AVAudioSession.sharedInstance()
         do {
-            try audio.setCategory(.playAndRecord, mode: .videoRecording, options: [.mixWithOthers, .defaultToSpeaker])
+            try audio.setCategory(.playAndRecord, mode: .videoRecording,
+                                  options: [.mixWithOthers, .defaultToSpeaker, .allowBluetoothA2DP])
             try audio.setActive(true)
+            audioSessionActive = true
         } catch {
             dlog("⚠️ Sessão de áudio: \(error.localizedDescription)")
         }
+    }
+
+    /// A sessão de áudio está ativa por nós (lido e escrito na fila da sessão).
+    private static var audioSessionActive = false
+
+    /// Fora dos modos com microfone (VÍDEO, CINEMÁTICO, DUPLA) a sessão de áudio é solta: antes ficava ativa até fechar
+    /// o app, segurando o microfone e a rota do som. Na fila da sessão, depois de o microfone sair da captura.
+    static func releaseAudioSession() {
+        guard audioSessionActive else { return }
+        audioSessionActive = false
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            dlog("Sessão de áudio solta")
+        } catch {
+            dlog("⚠️ Sessão de áudio (soltar): \(error.localizedDescription)")
+        }
+    }
+
+    /// Serviços de mídia reiniciados ou interrupção do som terminada (ligação, Siri): nos modos com microfone a sessão de
+    /// áudio é configurada e ativada de novo (senão o vídeo seguinte podia sair mudo).
+    private func restoreAudioSession(_ why: String) {
+        guard [.video, .cinematic, .dual].contains(captureMode),
+              AVCaptureDevice.authorizationStatus(for: .audio) == .authorized else { return }
+        dlog("Sessão de áudio de novo: \(why)")
+        sessionQueue.async { Self.prepareAudioSession() }
     }
 
     private static func freeDiskBytes() -> Int64? {
@@ -3414,6 +3456,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                                             queue: .main) { [weak self] _ in
             self?.endCaptureForInterruption("o app foi para o fundo")
         })
+        observers.append(center.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil,
+                                            queue: .main) { [weak self] _ in
+            self?.restoreAudioSession("serviços de mídia reiniciados")
+        })
+        observers.append(center.addObserver(forName: AVAudioSession.interruptionNotification,
+                                            object: AVAudioSession.sharedInstance(), queue: .main) { [weak self] note in
+            guard let raw = (note.userInfo?[AVAudioSessionInterruptionTypeKey] as? NSNumber)?.uintValue,
+                  AVAudioSession.InterruptionType(rawValue: raw) == .ended else { return }
+            self?.restoreAudioSession("a interrupção do som terminou")
+        })
     }
 
     private func endCaptureForInterruption(_ why: String) {
@@ -3424,6 +3476,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             stopRecording()
         }
         if actionRecording { stopAction() }
+        // Panorama no meio: fecha com o que já girou (as travas voltam e a guarda de "ocupado" solta)
+        if panoramaProgress != nil { finishPanorama() }
     }
 
     /// O arquivo do VideoRecorder falhou no meio.
@@ -3489,6 +3543,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     private func startRecording() {
+        // O arquivo do cinema anterior ainda fechando: gravar por cima dele no mesmo AVCaptureMovieFileOutput falhava
+        if captureMode == .cinematic, recordingFinishing {
+            show("Espere o vídeo anterior terminar de salvar")
+            return
+        }
         guard prepareToRecord() else { return }
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         isRecordingVideo = true
@@ -3496,6 +3555,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if captureMode == .cinematic {
             recordingCinematic = true
             let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelCapture
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("cinema-\(UUID().uuidString).mov")
+            cinematicURL = url
             sessionQueue.async {
                 if let angle, let c = self.movieOutput.connection(with: .video), c.isVideoRotationAngleSupported(angle) {
                     c.videoRotationAngle = angle
@@ -3503,21 +3564,50 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 // Fragmentos de 2 s e reserva de espaço: parando no meio (disco, ligação), o arquivo continua abrindo
                 self.movieOutput.movieFragmentInterval = CMTime(seconds: 2, preferredTimescale: 600)
                 self.movieOutput.minFreeDiskSpaceLimit = 200 * 1_048_576
-                let url = FileManager.default.temporaryDirectory.appendingPathComponent("cinema-\(UUID().uuidString).mov")
-                attempt("Gravar no modo cinema") { self.movieOutput.startRecording(to: url, recordingDelegate: self) }
-                dlog("Cinema: gravando")
+                // Sem o modo cinema montado (formato recusado) o startRecording lança exceção: o botão não pode ficar
+                // vermelho gravando nada
+                var ok = false
+                if self.session.outputs.contains(self.movieOutput), self.movieOutput.connection(with: .video) != nil {
+                    ok = attempt("Gravar no modo cinema") { self.movieOutput.startRecording(to: url, recordingDelegate: self) }
+                }
+                dlog(ok ? "Cinema: gravando" : "❌ Cinema: a gravação não começou")
+                guard !ok else { return }
+                DispatchQueue.main.async {
+                    guard self.cinematicURL == url else { return }
+                    self.cinematicURL = nil
+                    self.recordingCinematic = false
+                    self.isRecordingVideo = false
+                    self.recordingStarted = nil
+                    self.cinematicFinished()
+                    self.message = "O vídeo no modo cinema não começou. Tente de novo ou troque de lente; o relatório mostra o motivo."
+                }
             }
         } else {
             recordingCinematic = false
-            let fps = videoActualFPS
+            recordingID += 1
+            let id = recordingID
             // O arquivo sai espelhado só com o espelho dos Ajustes ligado (a frente chega espelhada do visor)
             recordingFlip = (activeLens == .front) != mirror
             let transform = Self.playbackRotation(degrees: captureDelta, mirrored: mirror)
-            videoQueue.async {
-                let size = self.lastFrameSize
-                self.recorder.start(width: Int(size.width), height: Int(size.height), fps: fps, transform: transform)
+            // Pela fila da sessão: uma troca pedida antes do toque (FOTO → VÍDEO 4K, 4K ↔ 1080p, lente) termina antes de
+            // o gravador armar, e os quadros por segundo vêm da câmera como ficou (o arquivo nasce do primeiro quadro)
+            sessionQueue.async {
+                self.recorder.start(id: id, fps: self.sessionFrameRate(), transform: transform)
             }
         }
+    }
+
+    /// CINEMÁTICO: o arquivo fechou (ou desistiu de esperar). Revelar de novo pediu para a câmera descansar: agora pode.
+    private func cinematicFinished() {
+        guard recordingFinishing else { return }
+        recordingFinishing = false
+        if pauseWanted { pauseSession() }
+    }
+
+    /// Quadros por segundo que a câmera está entregando agora. Na fila da sessão.
+    private func sessionFrameRate() -> Int {
+        guard let frame = device?.activeVideoMinFrameDuration, frame.isValid, frame.value > 0 else { return sessionVideoFPS }
+        return Int((Double(frame.timescale) / Double(frame.value)).rounded())
     }
 
     func stopRecording() {
@@ -3527,13 +3617,22 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         recordingStarted = nil
         if recordingCinematic {
             recordingCinematic = false
+            // Até o arquivo fechar (fileOutput didFinish) conta como ocupado; se o aviso nunca vier, solta em 10 s
+            recordingFinishing = true
+            let url = cinematicURL
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                guard self.recordingFinishing, self.cinematicURL == url else { return }
+                dlog("⚠️ Cinema: o arquivo não avisou que fechou em 10 s")
+                self.cinematicURL = nil
+                self.cinematicFinished()
+            }
             sessionQueue.async { self.movieOutput.stopRecording() }
             return
         }
         processing += 1
         // O app pode estar indo para o fundo (ligação): tempo extra para fechar o arquivo e salvar
         let task = BackgroundTask("Revela: salvar vídeo")
-        recorder.stop { url, _, partial in
+        recorder.stop(id: recordingID) { url, _, partial in
             guard let url else {
                 DispatchQueue.main.async {
                     self.processing -= 1
@@ -3595,8 +3694,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let finished = (error as NSError?)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool ?? (error == nil)
         dlog("Cinema: gravação terminou\(error == nil ? "" : " com erro: \(error?.localizedDescription ?? "")")")
         DispatchQueue.main.async {
-            self.isRecordingVideo = false
-            self.recordingStarted = nil
+            // Fim atrasado de um arquivo antigo: salva (abaixo), mas não mexe no estado da gravação de agora
+            guard outputFileURL.lastPathComponent == self.cinematicURL?.lastPathComponent else { return }
+            self.cinematicURL = nil
+            // Parou sozinha (disco, ligação): o botão volta
+            if self.recordingCinematic {
+                self.recordingCinematic = false
+                self.isRecordingVideo = false
+                self.recordingStarted = nil
+            }
+            self.cinematicFinished()
         }
         guard finished else {
             DispatchQueue.main.async { self.message = "O vídeo no modo cinema não foi gravado." }
@@ -3609,9 +3716,6 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                                savedText: "Vídeo cinema salvo. No app Fotos dá para mudar o foco e o desfoque.") { task.end() }
         }
     }
-
-    /// Tamanho do último quadro do visor (para o gravador saber a resolução). Lido na fila de vídeo.
-    private var lastFrameSize = CGSize(width: 1080, height: 1920)
 
     /// Quadro com o look e o zoom, do jeito que vai para o arquivo de vídeo. Na fila da câmera.
     private func recordingImage(_ frame: CIImage) -> CIImage {
@@ -3649,24 +3753,41 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if let back = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
                 dualRotation = AVCaptureDevice.RotationCoordinator(device: back, previewLayer: angleLayer)
             }
-            dual.onFrame = { [weak self] image, time in
+            dual.onFrame = { [weak self] preview, back, front, time in
                 guard let self else { return }
                 self.dualLock.lock()
-                self.latestDualFrame = image
+                self.latestDualFrame = (back, front, CFAbsoluteTimeGetCurrent())
+                let inset = self.dualRecordingInset
                 self.dualLock.unlock()
-                self.renderer.enqueue(image)
-                if self.recorder.isRecording { self.recorder.append(self.recordingImage(image), at: time) }
+                self.renderer.enqueue(preview)
+                if self.recorder.isRecording {
+                    // O arquivo: a cena de trás sem espelho e a selfie com o espelho dos Ajustes (o visor, como espelho)
+                    let selfie = front.map { DualCamera.fileFront($0, mirrored: inset.mirrored, degrees: inset.degrees) }
+                    self.recorder.append(self.recordingImage(DualCamera.compose(back: back, front: selfie)), at: time)
+                }
             }
             dual.onAudio = { [weak self] buffer in self?.recorder.appendAudio(buffer) }
             dual.onFailure = { [weak self] in
                 // Só volta se ainda estiver na DUPLA (você pode já ter trocado de modo)
                 guard let self, self.captureMode == .dual else { return }
+                // Timer contando, dedo segurando ou gravação: a guarda de "ocupado" barrava a volta e a mensagem já
+                // dizia "Voltei para FOTO". Cancela tudo e volta mesmo assim
+                if self.countdown > 0 {
+                    self.countdown = 0
+                    self.countdownRun += 1
+                }
+                self.holding = false
+                if self.isRecordingVideo { self.stopRecording() }
                 self.message = "A câmera dupla não abriu agora. Voltei para FOTO."
-                self.select(captureMode: .photo)
+                self.select(captureMode: .photo, force: true)
             }
             // Ligação, fundo ou erro na sessão dupla: fecha a gravação e salva o que deu
             dual.onInterrupted = { [weak self] in self?.endCaptureForInterruption("a câmera dupla foi interrompida") }
             let withAudio = AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
+            // Quadro de uma visita anterior à DUPLA não serve para a foto nem para a gravação
+            dualLock.lock()
+            latestDualFrame = nil
+            dualLock.unlock()
             sessionQueue.async {
                 self.dualActive = true
                 self.formatWasSpecial = true
@@ -3677,6 +3798,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         } else {
             dualRotation = nil
             if isRecordingVideo { stopRecording() }
+            dualLock.lock()
+            latestDualFrame = nil
+            dualLock.unlock()
             let lens = self.lens, raw = rawMode
             sessionQueue.async {
                 // A dupla deixou a câmera de trás em 1080p sem RAW: desmonta a dupla e reabre a câmera no formato de foto
@@ -3688,38 +3812,63 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
-    private func startDualRecording() {
-        guard prepareToRecord() else { return }
+    /// Quadro da DUPLA de agora (até 0,5 s). Nil com a dupla ainda abrindo, parada ou descansando.
+    private func freshDualFrame() -> (back: CIImage, front: CIImage?, arrived: CFAbsoluteTime)? {
         dualLock.lock()
-        let size = latestDualFrame?.extent.size ?? CGSize(width: 1080, height: 1920)
-        dualLock.unlock()
+        defer { dualLock.unlock() }
+        guard let frame = latestDualFrame, CFAbsoluteTimeGetCurrent() - frame.arrived <= 0.5 else { return nil }
+        return frame
+    }
+
+    private func startDualRecording(waited: Int = 0) {
+        // A dupla ainda abrindo: espera o primeiro quadro enquanto o dedo segura (até ~3 s)
+        guard freshDualFrame() != nil else {
+            if waited >= 30 {
+                show("Espere a câmera dupla abrir")
+                return
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                guard self.holding, !self.isRecordingVideo, self.captureMode == .dual else { return }
+                self.startDualRecording(waited: waited + 1)
+            }
+            return
+        }
+        guard prepareToRecord() else { return }
         isRecordingVideo = true
         recordingStarted = Date()
         recordingCinematic = false
+        recordingID += 1
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        // Espelho dos Ajustes inverte o quadro todo; o giro acompanha o iPhone deitado
-        recordingFlip = mirror
-        recorder.start(width: Int(size.width), height: Int(size.height), fps: 30,
-                       transform: Self.playbackRotation(degrees: dualDelta, mirrored: mirror))
+        // A cena de trás nunca espelha; a selfie segue o espelho dos Ajustes (antes o espelho invertia o quadro todo).
+        // O giro acompanha o iPhone deitado
+        let degrees = dualDelta
+        recordingFlip = false
+        dualLock.lock()
+        dualRecordingInset = (mirror, degrees)
+        dualLock.unlock()
+        recorder.start(id: recordingID, fps: 30, transform: Self.playbackRotation(degrees: degrees, mirrored: false))
     }
 
     private func saveDualPhoto(options: DevelopOptions, started t0: CFAbsoluteTime) {
-        dualLock.lock()
-        let frame = latestDualFrame
-        dualLock.unlock()
-        guard let frame else {
+        // Quadro velho (visita anterior, dupla abrindo ou descansando) saía como foto de agora
+        guard let frame = freshDualFrame() else {
             processing -= 1
+            show("Espere a câmera dupla abrir")
             return
         }
         var opts = options
         opts.zoom = 1
         // O quadro inteiro, como no visor e no vídeo: a proporção da foto cortava a selfie do canto
         opts.originalAspect = true
+        // O espelho dos Ajustes vale só para a selfie (abaixo); a cena de trás espelhada não é a cena
+        opts.mirror = false
         let degrees = dualDelta
+        let selfie = frame.front.map { DualCamera.fileFront($0, mirrored: options.mirror, degrees: degrees) }
+        let composite = DualCamera.compose(back: frame.back, front: selfie)
         let properties = Self.videoPhotoProperties()
         processingQueue.async {
             // Em pé com o iPhone deitado, e com data e aparelho no arquivo
-            let upright = frame.oriented(Self.orientation(degrees: degrees)).settingProperties(properties)
+            let upright = composite.oriented(Self.orientation(degrees: degrees)).settingProperties(properties)
             let output = Developer.developVideoImage(upright, options: opts)
             Library.save(dng: nil, developed: output?.heic, tryPair: false) { error in
                 dlog(error == nil ? "✅ Foto dupla salva: \(Diagnostics.ms(since: t0))" : "❌ \(error!.localizedDescription)")
@@ -4162,7 +4311,6 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
         let every = idleThrottle ? max(renderEvery, 2) : renderEvery
         if videoFrameIndex % every == 0 { renderer.enqueue(frame) }
-        lastFrameSize = CGSize(width: CVPixelBufferGetWidth(pixelBuffer), height: CVPixelBufferGetHeight(pixelBuffer))
         if !loggedBufferSize {
             loggedBufferSize = true
             dlog("Vídeo do visor chegando em \(CVPixelBufferGetWidth(pixelBuffer))×\(CVPixelBufferGetHeight(pixelBuffer))")

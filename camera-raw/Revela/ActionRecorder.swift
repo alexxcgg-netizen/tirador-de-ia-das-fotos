@@ -50,6 +50,8 @@ final class ActionRecorder {
                 isRecording = false
                 return
             }
+            // Fragmentos de 0,5 s: se o arquivo falhar no meio ou não fechar, ele ainda abre até o último pedaço salvo
+            writer.movieFragmentInterval = CMTime(seconds: 0.5, preferredTimescale: 600)
             let settings: [String: Any] = [
                 AVVideoCodecKey: AVVideoCodecType.hevc,
                 AVVideoWidthKey: CVPixelBufferGetWidth(pixelBuffer),
@@ -70,7 +72,12 @@ final class ActionRecorder {
                 return
             }
             writer.add(input)
-            writer.startWriting()
+            // startSession num arquivo que não começou derruba o app (exceção do AVFoundation)
+            guard writer.startWriting() else {
+                dlog("❌ AÇÃO: o arquivo não começou (\(writer.error?.localizedDescription ?? "?"))")
+                isRecording = false
+                return
+            }
             writer.startSession(atSourceTime: time)
             self.writer = writer
             self.input = input
@@ -116,24 +123,29 @@ final class ActionRecorder {
     /// Termina o arquivo e devolve o endereço, o instante de cada quadro (contado do início do vídeo) e as notas de nitidez.
     func stop(completion: @escaping (URL?, [CMTime], [Score]) -> Void) {
         isRecording = false
-        guard let writer, let input, writer.status == .writing, let startTime else {
+        guard let writer, let input, let startTime else {
             if let url { try? FileManager.default.removeItem(at: url) }
             return completion(nil, [], [])
         }
-        input.markAsFinished()
         let times = frameTimes.map { $0 - startTime }
         let url = self.url
-        writer.finishWriting {
+        let deliver: (Bool) -> Void = { closed in
             // Na fila das notas: a última que estava sendo calculada termina antes
             self.scoreQueue.async {
                 self.scoreLock.lock()
                 let scores = self.scores
                 self.scoreLock.unlock()
-                let ok = writer.status == .completed
-                if !ok, let url { try? FileManager.default.removeItem(at: url) }
-                completion(ok ? url : nil, times, scores)
+                // Não fechou ou falhou no meio: com os fragmentos de 0,5 s o arquivo abre até o último pedaço salvo
+                // (os quadros de depois dele simplesmente não abrem). Antes apagava tudo
+                let usable = closed || VideoRecorder.hasData(url)
+                if !closed { dlog("⚠️ AÇÃO: o arquivo não fechou (\(writer.error?.localizedDescription ?? "?"))\(usable ? "; usando o que foi salvo" : "")") }
+                if !usable, let url { try? FileManager.default.removeItem(at: url) }
+                completion(usable ? url : nil, times, scores)
             }
         }
+        guard writer.status == .writing else { return deliver(false) }
+        input.markAsFinished()
+        writer.finishWriting { deliver(writer.status == .completed) }
     }
 
     /// Os mais nítidos, com pelo menos 3 quadros de distância (para não salvar 8 fotos iguais). Em ordem.
