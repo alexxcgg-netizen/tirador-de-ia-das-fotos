@@ -1,0 +1,31 @@
+name: Revela (placar compila)
+
+# Barato (Linux, ~1 min): confere que o placar do laboratório compila e não quebra quando faltam saídas
+# (laboratório de antes de um teste novo, ou teste que não rodou). Não roda o laboratório (esse é de Mac, só à mão).
+on:
+  push:
+    paths:
+      - "camera-raw/RevelaLab/placar.py"
+      - ".github/workflows/revela-placar.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  placar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compilar
+        run: python -m py_compile camera-raw/RevelaLab/placar.py
+      - name: Rodar sem nenhuma saída
+        run: |
+          python -m pip install --quiet numpy pillow
+          mkdir -p "$RUNNER_TEMP/vazio"
+          python -I camera-raw/RevelaLab/placar.py "$RUNNER_TEMP/vazio" | tee "$RUNNER_TEMP/placar.txt"
+          grep -q "^Placar: " "$RUNNER_TEMP/placar.txt"

@@ -52,6 +52,51 @@ laboratório: o que aparecer lá entra no topo da fila.
   Enquanto isso: estudo, protótipos e revisão do código; as mudanças ficam prontas para a próxima rodada.
 - O simulador não tem câmera: NOITE, HDR e SUPER ZOOM são testados com fotos geradas a partir de RAWs reais.
 
+## Antes de cada IPA
+
+Nenhuma IPA sai sem estes passos, nesta ordem (a revisão profunda achou bugs que o placar 54/54 não via):
+
+1. **Laboratório** na versão candidata: workflow `Revela (laboratório)` (só `workflow_dispatch`, ~45–55 min de Mac).
+2. **Placar** nas imagens do ramo `revela-lab`: `python3 -I camera-raw/RevelaLab/placar.py <pasta do ramo>`.
+   Todas as metas OK, inclusive as de Prevenção (`PrevencaoTests.swift`). "sem saída" conta como FALTA: o teste
+   quebrou ou não rodou. Nenhuma meta antiga pode piorar.
+3. **Revisão por 4 agentes em paralelo**, todos com o agente `revisor-revela` (`.claude/agents/revisor-revela.md`,
+   só leitura), cada um com o diff desde a última IPA e um grupo de modos:
+   - **foto única**: FOTO, RÁPIDO, CONGELAR, FLASH, RETRATO, HDR, looks/revelação, Revelar de novo, EXIF/orientação;
+   - **várias fotos**: FOTO 3×, NOITE, SUPER ZOOM, SUPER RES, LUA, ESTRELAS, MÉDIA, FOCO EMPILHADO (fantasma,
+     alinhamento, memória em 48 MP);
+   - **vídeo e especiais**: VÍDEO, CINEMÁTICO, AÇÃO, DUPLA, LONGA, PANORAMA, 3D, DOC (interrupção da gravação,
+     segundo plano, 8 bits);
+   - **tela**: ContentView/StudioView/GuideView, troca de lente e zoom, travas e guardas de "ocupado", estado da
+     sessão que tem que voltar, relatório.
+4. **Corrigir** todo achado ALTA e MÉDIA. Os PLAUSÍVEL: confirmar ou descartar, com o motivo no Diário.
+5. **Laboratório de novo**: todas as metas OK.
+6. **Só então a IPA**, com a rodada do laboratório, o placar e os achados corrigidos registrados no Diário.
+
+Regra para teste novo no laboratório: a régua (ideal / foto única / cena limpa) passa pelo **mesmo caminho de
+revelação** que o app usa no modo (mesmo ruído, mesmos deslocamentos, mesmo ISO no EXIF); cada meta tem que falhar
+com o defeito e passar sem ele; cenas pequenas (o laboratório inteiro cabe em ~1 h, timeout 90 min). Workflow novo de
+Mac em todo push, nunca (cota 10×): o `revela-placar.yml` (Linux) só confere que o placar compila e não quebra sem saídas.
+
+**Que teste cobre cada modo** (LabTests = `LabTests.swift`, P = `PrevencaoTests.swift`):
+
+| Modo | Testes do laboratório | Metas |
+|---|---|---|
+| FOTO (1 quadro) | test2Foto, test1Looks, test4Tuning, test8SunStar | tom/cor/detalhe/preto vs Apple; filmes |
+| FOTO 3× | test12PhotoFusion; P07 (FOTO 3× = FOTO); P09 (fantasma) | +4,8 dB e ⅓ do ruído; luz/meio/saturação/contraste local iguais à FOTO; fantasma ≤ 5% |
+| NOITE | test3Night, test7NightStack, test11HandheldNight, test10Alignment; P08 (foto ruim); P09 | 3×, preto, luz média, mão, alinhamento ≤ 0,5 px; foto que não é da cena fora (≥ 35 dB); fantasma ≤ 5% |
+| SUPER ZOOM | test6SuperResolution; P09 (24 fotos) | +4,8 dB sobre 1 ampliada; fantasma ≤ 5% |
+| SUPER RES / LUA | P10 (saída de 48 MP, 5 fotos) | termina; usa as 5; memória ≤ 2500 MB a mais |
+| HDR | test9HDR | ⅓ do estourado e do ruído nas sombras |
+| RETRATO | test5Portrait; P01 (ponto do foco, função ainda não ligada) | vazamento ≤ ⅓ do desfoque comum |
+| ESTRELAS | P04 | pico ≥ 80%, largura ≤ 1,5×, pixels quentes ≤ 10% |
+| MÉDIA | P05 | nitidez ≥ 0,9 da ideal; ruído ≈ 1/√8 |
+| FOCO EMPILHADO | P06 | nítido nas duas metades; sem halo; sem degrau com +0,3 EV |
+| LONGA | P02 (acumulador; a captura não) | seda sem degraus em 240 quadros; rastros sem levantar o preto |
+| PANORAMA | P03 (emenda; o giroscópio de verdade não) | emenda tão boa quanto o miolo; sem salto de exposição |
+| Lentes / zoom | P01 (`CaptureGeometry`, ainda não ligada no CameraModel) | todos os casos |
+| Sem teste no laboratório | RÁPIDO, CONGELAR, FLASH (mesma revelação da FOTO), AÇÃO, VÍDEO, CINEMÁTICO, DUPLA, 3D, DOC, tela, Revelar de novo, relatório | só a revisão do passo 3 |
+
 ## Diário
 
 - 0.24 — tom calibrado (branco 0,71→0,82–0,88; névoa do Portra 0,12→0,07), grão em 3 tamanhos, NOITE em duas

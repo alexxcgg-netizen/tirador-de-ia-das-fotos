@@ -56,6 +56,10 @@ targets:
       - Revela/LUT.swift
       - Revela/CustomLook.swift
       - Revela/Tone.ci.metal
+      # Prevenção (PrevencaoTests.swift): LONGA, PANORAMA e a geometria da captura também passam pelo laboratório
+      - Revela/LongExposure.swift
+      - Revela/Panorama.swift
+      - Revela/CaptureGeometry.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.alexxcgg.revela.lab
