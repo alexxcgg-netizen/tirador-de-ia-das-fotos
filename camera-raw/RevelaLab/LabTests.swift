@@ -604,6 +604,11 @@ final class LabTests: XCTestCase {
             defer { Developer.decodeOverride = nil }
             let captured = (0..<path.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
             let t0 = CFAbsoluteTimeGetCurrent()
+            // A régua sem desfazer borrão: ela não tem borrão nenhum, e desfazer o que não existe deixava a régua
+            // supernítida (halo nas bordas), e a foto na mão era cobrada contra esse halo
+            let savedNight = Developer.nightTuning
+            if clean { Developer.nightTuning.deblurIterations = 0 }
+            defer { Developer.nightTuning = savedNight }
             guard let out = Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: options(.neutro)),
                   let img = CIImage(data: out.heic) else { continue }
             let name = clean ? "ideal" : (handheld ? "mao" : "tripe")

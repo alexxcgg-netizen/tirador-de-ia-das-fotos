@@ -646,6 +646,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var developOptions: DevelopOptions {
         var o = DevelopOptions(look: look, custom: customLook, amount: lookAmount, grain: grainAmount, zoom: crop, aspect: aspect, mirror: mirror)
         o.skinProtection = skinProtection
+        o.steady = isSteady
         // ETTR: a câmera expôs mais claro; a revelação volta para a exposição que você escolheu
         if ettrActive { o.exposureOffset = evBias - ettrBias }
         // Estrela de dia: sol e luzes fortes (a NOITE põe a dela depois de juntar as fotos)

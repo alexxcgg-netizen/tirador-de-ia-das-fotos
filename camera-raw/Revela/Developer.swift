@@ -555,6 +555,8 @@ struct DevelopOptions {
     var noGlow = false
     /// Estrela no sol e nas luzes fortes das fotos de dia (0 = sem).
     var starPoints = 0
+    /// iPhone apoiado na hora (NOITE): sem tremido, a junção não tem borrão para desfazer
+    var steady = false
 
     func cropRect(in extent: CGRect) -> CGRect {
         guard originalAspect else { return aspect.crop(extent, zoom: zoom) }
@@ -1195,7 +1197,7 @@ enum Developer {
                     let gain = Float(min(measured, asked * 1.5))
                     guard gain >= 2 else {
                         dlog(String(format: "Noite: a foto curta saiu sem ser curta (%.1f×): fica de fora", measured))
-                        return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints)
+                        return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady)
                     }
                     let warp = alignment(of: scaled(smallShort, by: gain), to: smallReference, scale: CGFloat(alignScale),
                                          fullExtent: extent, homography: false)
@@ -1203,7 +1205,7 @@ enum Developer {
                     out = recoverKernel.apply(extent: extent, arguments: [out, alignedShort, gain]) ?? out
                     dlog(String(format: "Noite: luzes fortes recuperadas da foto curta (%.0f×)", gain))
                 }
-                return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints)
+                return nightFinish(out, iso: iso, frameCount: frames.count, starPoints: starPoints, deblur: !options.steady)
             }
         case .average:
             var mean = average(count: frames.count, extent: extent, frame: aligned)
@@ -1290,7 +1292,7 @@ enum Developer {
     }
 
     /// NOITE depois de juntar: clareia, tira ruído, tons locais e estrelas nas luzes.
-    static func nightFinish(_ merged: CIImage, iso: Float, frameCount: Int, starPoints: Int) -> CIImage {
+    static func nightFinish(_ merged: CIImage, iso: Float, frameCount: Int, starPoints: Int, deblur: Bool = true) -> CIImage {
         let extent = merged.extent
         // ISO alto (pouca luz): tira o ruído colorido e um pouco do granulado; sombra levantada nos tons locais
         let strength = min(1, max(0.25, log2(max(iso, 100) / 200) / 6)) / sqrt(Float(max(frameCount, 1)) / 8)
@@ -1304,15 +1306,17 @@ enum Developer {
         out = nightDenoise(out, strength: cleanup)
         let noise = measuredNoise(out)
         dlog(String(format: "Noite: ruído medido %.4f", noise))
-        out = despeckle(lumaDenoise(out, strength: cleanup, noise: noise))
+        out = lumaDenoise(out, strength: cleanup, noise: noise)
         // Junção de várias fotos: devolve o detalhe que o movimento da mão tirou de cada uma (com uma foto só, desfazer
         // borrão realçaria o ruído)
-        if frameCount >= 4, nightTuning.deblurIterations > 0, nightTuning.deblurSigma > 0.05,
+        if deblur, frameCount >= 4, nightTuning.deblurIterations > 0, nightTuning.deblurSigma > 0.05,
            let sharp = tvRestoreStrips(materialize(out, extent: extent.integral), extent: extent, box: false, sigma: nightTuning.deblurSigma,
                                        luma: 1e-4, chroma: 1e-3, iterations: nightTuning.deblurIterations) {
             out = sharp
             dlog(String(format: "Noite: borrão de %.2f px desfeito (%d passos)", nightTuning.deblurSigma, nightTuning.deblurIterations))
         }
+        // Pontinhos por último: o desfazer borrão também realça um ou outro pixel solto (laboratório: grão no Pixel 52/MP)
+        out = despeckle(out)
         // Noite com cara de noite: preto de verdade (sem véu cinza). O "chão" de luz que o ruído e o céu
         // deixam é medido na foto (o mais escuro de uma versão pequena e borrada) e tirado quase todo
         let floor = darkFloor(out)

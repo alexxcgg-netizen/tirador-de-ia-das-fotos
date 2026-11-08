@@ -92,7 +92,7 @@ extension Developer {
         let perFrame = Double(sourceFit.width * sourceFit.height) * 8
         let outBytes = Double(outExtent.width * outExtent.height) * 8
         let available = Double(os_proc_available_memory())
-        let budget = min(700_000_000, (available > 0 ? available : 1_400_000_000) * 0.45) - outBytes * 4
+        let budget = min(700_000_000, (available > 0 ? available : 2_000_000_000) * 0.45) - outBytes * 4
         let fit = max(min(frames.count, max(2, keep ?? 2)), Int(max(0, budget) / max(perFrame, 1)))
         if frames.count > fit {
             let ranked = frames.indices.sorted { scores[$0] > scores[$1] }.prefix(fit).sorted()
