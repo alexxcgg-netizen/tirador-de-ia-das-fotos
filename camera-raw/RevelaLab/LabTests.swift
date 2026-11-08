@@ -510,10 +510,15 @@ final class LabTests: XCTestCase {
             }
             defer { Developer.decodeOverride = nil }
             let o = options(.neutro)
-            // As três pela mesma revelação completa (tons locais, nitidez, limpeza) que a FOTO usa
-            guard let idealOut = Developer.finish(truth.settingProperties(iso800), options: o), let ideal = CIImage(data: idealOut.heic),
-                  let singleOut = Developer.finish(frames[0], options: o), let single = CIImage(data: singleOut.heic) else { continue }
             let captured = (0..<shifts.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
+            // As três pela revelação que o app usa de verdade: a foto única pelo Developer.develop (tons locais, cor, nitidez
+            // e a limpeza de ruído do ISO dela), a juntada pelo fuse (tons locais, cor e nitidez sem limpar de novo) e a cena
+            // sem ruído pelos mesmos tons locais, cor e nitidez da juntada (sem limpeza: não há ruído para tirar)
+            let small = truth.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: 0.125, kCIInputAspectRatioKey: 1])
+                .cropped(to: CGRect(x: 0, y: 0, width: (e.width * 0.125).rounded(.down), height: (e.height * 0.125).rounded(.down)))
+            let idealScene = Developer.enhanced(truth.settingProperties(iso800), preview: small, fusedFrames: shifts.count)
+            guard let idealOut = Developer.finish(idealScene, options: o), let ideal = CIImage(data: idealOut.heic),
+                  let singleOut = Developer.develop(captured[0], options: o), let single = CIImage(data: singleOut.heic) else { continue }
             let t0 = CFAbsoluteTimeGetCurrent()
             guard let out = Developer.fuse(captured, options: o), let fused = CIImage(data: out.heic) else { continue }
             dlog("\(name) FOTO juntada (\(shifts.count) fotos): \(Diagnostics.ms(since: t0))")

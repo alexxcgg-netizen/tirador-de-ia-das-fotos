@@ -838,7 +838,9 @@ enum Developer {
         }
         // O RAW pequeno (rápido) serve para os tons locais: o grande é aberto uma vez só, na revelação
         let preview = frame.isRaw ? self.image(from: frame, scale: 0.125) : nil
-        let output = finish(enhanced(image, preview: preview), options: options)
+        // HEIC já vem processado pela Apple (RÁPIDO, CONGELAR, câmera sem RAW): tons locais, nitidez e limpeza dela já
+        // estão na foto. Passar pelos nossos de novo dava halo (nitidez em cima da nitidez) e cara de cera
+        let output = finish(frame.isRaw ? enhanced(image, preview: preview) : image, options: options)
         dlog("Revelação \(options.lookName) \(Int(image.extent.width))×\(Int(image.extent.height)) · \(frame.isRaw ? "DNG" : "HEIC") \(frame.data.count / 1_048_576) MB: \(Diagnostics.ms(since: t0))\(output == nil ? " · FALHOU" : "")")
         return output
     }
@@ -879,12 +881,13 @@ enum Developer {
         if options.mirror {
             cropped = cropped.transformed(by: CGAffineTransform(scaleX: -1, y: 1).translatedBy(x: -rect.width, y: 0))
         }
+        let params = options.params
         // Estrela de dia: só nas luzes pequenas e estouradas (sol, poste, reflexo), nunca em nuvem ou céu claro.
         // Fica de fora na foto revelada em faixas (a estrela precisa da foto inteira)
         if options.starPoints > 0, !options.noGlow {
-            cropped = dayStar(cropped, points: options.starPoints)
+            cropped = dayStar(cropped, points: options.starPoints, exposure: params.exposure, hdr: options.hdrCompress)
         }
-        return (grade(cropped, look: options.params, zebra: false).settingProperties(scene.properties), rect)
+        return (grade(cropped, look: params, zebra: false).settingProperties(scene.properties), rect)
     }
 
     /// Versão pequena revelada, para mostrar na tela (Revelar de novo).
@@ -967,26 +970,35 @@ enum Developer {
             return portraitScene(frame.data, aperture: aperture, focusPoint: focusPoint, scale: CGFloat(scale))
         }
         guard let opened = image(from: frame, scale: scale) else { return nil }
-        // A versão neutra guardada já tem os tons locais: aplicar de novo deixaria a foto lavada
-        if frame.toned { return opened }
+        // A versão neutra guardada já tem os tons locais: aplicar de novo deixaria a foto lavada.
+        // HEIC da Apple também (mesma regra da revelação no disparo)
+        if frame.toned || !frame.isRaw { return opened }
         return enhanced(opened, preview: scale < 0.5 ? nil : image(from: frame, scale: 0.125))
     }
 
     /// Foto de um quadro só: tons locais suaves (céu e sombra equilibrados) e, com ISO alto, menos ruído colorido.
     /// O ProRAW já vem de várias fotos juntadas pela Apple; isto só acerta o que a curva do filme não faz.
-    static func enhanced(_ scene: CIImage, preview: CIImage? = nil) -> CIImage {
+    /// `fusedFrames`: FOTO 3× (várias fotos já juntadas e limpas pelo photoFinish). A limpeza de ruído daqui fica de fora
+    /// (limpar de novo só amaciava o detalhe) e a nitidez segue o ruído que sobrou (o de ISO ÷ número de fotos).
+    static func enhanced(_ scene: CIImage, preview: CIImage? = nil, fusedFrames: Int = 1) -> CIImage {
         let exif = scene.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
         let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 100
-        var out = localTone(scene, strength: 0.85, preview: preview, keyPull: tuning.keyPull,
-                            highlightBoost: tuning.highlightBoost)
+        // A luz média volta junto com a imagem: guardada num valor estático, duas revelações ao mesmo tempo (fila rápida e
+        // fila de revelação) trocavam a cor uma da outra
+        let (toned, key) = localToneKeyed(scene, strength: 0.85, preview: preview, keyPull: tuning.keyPull,
+                                          highlightBoost: tuning.highlightBoost)
+        var out = toned
         // Cor pela luz da cena, como a Apple: dia claro (−3,3 EV) ganha ~12% de cor, entardecer (−4,7 EV) perde ~12%
-        let saturation = min(1.15, max(0.85, 1 + tuning.keyedSaturation * (lastKey + 4)))
+        let saturation = min(1.15, max(0.85, 1 + tuning.keyedSaturation * ((key ?? -4) + 4)))
         if abs(saturation - 1) > 0.01 {
             out = out.applyingFilter("CIColorControls", parameters: [kCIInputSaturationKey: saturation]).cropped(to: out.extent)
         }
-        if iso >= 800 {
+        let fused = max(fusedFrames, 1)
+        if iso >= 800, fused == 1 {
             out = nightDenoise(out, strength: min(0.8, log2(iso / 400) / 6))
         }
+        // Ruído que sobra: a junção de n fotos tem o ruído de uma foto com ISO ÷ n
+        let noiseISO = iso / Float(fused)
         // Nitidez fina, leve (a Apple tem um pouco mais de "mordida" nas folhas): raio pelo tamanho da foto,
         // menos com ISO alto (para não afiar o ruído)
         let e = scene.extent
@@ -995,7 +1007,7 @@ enum Developer {
             let radius = 0.9 * min(1.5, max(1, max(e.width, e.height) / 4032))
             // Foto bem grande (48 MP): um pouco menos (borda 1,31× a da Apple no laboratório)
             let big = max(e.width, e.height) > 5000
-            let amount = iso >= 1600 ? 0.13 : (big ? 0.21 : 0.26)
+            let amount = noiseISO >= 1600 ? 0.13 : (big ? 0.21 : 0.26)
             out = out.applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: radius, kCIInputIntensityKey: amount]).cropped(to: e)
         }
         return out.settingProperties(scene.properties)
@@ -1182,7 +1194,12 @@ enum Developer {
                 let exif = reference.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
                 let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 800
                 var out = materialize(night, extent: extent)
-                guard nightMode else { return photoFinish(out, iso: iso, frameCount: frames.count) }
+                guard nightMode else {
+                    // FOTO 3×: depois da limpeza leve, a mesma revelação da foto única (tons locais, luz média, céu, cor
+                    // e nitidez), sem a limpeza de ruído dela. Antes saía sem nada disso: mais escura e chapada que a FOTO
+                    let cleaned = photoFinish(out, iso: iso, frameCount: frames.count).settingProperties(reference.properties)
+                    return enhanced(cleaned, preview: image(from: frames[0], scale: 0.125), fusedFrames: frames.count)
+                }
                 // Postes e letreiros: a foto curta devolve a luz onde a junção estourou
                 if let shortFrame, let recoverKernel, let short = image(from: shortFrame),
                    let smallShort = image(from: shortFrame, scale: alignScale) {
@@ -1394,7 +1411,9 @@ enum Developer {
     ///   as pontas puxam para o quente (o vermelho se espalha mais); brilho suave em volta da luz.
     /// - f/1.8 (`points` 18): muitos raios curtos e finos, quase um sol.
     /// Estrela nas fotos de dia: o estourado (perto do branco máximo da foto) e pequeno vira estrela.
-    static func dayStar(_ scene: CIImage, points: Int) -> CIImage {
+    /// `exposure`: o que a revelação ainda soma depois (look, ETTR), para saber o que vai sair branco na tela.
+    /// `hdr`: no HDR o joelho segura as luzes um pouco abaixo do branco (o sol chega ali, não no branco).
+    static func dayStar(_ scene: CIImage, points: Int, exposure: Float = 0, hdr: Bool = false) -> CIImage {
         let e = scene.extent
         let small = scene.transformed(by: CGAffineTransform(translationX: -e.minX, y: -e.minY))
             .transformed(by: CGAffineTransform(scaleX: 1.0 / 8, y: 1.0 / 8))
@@ -1405,9 +1424,14 @@ enum Developer {
         context.render(maximum, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         let white = max(pixel[0], max(pixel[1], pixel[2]))
+        // Limite de verdade: a luz que sai branca estourada na tela (≥ 93% do branco; no HDR 90% do teto do joelho), não
+        // "82% do mais claro da foto". Com o limite relativo uma camisa branca a 0,65 já bastava, e o reforço de 26× virava
+        // raio em céu entre folhas, brilho na água, reflexo do flash e óculos
+        let clip = sceneValue(forDisplay: (hdr ? 0.9 : 0.93) / tuning.whiteScale) / exp2(exposure)
         // Sem nada estourado (nem sol nem lâmpada): sem estrela
-        guard white.isFinite, white > 0.6 else { return scene }
-        return starBurst(scene, points: points, threshold: white * 0.82 / 1.3, compactOnly: true, boost: starTuning.dayBoost)
+        guard white.isFinite, clip.isFinite, white > max(0.6, clip) else { return scene }
+        return starBurst(scene, points: points, threshold: max(white * 0.82, clip) / 1.3, compactOnly: true,
+                         boost: starTuning.dayBoost)
     }
 
     static func starBurst(_ scene: CIImage, points: Int, threshold: Float = 1.5,
@@ -1419,10 +1443,17 @@ enum Developer {
         var small = bright.transformed(by: CGAffineTransform(scaleX: k, y: k)).clampedToExtent()
         let smallRect = smallExtentFor(e, k)
         if compactOnly {
+            // Raios das aberturas pelo tamanho da foto (14 px era para 12 MP: no 48 MP o sol inteiro sobrevivia à abertura
+            // e sumia da estrela)
+            let sizeScale = max(1, min(smallRect.width, smallRect.height) / 1512)
             // Só o que é pequeno: tira o que sobrevive a uma "abertura" de 14 px (nuvem, céu, parede clara)
-            let opened = small.applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 14])
-                .applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 14])
-            small = (subKernel?.apply(extent: smallRect, arguments: [small, opened]) ?? small).clampedToExtent()
+            let opened = small.applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 14 * sizeScale])
+                .applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 14 * sizeScale])
+            // E não pequeno demais: pontinhos de 1–4 px (brilho na água, reflexo no olho e nos óculos, furo de céu entre
+            // folhas) somem numa abertura de 2 px antes de virar estrela
+            let kept = small.applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 2 * sizeScale])
+                .applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 2 * sizeScale])
+            small = (subKernel?.apply(extent: smallRect, arguments: [kept, opened]) ?? small).clampedToExtent()
         }
         // De dia o sol chega estourado (a energia de verdade foi cortada): o reforço devolve a força dos raios
         if boost != 1 { small = scaled(small, by: boost).clampedToExtent() }
@@ -1773,17 +1804,20 @@ enum Developer {
     /// e o detalhe fica. Calculado numa versão pequena: a luz de fundo é borrada de qualquer jeito.
     /// `preview`: a mesma foto já pequena (RAW aberto em 1/8, rápido). Sem ela, a cena é reduzida aqui; com ela,
     /// o RAW grande é aberto uma vez só (antes abria três vezes e a foto levava 7 s para revelar).
-    /// Luz média (log2) da última cena que passou pelos tons locais (para a cor acompanhar a luz).
-    private static var lastKey: Float = -4
-
     static func localTone(_ scene: CIImage, strength: Float, preview: CIImage? = nil, keyPull: Float = 0,
                           highlightBoost: Float = 0) -> CIImage {
-        guard let logLumaKernel, let localToneKernel else { return scene }
+        localToneKeyed(scene, strength: strength, preview: preview, keyPull: keyPull, highlightBoost: highlightBoost).0
+    }
+
+    /// Os tons locais e a luz média (log2) da cena que eles mediram (nil se não deu para medir), para a cor acompanhar a luz.
+    static func localToneKeyed(_ scene: CIImage, strength: Float, preview: CIImage? = nil, keyPull: Float = 0,
+                               highlightBoost: Float = 0) -> (CIImage, Float?) {
+        guard let logLumaKernel, let localToneKernel else { return (scene, nil) }
         let e = scene.extent
         let source = preview ?? scene.transformed(by: CGAffineTransform(scaleX: 0.125, y: 0.125))
         let se = source.extent
         guard se.width >= 8, se.height >= 8,
-              let logL = logLumaKernel.apply(extent: se, arguments: [source]) else { return scene }
+              let logL = logLumaKernel.apply(extent: se, arguments: [source]) else { return (scene, nil) }
         // Guardado pequeno na memória: o borrão e a média leem daqui, sem abrir a foto de novo
         let small = materialize(logL, extent: se)
             .transformed(by: CGAffineTransform(translationX: -se.minX, y: -se.minY))
@@ -1802,7 +1836,7 @@ enum Developer {
         context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         dlog(String(format: "Tons locais: luz média %.2f EV · força %.2f", pixel[0], 1 - strength))
-        if pixel[0].isFinite { lastKey = pixel[0] }
+        let key: Float? = pixel[0].isFinite ? pixel[0] : nil
         let t = tuning
         let shadow = max(0.3, 1 - (1 - strength) * t.shadowRatio)
         let high = min(1, 1 - (1 - strength) * t.highlightRatio)
@@ -1812,7 +1846,7 @@ enum Developer {
         // Detalhe ×1,08; nas fotos bem grandes (48 MP) ×1,04: lá o realce já é mais fino e dava borda 1,31× a da Apple
         let detail: CGFloat = max(e.width, e.height) > 5000 ? 1.04 : 1.08
         let shape = CIVector(x: CGFloat(shadow), y: CGFloat(high), z: detail, w: CGFloat(shift))
-        return localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], shape, highlightBoost]) ?? scene
+        return (localToneKernel.apply(extent: e, arguments: [scene, base, pixel[0], shape, highlightBoost]) ?? scene, key)
     }
 
     private static func hdrImage(_ frame: CapturedFrame, scale: Float = 1) -> CIImage? {
