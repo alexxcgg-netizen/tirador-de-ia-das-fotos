@@ -1291,8 +1291,9 @@ enum Developer {
                 guard nightMode else {
                     // FOTO 3×: depois da limpeza leve, a mesma revelação da foto única (tons locais, luz média, céu, cor
                     // e nitidez), sem a limpeza de ruído dela. Antes saía sem nada disso: mais escura e chapada que a FOTO
-                    let cleaned = photoFinish(out, iso: iso, frameCount: frames.count).settingProperties(reference.properties)
-                    return enhanced(cleaned, preview: image(from: frames[0], scale: 0.125), fusedFrames: frames.count,
+                    // Com as fotos que entraram de fato (a que não encaixou não conta para a limpeza nem para a nitidez)
+                    let cleaned = photoFinish(out, iso: iso, frameCount: mergedCount).settingProperties(reference.properties)
+                    return enhanced(cleaned, preview: image(from: frames[0], scale: 0.125), fusedFrames: mergedCount,
                                     coverage: coverage)
                 }
                 // Postes e letreiros: a foto curta devolve a luz onde a junção estourou
