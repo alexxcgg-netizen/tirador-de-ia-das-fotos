@@ -268,7 +268,7 @@ final class LabTests: XCTestCase {
                 lows.append(Developer.materialize(noisy, extent: le))
             }
             // Fotos de entrada em PNG de 16 bits (luz linear × 0,5), para rodar o protótipo em Python nas mesmas fotos
-            if name.hasPrefix("iphone12") {
+            do {  // as três câmeras (para estudar por que cada cena prefere uma desconvolução)
                 let lin = CGColorSpace(name: CGColorSpace.linearDisplayP3)!
                 for (i, low) in lows.enumerated() {
                     let url = outDir.appendingPathComponent("superres_cru/\(name)_\(i).png")
