@@ -147,7 +147,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
 
     var hint: String {
         switch self {
-        case .photo: return "Com pouca luz (ISO 320 ou mais) cada toque junta várias fotos do mesmo instante: FOTO 3×, um terço do ruído. O selo 3× no visor avisa. Com sol, uma foto de 48 MP."
+        case .photo: return "Com pouca luz (ISO 320 ou mais), cada toque junta várias fotos do mesmo instante: FOTO 3×, menos ruído (até um terço no RAW puro). O selo 3× no visor avisa. Com sol, uma foto de 48 MP."
         case .fast: return "Disparo sem atraso em 12 MP (HEIC, ou RAW no RAW puro). Toque várias vezes ou segure para rajada."
         case .action: return "4K a 120 fps: toque grava 1 s, segure para mais. O app salva as 8 fotos mais nítidas e o vídeo."
         case .freeze: return "Obturador rapidíssimo para congelar movimento. Precisa de muita luz; segure para rajada."
@@ -287,7 +287,11 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var cinematicWanted = false
     /// Com o modo cinema ligado o iPhone não deixa mexer no foco (fecharia o app).
     private var cinematicActive = false
-    private var dualActive = false
+    private var dualActive = false {
+        // Cópia para a principal (o applySensorZoom lê lá; o original é da fila da sessão)
+        didSet { let on = dualActive; DispatchQueue.main.async { self.dualActiveOnMain = on } }
+    }
+    private var dualActiveOnMain = false
     private var readoutTimer: Timer?
     /// Ligação, app no fundo, erro da câmera (ver observeInterruptions).
     private var observers: [NSObjectProtocol] = []
@@ -320,8 +324,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var lastFaceFocus = Date.distantPast
     /// Campo de visão do lado curto da imagem (retrato), para estimar a distância do rosto.
     private var shortSideFOV: Double = 1.0
-    /// Zoom do sensor nos quadros que chegam (lido na fila de vídeo): com 2× o rosto ocupa o dobro do quadro
-    private var frameZoom: CGFloat = 1
+    /// Zoom do sensor nos quadros que chegam: com 2× o rosto ocupa o dobro do quadro. Escrito na fila da sessão e lido
+    /// na de vídeo: com trava
+    private let frameZoomLock = NSLock()
+    private var storedFrameZoom: CGFloat = 1
+    private var frameZoom: CGFloat {
+        get { frameZoomLock.lock(); defer { frameZoomLock.unlock() }; return storedFrameZoom }
+        set { frameZoomLock.lock(); storedFrameZoom = newValue; frameZoomLock.unlock() }
+    }
     private let defaults = UserDefaults.standard
 
     @Published var authorized = true
@@ -365,7 +375,18 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// f/4 de começo: desfoque bonito sem "recortado" (f/1,4 continua a um toque).
     @Published var portraitAperture: Float = 4 { didSet { updatePortraitPreview() } }
     /// Retrato: o que você tocou no visor fica nítido (no lugar do rosto). Coordenadas do visor.
-    private var portraitTap: CGPoint?
+    private var portraitTap: CGPoint? { didSet { refreshPortraitPoint() } }
+    /// Cópia do portraitChoice para a fila da profundidade (ele lê o zoom e o rosto, que são da principal)
+    private let portraitPointLock = NSLock()
+    private var storedPortraitPoint: CGPoint?
+    private var portraitPointForDepth: CGPoint? {
+        get { portraitPointLock.lock(); defer { portraitPointLock.unlock() }; return storedPortraitPoint }
+        set { portraitPointLock.lock(); storedPortraitPoint = newValue; portraitPointLock.unlock() }
+    }
+    /// Na principal: refaz a cópia (toque, rosto novo e, pelo relógio da leitura, zoom)
+    private func refreshPortraitPoint() {
+        portraitPointForDepth = captureMode == .portrait ? portraitChoice : nil
+    }
     /// Retrato: a câmera aberta entrega profundidade (sem ela a foto sai sem desfoque, e o visor também não borra)
     @Published private(set) var portraitDepthReady = false
 
@@ -653,8 +674,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var ettrActive: Bool {
         // HEIC (RETRATO; RÁPIDO com ProRAW) já vem com a curva da Apple: expor mais claro e descontar depois só estourava
         let heic = captureMode == .portrait || (captureMode == .fast && rawMode == .proRAW)
+        // FLASH: o desconto é medido no visor, sem o flash (a foto com flash saía escura pelo que o ETTR tinha clareado)
         return ettr && !manualExposure && !heic
-            && ![.video, .cinematic, .dual, .panorama, .action, .freeze, .longExposure].contains(captureMode)
+            && ![.video, .cinematic, .dual, .panorama, .action, .freeze, .longExposure, .flash].contains(captureMode)
     }
     /// Lido na fila de vídeo.
     private var ettrRunning = false
@@ -703,6 +725,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         didSet {
             if faceRect != live.face { live.face = faceRect }
             updateAdvice()
+            refreshPortraitPoint()
         }
     }
     var faceDistance: Double? { didSet { updateAdvice() } }
@@ -735,7 +758,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var readoutShutter: Double = 0
     var readoutLensPosition: Float = 0
     /// Guarda as fotos cruas de cada disparo (todas da sequência) no app Arquivos, para o laboratório do Claude.
-    /// FOTO 3×: cada toque tira várias fotos do mesmo instante e junta (⅓ do ruído). Desligado = uma foto só, mais rápida
+    /// FOTO 3×: cada toque tira várias fotos do mesmo instante e junta (até ⅓ do ruído no RAW puro, ½ com 4 ProRAW).
+    /// Desligado = uma foto só, mais rápida
     @Published var photoFusion = UserDefaults.standard.object(forKey: "photoFusion") as? Bool ?? true {
         didSet { defaults.set(photoFusion, forKey: "photoFusion") }
     }
@@ -753,10 +777,23 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published private(set) var developingLabel: String?
     @Published private(set) var developingSince: Date?
 
+    /// Um rótulo por revelação em andamento, na ordem do disparo: o aviso mostra o da mais antiga que ainda revela
+    /// (antes ficava o do último disparo, mesmo depois de ele terminar e só a NOITE de antes continuar)
+    private var developingLabels: [String] = []
+    /// O modo da revelação que acabou de terminar (o process avisa), para sair da lista o rótulo certo
+    private var finishedLabel: String?
+
     private func developingChanged(from old: Int) {
         if processing > old {
-            developingLabel = fusionWillTrigger ? "FOTO 3×" : (lens == .macro && captureMode == .photo ? "MACRO" : captureMode.rawValue)
+            developingLabels.append(fusionWillTrigger ? "FOTO 3×" : (lens == .macro && captureMode == .photo ? "MACRO" : captureMode.rawValue))
+        } else if processing < old, !developingLabels.isEmpty {
+            // Sem aviso de qual foi (HDR recusado, AÇÃO de um toque: sai logo depois de entrar), sai o último
+            let index = finishedLabel.flatMap { developingLabels.firstIndex(of: $0) } ?? developingLabels.count - 1
+            developingLabels.remove(at: index)
         }
+        finishedLabel = nil
+        developingLabel = developingLabels.first
+        if processing <= 0 { developingLabels = [] }
         if processing > 0, old <= 0 {
             developingSince = Date()
             // Foi para o fundo no meio da revelação: o iOS dá um tempo para a foto terminar de sair
@@ -862,7 +899,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         if z < toUltra && availableLenses.contains(.ultraWide) { best = .ultraWide }
         else if z >= toTele && availableLenses.contains(.tele) { best = .tele }
         else { best = .wide }
-        if best != lens { select(lens: best) }
+        // Já está na lente certa: uma troca que esperava a foto sair (zoom de antes) não vale mais
+        if best != lens { select(lens: best) } else { lensAfterShot = nil }
     }
 
     /// Pinça: a lente certa já começa a abrir no meio do gesto; até ela chegar, o visor recorta a lente atual.
@@ -993,8 +1031,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Filmes vindos do Claude: atualiza os que existem, cria os novos e apaga os que ele apagou.
-    /// Os criados aqui que o Claude ainda não tem sobem para ele.
-    func applyRemoteLooks(_ remote: [CustomLook]) {
+    /// Os criados aqui que o Claude ainda não tem sobem para ele. Devolve se mudou algo (o aviso sai pela fila do ClaudeSync)
+    @discardableResult
+    func applyRemoteLooks(_ remote: [CustomLook]) -> Bool {
         let synced = Set(defaults.stringArray(forKey: "syncedLookIDs") ?? [])
         let remoteIDs = Set(remote.map(\.id))
         var merged: [CustomLook] = []
@@ -1017,9 +1056,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             CustomLookStore.save(merged)
             if let current = customLook { customLook = merged.first { $0.id == current.id } }
             dlog("Claude: filmes próprios atualizados (\(merged.count))")
-            show("Filmes atualizados pelo Claude")
         }
         if localOnly { syncLooksUp() } else { defaults.set(merged.map(\.id.uuidString), forKey: "syncedLookIDs") }
+        return changed
     }
 
     /// Acha um filme pelo nome (pronto ou próprio) e devolve o id do jeito dos looks extras.
@@ -1033,8 +1072,10 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         return nil
     }
 
-    /// Ajustes vindos do Claude (`ajustes.json`): só as chaves presentes.
-    func applyRemoteSettings(_ d: [String: Any]) {
+    /// Ajustes vindos do Claude (`ajustes.json`): só as chaves presentes. Devolve se aplicou algo (o aviso sai pela fila do
+    /// ClaudeSync, que espera a câmera ficar livre)
+    @discardableResult
+    func applyRemoteSettings(_ d: [String: Any]) -> Bool {
         var applied: [String] = []
         if let name = d["look"] as? String, let id = lookID(named: name) {
             if id.hasPrefix("c:") { customLook = customLooks.first { "c:" + $0.id.uuidString == id } }
@@ -1065,9 +1106,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             applied.append("ordem dos modos")
         }
         if applied.contains(where: { $0.hasPrefix("modos") || $0.hasPrefix("ordem") }) { saveModes() }
-        guard !applied.isEmpty else { return }
+        guard !applied.isEmpty else { return false }
         dlog("Claude: ajustes aplicados (\(applied.joined(separator: ", ")))")
-        show("Ajustes atualizados pelo Claude")
+        return true
     }
 
     /// Os ajustes de agora, para o `estado.json` que o Claude lê.
@@ -1107,6 +1148,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     func show(_ text: String, seconds: Double = 2.6) {
         toast = text
+        // O aviso é só visual: o leitor de tela também fala
+        if UIAccessibility.isVoiceOverRunning { UIAccessibility.post(notification: .announcement, argument: text) }
         let current = text
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
             if self.toast == current { self.toast = nil }
@@ -1207,14 +1250,23 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
     }
 
-    func select(lens requested: Lens) {
+    /// `reopen` false: quem chamou já vai reabrir a sessão com a lente nova (entrada no RETRATO)
+    func select(lens requested: Lens, reopen: Bool = true) {
         // RETRATO só nas câmeras com profundidade (principal com LiDAR, frente com TrueDepth): na 0,5×, 4× e macro a foto
         // saía sem desfoque nenhum enquanto o visor mostrava o fundo borrado
         let newLens: Lens = captureMode == .portrait && requested != .front ? .wide : requested
+        // Pedido novo: o que estava esperando a foto sair não vale mais
+        lensAfterShot = nil
         // No meio de uma rajada ou gravação a câmera não troca (trocar ali fechava o app no CONGELAR)
         // Na DUPLA as câmeras são as da sessão dupla: reabrir a principal disputava o sensor com ela
         guard newLens != lens, !bursting, !actionRecording, stackProgress == nil, longRemaining == nil,
               panoramaProgress == nil, !isRecordingVideo, captureMode != .dual else { return }
+        // Foto ainda saindo da câmera: reabrir a sessão agora perdia a foto (ProRAW de 48 MP leva 1–2 s). A troca fica
+        // para quando ela chegar
+        if capturesInFlight > 0 {
+            lensAfterShot = requested
+            return
+        }
         let old = lens
         lens = newLens
         optionsChanged()
@@ -1245,7 +1297,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         faceRect = nil
         faceDistance = nil
         // Mesma câmera física (ex.: 1× -> 2×): só muda o recorte, sem reabrir a sessão
-        guard !newLens.sameCamera(as: old) else { return }
+        guard reopen, !newLens.sameCamera(as: old) else { return }
         let mode = rawMode
         lensRequestLock.lock()
         lensRequest += 1
@@ -1294,11 +1346,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     }
 
     /// Cada cena ajusta a câmera para o que ela pede.
-    func select(captureMode mode: CaptureMode) {
+    /// `force`: troca mesmo ocupado (só o teste de modos e as voltas internas para FOTO quando um modo falha)
+    func select(captureMode mode: CaptureMode, force: Bool = false) {
         // Gravando, numa sequência, contando o timer ou no meio do panorama: trocar de modo estragava o que estava
-        // saindo. Espera terminar (o teste de modos troca sozinho e passa)
-        if mode != captureMode, isBusy, selfTestProgress == nil {
-            show("Espere terminar…")
+        // saindo. Espera terminar, e o aviso diz o que fazer
+        if mode != captureMode, isBusy, !force {
+            show(busyReason ?? "Espere terminar…")
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
             return
         }
@@ -1345,7 +1398,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // do Alex (longe) a foto saiu da ultra-angular recortada 2× em vez da 1× (f/1.78, bem melhor no escuro)
         if mode != .photo, lens == .macro, macroIsAuto {
             dlog("Macro automático: desligou ao sair da FOTO")
-            select(lens: .wide)
+            // No RETRATO a sessão já vai reabrir na 1× (com profundidade): troca sem reabrir duas vezes
+            select(lens: .wide, reopen: mode != .portrait)
             setZoom(1, settle: false)
         }
         // A exposição para RAW vale só nos modos de foto: liga ou desliga conforme o modo
@@ -1366,6 +1420,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // Retrato troca para a câmera com profundidade; HDR precisa do RAW puro; vídeo e cinema mudam o formato
         let wantsDepth = mode == .portrait, wantsHDR = mode == .hdr
         let wantsVideo = mode == .video, wantsCinematic = mode == .cinematic
+        // RETRATO vindo da 0,5×, 4× ou macro: a lente vira a 1× já aqui, para a sessão abrir uma vez só (antes abria a
+        // lente antiga com profundidade e logo depois o setZoom(2) reabria na 1×)
+        if wantsDepth, lens != .front, lens != .wide { select(lens: .wide, reopen: false) }
         let changed = wantsDepth != (oldMode == .portrait) || wantsHDR != (oldMode == .hdr)
             || wantsVideo != (oldMode == .video) || wantsCinematic != (oldMode == .cinematic)
         if changed {
@@ -1567,7 +1624,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 DispatchQueue.main.async {
                     // Só força FOTO se o modo pedido ainda é um desses (você pode já ter trocado)
                     guard [.portrait, .video, .cinematic, .hdr].contains(self.captureMode) else { return }
-                    self.select(captureMode: .photo)
+                    self.select(captureMode: .photo, force: true)
                     self.message = "A câmera recusou esse modo agora. Voltei para FOTO; o relatório mostra o motivo."
                 }
             }
@@ -1594,6 +1651,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         // Cada câmera é montada num ângulo; o coordinator, com a camada do visor, diz o ângulo certo
         DispatchQueue.main.async {
             self.activeLens = lens
+            // Um zoom do sensor de antes, ainda a caminho da tela (applySensorZoom), não vale para a câmera reaberta
+            self.sensorZoomToken &+= 1
             self.sensorZoom = 1
             self.requestedSensorZoom = 1
             self.optionsChanged()
@@ -1841,6 +1900,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             if abs(self.live.shutter - d.exposureDuration.seconds) > 1e-5 { self.live.shutter = d.exposureDuration.seconds }
             self.adjustShutterPriority()
             self.checkAutoMacro(lensPosition: d.lensPosition, focusMode: d.focusMode)
+            // Ponto do Retrato para a fila da profundidade acompanha o zoom (o toque e o rosto já refazem na hora)
+            if self.captureMode == .portrait || self.portraitPointForDepth != nil { self.refreshPortraitPoint() }
         }
     }
 
@@ -1971,11 +2032,20 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                 if self.holding && !self.bursting { self.startBurst() }
             }
-        } else {
+        } else if !shotWaitsForRelease {
             // Segurar não faz nada neste modo: dispara já no toque (no soltar, o tempo do dedo na tela virava atraso)
             firedOnPress = true
             shutter()
         }
+    }
+
+    /// Várias fotos (NOITE, HDR, FOTO 3×, LONGA, macro empilhado ou 2×/3×): dispara no soltar. No toque, o dedo saindo
+    /// do vidro tremia as primeiras fotos da sequência
+    private var shotWaitsForRelease: Bool {
+        let mode = captureMode
+        if mode.frameCount > 1 || mode == .hdr || mode == .longExposure { return true }
+        if mode == .photo, lens == .macro, macroStack || macroZoom > 1 { return true }
+        return fusionWillTrigger
     }
 
     func endHold() {
@@ -2298,6 +2368,57 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private var busyToken = 0
     /// Último zoom do sensor pedido (main): pedir o mesmo de novo não enfileira nada
     private var requestedSensorZoom: CGFloat = 1
+    /// Quando o videoZoomFactor mudou pela última vez (fila da sessão). O disparo sem atraso (RÁPIDO, CONGELAR, FOTO) usa
+    /// quadros guardados de antes do toque: logo depois da mudança a foto podia vir com o zoom antigo e o recorte do novo
+    private var sensorZoomChangedAt: CFTimeInterval = 0
+    /// Cada pedido de zoom do sensor (e cada reabertura) ganha um número (main): o valor que chega atrasado de um pedido
+    /// velho não cobre o de agora
+    private var sensorZoomToken = 0
+    /// Fotos de uma vez pedidas à câmera que ainda não chegaram (main). Trocar de modo ou de lente reabre a sessão e a foto
+    /// se perdia (ProRAW de 48 MP leva 1–2 s): entra no isBusy. Cada uma sai sozinha em 10 s, se a câmera nunca responder
+    @Published private(set) var capturesInFlight = 0
+    private var shotsInFlight: Set<Int> = []
+    private var shotSerial = 0
+    /// Lente pedida enquanto uma foto saía: abre quando ela chegar
+    private var lensAfterShot: Lens?
+
+    private func beginShotInFlight() -> Int {
+        shotSerial &+= 1
+        let id = shotSerial
+        shotsInFlight.insert(id)
+        capturesInFlight = shotsInFlight.count
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { self.endShotInFlight(id) }
+        return id
+    }
+
+    /// Main. A última foto chegou: a troca de lente que esperava acontece agora
+    private func endShotInFlight(_ id: Int) {
+        guard shotsInFlight.remove(id) != nil else { return }
+        capturesInFlight = shotsInFlight.count
+        if shotsInFlight.isEmpty, let pending = lensAfterShot {
+            lensAfterShot = nil
+            select(lens: pending)
+        }
+    }
+
+    /// Como `sessionQueue.async`, mas se o zoom do sensor acabou de mudar espera ele assentar (~0,35 s) antes de disparar
+    private func onSessionQueueWhenZoomSettled(_ action: @escaping () -> Void) {
+        sessionQueue.async { self.waitSensorZoomSettled(action) }
+    }
+
+    /// Fila da sessão.
+    private func waitSensorZoomSettled(_ action: @escaping () -> Void) {
+        let wait = sensorZoomChangedAt + 0.35 - CACurrentMediaTime()
+        guard wait > 0 else { return action() }
+        sessionQueue.asyncAfter(deadline: .now() + wait) { self.waitSensorZoomSettled(action) }
+    }
+
+    /// A câmera pode voltar com o zoom do sensor em 1 (3D, DOC, serviços de mídia reiniciados) enquanto o app acha que é
+    /// 2×: refaz o pedido do modo. Main
+    private func resyncSensorZoom() {
+        requestedSensorZoom = 0
+        applySensorZoom()
+    }
 
     /// Segura o botão enquanto as fotos chegam. Se a câmera parar no meio (ligação, Central de Controle) a resposta pode
     /// nunca vir: em 8 s solta sozinho, mas só se ainda for este disparo (antes o de um disparo velho soltava o novo)
@@ -2349,13 +2470,21 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Põe o zoom do sensor no que o modo pede, se o formato faz esse zoom em resolução de verdade (senão fica o recorte)
     private func applySensorZoom() {
         // No VÍDEO o zoom do sensor é contínuo (updateVideoZoom) e na DUPLA a câmera é da sessão dupla
-        guard captureMode != .video, !dualActive else { return }
+        guard captureMode != .video, !dualActiveOnMain else { return }
         let wanted = wantedSensorZoom
         guard wanted != requestedSensorZoom else { return }
         requestedSensorZoom = wanted
         let portrait = captureMode == .portrait
+        // Uns quadros chegam com o zoom antigo e o recorte novo (1× piscando, ou recorte em dobro; saindo do VÍDEO a 3×
+        // aparecia ~9×): a imagem fica parada até o zoom novo chegar e esmaece para ele
+        renderer.beginLensTransition(blur: false)
+        sensorZoomToken &+= 1
+        let token = sensorZoomToken
         sessionQueue.async {
-            guard let d = self.device else { return }
+            guard let d = self.device, !self.dualActive else {
+                DispatchQueue.main.async { self.renderer.endLensTransition() }
+                return
+            }
             var factor = wanted
             if factor > 1 {
                 let depth = portrait && self.photoOutput.isDepthDataDeliveryEnabled
@@ -2364,18 +2493,24 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     factor = 1
                 }
             }
+            var changed = false
             if abs(d.videoZoomFactor - factor) > 0.001, (try? d.lockForConfiguration()) != nil {
                 if attempt("Zoom do sensor", { d.videoZoomFactor = factor }) {
+                    changed = true
+                    self.sensorZoomChangedAt = CACurrentMediaTime()
                     dlog("Zoom do sensor: \(String(format: "%.1f", factor))× em \(d.localizedName)")
                 }
                 d.unlockForConfiguration()
             }
             let applied = max(d.videoZoomFactor, 1)
             self.frameZoom = applied
-            DispatchQueue.main.async {
-                guard self.sensorZoom != applied else { return }
-                self.sensorZoom = applied
-                self.renderer.options.develop = self.developOptions
+            // O recorte do visor muda junto com os quadros que já vêm no zoom novo (uns 0,15 s depois)
+            DispatchQueue.main.asyncAfter(deadline: .now() + (changed ? 0.15 : 0)) {
+                if token == self.sensorZoomToken, self.sensorZoom != applied {
+                    self.sensorZoom = applied
+                    self.renderer.options.develop = self.developOptions
+                }
+                self.renderer.endLensTransition()
             }
         }
     }
@@ -2479,7 +2614,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             let locks = (exposure: !manualExposure, whiteBalance: !manualWB, focus: !manualFocus)
             // Botão parado até as fotos chegarem (cada toque segurava mais 8 RAW na memória enquanto a junção corria)
             let token = holdShutter("FOTO 3×")
-            sessionQueue.async {
+            onSessionQueueWhenZoomSettled {
                 self.captureFusion(raw: raw, options: fix(options), locks: locks, started: t0, token: token, extraLooks: extraLooks)
             }
             return
@@ -2502,10 +2637,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 DispatchQueue.main.asyncAfter(deadline: .now() + 30) { _ = self.pendingSingles.remove(id) }
             }
             let pendingShot = pending
-            sessionQueue.async {
+            // Trocar de modo ou de lente antes de a foto chegar perdia a foto (ver capturesInFlight). O RÁPIDO e o CONGELAR
+            // (12 MP, ~0,2 s) ficam de fora: o botão de modo piscaria a cada toque
+            let inFlightShot: Int? = fast ? nil : beginShotInFlight()
+            onSessionQueueWhenZoomSettled {
                 let shot = fix(options)
                 let portraitFocus = self.photoPoint(fromFrame: portraitFrame)
                 self.captureRAW(forStack: false, flash: flash, fast: fast, portrait: portrait) { result in
+                    if let inFlightShot { DispatchQueue.main.async { self.endShotInFlight(inFlightShot) } }
                     dlog("RAW recebido: \(Diagnostics.ms(since: t0))")
                     self.process(result.map { [$0] }, mode: mode, options: shot, started: t0,
                                  aperture: aperture, focusPoint: portraitFocus, extraLooks: extraLooks, pendingShot: pendingShot)
@@ -2559,7 +2698,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let lockPlan = (mode == .moon || mode == .focusStack) && !nightPlan && !fastPlan
         let lockExposure = mode == .focusStack && !manualExposure
         let waitForStill = mode == .superZoom || mode == .moon
-        sessionQueue.async {
+        onSessionQueueWhenZoomSettled {
             let shot = fix(options)
             let run = {
                 // NOITE precisa de pelo menos 4 para valer a junção; os outros modos seguem com 2
@@ -2692,8 +2831,17 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                 return
             }
         }
-        let shoot = {
-            self.captureRAW(forStack: !fullResolution) { result in
+        let shoot: () -> Void = {
+            // A câmera parou no meio (ligação, Central de Controle) e a foto nunca chega: em 8 s (mais a exposição) segue
+            // sozinho com as que já chegaram. Antes o "Fotografando 3/8" ficava na tela e o botão travado para sempre
+            let lock = NSLock()
+            var answered = false
+            let handle: (Result<CapturedFrame, Error>) -> Void = { result in
+                lock.lock()
+                let first = !answered
+                answered = true
+                lock.unlock()
+                guard first else { return }
                 switch result {
                 case .failure(let error):
                     // Uma foto que falha no meio não joga fora as que já chegaram (antes a sequência inteira se perdia)
@@ -2715,6 +2863,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     }
                 }
             }
+            let exposure: Double = self.device?.exposureDuration.seconds ?? 1
+            let timeout: Double = 8 + 2 * (exposure.isFinite ? exposure : 1)
+            self.sessionQueue.asyncAfter(deadline: .now() + timeout) {
+                handle(.failure(RevelaError.noRawData))
+            }
+            self.captureRAW(forStack: !fullResolution, completion: handle)
         }
         if isShort, let d = device, (try? d.lockForConfiguration()) != nil {
             // Mesmo ISO, 1/8 do tempo: espera a câmera aplicar e fotografa
@@ -2890,16 +3044,21 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// Se o app fechar no meio, a próxima abertura anota em qual modo foi.
     func runModeSelfTest() {
         guard selfTestProgress == nil else { return }
+        // Com algo saindo (gravação, sequência, foto a caminho) o teste trocaria de modo por cima e estragaria
+        if isBusy {
+            show(busyReason ?? "Espere terminar…")
+            return
+        }
         selfTestCancelled = false
         let modes = CaptureMode.allCases.filter { $0 != .photo }
         let lenses = availableLenses.filter { $0 != .macro } + (hasFront ? [.front] : []) + [.wide]
         var steps: [(name: String, action: () -> Void, waitsForFrames: Bool)] = []
         for mode in modes {
             let previewless = mode == .cinematic || mode == .scan || mode == .document
-            steps.append((mode.rawValue, { self.select(captureMode: mode) }, !previewless))
+            steps.append((mode.rawValue, { self.select(captureMode: mode, force: true) }, !previewless))
             if mode == .scan { steps.append(("fechar 3D", { self.showScanner = false; self.scannerClosed() }, false)) }
             if mode == .document { steps.append(("fechar DOC", { self.showDocument = false; self.documentClosed() }, false)) }
-            steps.append(("FOTO", { self.select(captureMode: .photo) }, true))
+            steps.append(("FOTO", { self.select(captureMode: .photo, force: true) }, true))
         }
         for lens in lenses {
             steps.append(("lente \(lens.rawValue)", { self.select(lens: lens) }, true))
@@ -3094,6 +3253,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             if !self.session.isRunning { self.session.startRunning() }
         }
+        // O VisionKit pode devolver a câmera com o zoom do sensor em 1
+        resyncSensorZoom()
     }
 
     func scannerClosed() {
@@ -3101,6 +3262,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async {
             if !self.session.isRunning { self.session.startRunning() }
         }
+        // O ARKit pode devolver a câmera com o zoom do sensor em 1
+        resyncSensorZoom()
     }
 
     private func requestMicrophone() {
@@ -3409,6 +3572,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.sessionQueue.async {
                 if !self.dualActive, !self.session.isRunning { self.session.startRunning() }
             }
+            self.resyncSensorZoom()
         })
         observers.append(center.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil,
                                             queue: .main) { [weak self] _ in
@@ -3963,12 +4127,17 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func process(_ result: Result<[CapturedFrame], Error>, mode: CaptureMode, options: DevelopOptions,
                          started t0: CFAbsoluteTime, aperture: Float = 2.8, focusPoint: CGPoint? = nil,
                          extraLooks: [DevelopOptions] = [], keepOriginal: Bool = true, pendingShot: Int? = nil) {
+        // Rótulo desta revelação no aviso "Revelando…" (o mesmo do disparo), para sair da lista quando terminar
+        var finished = mode.rawValue
+        if case .success(let received) = result, mode == .photo, received.count > 1 { finished = "FOTO 3×" }
+        let finishedLabel = finished
         let done: (Result<UIImage?, Error>) -> Void = { result in
             switch result {
             case .success: dlog("✅ Salvo na galeria. Total: \(Diagnostics.ms(since: t0)) · memória livre \(Diagnostics.freeMemory)")
             case .failure(let error): dlog("❌ \(error.localizedDescription)")
             }
             DispatchQueue.main.async {
+                self.finishedLabel = finishedLabel
                 self.processing -= 1
                 if let pendingShot { _ = self.pendingSingles.remove(pendingShot) }
                 switch result {
@@ -4201,7 +4370,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Um passo do ETTR: estourou → desce; sobrando espaço nas altas luzes → sobe.
     private func stepETTR(clipped: Float, bright: Float) {
-        guard ettrActive else { return }
+        // Com a trava AE/AF (ou numa sequência) a câmera não segue o desvio: andar aqui até ±3 só desencontrava o visor
+        // (que desconta o ettrBias) da foto
+        guard ettrActive, !aeafLocked, stackProgress == nil else { return }
         var next = ettrBias
         if clipped > 0.004 {
             next -= clipped > 0.02 ? 0.4 : 0.15
@@ -4212,13 +4383,17 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         }
         next = min(max(next, -3), 2)
         guard abs(next - ettrBias) > 0.01 else { return }
-        ettrBias = next
-        renderer.options.develop = developOptions
         sessionQueue.async {
+            // Só anda quando a câmera está no automático contínuo e aceitou o desvio novo: o visor e a foto descontam o mesmo
             guard let d = self.device, d.exposureMode == .continuousAutoExposure,
                   (try? d.lockForConfiguration()) != nil else { return }
             d.setExposureTargetBias(min(max(next, d.minExposureTargetBias), d.maxExposureTargetBias), completionHandler: nil)
             d.unlockForConfiguration()
+            DispatchQueue.main.async {
+                guard self.ettrActive, !self.aeafLocked else { return }
+                self.ettrBias = next
+                self.renderer.options.develop = self.developOptions
+            }
         }
     }
 
@@ -4284,8 +4459,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         let disparity = depthData.depthDataType == kCVPixelFormatType_DisparityFloat16
             ? depthData : depthData.converting(toDepthDataType: kCVPixelFormatType_DisparityFloat16)
         let buffer = disparity.depthDataMap
-        // Ponto em foco no quadro inteiro (o toque já sem o recorte do visor; o rosto já vem assim) ou um pouco acima do centro
-        let viewPoint = portraitChoice ?? CGPoint(x: 0.5, y: 0.45)
+        // Ponto em foco no quadro inteiro (o toque já sem o recorte do visor; o rosto já vem assim) ou um pouco acima do centro.
+        // Da cópia travada: o portraitChoice lê estado da principal (zoom, rosto) e aqui é a fila da profundidade
+        let viewPoint = portraitPointForDepth ?? CGPoint(x: 0.5, y: 0.45)
         var image = CIImage(cvPixelBuffer: buffer)
         let samplePoint: CGPoint
         if depthRotated {

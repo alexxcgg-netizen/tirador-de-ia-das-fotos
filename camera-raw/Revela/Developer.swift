@@ -1016,7 +1016,9 @@ enum Developer {
     /// O ProRAW já vem de várias fotos juntadas pela Apple; isto só acerta o que a curva do filme não faz.
     /// `fusedFrames`: FOTO 3× (várias fotos já juntadas e limpas pelo photoFinish). A limpeza de ruído daqui fica de fora
     /// (limpar de novo só amaciava o detalhe) e a nitidez segue o ruído que sobrou (o de ISO ÷ número de fotos).
-    static func enhanced(_ scene: CIImage, preview: CIImage? = nil, fusedFrames: Int = 1) -> CIImage {
+    /// `coverage`: N_eff da junção (quantas fotos entraram em cada lugar). Onde o movimento deixou só a referência o ruído é
+    /// o de uma foto (ISO cheio): ali a nitidez é a da foto única, senão o grão de quem se mexeu saía afiado 2×
+    static func enhanced(_ scene: CIImage, preview: CIImage? = nil, fusedFrames: Int = 1, coverage: CIImage? = nil) -> CIImage {
         let exif = scene.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
         let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.floatValue ?? 100
         // A luz média volta junto com a imagem: guardada num valor estático, duas revelações ao mesmo tempo (fila rápida e
@@ -1043,10 +1045,38 @@ enum Developer {
             let radius = 0.9 * min(1.5, max(1, max(e.width, e.height) / 4032))
             // Foto bem grande (48 MP): um pouco menos (borda 1,31× a da Apple no laboratório)
             let big = max(e.width, e.height) > 5000
-            let amount = noiseISO >= 1600 ? 0.13 : (big ? 0.21 : 0.26)
-            out = out.applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: radius, kCIInputIntensityKey: amount]).cropped(to: e)
+            let amount: Double = noiseISO >= 1600 ? 0.13 : (big ? 0.21 : 0.26)
+            let single: Double = iso >= 1600 ? 0.13 : (big ? 0.21 : 0.26)
+            let sharp = out.applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: radius, kCIInputIntensityKey: amount]).cropped(to: e)
+            if fused > 1, single < amount, let coverage, let mask = singleFrameMask(coverage, frames: fused, extent: e) {
+                let soft = out.applyingFilter("CIUnsharpMask", parameters: [kCIInputRadiusKey: radius, kCIInputIntensityKey: single]).cropped(to: e)
+                out = soft.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: sharp, kCIInputMaskImageKey: mask])
+                    .cropped(to: e)
+            } else {
+                out = sharp
+            }
         }
         return out.settingProperties(scene.properties)
+    }
+
+    /// Máscara da junção: 1 onde só a referência entrou (N_eff = 1), 0 onde entraram todas as `frames` fotos
+    private static func singleFrameMask(_ coverage: CIImage, frames: Int, extent: CGRect) -> CIImage? {
+        guard frames > 1 else { return nil }
+        let n = CGFloat(frames)
+        let k = -1 / (n - 1), b = n / (n - 1)
+        return coverage.clampedToExtent()
+            .applyingFilter("CIColorMatrix", parameters: [
+                "inputRVector": CIVector(x: k, y: 0, z: 0, w: 0),
+                "inputGVector": CIVector(x: k, y: 0, z: 0, w: 0),
+                "inputBVector": CIVector(x: k, y: 0, z: 0, w: 0),
+                "inputAVector": CIVector(x: 0, y: 0, z: 0, w: 0),
+                "inputBiasVector": CIVector(x: b, y: b, z: b, w: 1),
+            ])
+            .applyingFilter("CIColorClamp", parameters: [
+                "inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
+                "inputMaxComponents": CIVector(x: 1, y: 1, z: 1, w: 1),
+            ])
+            .cropped(to: extent)
     }
 
     /// Halation/bloom + o kernel do look.
@@ -1251,7 +1281,8 @@ enum Developer {
                     // FOTO 3×: depois da limpeza leve, a mesma revelação da foto única (tons locais, luz média, céu, cor
                     // e nitidez), sem a limpeza de ruído dela. Antes saía sem nada disso: mais escura e chapada que a FOTO
                     let cleaned = photoFinish(out, iso: iso, frameCount: frames.count).settingProperties(reference.properties)
-                    return enhanced(cleaned, preview: image(from: frames[0], scale: 0.125), fusedFrames: frames.count)
+                    return enhanced(cleaned, preview: image(from: frames[0], scale: 0.125), fusedFrames: frames.count,
+                                    coverage: coverage)
                 }
                 // Postes e letreiros: a foto curta devolve a luz onde a junção estourou
                 if let shortFrame, let recoverKernel, let short = image(from: shortFrame),
@@ -1827,8 +1858,13 @@ enum Developer {
 
         // Alinha cada quadro (já trazido para a exposição normal) com o de referência
         let small: Float = 0.25
-        guard let refSmall = hdrImage(reference, scale: small) else { return nil }
-        let refBlur = materialize(blurred(refImage, extent: extent), extent: extent)
+        // Sem o quadro de 0 EV (bracketing que perdeu uma foto): a referência também vem para a exposição normal antes de
+        // comparar. Sem isso o −2 EV ficava 16× mais escuro que o +2 trazido de volta e tudo virava "movimento"
+        let refGain = Float(pow(2.0, Double(-reference.exposureBias)))
+        if refGain != 1 { dlog(String(format: "HDR: sem o quadro de 0 EV; referência %+.0f EV trazida ao normal", reference.exposureBias)) }
+        guard let refSmallRaw = hdrImage(reference, scale: small) else { return nil }
+        let refSmall = refGain == 1 ? refSmallRaw : scaled(refSmallRaw, by: refGain)
+        let refBlur = materialize(blurred(refGain == 1 ? refImage : scaled(refImage, by: refGain), extent: extent), extent: extent)
         var sumColor: CIImage?
         var sumWeight: CIImage?
         for (index, frame) in sorted.enumerated() {
@@ -1839,7 +1875,7 @@ enum Developer {
             if !isReference, let smallImage = hdrImage(frame, scale: small) {
                 // As duas cortadas no mesmo teto de luz (o que estoura numa e não na outra virava "detalhe" e o
                 // alinhamento errava: +2 EV "andou" 4 px no laboratório, sem ter andado nada)
-                let ceiling = CGFloat(0.95 * min(1, gain))
+                let ceiling = CGFloat(0.95 * min(refGain, gain))
                 let clamp = { (i: CIImage) in i.applyingFilter("CIColorClamp", parameters: [
                     "inputMinComponents": CIVector(x: 0, y: 0, z: 0, w: 0),
                     "inputMaxComponents": CIVector(x: ceiling, y: ceiling, z: ceiling, w: 1)]) }

@@ -73,7 +73,8 @@ struct LookStrip: View {
                     }
                     .padding(.horizontal, 10)
                 }
-                .onAppear { proxy.scrollTo(camera.currentLookID, anchor: .center) }
+                // Na volta seguinte: a fileira é preguiçosa e no onAppear o filme escolhido ainda não existe para rolar até ele
+                .onAppear { DispatchQueue.main.async { proxy.scrollTo(camera.currentLookID, anchor: .center) } }
                 .onChange(of: filter) { _, _ in
                     DispatchQueue.main.async { proxy.scrollTo(camera.currentLookID, anchor: .center) }
                 }
@@ -97,8 +98,9 @@ struct LookStrip: View {
         .padding(.vertical, 10)
         .background(.black.opacity(0.62), in: RoundedRectangle(cornerRadius: 18))
         // Miniaturas ao vivo: as da tela refeitas a cada ~2 s com o que a câmera vê; as que acabaram de
-        // aparecer sem imagem saem em meio segundo. Antes eram todas (31+) a cada 1,1 s, mesmo fora da tela
-        .task(id: filter) {
+        // aparecer sem imagem saem em meio segundo. Antes eram todas (31+) a cada 1,1 s, mesmo fora da tela.
+        // O `paused` entra na identidade: a tarefa guardava o valor do começo e nunca parava com o Revelar de novo aberto
+        .task(id: "\(filter)|\(paused)") {
             var tick = 0
             while !Task.isCancelled {
                 refresh(full: tick % 4 == 0)
@@ -117,8 +119,8 @@ struct LookStrip: View {
     }
 
     private func refresh(full: Bool) {
-        // Revelar de novo aberto, sequência saindo ou iPhone quente: a revelação e o visor vêm primeiro
-        guard !paused, !rendering, camera.stackProgress == nil,
+        // Revelar de novo aberto, sequência saindo, gravando, revelando ou iPhone quente: a revelação e o visor vêm primeiro
+        guard !paused, !rendering, camera.stackProgress == nil, !camera.isRecordingVideo, camera.processing == 0,
               ProcessInfo.processInfo.thermalState.rawValue < ProcessInfo.ThermalState.serious.rawValue else { return }
         let wanted = wantedIDs()
         let frame = camera.renderer.enqueuedCount
@@ -170,8 +172,8 @@ struct ModeGrid: View {
 
     private let columns = [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)]
 
-    /// Um modo na grade, com a primeira frase da dica embaixo. Gravando ou numa sequência a troca não vale
-    /// (o select avisa "Espere terminar…" e a grade fica aberta).
+    /// Um modo na grade, com uma linha curta embaixo. Gravando ou numa sequência a troca não vale
+    /// (o select avisa o motivo e a grade fica aberta).
     private func modeCell(_ mode: CaptureMode) -> some View {
         let on = camera.captureMode == mode
         let busy = camera.isBusy

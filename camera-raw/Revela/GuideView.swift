@@ -83,7 +83,7 @@ struct GuideView: View {
         ]),
         ("Modos", [
             Item(symbol: "camera", title: "FOTO 3×",
-                 text: "Com pouca luz (interior, fim de tarde, ISO 320 ou mais), cada toque na FOTO tira várias fotos do mesmo instante (8 em RAW puro, 4 em ProRAW), alinha e junta: um terço do ruído e sombra limpa. O selo 3× no canto do visor avisa quando vai acontecer. Com sol fica a foto única de 48 MP. Liga e desliga em Ajustes → FOTO 3×."),
+                 text: "Com pouca luz (interior, fim de tarde, ISO 320 ou mais), cada toque na FOTO tira várias fotos do mesmo instante (8 em RAW puro, 4 em ProRAW), alinha e junta: menos ruído (até um terço no RAW puro) e sombra limpa. O selo 3× no canto do visor avisa quando vai acontecer. Com sol fica a foto única de 48 MP. Liga e desliga em Ajustes → FOTO 3×."),
             Item(symbol: "hourglass", title: "Revelando",
                  text: "Nos modos que juntam muitas fotos (SUPER ZOOM, NOITE, HDR…) o visor mostra o que está revelando e há quantos segundos. Pode continuar fotografando; se sair do app, ele ainda termina por alguns instantes."),
             Item(symbol: "person.crop.rectangle", title: "Retrato",
