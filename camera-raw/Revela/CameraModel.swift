@@ -2310,12 +2310,12 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         var o = options
         let open = sessionLens
         let sensor = max(device?.videoZoomFactor ?? 1, 1)
-        if open == .front {
-            o.zoom = wantedLens == .front ? min(max(wanted, 1), 3) : 1
-        } else if wantedLens == .front {
-            o.zoom = 1
+        // A mesma conta que o laboratório testa (CaptureGeometry, PrevencaoTests.testP01Geometria)
+        if open == .front || wantedLens == .front {
+            o.zoom = open == .front && wantedLens == .front
+                ? CaptureGeometry.cropFactor(wantedZoom: wanted, captureBaseZoom: 1, front: true) : 1
         } else {
-            o.zoom = max(1, wanted / open.baseZoom / sensor)
+            o.zoom = CaptureGeometry.cropFactor(wantedZoom: wanted, captureBaseZoom: open.baseZoom * sensor)
         }
         // ETTR: desconta o quanto a câmera estava expondo a mais agora (no toque o valor do main podia estar atrasado)
         if ettr, let d = device, d.exposureMode != .custom {

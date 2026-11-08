@@ -1,9 +1,8 @@
 import CoreGraphics
 
 /// Geometria da captura em funções puras (sem câmera, sem estado), para o laboratório testar sem iPhone.
-/// AINDA NÃO LIGADAS no CameraModel: a ideia é o CameraModel chamar estas funções em vez de fazer a conta na hora
-/// (o recorte hoje sai de `activeLens`/`lens` no momento do toque; o ponto do Retrato, de `photoPoint(fromView:)`,
-/// que só desfaz o recorte). Testes: `PrevencaoTests.testP01Geometria` (RevelaLab).
+/// `cropFactor` é a conta do recorte de cada foto (CameraModel.shotOptions, com a lente que abriu e o zoom do sensor).
+/// `photoPoint` ainda não está ligada: o Retrato usa framePoint + photoPoint(fromFrame:) do CameraModel. Testes: `PrevencaoTests.testP01Geometria` (RevelaLab).
 enum CaptureGeometry {
     /// Recorte central (≥ 1) que a revelação aplica para chegar no zoom pedido, calculado com a lente que TIROU a foto.
     /// - Parameters:
