@@ -603,6 +603,13 @@ enum Developer {
     static let displayP3 = CGColorSpace(name: CGColorSpace.displayP3)!
     static let linearP3 = CGColorSpace(name: CGColorSpace.extendedLinearDisplayP3)!
 
+    /// O contexto para renderizar na revelação: com o app no fundo espera ele voltar (o iOS recusa trabalho de GPU no
+    /// fundo e a imagem saía preta ou falhava; a tarefa de fundo deixava a revelação correr ~30 s fora da tela)
+    static var gpu: CIContext {
+        ForegroundGate.shared.wait()
+        return context
+    }
+
     static let context = CIContext(options: [
         .workingColorSpace: linearP3,
         .workingFormat: CIFormat.RGBAh,
@@ -890,7 +897,7 @@ enum Developer {
     static func finish(_ scene: CIImage, options: DevelopOptions) -> Output? {
         let (graded, rect) = developed(scene, options: options)
 
-        guard let heic = try? context.heif10Representation(
+        guard let heic = try? gpu.heif10Representation(
             of: graded,
             colorSpace: displayP3,
             options: [kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.92]
@@ -922,7 +929,7 @@ enum Developer {
     /// Versão pequena revelada, para mostrar na tela (Revelar de novo).
     static func render(_ scene: CIImage, options: DevelopOptions) -> UIImage? {
         let (graded, _) = developed(scene, options: options)
-        guard let cg = context.createCGImage(graded, from: graded.extent, format: .RGBA8, colorSpace: displayP3) else { return nil }
+        guard let cg = gpu.createCGImage(graded, from: graded.extent, format: .RGBA8, colorSpace: displayP3) else { return nil }
         return UIImage(cgImage: cg)
     }
 
@@ -1147,7 +1154,7 @@ enum Developer {
         guard let abs = sharpnessKernel?.apply(extent: small.extent, arguments: [laplacian]) else { return 0 }
         let average = abs.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: small.extent)])
         var pixel = [Float](repeating: 0, count: 4)
-        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+        gpu.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         return pixel[0]
     }
@@ -1425,7 +1432,7 @@ enum Developer {
         let w = Int(se.width), h = Int(se.height)
         guard w >= 4, h >= 4 else { return 0 }
         var pixels = [Float](repeating: 0, count: w * h * 4)
-        context.render(small, toBitmap: &pixels, rowBytes: w * 16, bounds: CGRect(x: 0, y: 0, width: w, height: h),
+        gpu.render(small, toBitmap: &pixels, rowBytes: w * 16, bounds: CGRect(x: 0, y: 0, width: w, height: h),
                        format: .RGBAf, colorSpace: nil)
         var lumas = [Float]()
         lumas.reserveCapacity(w * h)
@@ -1448,7 +1455,7 @@ enum Developer {
         guard se.width >= 4, se.height >= 4, let logL = logLumaKernel.apply(extent: se, arguments: [small]) else { return 0 }
         let average = logL.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: se)])
         var pixel = [Float](repeating: 0, count: 4)
-        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+        gpu.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         guard pixel[0].isFinite else { return 0 }
         // −3,95 EV (era −4,2): no laboratório a noite saía com luz média 0,16–0,18; o Night Sight fica um pouco mais claro
@@ -1477,7 +1484,7 @@ enum Developer {
         guard se.width >= 4, se.height >= 4 else { return scene }
         let maximum = small.applyingFilter("CIAreaMaximum", parameters: [kCIInputExtentKey: CIVector(cgRect: se)])
         var pixel = [Float](repeating: 0, count: 4)
-        context.render(maximum, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+        gpu.render(maximum, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         let white = max(pixel[0], max(pixel[1], pixel[2]))
         // Limite de verdade: a luz que sai branca estourada na tela (≥ 93% do branco; no HDR 90% do teto do joelho), não
@@ -1597,7 +1604,7 @@ enum Developer {
         guard let subKernel, let detail = subKernel.apply(extent: rect, arguments: [scene, blur]) else { return 0 }
         let n = Int(side)
         var pixels = [Float](repeating: 0, count: n * n * 4)
-        context.render(detail.transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY)), toBitmap: &pixels,
+        gpu.render(detail.transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY)), toBitmap: &pixels,
                        rowBytes: n * 16, bounds: CGRect(x: 0, y: 0, width: n, height: n), format: .RGBAf, colorSpace: nil)
         var values = [Float]()
         values.reserveCapacity(n * n)
@@ -1796,7 +1803,7 @@ enum Developer {
         guard CVPixelBufferCreate(nil, w, h, kCVPixelFormatType_64RGBAHalf, attributes as CFDictionary, &buffer) == kCVReturnSuccess,
               let buffer else { return image }
         let shifted = image.transformed(by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY))
-        context.render(shifted, to: buffer, bounds: CGRect(x: 0, y: 0, width: w, height: h), colorSpace: linearP3)
+        gpu.render(shifted, to: buffer, bounds: CGRect(x: 0, y: 0, width: w, height: h), colorSpace: linearP3)
         return CIImage(cvPixelBuffer: buffer, options: [.colorSpace: linearP3])
             .transformed(by: CGAffineTransform(translationX: extent.minX, y: extent.minY))
     }
@@ -1920,7 +1927,7 @@ enum Developer {
             .cropped(to: e)
         let average = small.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: smallExtent)])
         var pixel = [Float](repeating: 0, count: 4)
-        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+        gpu.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                        format: .RGBAf, colorSpace: nil)
         dlog(String(format: "Tons locais: luz média %.2f EV · força %.2f", pixel[0], 1 - strength))
         let key: Float? = pixel[0].isFinite ? pixel[0] : nil
@@ -2010,7 +2017,7 @@ enum Developer {
         let average = disparity.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: box)])
         var pixel = [Float](repeating: 0, count: 4)
         // O pixel da média fica na origem do quadradinho, não em (0, 0)
-        context.render(average, toBitmap: &pixel, rowBytes: 16, bounds: average.extent,
+        gpu.render(average, toBitmap: &pixel, rowBytes: 16, bounds: average.extent,
                        format: .RGBAf, colorSpace: nil)
         let focus = pixel[0]
 
@@ -2163,7 +2170,45 @@ enum Developer {
     private static func thumbnail(of image: CIImage) -> UIImage? {
         let scale = 400 / max(image.extent.width, image.extent.height)
         let small = image.samplingLinear().transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-        guard let cg = context.createCGImage(small, from: small.extent, format: .RGBA8, colorSpace: displayP3) else { return nil }
+        guard let cg = gpu.createCGImage(small, from: small.extent, format: .RGBA8, colorSpace: displayP3) else { return nil }
         return UIImage(cgImage: cg)
+    }
+}
+
+
+/// Portão da GPU: aberto com o app na frente, fechado no fundo. Quem revela (fila de revelação) espera aqui; a fila
+/// principal nunca espera. Criado na abertura do app (CameraModel), para já saber do primeiro fundo.
+final class ForegroundGate {
+    static let shared = ForegroundGate()
+    private let condition = NSCondition()
+    private var background = false
+    private var observers: [NSObjectProtocol] = []
+
+    private init() {
+        let center = NotificationCenter.default
+        observers.append(center.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.set(background: true)
+        })
+        observers.append(center.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.set(background: false)
+        })
+    }
+
+    private func set(background value: Bool) {
+        condition.lock()
+        background = value
+        condition.broadcast()
+        condition.unlock()
+    }
+
+    /// Espera o app voltar para a frente (no máximo o tempo que o iOS deixar: depois ele suspende o app aqui mesmo).
+    func wait() {
+        guard !Thread.isMainThread else { return }
+        condition.lock()
+        defer { condition.unlock() }
+        guard background else { return }
+        dlog("Revelação pausada: app no fundo (o iOS não deixa usar a GPU); continua ao voltar")
+        while background { condition.wait() }
+        dlog("Revelação continua: app na frente")
     }
 }

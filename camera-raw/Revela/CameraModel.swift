@@ -545,10 +545,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     @Published var peaking = UserDefaults.standard.bool(forKey: "peaking") {
         didSet {
             renderer.options.peaking = peaking
-            // O macro liga o peaking sozinho: isso não vira preferência
-            if lens != .macro { defaults.set(peaking, forKey: "peaking") }
+            // O macro liga (e ao sair desliga) o peaking sozinho: isso não vira preferência
+            if lens != .macro, !macroTogglingPeaking { defaults.set(peaking, forKey: "peaking") }
         }
     }
+    /// Troca de peaking feita pelo macro (entrando/saindo), não por você
+    private var macroTogglingPeaking = false
+    /// O peaking que você tinha antes de o macro ligar o dele (volta ao sair)
+    private var peakingBeforeMacro = false
     @Published var loupe = false { didSet { renderer.loupe = loupe } }
     @Published var showGrid = UserDefaults.standard.object(forKey: "showGrid") as? Bool ?? true {
         didSet { defaults.set(showGrid, forKey: "showGrid") }
@@ -917,6 +921,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     override init() {
         super.init()
+        // Portão da GPU já na abertura: a revelação que sobrar quando o app for para o fundo espera ele voltar
+        _ = ForegroundGate.shared
         Diagnostics.shared.startMonitoring()
         // A calibragem que o Claude mandou pela ponte continua valendo depois de fechar o app
         Calibration.loadSaved()
@@ -1213,10 +1219,16 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         lens = newLens
         optionsChanged()
         if newLens == .macro {
+            peakingBeforeMacro = peaking
+            macroTogglingPeaking = true
             peaking = true
+            macroTogglingPeaking = false
             if !manualFocus { lensPosition = 0 }
         } else if old == .macro {
-            peaking = false
+            // Saindo do macro o peaking volta ao que você tinha (antes desligava e gravava "desligado" como preferência)
+            macroTogglingPeaking = true
+            peaking = peakingBeforeMacro
+            macroTogglingPeaking = false
             macroIsAuto = false
             macroZoom = 1
             macroStack = false

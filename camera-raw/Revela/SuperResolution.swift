@@ -253,7 +253,7 @@ extension Developer {
                 let average = refSmall.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: mRegion)])
                 let one = average.transformed(by: CGAffineTransform(translationX: -average.extent.minX, y: -average.extent.minY))
                 var pixel = [Float](repeating: 0, count: 4)
-                context.render(one, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                gpu.render(one, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                                format: .RGBAf, colorSpace: nil)
                 let meanY = max(0, 0.2126 * pixel[0] + 0.7152 * pixel[1] + 0.0722 * pixel[2])
                 frameNoise = (model.a * (meanY.isFinite ? meanY : 0) + model.b).squareRoot()
@@ -450,7 +450,7 @@ extension Developer {
         let img = CIImage(bitmapData: data.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: 16,
                           size: CGSize(width: 1, height: 2), format: .RGBAf, colorSpace: nil)
         var probe = [Float](repeating: -1, count: 4)
-        context.render(img, toBitmap: &probe, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBAf, colorSpace: nil)
+        gpu.render(img, toBitmap: &probe, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: .RGBAf, colorSpace: nil)
         let top = probe[0] < 0.5
         dlog("Super resolução: 1ª linha do bitmap = \(top ? "topo" : "base")")
         return top
@@ -659,7 +659,7 @@ extension Developer {
         guard CVPixelBufferCreate(nil, w, h, kCVPixelFormatType_64RGBAHalf, attributes as CFDictionary, &buffer) == kCVReturnSuccess,
               let buffer else { return nil }
         let shifted = image.transformed(by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY))
-        context.render(shifted, to: buffer, bounds: CGRect(x: 0, y: 0, width: w, height: h), colorSpace: linearP3)
+        gpu.render(shifted, to: buffer, bounds: CGRect(x: 0, y: 0, width: w, height: h), colorSpace: linearP3)
         return CIImage(cvPixelBuffer: buffer, options: [.colorSpace: linearP3])
             .transformed(by: CGAffineTransform(translationX: extent.minX, y: extent.minY))
     }
@@ -674,7 +674,7 @@ extension Developer {
         guard let d = srSubKernel.apply(extent: rect, arguments: [a, b]) else { return 0 }
         let n = Int(side)
         var pixels = [Float](repeating: 0, count: n * n * 4)
-        context.render(d.transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY)), toBitmap: &pixels,
+        gpu.render(d.transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY)), toBitmap: &pixels,
                        rowBytes: n * 16, bounds: CGRect(x: 0, y: 0, width: n, height: n), format: .RGBAf, colorSpace: nil)
         var values = [Float]()
         values.reserveCapacity(n * n)
@@ -697,7 +697,7 @@ extension Developer {
         let n = Int(side)
         func lumas(_ image: CIImage) -> [Float] {
             var pixels = [Float](repeating: 0, count: n * n * 4)
-            context.render(image.transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY)), toBitmap: &pixels,
+            gpu.render(image.transformed(by: CGAffineTransform(translationX: -rect.minX, y: -rect.minY)), toBitmap: &pixels,
                            rowBytes: n * 16, bounds: CGRect(x: 0, y: 0, width: n, height: n), format: .RGBAf, colorSpace: nil)
             var out = [Float](repeating: 0, count: n * n)
             for k in 0..<(n * n) {
@@ -730,7 +730,7 @@ extension Developer {
         let toSmall = CGAffineTransform(translationX: -extent.minX, y: -extent.minY).concatenating(CGAffineTransform(scaleX: s, y: s))
         func lumas(_ image: CIImage) -> [Float] {
             var pixels = [Float](repeating: 0, count: w * h * 4)
-            context.render(image.cropped(to: extent).transformed(by: toSmall), toBitmap: &pixels, rowBytes: w * 16, bounds: bounds,
+            gpu.render(image.cropped(to: extent).transformed(by: toSmall), toBitmap: &pixels, rowBytes: w * 16, bounds: bounds,
                            format: .RGBAf, colorSpace: nil)
             var out = [Float](repeating: 0, count: w * h)
             for k in 0..<(w * h) {
@@ -855,7 +855,7 @@ extension Developer {
             .applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: k, kCIInputAspectRatioKey: 1])
             .clampedToExtent().applyingGaussianBlur(sigma: 1.5).cropped(to: te)
         var pixels = [Float](repeating: 0, count: w * h * 4)
-        context.render(tiny, toBitmap: &pixels, rowBytes: w * 16, bounds: te, format: .RGBAf, colorSpace: nil)
+        gpu.render(tiny, toBitmap: &pixels, rowBytes: w * 16, bounds: te, format: .RGBAf, colorSpace: nil)
         var best = -Float.greatestFiniteMagnitude
         var at = -1
         for i in 0..<(w * h) {
@@ -878,7 +878,7 @@ extension Developer {
         let top = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: CGRect(x: 0, y: 1, width: 1, height: 1))
         let probeImage = top.composited(over: CIImage(color: CIColor(red: 0, green: 0, blue: 0)).cropped(to: rect))
         var probe = [Float](repeating: -1, count: 8)
-        context.render(probeImage, toBitmap: &probe, rowBytes: 16, bounds: rect, format: .RGBAf, colorSpace: nil)
+        gpu.render(probeImage, toBitmap: &probe, rowBytes: 16, bounds: rect, format: .RGBAf, colorSpace: nil)
         return probe[0] > 0.5
     }()
 
@@ -926,7 +926,7 @@ extension Developer {
                     let average = s.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: extent)])
                     let one = average.transformed(by: CGAffineTransform(translationX: -average.extent.minX, y: -average.extent.minY))
                     var pixel = [Float](repeating: 0, count: 4)
-                    context.render(one, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                    gpu.render(one, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
                                    format: .RGBAf, colorSpace: nil)
                     typical = pixel[0].isFinite && pixel[0] > 0 ? 2 * pixel[0] : 1e-3
                 }
@@ -1351,7 +1351,7 @@ extension Developer {
                 .transformed(by: CGAffineTransform(translationX: cx - rect.minX, y: cy - rect.minY))
             atlas = piece.composited(over: atlas)
         }
-        guard let cg = context.createCGImage(atlas, from: atlasExtent, format: .RGBAf, colorSpace: linearP3),
+        guard let cg = gpu.createCGImage(atlas, from: atlasExtent, format: .RGBAf, colorSpace: linearP3),
               let data = cg.dataProvider?.data, let bytes = CFDataGetBytePtr(data),
               cg.width == w * columns, cg.height == h * rows else { return rects.map { _ in nil } }
         let rowFloats = cg.bytesPerRow / 4
@@ -1595,7 +1595,7 @@ extension Developer {
                 guard let strip = scene(padded) else { return false }
                 // A faixa vai numa tela do tamanho da foto: a vinheta do filme continua centrada na foto inteira
                 let canvas = strip.cropped(to: padded).composited(over: canvasBase)
-                guard let cg = context.createCGImage(grade(canvas), from: rect, format: deep ? .RGBA16 : .RGBA8,
+                guard let cg = gpu.createCGImage(grade(canvas), from: rect, format: deep ? .RGBA16 : .RGBA8,
                                                      colorSpace: displayP3) else { return false }
                 ctx.draw(cg, in: rect)
                 return true
@@ -1620,7 +1620,7 @@ extension Developer {
             if let exif { meta[kCGImagePropertyExifDictionary as String] = exif }
             if let tiff { meta[kCGImagePropertyTIFFDictionary as String] = tiff }
             let image = CIImage(cgImage: big).settingProperties(meta)
-            if let data = try? context.heif10Representation(of: image, colorSpace: displayP3, options: [
+            if let data = try? gpu.heif10Representation(of: image, colorSpace: displayP3, options: [
                 kCGImageDestinationLossyCompressionQuality as CIImageRepresentationOption: 0.98,
             ]) {
                 return data

@@ -153,7 +153,8 @@ struct ContentView: View {
     }
 
     /// Revelando, fotografando, contando ou gravando: a tela não apaga no meio.
-    private var keepAwake: Bool { camera.processing > 0 || camera.isBusy }
+    // A análise do Claude leva minutos: com a tela apagando o app ia para o fundo e o pedido (já pago) caía
+    private var keepAwake: Bool { camera.processing > 0 || camera.isBusy || critic.running }
 
     /// A dica do modo aparece sozinha nas 2 primeiras vezes; depois só pelo "?" (antes ela morava embaixo do visor
     /// e empurrava o visor, que mudava de tamanho a cada modo).
