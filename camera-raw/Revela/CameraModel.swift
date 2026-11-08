@@ -779,12 +779,6 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     var selectedISO: Float { isoStops[min(max(Int(isoIndex), 0), isoStops.count - 1)] }
     var selectedShutter: Double { shutterStops[min(max(Int(shutterIndex), 0), shutterStops.count - 1)] }
 
-    /// Recorte digital da revelação (visor, foto, arquivo). No VÍDEO quem recorta é o sensor (videoZoomFactor, com o
-    /// detalhe cheio antes de reduzir para o arquivo); na DUPLA não há zoom (as câmeras são as da sessão dupla).
-    var crop: CGFloat {
-        if captureMode == .video || captureMode == .dual { return 1 }
-        return totalCrop
-    }
 
     /// Recorte central do sensor da câmera atual para chegar no zoom pedido.
     /// Vale para a câmera que está entregando a imagem agora (`activeLens`): enquanto a outra lente abre,
@@ -1865,7 +1859,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         focusPoint = point
         // O visor mostra o centro ampliado pelo zoom digital (e, no vídeo, o quadro encaixado com faixas)
         let zoom = crop
-        let framed = framePoint(fromView: point)
+        let framed = fittedPoint(fromView: point)
         let sensorPoint = CGPoint(x: 0.5 + (framed.x - 0.5) / zoom, y: 0.5 + (framed.y - 0.5) / zoom)
         let devicePoint = self.sensorPoint(fromView: sensorPoint)
         let manualFocus = self.manualFocus
@@ -3386,7 +3380,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
 
     /// Ponto do visor (0…1) -> ponto do quadro, antes do zoom digital. No VÍDEO/DUPLA o quadro aparece encaixado (faixas
     /// dos lados); nos outros ele preenche o 3:4 e, se a proporção for outra (AÇÃO em 16:9), sobra quadro fora da tela.
-    private func framePoint(fromView p: CGPoint) -> CGPoint {
+    private func fittedPoint(fromView p: CGPoint) -> CGPoint {
         let frame = renderer.drawnFrameSize, view = renderer.drawnViewSize
         guard frame.width > 0, frame.height > 0, view.width > 0, view.height > 0 else { return p }
         let frameAspect = frame.width / frame.height, viewAspect = view.width / view.height
