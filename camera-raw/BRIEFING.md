@@ -32,7 +32,7 @@ Pedido do Alex (06/11): **todos os modos 3× melhores que a câmera da Apple**; 
 | NOITE | ruído em área lisa (desvio local) | ≤ ⅓ da foto única (3×) |
 | NOITE | preto (p1) / cara de noite | p1 ≤ 0,06; luz média 0,18–0,32 |
 | NOITE | fantasma do carro | diferença no lugar do carro ≤ 2% |
-| NOITE na mão | caminho da mão do Alex (até 39 px) + borrão + 2 fotos tremidas vs tripé | detalhe no centro ≥ 90% do tripé |
+| NOITE na mão | caminho da mão do Alex (até 39 px) + borrão + 2 fotos tremidas | ⅓ do erro de 1 foto na mão (+4,8 dB), contra a cena sem ruído |
 | Estrela | comprimento e forma vs iPhone 18 f/4 | raio do sol 10–15% da largura; 6 pontas, uma em pé; halo visível |
 | SUPER ZOOM | PSNR vs original de verdade | ≥ uma foto ampliada + 4,8 dB (⅓ do erro, 3×) |
 | Alinhamento | deslocamentos de mão de verdade (10–26 px), de dia e no escuro com ruído | erro ≤ 0,5 px |

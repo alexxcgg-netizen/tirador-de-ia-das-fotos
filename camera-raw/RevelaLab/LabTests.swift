@@ -324,7 +324,9 @@ final class LabTests: XCTestCase {
             // Variações da calibragem (para escolher a melhor no placar)
             let variants: [(String, Developer.SRTuning)] = [
                 // Estudo em Python nas 24 fotos do teste: núcleo 0,6 + RL 0,9 px (0,45 × 2) com 10 passos = +4,90 dB
-                ("rl_10_passos", .init(splatSigma: 0.6, deconvScale: 0.45, deconvIterations: 10, tv: false)),
+                ("rl_padrao_antigo", .init(splatSigma: 0.45, deconvScale: 0.4, deconvIterations: 3, tv: false)),
+                ("tv_brilho_5e-5", .init(tvLumaLambda: 5e-5)),
+                ("tv_brilho_1e-5", .init(tvLumaLambda: 1e-5)),
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning
@@ -608,6 +610,14 @@ final class LabTests: XCTestCase {
             let name = clean ? "ideal" : (handheld ? "mao" : "tripe")
             dlog("NOITE \(name): \(path.count) fotos em \(Diagnostics.ms(since: t0))")
             let ie = img.extent
+            if handheld {
+                // Uma foto só tirada na mão (a 1ª, revelada sozinha pela NOITE): o 3× é ⅓ do erro dela contra a cena sem ruído
+                let single = Developer.developed(Developer.nightFinish(frames[0], iso: 3200, frameCount: 1, starPoints: 0),
+                                                 options: options(.neutro)).0
+                let se = single.extent
+                save(single.cropped(to: CGRect(x: se.midX - 400, y: se.midY - 300, width: 800, height: 600).integral),
+                     "noite_mao/uma_100pct", maxSide: 800)
+            }
             // Centro em 100% (sem reduzir): é onde a nitidez aparece
             save(img.cropped(to: CGRect(x: ie.midX - 400, y: ie.midY - 300, width: 800, height: 600).integral), "noite_mao/\(name)_100pct", maxSide: 800)
             save(img, "noite_mao/\(name)", maxSide: 1200)

@@ -209,7 +209,13 @@ def main(root):
             # subia com o repique de qualquer filtro e não servia de régua). A referência da mão pode estar ~25 px deslocada
             ideal = load(ideal_path)
             pm, pt = psnr(load(os.path.join(mao, "mao_100pct.jpg")), ideal, reach=26), psnr(load(os.path.join(mao, "tripe_100pct.jpg")), ideal, reach=4)
-            check("NOITE na mão", "erro na mão vs tripé (contra a cena sem ruído)", f"{pm - pt:+.2f} dB", pm >= pt - 1, "≥ −1 dB")
+            rows.append(("NOITE na mão", "na mão / tripé contra a cena sem ruído (só informação)", f"{pm:.1f} / {pt:.1f} dB", "", ""))
+            one_path = os.path.join(mao, "uma_100pct.jpg")
+            if os.path.exists(real(one_path)):
+                # 3× como as outras: ⅓ do erro de uma foto só tirada na mão (o tripé do teste não tem borrão nenhum e fica
+                # perfeito, 50 dB; "≤ 1 dB pior que ele" era impossível com qualquer movimento de mão)
+                po = psnr(load(one_path), ideal, reach=26)
+                check("NOITE na mão", "erro na mão vs 1 foto na mão (contra a cena sem ruído, 3×)", f"{pm - po:+.2f} dB", pm - po >= 4.77, "≥ +4,8 dB")
             rows.append(("NOITE na mão", "detalhe (bordas) mão ÷ tripé (só informação)", f"{em / max(et, 1e-6):.2f}", "", ""))
         else:
             r = em / max(et, 1e-6)
