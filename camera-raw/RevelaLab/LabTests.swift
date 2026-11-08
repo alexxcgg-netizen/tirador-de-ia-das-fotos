@@ -291,6 +291,8 @@ final class LabTests: XCTestCase {
             defer { Developer.decodeOverride = nil }
             let frames = (0..<fixed.count).map { CapturedFrame(data: Data([UInt8($0)]), isRaw: true) }
             let t0 = CFAbsoluteTimeGetCurrent()
+            // A régua é a cena revelada sem os tons locais/nitidez da FOTO: a super resolução também sai sem eles aqui
+            Developer.srTuning.enhance = false
             // Como o modo SUPER ZOOM: pelo menos 10, e toda foto nítida entra
             let out = Developer.superResolution(frames, options: options(.neutro), keep: 10)
             dlog("\(name) super resolução: \(Diagnostics.ms(since: t0))")
@@ -331,6 +333,7 @@ final class LabTests: XCTestCase {
             ]
             for (label, tuning) in variants {
                 Developer.srTuning = tuning
+                Developer.srTuning.enhance = false
                 if let heic = Developer.superResolution(frames, options: options(.neutro), keep: 10)?.heic,
                    let sr = CIImage(data: heic) {
                     let se = sr.extent

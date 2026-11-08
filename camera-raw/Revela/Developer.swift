@@ -530,6 +530,9 @@ struct CapturedFrame {
     var exposureBias: Float = 0
     /// Versão neutra já revelada (NOITE, HDR, LONGA, PANORAMA): os tons locais já foram aplicados.
     var toned = false
+    /// Quadro de uma junção com limpeza própria (NOITE, FOTO 3×, ESTRELAS, SUPER RES/ZOOM, LUA): RAW aberto sem a redução de
+    /// ruído e a nitidez do CIRAWFilter (a junção tira o ruído de verdade; a de cada foto apagava detalhe e a nitidez fazia halo)
+    var merge = false
 }
 
 /// Tudo que define como a foto é revelada.
@@ -653,6 +656,22 @@ enum Developer {
     // SUPER ZOOM 3×: retroprojeção com o modelo do sensor e o passo do MAP
     static let splatHKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplatH", fromMetalLibraryData: $0) }
     static let mapStepKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaMAPStep", fromMetalLibraryData: $0) }
+    // Junções de várias fotos (SuperResolution.swift): peso da SUPER RES sem abrir a foto, Σh do MAP, mapa de movimento,
+    // pixel quente e máscara do céu das ESTRELAS, peso do FOCO EMPILHADO, rastros da LONGA
+    static let splatWeightKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaSplatWeight", fromMetalLibraryData: $0) }
+    static let splatHWeightKernel = kernel("revelaSplatHWeight")
+    static let motionKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaMotion", fromMetalLibraryData: $0) }
+    static let mulGKernel = kernel("revelaMulG")
+    static let highGKernel = kernel("revelaHighG")
+    static let subPosKernel = kernel("revelaSubPos")
+    static let hotMapKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaHotMap", fromMetalLibraryData: $0) }
+    static let skyEvidenceKernel = kernel("revelaSkyEvidence")
+    static let skyMaskKernel = kernel("revelaSkyMask")
+    static let starClipKernel = kernel("revelaClip")
+    static let focusWeightKernel = kernel("revelaFocusWeight")
+    static let focusSharpnessKernel = kernel("revelaSharpness")
+    static let fusionDivideAddKernel = kernel("revelaDivideAdd")
+    static let trailKernel = kernel("revelaTrail")
     // SUPER ZOOM: desconvolução regularizada (Huber-TV)
     static let tvFluxKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaTVFlux", fromMetalLibraryData: $0) }
     static let tvStepKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaTVStep", fromMetalLibraryData: $0) }
@@ -787,13 +806,21 @@ enum Developer {
 
     /// RAW -> luz linear da cena, sem boost de contraste e sem tone mapping local da Apple.
     /// `neutralExposure`: sem a exposição de base do DNG (HDR: o branco do sensor fica em 1,0 em todos os quadros).
-    static func linear(dng: Data, scale: Float = 1, neutralExposure: Bool = false) -> CIImage? {
+    static func linear(dng: Data, scale: Float = 1, neutralExposure: Bool = false, forMerge: Bool = false) -> CIImage? {
         guard let raw = CIRAWFilter(imageData: dng, identifierHint: "com.adobe.raw-image") else { return nil }
         raw.boostAmount = 0
         raw.boostShadowAmount = 0
         if raw.isLocalToneMapSupported { raw.localToneMapAmount = 0 }
         raw.extendedDynamicRangeAmount = 0
         if neutralExposure { raw.baselineExposure = 0 }
+        if forMerge {
+            // Quadro de junção: sem a redução de ruído de brilho e sem nitidez de cada foto. A redução amolecia o detalhe que
+            // a junção/super resolução aproveita e deixava o ruído em manchas (a média de manchas cai menos que √n); a nitidez
+            // fazia halo, somado em todas. A cor fica (o ruído colorido sem ela é forte e a MÉDIA não limpa cor)
+            if raw.isLuminanceNoiseReductionSupported { raw.luminanceNoiseReductionAmount = 0 }
+            if raw.isSharpnessSupported { raw.sharpnessAmount = 0 }
+            if raw.isDetailSupported { raw.detailAmount = 0 }
+        }
         if scale < 1 {
             raw.scaleFactor = scale
             raw.isDraftModeEnabled = true
@@ -825,7 +852,7 @@ enum Developer {
 
     static func image(from frame: CapturedFrame, scale: Float = 1) -> CIImage? {
         if let decodeOverride, let image = decodeOverride(frame, scale) { return image }
-        return frame.isRaw ? linear(dng: frame.data, scale: scale) : processed(frame.data, scale: scale)
+        return frame.isRaw ? linear(dng: frame.data, scale: scale, forMerge: frame.merge) : processed(frame.data, scale: scale)
     }
 
     // MARK: - Foto
@@ -1117,9 +1144,19 @@ enum Developer {
     /// Junta vários quadros em lotes pequenos (para não esgotar a memória):
     /// foco empilhado (pega o pedaço mais nítido de cada um) ou média (menos ruído / exposição longa).
     /// `starPoints`: NOITE, raios em volta das luzes fortes, como numa lente fechada (0 = sem).
-    static func stack(_ allFrames: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
+    static func stack(_ captured: [CapturedFrame], kind: StackKind, removeOutliers: Bool = false,
                       robust: Bool = false, starPoints: Int = 0, night: Bool = true, options: DevelopOptions) -> Output? {
         let t0 = CFAbsoluteTimeGetCurrent()
+        // NOITE, FOTO 3× e ESTRELAS: RAW aberto sem a redução de ruído e a nitidez de cada foto (a limpeza de depois conta com
+        // a junção). Na MÉDIA não (a revelação dela não tem limpeza própria) nem no foco empilhado (lá a nitidez decide qual
+        // foto vale e o ruído contaria como nitidez)
+        let allFrames = kind == .average && (robust || removeOutliers) ? captured.map { frame -> CapturedFrame in
+            var f = frame
+            f.merge = true
+            return f
+        } : captured
+        // ESTRELAS: o céu alinhado (girando) e o chão parado, juntados por uma máscara; pixel quente tirado antes
+        if kind == .average, removeOutliers, !robust, let out = starStack(allFrames, options: options) { return out }
         // NOITE: a foto curta (para as luzes) fica de fora da soma
         let shortFrame = allFrames.first { $0.exposureBias < -1 }
         var frames = allFrames.filter { $0.exposureBias >= -1 }
@@ -1158,8 +1195,10 @@ enum Developer {
         // NOITE: alinhamento fino (fração de pixel e por região), o mesmo da super resolução
         let alignScale: Float = 0.25
         guard let smallReference = image(from: frames[0], scale: alignScale) else { return nil }
-        var warps: [(CIImage) -> CIImage] = [{ $0 }]
-        if robust {
+        var warps: [((CIImage) -> CIImage)?] = [{ $0 }]
+        // MÉDIA (e ESTRELAS sem a junção própria) também: só deslocamento com encaixe bilinear amolecia a foto, e o grosso
+        // no centro não achava nada num céu de estrelas. Foto que não encaixou em nada fica de fora (nil)
+        if robust || kind == .average {
             warps = fineWarps(frames, reference: reference)
         } else {
             for frame in frames.dropFirst() {
@@ -1171,7 +1210,8 @@ enum Developer {
         dlog("Alinhamento: \(Diagnostics.ms(since: t0))")
 
         func aligned(_ i: Int) -> CIImage? {
-            image(from: frames[i]).map { warps[i]($0).cropped(to: extent) }
+            guard let warp = warps[i] else { return nil }
+            return image(from: frames[i]).map { warp($0).cropped(to: extent) }
         }
 
         let merged: CIImage?
@@ -1219,9 +1259,17 @@ enum Developer {
                 }
                 dlog("Estrelas: pontos que apareceram em poucos quadros removidos")
             }
-            merged = mean
+            // MÉDIA: revelada como a FOTO (tons locais, cor pela luz, nitidez), com o ISO de uma foto com a luz de todas
+            // (céu de estrelas não: o ajuste de luz da FOTO clarearia o céu inteiro)
+            let preview = removeOutliers ? nil : image(from: frames[0], scale: 0.125)
+            merged = removeOutliers ? mean : mean.map {
+                multiFrameEnhanced($0.settingProperties(reference.properties), frames: frames.count, preview: preview)
+            }
         case .focus:
-            merged = focusMerge(count: frames.count, extent: extent, frame: aligned)
+            let preview = image(from: frames[0], scale: 0.125)
+            merged = focusMerge(count: frames.count, extent: extent, frame: aligned).map {
+                multiFrameEnhanced($0.settingProperties(reference.properties), frames: 1, preview: preview)
+            }
         }
         guard let merged else { return nil }
         let output = finish(merged.settingProperties(reference.properties), options: options)
@@ -1564,12 +1612,11 @@ enum Developer {
         return materialize(merged, extent: extent)
     }
 
-    /// Junção em duas faixas, como o HDR+ do Google: a parte lisa de cada foto entra quase sempre (tolerância larga),
-    /// e o detalhe fino só onde a foto bate com a referência. Onde alguém se mexeu, só o detalhe é recusado:
-    /// a região fica com o ruído baixo das 12 fotos, em vez de uma mancha com o ruído de uma foto só.
+    /// Junção em duas faixas, como o HDR+ do Google: parte lisa e detalhe somados à parte, cada foto só onde o mapa de
+    /// movimento diz que ela bate com a referência. Onde alguém se mexeu fica a referência (o liso dela, borrado 6 px, quase
+    /// não tem ruído; antes o liso de todas entrava e a pessoa saía translúcida).
     private static func twoBandMerge(count: Int, extent: CGRect, reference: CIImage, frame: (Int) -> CIImage?) -> CIImage? {
-        guard let robustColorKernel, let robustWeightKernel, let highColorKernel, let subKernel, let divideAddKernel else { return nil }
-        let k: Float = 0.1
+        guard let mulGKernel, let highGKernel, motionKernel != nil, let subKernel, let divideAddKernel else { return nil }
         // Memória: só o detalhe fica no tamanho cheio. A parte lisa (borrão de 6 px) vive em ¼ do tamanho e a
         // comparação de movimento (borrão de 2,5 px) em ½ — já são borradas, não perdem nada. Antes eram ~15 imagens
         // de 12 MP ao mesmo tempo (~1,5 GB) e o iOS matava o app no meio da NOITE (relatório da 0.26)
@@ -1592,7 +1639,6 @@ enum Developer {
         let ref = materialize(reference, extent: extent)
         let refLow = shrink(ref, blur: 6, by: quarter)
         let refBlur = shrink(ref, blur: 2.5, by: half)
-        let refBlurUp = grow(refBlur, by: half)
         guard let refHigh = subKernel.apply(extent: extent, arguments: [ref, grow(refLow, by: quarter)]) else { return nil }
         var lowSum = refLow
         var lowWeight = CIImage(color: CIColor(red: 1, green: 1, blue: 1)).cropped(to: small(quarter))
@@ -1601,21 +1647,36 @@ enum Developer {
         for i in 1..<count {
             autoreleasepool {
                 guard let opened = frame(i) else { return }
-                let image = materialize(opened, extent: extent)
-                let imageLow = shrink(image, blur: 6, by: quarter)
-                let imageBlur = shrink(image, blur: 2.5, by: half)
-                guard let lc = robustColorKernel.apply(extent: small(quarter), arguments: [imageLow, imageLow, refLow, k * 2.5]),
-                      let lw = robustWeightKernel.apply(extent: small(quarter), arguments: [imageLow, refLow, k * 2.5]),
-                      let hw = robustWeightKernel.apply(extent: small(half), arguments: [imageBlur, refBlur, k]),
-                      let hc = highColorKernel.apply(extent: extent, arguments: [image, grow(imageLow, by: quarter),
-                                                                                grow(imageBlur, by: half), refBlurUp, k]) else { return }
+                var image = materialize(opened, extent: extent)
+                var imageLow = shrink(image, blur: 6, by: quarter)
+                var imageBlur = shrink(image, blur: 2.5, by: half)
+                // Luz que pisca (LED a 100 Hz) ou exposição que andou: a foto vai para o brilho médio da referência antes de
+                // comparar e somar (alguns % de diferença virariam "movimento" na foto inteira com o limite novo, apertado)
+                let gain = exposureGain(imageBlur, refBlur, extent: small(half))
+                if gain != 1 {
+                    image = scaled(image, by: gain)
+                    imageLow = scaled(imageLow, by: gain)
+                    imageBlur = scaled(imageBlur, by: gain)
+                }
+                // Movimento por um mapa: diferença das versões borradas (½) acima de 4× o ruído medido nelas + 3% da luz + o
+                // que ±1 px de encaixe explica nas bordas. Antes a tolerância k·√L + 0,004 era ~25× o ruído que sobra no escuro:
+                // pessoa e carro saíam translúcidos (o "carro" do laboratório vazava 19% na parte lisa, que aceitava quase tudo)
+                let noise = diffNoise(imageBlur, refBlur, extent: small(half))
+                guard let motion = motionWeights(imageBlur, refBlur, extent: small(half), noise: noise, edge: 0.5) else { return }
+                let g = materialize(motion, extent: small(half))
+                // Parte lisa: a mesma recusa (o liso de uma foto parada é igual ao da referência, aceitar não ganhava nada lá
+                // e o de quem se mexeu vazava), alargada 3 px de ½ (o borrão de 6 px espalha quem se mexe) e levada a ¼
+                let gLow = materialize(g.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 3])
+                    .transformed(by: CGAffineTransform(scaleX: 0.5, y: 0.5)).cropped(to: small(quarter)), extent: small(quarter))
+                guard let lc = mulGKernel.apply(extent: small(quarter), arguments: [imageLow, gLow]),
+                      let hc = highGKernel.apply(extent: extent, arguments: [image, grow(imageLow, by: quarter), grow(g, by: half)]) else { return }
                 lowSum = materialize(add(lowSum, lc), extent: small(quarter))
-                lowWeight = materialize(add(lowWeight, lw), extent: small(quarter))
-                highWeight = materialize(add(highWeight, hw), extent: small(half))
+                lowWeight = materialize(add(lowWeight, gLow), extent: small(quarter))
+                highWeight = materialize(add(highWeight, g), extent: small(half))
                 highSum = materialize(add(highSum, hc), extent: extent)
             }
         }
-        dlog("Noite: junção em duas faixas (liso sempre, detalhe só onde nada se mexeu) · memória livre \(Diagnostics.freeMemory)")
+        dlog("Noite: junção em duas faixas (cada foto só onde o mapa de movimento diz que nada se mexeu) · memória livre \(Diagnostics.freeMemory)")
         guard let merged = divideAddKernel.apply(extent: extent, arguments: [grow(lowSum, by: quarter), grow(lowWeight, by: quarter),
                                                                            highSum, grow(highWeight, by: half)]) else { return nil }
         return materialize(merged, extent: extent)
@@ -1651,6 +1712,8 @@ enum Developer {
     }
 
     private static func focusMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+        // Em duas faixas com pesos suaves (SuperResolution.swift); a escolha dura de antes fica de reserva
+        if let fused = focusFusion(count: count, extent: extent, frame: frame) { return fused }
         guard let first = frame(0), let firstSharpness = sharpness(first), let pickKernel else { return nil }
         var result = materialize(first, extent: extent)
         var resultSharpness = materialize(firstSharpness, extent: extent)

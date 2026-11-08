@@ -31,6 +31,17 @@ namespace revela {
         return exp(-0.5f * x * x);
     }
 
+    // O mesmo para fotos de exposição igual (NOITE, FOTO 3×): só não compara onde as DUAS estouraram. Com uma só
+    // estourada (céu claro, carro branco passando) é movimento; antes a referência estourada aceitava qualquer coisa
+    inline float ghostEqual(float3 frame, float3 ref, float k) {
+        float rp = max(ref.r, max(ref.g, ref.b)), fp = max(frame.r, max(frame.g, frame.b));
+        if (min(rp, fp) > 0.85f) return 1.0f;
+        float d = abs(dot(frame - ref, kLuma));
+        float sigma = k * sqrt(max(dot(ref, kLuma), 0.0005f)) + 0.004f;
+        float x = d / sigma;
+        return exp(-0.5f * x * x);
+    }
+
     // Inversa da curva: estima a luz da cena a partir de uma imagem já com curva (vídeo, HEIC)
     inline float3 inverseFilmic(float3 v) {
         float3 x = clamp(v, 0.0f, 0.985f);
@@ -189,14 +200,14 @@ namespace coreimage {
 
     // NOITE sem fantasma: cada quadro conta menos onde difere da referência (algo se mexeu).
     float4 revelaRobustColor(sample_t s, sample_t sBlur, sample_t refBlur, float k) {
-        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
+        float g = revela::ghostEqual(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
         return float4(max(s.rgb, float3(0.0f)) * g, 1.0f);
     }
 
     // Junção em duas faixas (como o HDR+): o detalhe (s − parte lisa) entra só onde o quadro bate com a referência.
     // A parte lisa usa os kernels de sempre com tolerância maior. Sem limitar em zero: o detalhe tem sinal
     float4 revelaHighColor(sample_t s, sample_t low, sample_t sBlur, sample_t refBlur, float k) {
-        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
+        float g = revela::ghostEqual(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
         return float4((s.rgb - low.rgb) * g, 1.0f);
     }
 
@@ -211,7 +222,7 @@ namespace coreimage {
     }
 
     float4 revelaRobustWeight(sample_t sBlur, sample_t refBlur, float k) {
-        float g = revela::ghost(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
+        float g = revela::ghostEqual(max(sBlur.rgb, float3(0.0f)), max(refBlur.rgb, float3(0.0f)), k);
         return float4(g, g, g, 1.0f);
     }
 
@@ -306,42 +317,66 @@ namespace coreimage {
         return float4(acc.rgb, 1.0f);
     }
 
-    // Super resolução por regressão de núcleo (Wronski et al. 2019, Google "Handheld Multi-Frame Super-Resolution"):
-    // cada pixel de cada foto vai para onde ele caiu na grade grande (com o alinhamento em fração de pixel),
-    // pesado pela distância (gaussiana em pixels grandes). Antes cada foto era ampliada e depois tirada a média:
-    // isso borrava e a desconvolução forte voltava a estragar (protótipo: +4 dB de PSNR com este jeito).
-    // m = (fator, origem x, origem y, sigma); inv0/inv1 = linhas da inversa do alinhamento (referência → foto);
-    // a…e, grid = o que sobrou do alinhamento em cada uma das 9 regiões (em pixels grandes).
-    // mode 0 devolve a soma ponderada da cor; mode 1, a soma dos pesos (para dividir no fim).
-    float4 revelaSplat(sampler src, sampler ref, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
-                       float4 d, float2 e, float4 grid, float k, float mode, destination dest) {
+    // Super resolução: o ponto da foto que cai no pixel grande p — pelo alinhamento geral (inversa em inv0/inv1) e pelo
+    // que sobrou em cada uma das 9 regiões (grade 3×3 com centros em x0 + i·dx, y0 + j·dy), m = (fator, origem x, origem y, σ)
+    inline float2 srSource(float2 p, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c, float4 d, float2 e,
+                           float4 grid) {
         float2 o[9] = { a.xy, a.zw, b.xy, b.zw, c.xy, c.zw, d.xy, d.zw, e };
-        float2 p = dest.coord();
         float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
         float v = clamp((p.y - grid.y) / grid.w, 0.0f, 2.0f);
         int i0 = min(int(u), 1), j0 = min(int(v), 1);
         float fu = u - float(i0), fv = v - float(j0);
         float2 residual = mix(mix(o[j0 * 3 + i0], o[j0 * 3 + i0 + 1], fu), mix(o[(j0 + 1) * 3 + i0], o[(j0 + 1) * 3 + i0 + 1], fu), fv);
         float2 r = (p - residual) / m.x + m.yz;
-        float2 q = float2(dot(inv0, float3(r, 1.0f)), dot(inv1, float3(r, 1.0f)));
+        return float2(dot(inv0, float3(r, 1.0f)), dot(inv1, float3(r, 1.0f)));
+    }
+    // Amostra dentro do que foi aberto da foto (valid = minX, minY, maxX, maxY)? Fora dele o Core Image devolve 0, que
+    // entrava com peso cheio e escurecia a beirada da foto grande
+    inline float srValid(float2 cpos, float4 valid) {
+        return (cpos.x > valid.x && cpos.y > valid.y && cpos.x < valid.z && cpos.y < valid.w) ? 1.0f : 0.0f;
+    }
+
+    // Super resolução por regressão de núcleo (Wronski et al. 2019, Google "Handheld Multi-Frame Super-Resolution"):
+    // cada pixel de cada foto vai para onde ele caiu na grade grande (com o alinhamento em fração de pixel),
+    // pesado pela distância (gaussiana de σ = m.w pixels grandes). Antes cada foto era ampliada e depois tirada a média:
+    // isso borrava e a desconvolução forte voltava a estragar (protótipo: +4 dB de PSNR com este jeito).
+    // gm: mapa de movimento da foto (1 = igual à referência; onde algo se mexeu ela quase não conta). Devolve Σ w·cor·g;
+    // o peso (Σ w·g) sai do revelaSplatWeight, que não abre a foto
+    float4 revelaSplat(sampler src, sampler gm, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
+                       float4 d, float2 e, float4 grid, float4 valid, destination dest) {
+        float2 p = dest.coord();
+        float2 q = srSource(p, inv0, inv1, m, a, b, c, d, e, grid);
         float2 base = floor(q - 0.5f);
         float3 acc = float3(0.0f);
+        float inv2s2 = 1.0f / (2.0f * m.w * m.w);
+        for (int j = -1; j <= 2; j++) {
+            for (int i = -1; i <= 2; i++) {
+                float2 cpos = base + float2(float(i), float(j)) + 0.5f;
+                float2 dd = (cpos - q) * m.x;
+                float w = exp(-dot(dd, dd) * inv2s2) * srValid(cpos, valid);
+                acc += max(src.sample(src.transform(cpos)).rgb, float3(0.0f)) * w;
+            }
+        }
+        float g = clamp(gm.sample(gm.transform(p)).r, 0.0f, 1.0f);
+        return float4(acc * g, 1.0f);
+    }
+
+    float4 revelaSplatWeight(sampler gm, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
+                             float4 d, float2 e, float4 grid, float4 valid, destination dest) {
+        float2 p = dest.coord();
+        float2 q = srSource(p, inv0, inv1, m, a, b, c, d, e, grid);
+        float2 base = floor(q - 0.5f);
         float wsum = 0.0f;
         float inv2s2 = 1.0f / (2.0f * m.w * m.w);
         for (int j = -1; j <= 2; j++) {
             for (int i = -1; i <= 2; i++) {
                 float2 cpos = base + float2(float(i), float(j)) + 0.5f;
                 float2 dd = (cpos - q) * m.x;
-                float w = exp(-dot(dd, dd) * inv2s2);
-                acc += max(src.sample(src.transform(cpos)).rgb, float3(0.0f)) * w;
-                wsum += w;
+                wsum += exp(-dot(dd, dd) * inv2s2) * srValid(cpos, valid);
             }
         }
-        // Sem fantasma: onde esta foto não bate com a referência (algo se mexeu), ela quase não conta
-        float3 local = acc / max(wsum, 1e-5f);
-        float3 refc = max(ref.sample(ref.transform(p)).rgb, float3(0.0f));
-        float g = revela::ghost(local, refc, k);
-        return mode < 0.5f ? float4(acc * g, 1.0f) : float4(float3(wsum * g), 1.0f);
+        float g = clamp(gm.sample(gm.transform(p)).r, 0.0f, 1.0f);
+        return float4(float3(wsum * g), 1.0f);
     }
 
     // SUPER ZOOM: desconvolução regularizada (MAP com Huber-TV), como no estudo em Python (+5,4 dB contra +4,5 do
@@ -366,19 +401,12 @@ namespace coreimage {
     inline float srH(float d) { return 0.5f * (srMitchell(d + 0.5f) + srMitchell(d - 0.5f)); }
 
     // Retroprojeção de uma foto (Aᵀy): cada pixel grande soma h·valor dos pixels da foto em volta. Onde a foto não bate
-    // com a referência (algo se mexeu) o valor dela vira a referência (o modelo conta com todas as amostras presentes).
-    // mode 0 = Σ h·y, 1 = Σ h (para a estimativa inicial)
-    float4 revelaSplatH(sampler src, sampler ref, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
-                        float4 d, float2 e, float4 grid, float k, float mode, destination dest) {
-        float2 o[9] = { a.xy, a.zw, b.xy, b.zw, c.xy, c.zw, d.xy, d.zw, e };
+    // com a referência (mapa de movimento gm < 1) o valor dela vira a referência (o modelo conta com todas as amostras).
+    // O mapa compara versões borradas: o serrilhado das bordas (que a super resolução aproveita) não conta como movimento
+    float4 revelaSplatH(sampler src, sampler ref, sampler gm, float3 inv0, float3 inv1, float4 m, float4 a, float4 b,
+                        float4 c, float4 d, float2 e, float4 grid, float4 valid, destination dest) {
         float2 p = dest.coord();
-        float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
-        float v = clamp((p.y - grid.y) / grid.w, 0.0f, 2.0f);
-        int i0 = min(int(u), 1), j0 = min(int(v), 1);
-        float fu = u - float(i0), fv = v - float(j0);
-        float2 residual = mix(mix(o[j0 * 3 + i0], o[j0 * 3 + i0 + 1], fu), mix(o[(j0 + 1) * 3 + i0], o[(j0 + 1) * 3 + i0 + 1], fu), fv);
-        float2 r = (p - residual) / m.x + m.yz;
-        float2 q = float2(dot(inv0, float3(r, 1.0f)), dot(inv1, float3(r, 1.0f)));
+        float2 q = srSource(p, inv0, inv1, m, a, b, c, d, e, grid);
         float2 base = floor(q - 0.5f);
         float3 acc = float3(0.0f);
         float wsum = 0.0f;
@@ -386,23 +414,38 @@ namespace coreimage {
             for (int i = -1; i <= 2; i++) {
                 float2 cpos = base + float2(float(i), float(j)) + 0.5f;
                 float2 dd = (cpos - q) * m.x;
-                float w = srH(dd.x) * srH(dd.y);
+                float w = srH(dd.x) * srH(dd.y) * srValid(cpos, valid);
                 acc += max(src.sample(src.transform(cpos)).rgb, float3(0.0f)) * w;
                 wsum += w;
             }
         }
         float3 refc = max(ref.sample(ref.transform(p)).rgb, float3(0.0f));
-        float g = revela::ghost(acc / max(wsum, 1e-5f), refc, k);
-        return mode < 0.5f ? float4(acc * g + refc * (wsum * (1.0f - g)), 1.0f) : float4(float3(wsum), 1.0f);
+        float g = clamp(gm.sample(gm.transform(p)).r, 0.0f, 1.0f);
+        return float4(acc * g + refc * (wsum * (1.0f - g)), 1.0f);
     }
 
-    // Um passo de FISTA do MAP: z = x + β(x − x_anterior) calculado na hora; dado = AᵀA·z − b, com AᵀA exato para
-    // deslocamento (núcleo 7×7 por fase do pixel e por pedaço da grade 3×3, na tabela); Huber-TV conjunta brilho/cor
-    // (as bordas da cor seguem as do brilho). Passo diagonal 1/(‖AᵀA‖ + 8λ/δ) em cada canal: converge
-    inline float3 srZ(sampler x, sampler xp, float2 q, float beta) {
-        float3 a = x.sample(x.transform(q)).rgb;
-        return a + beta * (a - xp.sample(xp.transform(q)).rgb);
+    // Σh da mesma foto (só a geometria: não abre a foto), somado ao acumulado (para a estimativa inicial Σh·y/Σh)
+    float4 revelaSplatHWeight(sample_t accum, float3 inv0, float3 inv1, float4 m, float4 a, float4 b, float4 c,
+                              float4 d, float2 e, float4 grid, float4 valid, destination dest) {
+        float2 p = dest.coord();
+        float2 q = srSource(p, inv0, inv1, m, a, b, c, d, e, grid);
+        float2 base = floor(q - 0.5f);
+        float wsum = 0.0f;
+        for (int j = -1; j <= 2; j++) {
+            for (int i = -1; i <= 2; i++) {
+                float2 cpos = base + float2(float(i), float(j)) + 0.5f;
+                float2 dd = (cpos - q) * m.x;
+                wsum += srH(dd.x) * srH(dd.y) * srValid(cpos, valid);
+            }
+        }
+        return float4(accum.rgb + float3(wsum), 1.0f);
     }
+
+    // Um passo de FISTA do MAP sobre z (= x + β(x − x_anterior), calculado uma vez por passo antes; antes era refeito
+    // 56 vezes por pixel aqui dentro): dado = AᵀA·z − b, com AᵀA exato para deslocamento (núcleo 7×7 por fase do pixel e
+    // por pedaço da grade 3×3, na tabela, misturando os 4 pedaços em volta como o alinhamento por região; antes trocava de
+    // pedaço de uma vez no meio do caminho); Huber-TV conjunta brilho/cor (as bordas da cor seguem as do brilho).
+    // Passo diagonal 1/(‖AᵀA‖ + 8λ/δ) em cada canal: converge
     struct SRFlux { float3 x; float3 y; };
     inline SRFlux srFlux(float3 u0, float3 ux, float3 uy, float w, float delta) {
         float3 gx = ux - u0, gy = uy - u0;
@@ -413,26 +456,35 @@ namespace coreimage {
         f.y = gy * s;
         return f;
     }
-    float4 revelaMAPStep(sampler x, sampler xp, sampler b, sampler tab, float4 grid, float beta, float3 lam, float3 tau,
+    float4 revelaMAPStep(sampler z, sampler b, sampler tab, float4 grid, float3 lam, float3 tau,
                          float delta, float w, destination dest) {
         float2 p = dest.coord();
-        int ti = int(clamp(round((p.x - grid.x) / grid.z), 0.0f, 2.0f));
-        int tj = int(clamp(round((p.y - grid.y) / grid.w), 0.0f, 2.0f));
+        float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
+        float v = clamp((p.y - grid.y) / grid.w, 0.0f, 2.0f);
+        int i0 = min(int(u), 1), j0 = min(int(v), 1);
+        float fu = u - float(i0), fv = v - float(j0);
+        float w00 = (1.0f - fu) * (1.0f - fv), w10 = fu * (1.0f - fv), w01 = (1.0f - fu) * fv, w11 = fu * fv;
         int ax = int(floor(p.x)) & 1, ay = int(floor(p.y)) & 1;
-        float2 t0 = float2(float(ax * 7) + 0.5f, float((tj * 3 + ti) * 14 + ay * 7) + 0.5f);
+        // Tabela: x = fase x·7 + dx, y = (pedaço·2 + fase y)·7 + dy; pedaço = j·3 + i (o vizinho em x soma 14 linhas, em y 42)
+        float tx = float(ax * 7) + 3.5f;
+        float y00 = float((j0 * 3 + i0) * 14 + ay * 7) + 3.5f;
         float3 conv = float3(0.0f);
         for (int dy = -3; dy <= 3; dy++) {
             for (int dx = -3; dx <= 3; dx++) {
-                float kv = tab.sample(tab.transform(t0 + float2(float(dx + 3), float(dy + 3)))).r;
-                conv += kv * srZ(x, xp, p + float2(float(dx), float(dy)), beta);
+                float kx = tx + float(dx), ky = y00 + float(dy);
+                float kv = w00 * tab.sample(tab.transform(float2(kx, ky))).r
+                         + w10 * tab.sample(tab.transform(float2(kx, ky + 14.0f))).r
+                         + w01 * tab.sample(tab.transform(float2(kx, ky + 42.0f))).r
+                         + w11 * tab.sample(tab.transform(float2(kx, ky + 56.0f))).r;
+                conv += kv * z.sample(z.transform(p + float2(float(dx), float(dy)))).rgb;
             }
         }
-        float3 z0 = srZ(x, xp, p, beta);
+        float3 z0 = z.sample(z.transform(p)).rgb;
         float3 G = conv - b.sample(b.transform(p)).rgb;
         float3 u0 = tvU(z0);
-        float3 uxp = tvU(srZ(x, xp, p + float2(1.0f, 0.0f), beta)), uyp = tvU(srZ(x, xp, p + float2(0.0f, 1.0f), beta));
-        float3 uxm = tvU(srZ(x, xp, p - float2(1.0f, 0.0f), beta)), uym = tvU(srZ(x, xp, p - float2(0.0f, 1.0f), beta));
-        float3 uxmyp = tvU(srZ(x, xp, p + float2(-1.0f, 1.0f), beta)), uymxp = tvU(srZ(x, xp, p + float2(1.0f, -1.0f), beta));
+        float3 uxp = tvU(z.sample(z.transform(p + float2(1.0f, 0.0f))).rgb), uyp = tvU(z.sample(z.transform(p + float2(0.0f, 1.0f))).rgb);
+        float3 uxm = tvU(z.sample(z.transform(p - float2(1.0f, 0.0f))).rgb), uym = tvU(z.sample(z.transform(p - float2(0.0f, 1.0f))).rgb);
+        float3 uxmyp = tvU(z.sample(z.transform(p + float2(-1.0f, 1.0f))).rgb), uymxp = tvU(z.sample(z.transform(p + float2(1.0f, -1.0f))).rgb);
         SRFlux f0 = srFlux(u0, uxp, uyp, w, delta);
         SRFlux fl = srFlux(uxm, u0, uxmyp, w, delta);
         SRFlux fd = srFlux(uym, uymxp, u0, w, delta);
@@ -617,6 +669,110 @@ namespace coreimage {
     float4 revelaClip(sample_t frame, sample_t mean, float allowance) {
         float3 limit = mean.rgb * (1.0f + allowance) + 0.0004f;
         return float4(min(frame.rgb, limit), 1.0f);
+    }
+
+    // Mapa de movimento das junções de fotos iguais (NOITE, FOTO 3×, SUPER ZOOM/RES): compara as versões já borradas (o
+    // borrão mata o serrilhado e o ruído fino) e só recusa onde a diferença passa de p.x (4× o ruído medido na diferença
+    // borrada) + p.y × a luz + o que um encaixe de ±p.z px explica numa borda que as DUAS têm (gradiente menor das duas:
+    // borda que só uma tem é movimento) + piso p.w. 1 = igual; cai a 0 entre 1× e 2× o limite.
+    // Antes: tolerância k·√L + 0,004, ~25× o ruído que sobra no escuro (pessoa e carro translúcidos), e referência acima
+    // de 0,85 aceitava tudo (céu claro, carro branco). Agora só não compara onde as duas estouraram
+    float4 revelaMotion(sampler a, sampler r, float4 p, destination dest) {
+        float2 q = dest.coord();
+        float3 ca = max(a.sample(a.transform(q)).rgb, float3(0.0f));
+        float3 cr = max(r.sample(r.transform(q)).rgb, float3(0.0f));
+        float pa = max(ca.r, max(ca.g, ca.b)), pr = max(cr.r, max(cr.g, cr.b));
+        if (min(pa, pr) > 0.85f) return float4(1.0f, 1.0f, 1.0f, 1.0f);
+        float la = dot(ca, revela::kLuma), lr = dot(cr, revela::kLuma);
+        float2 ex = float2(1.0f, 0.0f), ey = float2(0.0f, 1.0f);
+        float gax = dot(a.sample(a.transform(q + ex)).rgb - a.sample(a.transform(q - ex)).rgb, revela::kLuma);
+        float gay = dot(a.sample(a.transform(q + ey)).rgb - a.sample(a.transform(q - ey)).rgb, revela::kLuma);
+        float grx = dot(r.sample(r.transform(q + ex)).rgb - r.sample(r.transform(q - ex)).rgb, revela::kLuma);
+        float gry = dot(r.sample(r.transform(q + ey)).rgb - r.sample(r.transform(q - ey)).rgb, revela::kLuma);
+        float grad = 0.5f * min(sqrt(gax * gax + gay * gay), sqrt(grx * grx + gry * gry));
+        float t = p.x + p.y * lr + p.z * grad + p.w;
+        float g = 1.0f - smoothstep(t, 2.0f * t, abs(la - lr));
+        return float4(g, g, g, 1.0f);
+    }
+
+    // Cor × peso (mapa de movimento ou peso do foco, no canal r)
+    float4 revelaMulG(sample_t s, sample_t g) {
+        return float4(max(s.rgb, float3(0.0f)) * g.r, 1.0f);
+    }
+
+    // Detalhe (s − parte lisa) × peso. Sem limitar em zero: o detalhe tem sinal
+    float4 revelaHighG(sample_t s, sample_t low, sample_t g) {
+        return float4((s.rgb - low.rgb) * g.r, 1.0f);
+    }
+
+    // a − b sem negativo (pixel quente tirado de cada foto)
+    float4 revelaSubPos(sample_t a, sample_t b) {
+        return float4(max(a.rgb - b.rgb, float3(0.0f)), 1.0f);
+    }
+
+    // ESTRELAS: pixel quente (fixo no sensor). No mínimo das fotos sem alinhar as estrelas somem (o céu anda) e o quente
+    // fica. É quente onde um canal passa de 1,8× todos os 8 vizinhos + thr (uma luz de verdade se espalha pela lente)
+    inline bool hotCenter(sampler mn, float2 q, float thr) {
+        float3 c = mn.sample(mn.transform(q)).rgb;
+        float3 mx = float3(0.0f);
+        for (int j = -1; j <= 1; j++) {
+            for (int i = -1; i <= 1; i++) {
+                if (i == 0 && j == 0) continue;
+                mx = max(mx, mn.sample(mn.transform(q + float2(float(i), float(j)))).rgb);
+            }
+        }
+        float3 lim = 1.8f * mx + thr;
+        return c.r > lim.r || c.g > lim.g || c.b > lim.b;
+    }
+    // O excesso do quente sobre o fundo em volta (anel a 2 px), na pegada 3×3 dele (o demosaico espalha o quente para os
+    // vizinhos); 0 no resto. Esse excesso está em todas as fotos e é tirado de cada uma antes de alinhar
+    float4 revelaHotMap(sampler mn, float thr, destination dest) {
+        float2 p = dest.coord();
+        bool nearHot = false;
+        for (int j = -1; j <= 1; j++) {
+            for (int i = -1; i <= 1; i++) {
+                if (hotCenter(mn, p + float2(float(i), float(j)), thr)) nearHot = true;
+            }
+        }
+        if (!nearHot) return float4(0.0f, 0.0f, 0.0f, 1.0f);
+        float3 bg = float3(1e9f);
+        for (int j = -2; j <= 2; j += 2) {
+            for (int i = -2; i <= 2; i += 2) {
+                if (i == 0 && j == 0) continue;
+                bg = min(bg, mn.sample(mn.transform(p + float2(float(i), float(j)))).rgb);
+            }
+        }
+        float3 c = mn.sample(mn.transform(p)).rgb;
+        return float4(max(c - max(bg, float3(0.0f)), float3(0.0f)), 1.0f);
+    }
+
+    // ESTRELAS: qual jeito explica melhor esta foto aqui, parado (chão) ou girando com o céu. > 0 = céu
+    float4 revelaSkyEvidence(sample_t still, sample_t stillMean, sample_t turned, sample_t skyMean) {
+        float du = abs(dot(still.rgb - stillMean.rgb, revela::kLuma));
+        float da = abs(dot(turned.rgb - skyMean.rgb, revela::kLuma));
+        float e = du - da;
+        return float4(e, e, e, 1.0f);
+    }
+
+    float4 revelaSkyMask(sample_t e, float t) {
+        float m = smoothstep(-t, t, e.r);
+        return float4(m, m, m, 1.0f);
+    }
+
+    // FOCO EMPILHADO: peso pela nitidez relativa (s ÷ nitidez típica), preso para caber na meia precisão (a soma de 7 fotos
+    // não estoura). Potência alta = quase sempre a mais nítida, mas sem a troca dura (0/1) que fazia auréola
+    float4 revelaFocusWeight(sample_t s, float typical, float power) {
+        float r = clamp(max(s.r, 0.0f) / max(typical, 1e-6f), 0.18f, 6.7f);
+        float w = pow(r, power);
+        return float4(w, w, w, 1.0f);
+    }
+
+    // LONGA rastros: a luz que passou acima da média até aqui (e do ruído: t.x + t.y × média), o maior de todos. No fim:
+    // média + isso. O máximo puro das fotos com ruído subia o preto ~3σ (céu cinza)
+    float4 revelaTrail(sample_t previous, sample_t frame, sample_t total, float invCount, float2 t) {
+        float3 mean = max(total.rgb, float3(0.0f)) * invCount;
+        float3 e = max(frame.rgb - mean - (t.x + t.y * mean), float3(0.0f));
+        return float4(max(previous.rgb, e), 1.0f);
     }
 }
 }
