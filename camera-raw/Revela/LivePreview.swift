@@ -28,7 +28,28 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
     weak var view: MTKView?
 
     // Lidos e escritos só na main thread
-    var options = Developer.PreviewOptions()
+    var options = Developer.PreviewOptions() {
+        // Cópia travada para a gravação de vídeo, que lê a cada quadro em outra fila (ler `options` lá enquanto a
+        // principal escrevia, até 120 vezes por segundo no zoom, era corrida de dados)
+        didSet {
+            optionsLock.lock()
+            optionsCopy = options
+            optionsLock.unlock()
+        }
+    }
+    private let optionsLock = NSLock()
+    private var optionsCopy = Developer.PreviewOptions()
+    /// `options` para ler fora da fila principal.
+    var threadSafeOptions: Developer.PreviewOptions {
+        optionsLock.lock()
+        defer { optionsLock.unlock() }
+        return optionsCopy
+    }
+    /// VÍDEO e DUPLA: mostra o quadro inteiro que vai para o arquivo (encaixado, com faixas) em vez de preencher o 3:4.
+    var fitWhole = false
+    /// Tamanho do último quadro desenhado e da área do visor (para converter um toque em ponto do quadro). Só na main thread.
+    private(set) var drawnFrameSize: CGSize = .zero
+    private(set) var drawnViewSize: CGSize = .zero
     /// Lupa de foco: amplia o centro 4× enquanto você ajusta o foco.
     var loupe = false
     /// Retrato: quanto borrar o fundo no visor (0 = nada). A foto final usa a profundidade de verdade.
@@ -157,10 +178,14 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
         lock.unlock()
         guard let frame, let drawable = view.currentDrawable, let buffer = queue.makeCommandBuffer() else { return }
 
-        // Preenche a área do visor (aspect fill), centralizado, com zoom digital e lupa
+        // Preenche a área do visor (aspect fill), centralizado, com zoom digital e lupa. No vídeo: encaixa o quadro inteiro
         let size = view.drawableSize
+        drawnFrameSize = frame.extent.size
+        drawnViewSize = size
         let zoom = options.develop.zoom * (loupe ? 4 : 1)
-        let scale = max(size.width / frame.extent.width, size.height / frame.extent.height) * zoom
+        let fill = max(size.width / frame.extent.width, size.height / frame.extent.height)
+        let fit = min(size.width / frame.extent.width, size.height / frame.extent.height)
+        let scale = (fitWhole ? fit : fill) * zoom
         var image = frame
             .transformed(by: CGAffineTransform(translationX: -frame.extent.minX, y: -frame.extent.minY))
             .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
@@ -230,7 +255,11 @@ final class PreviewRenderer: NSObject, MTKViewDelegate {
             width: Int(size.width), height: Int(size.height),
             pixelFormat: view.colorPixelFormat, commandBuffer: buffer,
             mtlTextureProvider: { drawable.texture })
-        _ = try? context.startTask(toRender: image, to: destination)
+        // Quadro encaixado: faixas pretas onde ele não chega (sem isso ficava o lixo do desenho anterior)
+        let shown = fitWhole
+            ? image.composited(over: CIImage(color: CIColor.black).cropped(to: CGRect(origin: .zero, size: size)))
+            : image
+        _ = try? context.startTask(toRender: shown, to: destination)
         buffer.present(drawable)
         buffer.commit()
 

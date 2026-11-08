@@ -705,7 +705,8 @@ struct ContentView: View {
                 if camera.showGrid {
                     ThirdsGrid().stroke(.white.opacity(0.22), lineWidth: 0.5)
                 }
-                AspectMask(aspect: camera.aspect)
+                // Vídeo: o visor mostra o quadro inteiro do arquivo; a proporção da foto não se aplica
+                if !camera.showsWholeFrame { AspectMask(aspect: camera.aspect) }
                 // No panorama o giroscópio fica só para ele
                 if camera.showLevel, camera.panoramaProgress == nil { LevelOverlay() }
                 if let progress = camera.panoramaProgress {
@@ -788,8 +789,10 @@ struct ContentView: View {
                 }
                 VStack {
                     HStack {
-                        // No CINEMÁTICO o visor é o do sistema: o histograma do nosso visor ficava parado
-                        if camera.captureMode != .cinematic {
+                        if camera.captureMode == .cinematic {
+                            // O CINEMÁTICO não passa pelo visor do app: o histograma ficaria parado no último quadro
+                            Color.clear.frame(width: 96, height: 40)
+                        } else {
                             LiveHistogram(live: camera.live, rgb: camera.rgbHistogram)
                                 .frame(width: 96, height: 40)
                         }
@@ -822,8 +825,8 @@ struct ContentView: View {
                         .frame(maxHeight: .infinity, alignment: .bottom)
                         .padding(.bottom, 10 + controlsHeight)
                 }
-                // No CINEMÁTICO o quadro do rosto vinha do nosso visor (parado): o do sistema já segue as pessoas
-                if camera.stackProgress == nil, camera.captureMode != .cinematic {
+                // Nos vídeos o quadro fica encaixado (e no CINEMÁTICO o rosto nem é procurado): o quadro do rosto sairia fora do lugar
+                if camera.stackProgress == nil, !camera.showsWholeFrame {
                     FaceOverlay(live: camera.live, zoom: camera.crop, size: geo.size, bottomInset: controlsHeight)
                 }
                 if camera.lens == .macro && camera.stackProgress == nil {
@@ -1533,7 +1536,7 @@ struct ContentView: View {
         case .action: return "4K\n120"
         case .freeze: return camera.freezeMax ? "1/\(Int((1 / camera.freezeShutter).rounded()))\nMÁX" : "1/\(Int((1 / camera.freezeShutter).rounded()))\n12MP"
         case .hdr: return "HDR\n3× RAW"
-        case .video: return "1080p\n\(camera.videoFPS) fps"
+        case .video: return camera.videoFormatLabel
         case .cinematic: return apertureLabel(camera.cinematicAperture) + "\nCINEMA"
         case .dual: return "DUPLA\nFOTO · VÍDEO"
         case .scan: return "3D\nLIDAR"

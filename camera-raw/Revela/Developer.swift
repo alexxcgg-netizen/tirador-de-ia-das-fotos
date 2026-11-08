@@ -1085,10 +1085,11 @@ enum Developer {
         return finish(scene, options: options)
     }
 
-    /// Imagem de vídeo (exposição longa) -> look e HEIC.
+    /// Imagem de vídeo (exposição longa, AÇÃO, DUPLA) -> look e HEIC. Os metadados da imagem (data, aparelho) vão junto:
+    /// o kernel não carrega as propriedades.
     static func developVideoImage(_ image: CIImage, options: DevelopOptions) -> Output? {
         let scene = toSceneKernel?.apply(extent: image.extent, arguments: [image, tuning.filmicGain]) ?? image
-        return finish(scene, options: options)
+        return finish(scene.settingProperties(image.properties), options: options)
     }
 
     // MARK: - Super resolução
