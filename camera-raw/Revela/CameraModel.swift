@@ -2752,6 +2752,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             }
         }
         d.unlockForConfiguration()
+        // O formato de vídeo não é o de foto: ao voltar para a foto, o tamanho dela é refeito (como na AÇÃO)
+        formatWasSpecial = true
         let dims = CMVideoFormatDescriptionGetDimensions(d.activeFormat.formatDescription)
         let frame = d.activeVideoMinFrameDuration
         let actual = frame.value > 0 ? Int((Double(frame.timescale) / Double(frame.value)).rounded()) : fps
