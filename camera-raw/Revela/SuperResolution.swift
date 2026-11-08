@@ -33,6 +33,7 @@ extension Developer {
         var denoise: Float = 0
         /// Desconvolução regularizada (Huber-TV, brilho/cor) em vez da Richardson–Lucy. Estudo em Python nas 24 fotos
         /// do laboratório: +5,4 dB (RL × 3: +4,5; RL × 10: +4,9). Borradura: caixa 2×2 do sensor ⊗ gaussiana 0,45 px
+        // No app (86ab1f0) só ganhava no iPhone 12 Pro (+4,77) e perdia no XS (+4,72) e no Pixel (+4,30): fica desligada
         var tv = false
         var tvLumaLambda: Float = 2e-4
         var tvChromaLambda: Float = 2e-3
@@ -672,7 +673,7 @@ extension Developer {
     /// diferença viravam "movimento" na foto inteira. Mediana da razão pixel a pixel no centro (quem se mexeu é minoria e
     /// não conta, ao contrário da média). Preso entre −15% e +18%; perto de 1 (menos de 1%) devolve 1
     static func exposureGain(_ frame: CIImage, _ reference: CIImage, extent: CGRect) -> Float {
-        let side = min(192, extent.width, extent.height).rounded(.down)
+        let side = min(320, extent.width, extent.height).rounded(.down)
         guard side >= 16 else { return 1 }
         let rect = CGRect(x: (extent.midX - side / 2).rounded(), y: (extent.midY - side / 2).rounded(), width: side, height: side)
         let n = Int(side)
