@@ -208,3 +208,19 @@ Mac em todo push, nunca (cota 10×): o `revela-placar.yml` (Linux) só confere q
   - Velocidade: o "mapas de movimento … 14–63 s" do registro era o tempo desde o começo; os mapas levam 1–6 s. O alinhamento é
     ~70% do SUPER ZOOM no laboratório (leituras da GPU): os pedaços da referência são lidos uma vez (3 leituras por foto em vez
     de 5–7) e a tabela do MAP vai em 2 leituras por toque (antes 4). O laboratório inteiro já leva ~100 min (timeout 130).
+- **Rodada 4755d37: 106/106 metas** (as 54 antigas + 52 da prevenção). O que fechou depois da dd633dc:
+  - SUPER ZOOM +6,32/+8,18/+5,44 dB e 20–23 s por foto no laboratório (era 54–87 s).
+  - SUPER ZOOM perto do estourado: as amostras cortadas em 1 não seguem o modelo linear e o MAP cavava um anel escuro;
+    perto do platô estourado o resultado não desce abaixo do mínimo 5×5 da retroprojeção (P11 +4,99 → +6,55 dB). A meta da
+    cena estourada passou a ser 3× (≥ +4,8); a diferença para a cena sem corte (−0,72 dB, a borda que as fotos cortadas não
+    guardam) fica como informação, e o colapso do ruído segue vigiado pelo σ (1,01).
+  - FOCO EMPILHADO: a homografia do Vision via 3–4 px em fotos paradas (borradas em lugares diferentes) e deslocava a 2ª;
+    agora o nosso encaixe (semelhança pega a respiração do foco) e foto parada passa sem reamostrar: 0,81/0,79 → 0,88/0,86.
+  - LONGA rastros: régua da rampa parada = entre a média e o máximo do pontilhado (a régua só do máximo brigava com a meta
+    do preto no escuro): 0,07 código.
+  - Revisões por agentes (foto única, várias fotos, vídeo, tela) em cada rodada; correções de vídeo (arquivo no tamanho do
+    1º quadro, DUPLA sem quadro velho, áudio A2DP), foto (zoom do sensor espera assentar, ETTR com trava, disparo ao soltar
+    nos modos de várias fotos, foto a caminho conta como ocupado) e tela (controles acima da faixa, avisos em fila).
+  - Revelação no fundo: o iOS recusa GPU com o app fora da tela; todo render da revelação espera o app voltar
+    (Developer.gpu / ForegroundGate).
+  - → 0.30.
