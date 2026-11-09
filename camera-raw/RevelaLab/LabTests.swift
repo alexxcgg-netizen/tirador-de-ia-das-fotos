@@ -502,10 +502,19 @@ final class LabTests: XCTestCase {
                 let noisy = Developer.add(moved, sensorNoise(e, seed: 600 + i, amplitude: 0.035)).cropped(to: e)
                 frames.append(Developer.materialize(noisy, extent: e).settingProperties(iso800))
             }
+            // Aberto como o app abre: sem `merge` (a FOTO de 1 quadro e os quadros da FOTO 3×) com a redução de ruído e a nitidez
+            // da Apple (imitadas como no P07: limpeza de brilho 0,5 + nitidez 0,4). Antes vinham todos crus: a FOTO 3× era medida
+            // num caminho que o app não usa (e o photoFinish, calibrado assim, limpava de novo por cima da redução da Apple) e a
+            // foto única tinha ruído que a FOTO de verdade não tem (Python: com a redução ela fica ~3,5 dB melhor)
             Developer.decodeOverride = { frame, scale in
                 let i = Int(frame.data.first ?? 0)
                 guard frames.indices.contains(i) else { return nil }
-                let img = frames[i]
+                var img = frames[i]
+                if !frame.merge {
+                    img = Developer.lumaDenoise(img, strength: 0.5)
+                        .applyingFilter("CISharpenLuminance", parameters: [kCIInputSharpnessKey: 0.4])
+                        .cropped(to: e).settingProperties(frames[i].properties)
+                }
                 guard scale < 0.999 else { return img }
                 return img.applyingFilter("CILanczosScaleTransform", parameters: [kCIInputScaleKey: scale, kCIInputAspectRatioKey: 1])
                     .cropped(to: CGRect(x: 0, y: 0, width: (img.extent.width * CGFloat(scale)).rounded(.down),

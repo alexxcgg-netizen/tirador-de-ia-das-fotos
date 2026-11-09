@@ -83,16 +83,16 @@ Mac em todo push, nunca (cota 10×): o `revela-placar.yml` (Linux) só confere q
 | Modo | Testes do laboratório | Metas |
 |---|---|---|
 | FOTO (1 quadro) | test2Foto, test1Looks, test4Tuning, test8SunStar | tom/cor/detalhe/preto vs Apple; filmes |
-| FOTO 3× | test12PhotoFusion; P07 (FOTO 3× = FOTO, aberta como o app: sem `merge`, com a redução da Apple imitada); P09 (fantasma); P11 (14% estourado) | +4,8 dB e ⅓ do ruído; luz/meio/saturação/contraste local iguais à FOTO; fantasma ≤ 5%; com estourado ruído ≤ 0,6 da foto única |
+| FOTO 3× | test12PhotoFusion; P07 (FOTO 3× = FOTO); P09 (fantasma); P11 (14% estourado). Todos abertos como o app: a FOTO e os quadros da FOTO 3× sem `merge`, com a redução da Apple imitada | +4,8 dB e ⅓ do ruído; luz/meio/saturação/contraste local iguais à FOTO, bordas finas ≥ 0,90 da FOTO (sem cera); fantasma ≤ 5%; com estourado ruído ≤ 0,6 da foto única |
 | NOITE | test3Night, test7NightStack, test11HandheldNight, test10Alignment; P08 (foto ruim); P09; P11 (14% estourado) | 3×, preto, luz média, mão, alinhamento ≤ 0,5 px; foto que não é da cena fora (≥ 35 dB); fantasma ≤ 5%; com estourado ≥ +3 dB sobre 1 foto |
-| SUPER ZOOM | test6SuperResolution; P09 (24 fotos); P11 (com e sem corte em 1) | +4,8 dB sobre 1 ampliada; fantasma ≤ 5%; estourado não tira mais de 0,5 dB, σ ajustado dentro de 2× |
+| SUPER ZOOM | test6SuperResolution; P09 (24 fotos); P11 (com e sem corte em 1) | +4,8 dB sobre 1 ampliada; fantasma ≤ 5%; com 14% estourado também ≥ +4,8 dB e no máximo 1,0 dB abaixo da cena sem corte; σ ajustado dentro de 2× |
 | SUPER RES / LUA | P10 (saída de 48 MP, 5 fotos) | termina; usa as 5; memória ≤ 2500 MB a mais |
 | HDR | test9HDR | ⅓ do estourado e do ruído nas sombras |
 | RETRATO | test5Portrait; P01 (ponto do foco, função ainda não ligada) | vazamento ≤ ⅓ do desfoque comum |
-| ESTRELAS | P04 (deriva 4 px: o caminho dos quentes roda); P04b (polo dentro da foto, luz 2×2 no chão, trilhas de avião em 1 e 2 fotos) | pico ≥ 80%, largura ≤ 1,5×, pixels quentes ≤ 10%; estrelas perto do polo e a luz ≥ 80%; trilhas ≤ 1,5σ |
+| ESTRELAS | P04 (deriva 4 px: o caminho dos quentes roda); P04b (polo dentro da foto, luz 2×2 no chão, trilhas de avião em 1 e 2 fotos); P04c (chão de textura até a 2ª linha de pedaços: 8 pedaços parados contra 8 do céu) | pico ≥ 80%, largura ≤ 1,5×, pixels quentes ≤ 10% (P04 e P04c); estrelas perto do polo e a luz ≥ 80%; trilhas ≤ 1,5σ |
 | MÉDIA | P05 | nitidez ≥ 0,9 da ideal; ruído ≈ 1/√8 |
-| FOCO EMPILHADO | P06 (2 fotos; 4 fotos com a 1ª fora de foco) | nítido nas duas metades; sem halo; sem degrau com +0,3 EV; 4 fotos ≥ 0,85 em cada terço |
-| LONGA | P02 (acumulador; a captura não) | seda sem degraus em 240 quadros; rastros sem levantar o preto |
+| FOCO EMPILHADO | P06 (2 fotos; 4 fotos com a 1ª fora de foco; +0,3 EV com o EXIF dizendo); P06c (respiração do foco: 5 fotos de 12 MP com escala −0,8 a +0,8%, referência no meio) | nítido nas duas metades; sem halo; sem degrau com +0,3 EV; 4 fotos ≥ 0,85 em cada terço; cantos com respiração ≥ 0,85 de nitidez e erro ≤ 0,5 do da borrada |
+| LONGA | P02 (acumulador; a captura não) | seda sem degraus em 240 quadros; rastros sem levantar o preto (60 e 240 quadros, ruído branco e borrado 1 px: ≤ 1σ); luz andando fica no rastro (≥ 0,9) |
 | PANORAMA | P03 (emenda; o giroscópio de verdade não) | emenda tão boa quanto o miolo; sem salto de exposição |
 | Lentes / zoom | P01 (`CaptureGeometry`, ainda não ligada no CameraModel) | todos os casos |
 | Sem teste no laboratório | RÁPIDO, CONGELAR, FLASH (mesma revelação da FOTO), AÇÃO, VÍDEO, CINEMÁTICO, DUPLA, 3D, DOC, tela, Revelar de novo, relatório | só a revisão do passo 3 |
@@ -224,3 +224,27 @@ Mac em todo push, nunca (cota 10×): o `revela-placar.yml` (Linux) só confere q
   - Revelação no fundo: o iOS recusa GPU com o app fora da tela; todo render da revelação espera o app voltar
     (Developer.gpu / ForegroundGate).
   - → 0.30.
+- **Revisão final das várias fotos (sobre a 4755d37): correções aguardando o laboratório** (118 metas: 8 dos testes novos, as
+  bordas finas da FOTO 3× e a diferença do SUPER ZOOM estourado viraram metas).
+  - FOCO EMPILHADO e a respiração do foco (ALTA): com o nosso encaixe, os pedaços de fora (a ~1450 px do centro em 12 MP) andam
+    além da busca (±8 px) com mais de 0,55% de escala (0,28% em 48 MP): ficavam os de dentro e a foto saía só com deslocamento
+    (36 px de erro no canto em 48 MP com 1%). Agora: referência na foto do meio da varredura (metade da respiração), os pedaços
+    que faltaram procurados de novo onde a semelhança dos de dentro diz, semelhança aceita com 4+ pedaços concordando e, se
+    ainda assim ficar só deslocamento, a homografia do Vision. Python (P06c, 12 MP, ±0,8%): 6/16 → 16/16 pedaços, erro nos
+    cantos 2,2 → 0,13–0,26 do da cena borrada (só referência no meio: 2,0). Teste novo P06c.
+  - FOTO 3× abre com a redução da Apple (sem `merge`) e o photoFinish, calibrado para quadros crus, limpava de novo por cima
+    (cera). Agora a força cai na razão ruído medido ÷ limiar da limpeza (½ a 1). O laboratório abria tudo cru: agora test12, P09
+    e P11 abrem a FOTO e a FOTO 3× com a redução imitada (como o P07). Python (test12): ×½ +8,1 dB e ruído 0,34 da foto única
+    (a mesma conta dava +14,2 dB e 0,18 no laboratório de antes, que mediu +12,2–14 e 0,05–0,07); "bordas finas FOTO 3× ÷ FOTO"
+    virou meta (≥ 0,90). Voltar aos quadros crus (a outra saída) daria mais detalhe, mas a FOTO 3× sem a redução fica com a
+    textura fina que a FOTO não tem: contraste local do P07 ~1,12 no estudo (meta 0,90–1,10).
+  - LONGA rastros: o limite saía do ruído de 1 px do 1º quadro e não crescia com o número de quadros (o máximo de N quadros de
+    ruído sobe ~√(2 ln N)·σ): 240 quadros 1,18σ, ruído borrado 1 px 1,55σ. Agora 1,2 × a mediana de (máximo − média) do próprio
+    resultado: 0,10–0,16σ (Python). Metas novas no P02: 240 quadros, ruído borrado e uma luz andando (rastro ≥ 0,9 da luz).
+  - ESTRELAS: com chão de textura em metade dos pedaços o consenso empatava e ficava com o chão parado; agora vale o que anda
+    (com pelo menos metade dos pedaços do parado). Teste novo P04c.
+  - SUPER ZOOM: chão perto do estourado com o nível de corte de cada cor na foto toda (era 97% do máximo de cada faixa), platô
+    menor que 7 px fora (reflexo do sol na água) e quantos pixels pegou no registro; faixa de reserva sem memória sai sem
+    desconvolução (antes uma cadeia preguiçosa). Meta relativa de volta: com corte − sem corte ≥ −1,0 dB (era −0,72).
+  - FOCO EMPILHADO: brilho igualado só quando o EXIF (tempo × ISO) muda entre as fotos; com a exposição travada a diferença de
+    0,5–1% do desfoque e da respiração virava degrau falso.

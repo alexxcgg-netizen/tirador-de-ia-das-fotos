@@ -153,14 +153,18 @@ def _longa(root, log):
              ("rastros: erro na rampa clara", "≤ 0,5 código"),
              ("rastros no escuro: quanto o preto sobe", "≤ 1 σ"),
              ("seda no escuro: quanto o preto sobe", "≤ 0,25 σ")]
+    # Rastros com mais quadros, com o ruído borrado do vídeo e com uma luz andando (abaixo)
+    extra = [("rastros no escuro, 240 quadros: quanto o preto sobe", "≤ 1 σ"),
+             ("rastros no escuro, ruído borrado 1 px: quanto o preto sobe", "≤ 1 σ"),
+             ("rastros: luz andando (3×3, 4 px por quadro) ÷ a luz", "≥ 0,90")]
     ctrl = re.search(r"LONGA controle \(1 quadro\): erro máximo ([\d.]+) códigos", log)
     if not ctrl:
-        return _sem(area, metas)
+        return _sem(area, metas + extra)
     c = float(ctrl.group(1))
     rows.append((area, "controle da medida: 1 quadro (só informação)", f"{c:.2f} cód.", "", ""))
     if c > 0.6:
         # A medida em si está errada (não o app): nenhuma meta da LONGA vale nesta rodada
-        for name, goal in metas:
+        for name, goal in metas + extra:
             check(area, name, "medida inválida", False, goal)
         return
     seda = re.search(r"LONGA seda rampa \((\d+) de (\d+) quadros\): erro máximo ([\d.]+) códigos · níveis (\d+) em ([\d.]+) códigos", log)
@@ -185,6 +189,23 @@ def _longa(root, log):
             continue
         lift = float(m.group(3))
         check(area, meta[0], f"{lift:+.2f} σ", abs(lift) <= limit and m.group(1) == m.group(2), meta[1])
+    # O máximo de N quadros de ruído sobe ~√(2 ln N)·σ: com 240 quadros (8 s) e com o ruído borrado 1 px (o do vídeo do aparelho)
+    # o limite antigo deixava o preto subir 1,18σ e 1,55σ (Python). E um rastro de verdade (luz 3×3 andando 4 px por quadro): sem
+    # ele um resultado igual à média passava em todas as metas dos rastros
+    for label, (name, goal) in (("240", extra[0]), ("borrado", extra[1])):
+        m = re.search(rf"LONGA rastros escuro {label} \((\d+) de (\d+) quadros\): preto sobe ([-\d.]+) σ", log)
+        if not m:
+            _sem(area, [(name, goal)])
+            continue
+        lift = float(m.group(3))
+        check(area, name, f"{lift:+.2f} σ", abs(lift) <= 1.0 and m.group(1) == m.group(2), goal)
+    light = extra[2]
+    m = re.search(r"LONGA rastros luz andando \((\d+) de (\d+) quadros\): rastro ([\d.]+) da luz", log)
+    if m:
+        r = float(m.group(3))
+        check(area, light[0], f"{r:.3f}", r >= 0.9 and m.group(1) == m.group(2), light[1])
+    else:
+        _sem(area, [light])
 
 
 def _panorama(root, log):
@@ -236,22 +257,22 @@ def _panorama(root, log):
         _sem(area, metas[1:])
 
 
-def _estrelas(root, log):
-    area = "ESTRELAS"
+def _estrelas(root, log, area="ESTRELAS", prefix="estrelas/", tag="ESTRELAS", sky=0.72):
+    """P04 (e o P04c, com `prefix` "estrelas/chao_"). `sky`: até que fração da altura (de cima) as estrelas são procuradas."""
     metas = [("pico das estrelas da borda ÷ céu parado", "≥ 0,80"), ("largura (FWHM) das estrelas ÷ céu parado", "≤ 1,5"),
              ("pixels quentes que sobram ÷ 1 foto", "≤ 0,10")]
-    ps, pm, p1 = _png(root, "estrelas/parado"), _png(root, "estrelas/girando"), _png(root, "estrelas/uma_foto")
-    m = re.search(r"ESTRELAS: pixels quentes ((?:\d+,\d+ ?)+)", log)
+    ps, pm, p1 = _png(root, prefix + "parado"), _png(root, prefix + "girando"), _png(root, prefix + "uma_foto")
+    m = re.search(tag + r": pixels quentes ((?:\d+,\d+ ?)+)", log)
     if not (ps and pm):
         return _sem(area, metas)
     still, moving = _same(luma(load(ps)), luma(load(pm)))
     h, w = still.shape
     hot = [tuple(int(v) for v in t.split(",")) for t in m.group(1).split()] if m else []
     # Estrelas: picos isolados no céu parado (fora do chão, das bordas, dos pixels quentes e do estourado)
-    bg = float(np.median(still[: int(h * 0.7)]))
+    bg = float(np.median(still[: int(h * min(0.7, sky))]))
     cand = (still == _maxfilt(still, 3)) & (still - bg > 0.08) & (still < 0.92)
     cand[:16] = False
-    cand[int(h * 0.72):] = False
+    cand[int(h * sky):] = False
     cand[:, :16] = False
     cand[:, w - 16:] = False
     for c, r in hot:
@@ -302,6 +323,16 @@ def _estrelas(root, log):
 
     worst = max(excess(moving2, c, r) / max(excess(single, c, r), 1e-6) for c, r in hot)
     check(area, metas[2][0], f"{worst:.2f}", worst <= 0.10, metas[2][1])
+
+
+def _estrelas_chao(root, log):
+    """P04c: chão de textura até a 2ª linha de pedaços (o consenso de giro empatava 8 × 8 e ficava com o chão parado)."""
+    m = re.search(r"ESTRELAS CHÃO: .*? chão da linha (\d+)", log)
+    p = _png(root, "estrelas/chao_parado")
+    h = np.asarray(Image.open(p)).shape[0] if p else 768
+    top = int(m.group(1)) if m else int(h * 0.49)
+    # As estrelas no céu, a 16 px do chão (o giro e a deriva não chegam a isso)
+    _estrelas(root, log, area="ESTRELAS chão alto", prefix="estrelas/chao_", tag="ESTRELAS CHÃO", sky=max(0.1, (top - 16) / h))
 
 
 def _estrelas_polo(root, log):
@@ -456,9 +487,40 @@ def _foco(root, log):
         _sem(area, [quatro])
 
 
+def _foco_respiracao(root, log):
+    """P06c: 5 fotos com a escala da respiração do foco (−0,8 a +0,8%), 12 MP; os 4 cantos num mosaico 2×2 (448 px cada).
+    Só os cantos com textura (bordas da cena nítida ≥ metade da mediana dos 4: o céu liso mede ruído), pelo menos 2."""
+    area = "FOCO respiração"
+    metas = [("cantos: nitidez ÷ cena nítida (o pior)", "≥ 0,85"), ("cantos: erro ÷ erro da cena borrada (borda dupla)", "≤ 0,5")]
+    paths = [_png(root, f"foco/respiracao_{k}") for k in ("nitida", "borrada", "junta")]
+    if not all(paths):
+        return _sem(area, metas)
+    sharp, soft, merged = _same(*[luma(load(p)) for p in paths])
+    h, w = sharp.shape
+    hh, hw = h // 2, w // 2
+    names = {(0, 0): "sup-esq", (0, 1): "sup-dir", (1, 0): "inf-esq", (1, 1): "inf-dir"}
+    quads = {names[(r, c)]: (slice(r * hh + 4, (r + 1) * hh - 4), slice(c * hw + 4, (c + 1) * hw - 4))
+             for r in (0, 1) for c in (0, 1)}
+    texture = {k: _edge_mean(sharp[q]) for k, q in quads.items()}
+    typical = float(np.median(list(texture.values())))
+    use = [k for k in quads if texture[k] >= 0.5 * typical]
+    if len(use) < 2:
+        for name, goal in metas:
+            check(area, name, "sem textura", False, goal)
+        return
+    sharpness = {k: _edge_mean(merged[quads[k]]) / max(texture[k], 1e-6) for k in use}
+    error = {k: float(np.abs(merged[quads[k]] - sharp[quads[k]]).mean())
+             / max(float(np.abs(soft[quads[k]] - sharp[quads[k]]).mean()), 1e-6) for k in use}
+    ks, ke = min(sharpness, key=sharpness.get), max(error, key=error.get)
+    check(area, metas[0][0], f"{sharpness[ks]:.2f} ({ks})", sharpness[ks] >= 0.85, metas[0][1])
+    check(area, metas[1][0], f"{error[ke]:.2f} ({ke})", error[ke] <= 0.5, metas[1][1])
+    rows.append((area, "cantos medidos (só informação)", " ".join(sorted(use)), "", ""))
+
+
 def _foto_consistencia(root, log):
     metas = [("luz média FOTO 3× − FOTO", "±0,03"), ("meio (p50) FOTO 3× − FOTO", "±0,03"),
-             ("saturação FOTO 3× ÷ FOTO", "0,92–1,08"), ("contraste local FOTO 3× ÷ FOTO", "0,90–1,10")]
+             ("saturação FOTO 3× ÷ FOTO", "0,92–1,08"), ("contraste local FOTO 3× ÷ FOTO", "0,90–1,10"),
+             ("bordas finas FOTO 3× ÷ FOTO (sem cera)", "≥ 0,90")]
     d = os.path.join(root, "foto_consistencia")
     names = sorted({f[:-4].rsplit("_", 1)[0] for f in os.listdir(d) if f.endswith(".png")}) if os.path.isdir(d) else []
     if not names:
@@ -480,8 +542,10 @@ def _foto_consistencia(root, log):
         local = lambda l: float(np.abs(l - _gauss(l, 8))[16:-16, 16:-16].mean())
         rc = local(lf) / max(local(lo), 1e-6)
         check(area, metas[3][0], f"{rc:.2f}", 0.9 <= rc <= 1.1, metas[3][1])
-        rows.append((area, "bordas finas FOTO 3× ÷ FOTO (só informação)",
-                     f"{_edge_mean(lf[16:-16, 16:-16]) / max(_edge_mean(lo[16:-16, 16:-16]), 1e-6):.2f}", "", ""))
+        # Era só informação. A FOTO 3× chegou a abrir com a redução da Apple e o photoFinish (calibrado para quadros crus) limpava
+        # de novo por cima: textura de cera. Agora meta
+        rb = _edge_mean(lf[16:-16, 16:-16]) / max(_edge_mean(lo[16:-16, 16:-16]), 1e-6)
+        check(area, metas[4][0], f"{rb:.2f}", rb >= 0.9, metas[4][1])
 
 
 def _noite_ruim(root, log):
@@ -599,7 +663,8 @@ def _estourado(root, log):
     metas = [("FOTO 3×: ruído no liso juntada ÷ foto única", "≤ 0,60"),
              ("NOITE: erro juntada vs foto única (vs cena sem ruído)", "≥ +3 dB"),
              ("SUPER ZOOM com 14% estourado: ganho sobre uma ampliada (3×)", "≥ +4,8 dB"),
-             ("SUPER ZOOM: σ ajustado com corte ÷ sem corte", "0,5–2")]
+             ("SUPER ZOOM: σ ajustado com corte ÷ sem corte", "0,5–2"),
+             ("SUPER ZOOM: ganho com corte − sem corte", "≥ −1,0 dB")]
     pu, pj = _png(root, "estourado/foto3x_uma"), _png(root, "estourado/foto3x_juntada")
     if pu and pj:
         one, fused = _same(luma(load(pu)), luma(load(pj)))
@@ -651,15 +716,18 @@ def _estourado(root, log):
             sigmas[label] = max(float(fit.group(1)) * 0.18 + float(fit.group(2)), 0.0) ** 0.5
     # Era "com corte − sem corte ≥ −0,5 dB". O que sobra (−0,7 dB no laboratório 4d83b5e) é a nitidez da borda do estourado, que as
     # fotos cortadas não guardam; o colapso do ruído que esta cena pegava é medido pelo σ (meta abaixo). Agora: 3× como as
-    # outras cenas do SUPER ZOOM, com a diferença como informação
+    # outras cenas do SUPER ZOOM (passava com folga de 1,75 dB até sem o chão perto do corte) e a diferença para a cena sem
+    # corte ≥ −1,0 dB (sem o chão: −1,1 dB na dd633dc; com ele, −0,72)
     if "corte" in gains:
         g = gains["corte"]
         check(area, metas[2][0], f"{g:+.2f} dB", g >= 4.77, metas[2][1])
-        if "livre" in gains:
-            rows.append((area, "SUPER ZOOM: ganho com corte − sem corte (só informação)",
-                         f"{g - gains['livre']:+.2f} dB ({g:+.2f} / {gains['livre']:+.2f})", "", ""))
     else:
         _sem(area, metas[2:3])
+    if "corte" in gains and "livre" in gains:
+        dg = gains["corte"] - gains["livre"]
+        check(area, metas[4][0], f"{dg:+.2f} dB ({gains['corte']:+.2f} / {gains['livre']:+.2f})", dg >= -1.0, metas[4][1])
+    else:
+        _sem(area, metas[4:5])
     if len(sigmas) == 2 and sigmas["livre"] > 0:
         q = sigmas["corte"] / sigmas["livre"]
         check(area, metas[3][0], f"{q:.2f}", 0.5 <= q <= 2, metas[3][1])
@@ -669,8 +737,8 @@ def _estourado(root, log):
 
 def prevencao(root):
     log = _log_text(root)
-    for fn in (_geometria, _longa, _panorama, _estrelas, _estrelas_polo, _media, _foco, _foto_consistencia, _noite_ruim,
-               _fantasmas, _lua, _estourado):
+    for fn in (_geometria, _longa, _panorama, _estrelas, _estrelas_chao, _estrelas_polo, _media, _foco, _foco_respiracao,
+               _foto_consistencia, _noite_ruim, _fantasmas, _lua, _estourado):
         try:
             fn(root, log)
         except Exception as e:  # um teste com saída estranha não derruba o placar: vira FALTA com o erro

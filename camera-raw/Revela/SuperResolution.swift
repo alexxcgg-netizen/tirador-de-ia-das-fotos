@@ -70,6 +70,8 @@ extension Developer {
         var transform: CGAffineTransform
         /// Correção por região, em pixels da foto (0 onde o pedaço não deu ou discordou).
         var residuals: [CGPoint]
+        /// false = ficou só com deslocamento (poucos pedaços, ou discordando): sem giro nem escala
+        var similarity = true
     }
 
     /// `keep`: tira mais fotos do que usa e fica com pelo menos essas (as mais nítidas). `moon`: LUA — a nitidez é medida
@@ -553,6 +555,20 @@ extension Developer {
         guard inputs.count >= 2 else { return nil }
         let used = inputs.count
         let k = Float(used)
+        // Nível de corte de cada cor, uma vez para a foto toda (todas as fotos têm a mesma exposição): o máximo de cada cor numa
+        // delas. Antes era 97% do máximo da própria faixa, nas três cores juntas: a faixa sem estourado achava "estourado" no
+        // que fosse mais claro e liso nela, faixas vizinhas decidiam diferente, e uma cor só cortada (o vermelho do pôr do sol)
+        // levantava o limite das outras
+        var clipLevel = SIMD3<Float>(repeating: 0)
+        if let src = inputs.first?.src {
+            let top = src.applyingFilter("CIAreaMaximum", parameters: [kCIInputExtentKey: CIVector(cgRect: src.extent)])
+            var pixel = [Float](repeating: 0, count: 4)
+            let at = top.extent
+            gpu.render(top, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: at.minX, y: at.minY, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+            if pixel[0].isFinite, pixel[1].isFinite, pixel[2].isFinite { clipLevel = SIMD3(pixel[0], pixel[1], pixel[2]) }
+        }
+        let clip = clipLevel
         // Tabela como imagem, por célula da grade (os 4 pedaços dos cantos de cada célula numa leitura): 14 × 56, x = fase x·7 + dx,
         // y = (célula·2 + fase y)·7 + dy (linhas da imagem de baixo para cima), célula = j·2 + i (i, j = 0…1). Na 1ª imagem
         // R, G, B = pedaços (i, j), (i + 1, j), (i, j + 1); na 2ª, R = (i + 1, j + 1). Antes eram 4 leituras por toque (196 por
@@ -675,7 +691,7 @@ extension Developer {
                 beta = (tk - 1) / tn
                 tk = tn
             }
-            return floorNearClip(x, start: ready.x0, extent: e)
+            return floorNearClip(x, start: ready.x0, extent: e, clip: clip)
         }
         dlog("Super resolução: \(used) fotos resolvidas juntas (MAP, \(iterations) passos)")
         return (solve, used)
@@ -683,19 +699,29 @@ extension Developer {
 
     /// Borda do estourado (janela, céu branco): as amostras cortadas em 1 não batem com o modelo linear do MAP, que cavava
     /// um anel escuro em volta (laboratório P11: −1,1 dB com 14% estourado; na simulação, o chão local +2,1 dB no corte e
-    /// +2 dB na janela sem corte; nas 3 cenas do test6, 0 a −0,09 dB). Só perto do platô estourado: o resto fica igual
-    private static func floorNearClip(_ x: CIImage, start x0: CIImage, extent e: CGRect) -> CIImage {
-        guard let clipMaskKernel, let floorNearClipKernel else { return x }
-        let maxImage = x0.applyingFilter("CIAreaMaximum", parameters: [kCIInputExtentKey: CIVector(cgRect: e)])
-        var pixel = [Float](repeating: 0, count: 4)
-        let at = maxImage.extent
-        gpu.render(maxImage, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: at.minX, y: at.minY, width: 1, height: 1),
+    /// +2 dB na janela sem corte; nas 3 cenas do test6, 0 a −0,09 dB). Só perto do platô estourado: o resto fica igual.
+    /// `clip`: nível de corte de cada cor na foto toda (o mesmo em todas as faixas); estourado = alguma cor a 97% do seu corte
+    private static func floorNearClip(_ x: CIImage, start x0: CIImage, extent e: CGRect, clip: SIMD3<Float>) -> CIImage {
+        guard let clipMaskKernel, let floorNearClipKernel, clip.max() > 0 else { return x }
+        // Cor que nunca passa de 0 na foto não conta (o limite 0 marcaria tudo como estourado)
+        func limit(_ v: Float) -> CGFloat { v > 0 ? CGFloat(v * 0.97) : 1e30 }
+        let t = CIVector(x: limit(clip.x), y: limit(clip.y), z: limit(clip.z))
+        guard let mask = clipMaskKernel.apply(extent: e, roiCallback: { _, r in r.insetBy(dx: -1, dy: -1) },
+                                              arguments: [x0.clampedToExtent(), t]) else { return x }
+        // Platô pequeno fora (reflexo do sol na água: 1–3 px da foto, até ~6 px aqui no 2×): os 8 px em volta de cada um cobriam a
+        // água e achatavam as ondinhas escuras entre os reflexos. Só platô de 7 px ou mais (o anel escuro é na borda de janela e
+        // céu estourados); a volta passa a 10 px, para cobrir o mesmo de antes fora do platô grande
+        let core = mask.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 2])
+        let near = core.applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 10]).cropped(to: e)
+        // Quanto da faixa foi pego (o registro não dizia nada); nada pego, nada muda (e a faixa não precisa ser guardada de novo)
+        let average = near.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: e)])
+        var share = [Float](repeating: 0, count: 4)
+        let at = average.extent
+        gpu.render(average, toBitmap: &share, rowBytes: 16, bounds: CGRect(x: at.minX, y: at.minY, width: 1, height: 1),
                    format: .RGBAf, colorSpace: nil)
-        let top = max(pixel[0], max(pixel[1], pixel[2]))
-        guard top.isFinite, top > 0,
-              let mask = clipMaskKernel.apply(extent: e, roiCallback: { _, r in r.insetBy(dx: -1, dy: -1) },
-                                              arguments: [x0.clampedToExtent(), top * 0.97]) else { return x }
-        let near = mask.clampedToExtent().applyingFilter("CIMorphologyMaximum", parameters: [kCIInputRadiusKey: 8]).cropped(to: e)
+        guard share[0].isFinite, share[0] > 0 else { return x }
+        dlog(String(format: "Super resolução: borda do estourado em %.0f pixels da faixa (%.2f%%) · corte %.3f / %.3f / %.3f",
+                    Double(share[0]) * Double(e.width * e.height), Double(share[0]) * 100, clip.x, clip.y, clip.z))
         let low = x0.clampedToExtent().applyingFilter("CIMorphologyMinimum", parameters: [kCIInputRadiusKey: 2]).cropped(to: e)
         guard let floored = floorNearClipKernel.apply(extent: e, arguments: [x, low, near]) else { return x }
         return materializedOrNil(floored, extent: e) ?? x
@@ -1045,8 +1071,8 @@ extension Developer {
     /// média da 1ª foto e preso em 6,7: com a 1ª toda fora de foco a melhor e a vizinha prendiam juntas e pesavam igual
     /// (estudo em Python, 4 fotos, 1ª com borrão de 6 px: 0,57–0,62 da nitidez da cena; agora 0,97–0,98). Potência 8 no
     /// lugar de 4: a vizinha com borrão de 1 px pesava ~1/11 da nítida e amolecia a borda (0,84 → 0,97; auréola igual,
-    /// 0,065 → 0,069). nil se faltar kernel (fica a escolha de antes)
-    static func focusFusion(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+    /// 0,065 → 0,069). nil se faltar kernel (fica a escolha de antes). `exposures`: luz de cada foto pelo EXIF (tempo × ISO)
+    static func focusFusion(count: Int, extent: CGRect, frame: (Int) -> CIImage?, exposures: [Double?] = []) -> CIImage? {
         guard count >= 2, let focusWeightKernel, let focusSharpnessKernel, let mulGKernel, let highGKernel,
               let fusionDivideAddKernel, let maxKernel else { return nil }
         let quarter: CGFloat = 0.25
@@ -1082,7 +1108,10 @@ extension Developer {
         }
         // Brilho de cada foto igual ao da 1ª: a 2ª foto +0,3 EV fazia um degrau de 0,034 na divisa (laboratório; meta 0,02) e a
         // mais clara também parecia mais "nítida" (o laplaciano cresce com a luz). Razão das médias do brilho no miolo: o desfoque
-        // espalha a luz mas não muda a média (estudo em Python, P06 +0,3 EV: degrau 0,026 → 0,000). Presa entre ½ e 2×
+        // espalha a luz mas não muda a média (estudo em Python, P06 +0,3 EV: degrau 0,026 → 0,000). Presa entre ½ e 2×.
+        // Só quando a exposição mudou de verdade: com ela travada (o normal no FOCO) o EXIF é igual em todas e a diferença no
+        // miolo é do desfoque e da respiração (0,5–1%), que o limite antigo de 0,5% virava degrau falso entre as faixas. EXIF
+        // diferente (mais de 1%): iguala acima de 0,5%, como antes; sem EXIF, só acima de 2%
         let core = extent.insetBy(dx: (extent.width * 0.2).rounded(), dy: (extent.height * 0.2).rounded())
         func coreLuma(_ image: CIImage) -> Float {
             let average = image.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: core)])
@@ -1094,6 +1123,11 @@ extension Developer {
         }
         var gains = [Float](repeating: 1, count: count)
         var referenceLuma: Float = 0
+        var referenceIndex = 0
+        func light(_ i: Int) -> Double? {
+            guard exposures.indices.contains(i), let l = exposures[i], l > 0 else { return nil }
+            return l
+        }
         func leveled(_ i: Int, _ image: CIImage) -> CIImage {
             gains[i] == 1 ? image : scaled(image, by: gains[i]).cropped(to: image.extent)
         }
@@ -1106,11 +1140,16 @@ extension Developer {
                 let l = coreLuma(raw.cropped(to: extent))
                 if referenceLuma <= 0 {
                     referenceLuma = l
+                    referenceIndex = i
                 } else if l > 0 {
                     let g = min(2, max(0.5, referenceLuma / l))
-                    if abs(g - 1) > 0.005 {
+                    var limit: Float = 0.02
+                    if let mine = light(i), let theirs = light(referenceIndex) {
+                        limit = abs(mine / theirs - 1) > 0.01 ? 0.005 : .infinity
+                    }
+                    if abs(g - 1) > limit {
                         gains[i] = g
-                        dlog(String(format: "Foco empilhado: foto %d com %+.2f EV de diferença: brilho igualado ao da 1ª", i + 1, log2(1 / g)))
+                        dlog(String(format: "Foco empilhado: foto %d com %+.2f EV de diferença: brilho igualado ao da referência", i + 1, log2(1 / g)))
                     }
                 }
                 let opened = leveled(i, raw)
@@ -1404,11 +1443,15 @@ extension Developer {
     /// conta 0)
     /// `exactWhenStill`: foto que já está no lugar (deslocamento e escala ~0) passa sem reamostrar (o encaixe bicúbico
     /// amolece um pouco mesmo parado; no FOCO EMPILHADO isso tirava nitidez justamente da faixa que aquela foto traz)
+    /// `breathing` (FOCO EMPILHADO): a escala muda entre as fotos; ver alignTransforms. `translationOnly`: recebe as fotos que
+    /// ficaram só com deslocamento (quem chama pode tentar outro encaixe)
     static func fineWarps(_ frames: [CapturedFrame], reference: CIImage,
-                          softening: ((Float) -> Void)? = nil, exactWhenStill: Bool = false) -> [((CIImage) -> CIImage)?] {
+                          softening: ((Float) -> Void)? = nil, exactWhenStill: Bool = false, breathing: Bool = false,
+                          translationOnly: (([Int]) -> Void)? = nil) -> [((CIImage) -> CIImage)?] {
         let e = reference.extent
         let centers = tileCenters(in: e)
-        let alignments = alignTransforms(frames: frames, refIndex: 0, reference: reference, centers: centers)
+        let alignments = alignTransforms(frames: frames, refIndex: 0, reference: reference, centers: centers, breathing: breathing)
+        translationOnly?(alignments.indices.filter { alignments[$0].map { !$0.similarity } ?? false })
         let grid = CIVector(x: centers[0].x, y: centers[0].y, z: centers[1].x - centers[0].x, w: centers[3].y - centers[0].y)
         if let softening {
             let placed = alignments.compactMap { $0 }
@@ -1489,8 +1532,14 @@ extension Developer {
     /// `stars`: liso = variância abaixo de 3× o ruído do próprio pedaço, mediana 3×3 antes de comparar (o quente fixo no sensor
     /// puxava o encaixe para o zero) e giro + deslocamento pelo que mais pedaços confirmam (o chão parado discorda). Estudo em
     /// Python com os quadros do P04/P04b: 16/16 pedaços, erro até 0,29 px nos cantos (antes 1,4 e 5,1 px)
+    /// `breathing` (FOCO EMPILHADO): a respiração do foco muda a escala (do meio da varredura até a ponta, ~0,25% na 1× e ~0,5%
+    /// no macro). Os pedaços de fora ficam a ~1450 px do centro em 12 MP (~2900 px em 48 MP) e com mais de 0,55% (0,28% em 48 MP)
+    /// andam além da busca (±8 px): sobravam os 8 de dentro, "poucos pedaços" e só deslocamento (36 px de erro no canto em 48 MP
+    /// com 1%). Agora a semelhança dos que encaixaram diz onde cada pedaço que faltou deve estar e ele é procurado lá de novo (até
+    /// 3 vezes); com 4 ou mais pedaços concordando vale a semelhança (o "poucos" da NOITE, < 10, é do escuro). Estudo em Python
+    /// (P06c, 12 MP, escala ±0,8%): 6/16 → 16/16 pedaços, escala certa a 0,005%, erro nos cantos 2,2 → 0,13–0,26 do da cena borrada
     private static func alignTransforms(frames: [CapturedFrame], refIndex: Int, reference: CIImage,
-                                        centers: [CGPoint], stars: Bool = false) -> [Alignment?] {
+                                        centers: [CGPoint], stars: Bool = false, breathing: Bool = false) -> [Alignment?] {
         let alignScale: CGFloat = 0.25
         // Pedaço proporcional à foto (160 px em 2000 px, até 320 px em 4000 px+): na NOITE do Pixel (4072 px, bem
         // escura) os de 160 px erravam até 2 px, a junção recusava as fotos e o ruído ficava em 0,71 da foto única
@@ -1549,6 +1598,48 @@ extension Developer {
                                     i + 1, k, c.x, c.y, coarse.x, coarse.y, shift.x, shift.y, coarse.x - shift.x, coarse.y + shift.y))
                     }
                 }
+                // FOCO EMPILHADO: os pedaços que faltaram, de novo, onde a semelhança dos que encaixaram diz (a janela é centrada no
+                // ponto previsto, arredondado; o ponto na foto é esse centro + (u, −v), como acima com o centro c − grosso)
+                if breathing {
+                    let firstFound = pairs.count
+                    var tried = measure.map { CGPoint(x: $0.x - coarse.x, y: $0.y - coarse.y) }
+                    for _ in 0..<3 {
+                        guard pairs.count >= 4, pairs.count < measure.count, let fit = fitSimilarity(pairs) else { break }
+                        let sobra = pairs.map { p -> CGFloat in
+                            let m = p.frame.applying(fit)
+                            return hypot(m.x - p.ref.x, m.y - p.ref.y)
+                        }.sorted()
+                        guard sobra[sobra.count / 2] <= 0.5 else { break }
+                        let back = fit.inverted()
+                        var redo: [(k: Int, center: CGPoint)] = []
+                        for k in measure.indices where refPatches[k] != nil && !pairTile.contains(k) {
+                            let p = measure[k].applying(back)
+                            let q = CGPoint(x: p.x.rounded(), y: p.y.rounded())
+                            // Mesmo lugar de antes (menos de 2 px): falharia igual
+                            guard max(abs(q.x - tried[k].x), abs(q.y - tried[k].y)) >= 2 else { continue }
+                            tried[k] = q
+                            redo.append((k, q))
+                        }
+                        guard !redo.isEmpty else { break }
+                        let again = grayPatches(img, rects: redo.map { item in
+                            CGRect(x: item.center.x - half - s, y: item.center.y - half - s,
+                                   width: CGFloat(patch) + 2 * s, height: CGFloat(patch) + 2 * s)
+                        }, median: stars)
+                        var added = 0
+                        for (n, item) in redo.enumerated() {
+                            guard let refPatch = refPatches[item.k], let imgPatch = again[n],
+                                  let shift = subpixelShift(ref: refPatch, img: imgPatch, size: patch, search: search,
+                                                            flat: flat[item.k]) else { continue }
+                            pairs.append((CGPoint(x: item.center.x + shift.x, y: item.center.y - shift.y), measure[item.k]))
+                            pairTile.append(item.k)
+                            added += 1
+                        }
+                        if added == 0 { break }
+                    }
+                    if pairs.count > firstFound {
+                        dlog("Foco empilhado: foto \(i + 1) · \(firstFound)/16 pedaços na 1ª busca, \(pairs.count)/16 procurando onde a escala diz")
+                    }
+                }
                 // Os pedaços concordam entre si? No escuro cada pedaço pequeno erra mais de 1 px e o ajuste "inventava"
                 // giro (laboratório com ruído limpo: 0,07°, que nas bordas vira 3,4 px). Então: com menos de 3 pedaços,
                 // ou com eles discordando (sobra típica acima de 0,5 px), vale o pedaço grande do centro na foto cheia,
@@ -1571,9 +1662,10 @@ extension Developer {
                 // Com menos de 10 dos 16 pedaços (escuro: só os com textura passam) os poucos que sobram podem concordar no
                 // erro (NOITE do Pixel: 7/16, errando 0,9 px juntos por causa do carro que passa): vale o pedaço grande do
                 // centro, maior nas fotos grandes. Estrelas: vale o giro que 4+ pedaços confirmaram (o centro só translada)
-                let few = stars ? agreeing == nil : pairs.count < 10
+                let few = stars ? agreeing == nil : pairs.count < (breathing ? 4 : 10)
                 var centerOK = false
-                if t == nil || spread > 0.5 || few {
+                let onlyShift = t == nil || spread > 0.5 || few
+                if onlyShift {
                     let size = min(768, max(512, Int(reference.extent.width / 6) / 16 * 16))
                     if let full = centerShift(ref: reference, img: img, search: 6, size: size, start: precise, ambiguity: 0.97,
                                               cache: refCache) {
@@ -1619,7 +1711,7 @@ extension Developer {
                     }
                     return weight > 0.05 ? CGPoint(x: sum.x / weight, y: sum.y / weight) : .zero
                 }
-                result[i] = Alignment(transform: transform, residuals: residuals)
+                result[i] = Alignment(transform: transform, residuals: residuals, similarity: !onlyShift)
                 let worst = residuals.map { hypot($0.x, $0.y) }.max() ?? 0
                 dlog(String(format: "Super resolução: foto %d · %d/16 pedaços · desloca %.2f, %.2f px · giro %.3f° · região até %.2f px · sobra %.2f px",
                             i + 1, pairs.count, transform.tx, transform.ty, atan2(transform.b, transform.a) * 180 / .pi, worst,
@@ -1895,11 +1987,18 @@ extension Developer {
     /// ESTRELAS: o céu inteiro gira junto e o chão parado discorda. O ajuste robusto de sempre começa da média de todos os
     /// pedaços e, com o chão em 4 dos 16 a menos de 1,5 px do céu, ficava torto (estudo em Python, polo: erro até 0,92 px). Aqui:
     /// cada par de pedaços dá um giro + deslocamento exato; vale o que mais pedaços confirmam (sobra ≤ 0,4 px), refeito por
-    /// mínimos quadrados neles (polo: 0,26 px). nil com menos de 4 confirmando
+    /// mínimos quadrados neles (polo: 0,26 px). nil com menos de 4 confirmando.
+    /// No tripé o chão é o que fica PARADO: com chão de textura em metade dos pedaços (8 contra 8 do céu) o empate ia para o de
+    /// menor sobra, o chão (andou 0), e o céu não era alinhado (estrelas em rastro, caminho dos quentes desligado). Então, entre
+    /// os que 4+ pedaços confirmam, vale o que ANDA (pedaços que ele explica andaram mais de 0,4 px, medido neles mesmos), se tem
+    /// pelo menos metade dos pedaços do melhor parado; o parado só quando nenhum outro chega a isso. Nas fotos vizinhas da
+    /// referência o céu anda menos de 0,4 px e os dois quase coincidem: vale o de mais pedaços, como antes
     private static func consensusSimilarity(_ pairs: [(frame: CGPoint, ref: CGPoint)]) -> (transform: CGAffineTransform, inliers: [Int])? {
         guard pairs.count >= 4 else { return nil }
         var best: [Int] = []
         var bestCost = CGFloat.infinity
+        var mover: [Int] = []
+        var moverCost = CGFloat.infinity
         for i in 0..<(pairs.count - 1) {
             for j in (i + 1)..<pairs.count {
                 // ref = s·foto + t em números complexos: s = Δref / Δfoto (giro e escala), t pelo 1º ponto
@@ -1926,10 +2025,18 @@ extension Developer {
                     best = inliers
                     bestCost = cost
                 }
+                if inliers.count >= 4, inliers.count > mover.count || (inliers.count == mover.count && cost < moverCost) {
+                    let moved = inliers.map { hypot(pairs[$0].ref.x - pairs[$0].frame.x, pairs[$0].ref.y - pairs[$0].frame.y) }.sorted()
+                    if moved[moved.count / 2] > 0.4 {
+                        mover = inliers
+                        moverCost = cost
+                    }
+                }
             }
         }
-        guard best.count >= 4, let refit = fitSimilarity(best.map { pairs[$0] }) else { return nil }
-        return (refit, best)
+        let chosen = mover.count >= 4 && 2 * mover.count >= best.count ? mover : best
+        guard chosen.count >= 4, let refit = fitSimilarity(chosen.map { pairs[$0] }) else { return nil }
+        return (refit, chosen)
     }
 
     /// Melhor deslocamento + giro + escala (mínimos quadrados) que leva os pontos da foto nos da referência.
@@ -2141,17 +2248,26 @@ extension Developer {
         guard iterations > 0, let ratioKernel, let multiplyKernel else { return image.cropped(to: rect) }
         let margin = CGFloat(ceil(sigma * 3 * 2 * Double(iterations))) + 4
         let big = rect.insetBy(dx: 0, dy: -margin).intersection(extent).integral
-        let observed = materialize(image.cropped(to: big), extent: big)
+        // Sem memória para guardar a faixa: ela sai sem desconvolução (o `materialize` devolvia a imagem preguiçosa calada e cada
+        // passo empilhava a cadeia inteira de novo: na faixa de reserva do MAP, que já é o caminho de quando faltou memória)
+        guard let observed = materializedOrNil(image.cropped(to: big), extent: big) else {
+            dlog("⚠️ Super resolução: faixa sem memória para a desconvolução; sai sem ela")
+            return image.cropped(to: rect)
+        }
         var estimate = observed
         func blur(_ x: CIImage) -> CIImage { x.clampedToExtent().applyingGaussianBlur(sigma: sigma).cropped(to: big) }
-        for _ in 0..<iterations {
+        for step in 0..<iterations {
             let ok: Bool = autoreleasepool {
                 guard let ratio = ratioKernel.apply(extent: big, arguments: [observed, blur(estimate)]),
-                      let next = multiplyKernel.apply(extent: big, arguments: [estimate, blur(ratio)]) else { return false }
-                estimate = materialize(next, extent: big)
+                      let next = multiplyKernel.apply(extent: big, arguments: [estimate, blur(ratio)]),
+                      let ready = materializedOrNil(next, extent: big) else { return false }
+                estimate = ready
                 return true
             }
-            guard ok else { break }
+            guard ok else {
+                dlog("⚠️ Super resolução: desconvolução parou no passo \(step + 1) de \(iterations) (sem memória)")
+                break
+            }
         }
         if t.chromaClean > 0, let clean = tvRestore(estimate, strip: rect, extent: big, box: false, sigma: 0, luma: 0,
                                                      chroma: t.chromaClean, iterations: 20) {

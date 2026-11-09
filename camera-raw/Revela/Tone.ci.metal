@@ -466,22 +466,23 @@ namespace coreimage {
     // tab: por célula da grade (célula = j·2 + i), R/G/B = os pedaços (i, j), (i + 1, j), (i, j + 1); corner: R = (i + 1, j + 1).
     // Duas leituras por toque em vez de quatro (era o passo mais pesado do SUPER ZOOM)
     // SUPER ZOOM perto do estourado: as amostras cortadas não seguem o modelo linear e o MAP cava um anel escuro na
-    // borda da janela/céu estourado. Máscara do platô estourado (o mais claro e liso: variação 3×3 < 0,2%)
-    float4 revelaClipMask(sampler s, float t, destination dest) {
+    // borda da janela/céu estourado. Máscara do platô estourado: alguma cor acima do seu limite (t: 97% do corte de cada cor
+    // na foto toda) e lisa nessa cor (variação 3×3 < 0,2%)
+    float4 revelaClipMask(sampler s, float3 t, destination dest) {
         float2 p = dest.coord();
         float3 c = s.sample(s.transform(p)).rgb;
-        float m = max(c.r, max(c.g, c.b));
-        if (m < t) return float4(0.0f, 0.0f, 0.0f, 1.0f);
-        float lo = m, hi = m;
+        float3 over = step(t, c);
+        if (over.r + over.g + over.b < 0.5f) return float4(0.0f, 0.0f, 0.0f, 1.0f);
+        float3 lo = c, hi = c;
         for (int j = -1; j <= 1; j++) {
             for (int i = -1; i <= 1; i++) {
                 float3 q = s.sample(s.transform(p + float2(float(i), float(j)))).rgb;
-                float v = max(q.r, max(q.g, q.b));
-                lo = min(lo, v);
-                hi = max(hi, v);
+                lo = min(lo, q);
+                hi = max(hi, q);
             }
         }
-        float flat = (hi - lo) < 0.002f * m ? 1.0f : 0.0f;
+        float3 flat3 = over * step(hi - lo, 0.002f * max(c, float3(1e-6f)));
+        float flat = max(flat3.r, max(flat3.g, flat3.b));
         return float4(flat, flat, flat, 1.0f);
     }
 

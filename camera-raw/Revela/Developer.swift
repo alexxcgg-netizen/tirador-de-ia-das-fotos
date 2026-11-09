@@ -1207,7 +1207,7 @@ enum Developer {
         // NOITE e ESTRELAS: RAW aberto sem a redução de ruído e a nitidez de cada foto (a limpeza de depois conta com a junção:
         // nightFinish mede o ruído que sobrou e limpa por ele). Na FOTO 3× não: onde algo se mexeu fica só a referência, e
         // sem a redução da Apple ela saía com o ruído cru do sensor ao lado da FOTO de 1 quadro (que tem a redução e a
-        // nitidez, e para quem photoFinish/enhanced foram calibrados). Na MÉDIA também não (a revelação dela não tem
+        // nitidez); a limpeza do photoFinish cai pelo ruído que sobrou (appleNR). Na MÉDIA também não (a revelação dela não tem
         // limpeza própria) nem no foco empilhado (lá a nitidez decide qual foto vale e o ruído contaria como nitidez)
         let allFrames = kind == .average && ((robust && night) || removeOutliers) ? captured.map { frame -> CapturedFrame in
             var f = frame
@@ -1248,6 +1248,13 @@ enum Developer {
                 frames = frames.indices.filter { keep.contains($0) }.map { frames[$0] }
             }
         }
+        // FOCO EMPILHADO: referência na foto do MEIO da varredura. A respiração do foco muda a escala de uma ponta à outra (~0,5%
+        // na 1×, ~1% no macro da ultra-angular); com a 1ª foto de referência a última ficava com toda ela (1% = 36 px no canto em
+        // 48 MP), do meio só metade para cada lado
+        if kind == .focus, frames.count > 2 {
+            let mid = frames.count / 2
+            frames = [frames[mid]] + frames.indices.filter { $0 != mid }.map { frames[$0] }
+        }
         guard let reference = frames.first.flatMap({ image(from: $0) }) else { return nil }
         let extent = reference.extent
         dlog("Empilhando \(frames.count) quadros (\(kind == .focus ? "foco" : "média")) · \(Int(extent.width))×\(Int(extent.height)) · memória livre \(Diagnostics.freeMemory)")
@@ -1268,10 +1275,20 @@ enum Developer {
         } else if kind == .focus {
             // FOCO EMPILHADO pelo nosso encaixe (semelhança: pega a "respiração" do foco, que muda a escala), não pela
             // homografia do Vision: com as fotos borradas em lugares diferentes ela errava 3–4 px nos cantos de fotos que
-            // estavam no lugar (laboratório P06: nitidez 0,81/0,79 da cena nítida). Foto parada passa sem reamostrar; a que não
-            // encaixou entra como está (no foco cada foto traz a sua faixa nítida, não dá para tirar)
-            warps = fineWarps(frames, reference: reference, exactWhenStill: true).map { warp -> ((CIImage) -> CIImage)? in
-                warp ?? { image in image }
+            // estavam no lugar (laboratório P06: nitidez 0,81/0,79 da cena nítida). Foto parada passa sem reamostrar.
+            // `breathing`: os pedaços de fora, que a respiração leva além da busca, são procurados de novo onde a semelhança dos
+            // de dentro diz (FOCO P06c). Se mesmo assim a foto ficou só com deslocamento (escala nenhuma: até ~36 px de erro no
+            // canto), ou não encaixou, vale a homografia do Vision (3–4 px de erro, mas pega a escala); sem ela, a foto entra
+            // como está (no foco cada foto traz a sua faixa nítida, não dá para tirar)
+            var shiftOnly: [Int] = []
+            let fine = fineWarps(frames, reference: reference, exactWhenStill: true, breathing: true,
+                                 translationOnly: { shiftOnly = $0 })
+            warps = fine.enumerated().map { (i, warp) -> ((CIImage) -> CIImage)? in
+                if i > 0, warp == nil || shiftOnly.contains(i), let small = image(from: frames[i], scale: alignScale) {
+                    dlog("Foco empilhado: foto \(i + 1) sem escala pelo nosso encaixe: homografia do Vision")
+                    return alignment(of: small, to: smallReference, scale: CGFloat(alignScale), fullExtent: extent, homography: true)
+                }
+                return warp ?? { image in image }
             }
         } else {
             for frame in frames.dropFirst() {
@@ -1306,7 +1323,8 @@ enum Developer {
                     // FOTO 3×: depois da limpeza leve, a mesma revelação da foto única (tons locais, luz média, céu, cor
                     // e nitidez), sem a limpeza de ruído dela. Antes saía sem nada disso: mais escura e chapada que a FOTO
                     // Com as fotos que entraram de fato (a que não encaixou não conta para a limpeza nem para a nitidez)
-                    let cleaned = photoFinish(out, iso: iso, frameCount: mergedCount).settingProperties(reference.properties)
+                    let cleaned = photoFinish(out, iso: iso, frameCount: mergedCount, appleNR: true)
+                        .settingProperties(reference.properties)
                     return enhanced(cleaned, preview: image(from: frames[0], scale: 0.125), fusedFrames: mergedCount,
                                     coverage: coverage)
                 }
@@ -1315,13 +1333,7 @@ enum Developer {
                    let smallShort = image(from: shortFrame, scale: alignScale) {
                     // Ganho medido (tempo × ISO de cada uma), não o pedido: nas NOITEs de 1 s do Alex a "curta" saiu
                     // com 1 s também, e ×8 trocava a junção de 16 fotos por uma só clareada 8× (com todo o ruído)
-                    func light(_ i: CIImage) -> Double? {
-                        let exif = i.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
-                        guard let t = (exif?[kCGImagePropertyExifExposureTime as String] as? NSNumber)?.doubleValue,
-                              let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.doubleValue,
-                              t > 0, iso > 0 else { return nil }
-                        return t * iso
-                    }
+                    func light(_ i: CIImage) -> Double? { exposureLight(i) }
                     let asked = pow(2.0, Double(-shortFrame.exposureBias))
                     let measured = light(reference).flatMap { l in light(short).map { l / $0 } } ?? asked
                     let gain = Float(min(measured, asked * 1.5))
@@ -1364,7 +1376,9 @@ enum Developer {
             }
         case .focus:
             let preview = image(from: frames[0], scale: 0.125)
-            merged = focusMerge(count: frames.count, extent: extent, frame: aligned).map {
+            // Luz de cada foto pelo EXIF: o brilho só é igualado quando a exposição mudou de verdade (focusFusion)
+            let exposures = frames.map { frame in image(from: frame).flatMap { exposureLight($0) } }
+            merged = focusMerge(count: frames.count, extent: extent, frame: aligned, exposures: exposures).map {
                 multiFrameEnhanced($0.settingProperties(reference.properties), frames: 1, preview: preview)
             }
         }
@@ -1372,6 +1386,15 @@ enum Developer {
         let output = finish(merged.settingProperties(reference.properties), options: options)
         dlog("Empilhamento + revelação: \(Diagnostics.ms(since: t0)) · memória livre \(Diagnostics.freeMemory)\(output == nil ? " · FALHOU" : "")")
         return output
+    }
+
+    /// Luz que a foto recebeu pelo EXIF (tempo × ISO); nil sem os dois
+    static func exposureLight(_ image: CIImage) -> Double? {
+        let exif = image.properties[kCGImagePropertyExifDictionary as String] as? [String: Any]
+        guard let t = (exif?[kCGImagePropertyExifExposureTime as String] as? NSNumber)?.doubleValue,
+              let iso = (exif?[kCGImagePropertyExifISOSpeedRatings as String] as? [NSNumber])?.first?.doubleValue,
+              t > 0, iso > 0 else { return nil }
+        return t * iso
     }
 
     /// Vision compara a versão pequena com a de referência. Translação para o tremido da mão;
@@ -1426,8 +1449,31 @@ enum Developer {
     /// Feito numa versão pequena (os raios são suaves de qualquer jeito) e somado à luz da cena.
     /// FOTO com várias fotos juntas (como o Deep Fusion / HDR+): a junção já tirou o grosso do ruído (√n);
     /// aqui só uma limpeza leve de cor e de granulado, na medida do ISO e de quantas fotos entraram
-    static func photoFinish(_ merged: CIImage, iso: Float, frameCount: Int) -> CIImage {
-        let strength = min(1, max(0.15, log2(max(iso, 50) / 100) / 6)) / sqrt(Float(max(frameCount, 1)) / 4)
+    /// `appleNR`: os quadros já vieram com a redução de ruído da Apple (a FOTO 3× abre sem `merge`). A força foi calibrada para
+    /// quadros crus: no test12 (8 fotos crus, ISO 800) o limiar do brilho do lumaDenoise (0,05 × força × √luz) fica no ruído
+    /// medido na junção (detalhe de 1 px: 0,0023 contra 0,0021). Depois da redução da Apple sobra bem menos ruído e a mesma
+    /// limpeza tirava textura de verdade (cera). Então a força cai na razão ruído medido ÷ esse limiar, de ½ a 1 (sem nenhuma o
+    /// ruído não chega a ⅓). Simulação do test12 em Python com os quadros e a foto única reduzidos (a imitação da Apple do P07):
+    /// ×½ dá +8,1 dB e ruído 0,34 do da foto única; ×1, +7,3 dB e 0,31 (a limpeza inteira tira mais detalhe do que ruído); sem
+    /// limpeza, +5,4 dB e 1,56. A mesma simulação dá +14,2 dB e 0,18 no laboratório de antes, que mediu +12,2–14 e 0,05–0,07
+    static func photoFinish(_ merged: CIImage, iso: Float, frameCount: Int, appleNR: Bool = false) -> CIImage {
+        var strength = min(1, max(0.15, log2(max(iso, 50) / 100) / 6)) / sqrt(Float(max(frameCount, 1)) / 4)
+        if appleNR {
+            let e = merged.extent
+            let side = min(512, e.width, e.height)
+            let rect = CGRect(x: (e.midX - side / 2).rounded(), y: (e.midY - side / 2).rounded(), width: side, height: side)
+            let average = merged.applyingFilter("CIAreaAverage", parameters: [kCIInputExtentKey: CIVector(cgRect: rect)])
+            var pixel = [Float](repeating: 0, count: 4)
+            let at = average.extent
+            gpu.render(average, toBitmap: &pixel, rowBytes: 16, bounds: CGRect(x: at.minX, y: at.minY, width: 1, height: 1),
+                       format: .RGBAf, colorSpace: nil)
+            let luma = 0.2126 * pixel[0] + 0.7152 * pixel[1] + 0.0722 * pixel[2]
+            let threshold = 0.05 * min(1, strength * 0.6) * max(luma.isFinite ? luma : 0, 0.0004).squareRoot()
+            let noise = measuredNoise(merged)
+            let ratio = threshold > 0 && noise.isFinite ? min(1, max(0.5, noise / threshold)) : 1
+            dlog(String(format: "FOTO juntada: ruído medido %.4f · limiar da limpeza %.4f → força × %.2f", noise, threshold, ratio))
+            strength *= ratio
+        }
         dlog(String(format: "FOTO juntada: %d fotos · ISO %.0f · limpeza %.2f", frameCount, iso, strength))
         var out = nightDenoise(merged, strength: min(1, strength))
         out = despeckle(lumaDenoise(out, strength: min(1, strength * 0.6)))
@@ -1870,9 +1916,9 @@ enum Developer {
         return s.clampedToExtent().applyingGaussianBlur(sigma: 6).cropped(to: image.extent)
     }
 
-    private static func focusMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?) -> CIImage? {
+    private static func focusMerge(count: Int, extent: CGRect, frame: (Int) -> CIImage?, exposures: [Double?] = []) -> CIImage? {
         // Em duas faixas com pesos suaves (SuperResolution.swift); a escolha dura de antes fica de reserva
-        if let fused = focusFusion(count: count, extent: extent, frame: frame) { return fused }
+        if let fused = focusFusion(count: count, extent: extent, frame: frame, exposures: exposures) { return fused }
         guard let first = frame(0), let firstSharpness = sharpness(first), let pickKernel else { return nil }
         var result = materialize(first, extent: extent)
         var resultSharpness = materialize(firstSharpness, extent: extent)
