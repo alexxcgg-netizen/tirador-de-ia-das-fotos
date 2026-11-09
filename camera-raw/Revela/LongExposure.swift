@@ -30,8 +30,6 @@ final class LongExposure {
     private var referenceSmall: CIImage?
     private var maxShift = CGSize.zero
     private let alignScale: CGFloat = 0.2
-    /// Rastros: quanto o máximo de N quadros de puro ruído sobe acima da média (medido no 1º quadro): sai do máximo no fim
-    private var trailThreshold: Float = 0.002
 
     /// Conta em 32 bits: o contexto de sempre trabalha em meia precisão e arredondaria a soma de novo no caminho
     private static let floatContext = CIContext(options: [
@@ -81,14 +79,6 @@ final class LongExposure {
         let bounds = CGRect(origin: .zero, size: extent.size)
         var shifted = frame.transformed(by: CGAffineTransform(translationX: -extent.minX, y: -extent.minY))
         if handheld { shifted = align(shifted) }
-        if count == 0 {
-            // Ruído do quadro (detalhe de 1 px, mediana; ~0,87σ no ruído branco): o máximo de 60 quadros de ruído sobe ~2,3σ.
-            // 2,3× o medido (= 2σ) tira quase tudo disso. Antes: o maior excesso sobre a média corrente, menos max(0,004;
-            // 3× o ruído) + 5% da média — na rampa clara do laboratório isso passava de 1 código (o pontilhado de 1 código
-            // nunca chegava ao limite: erro 1,03 códigos, meta 0,5). Estudo em Python nos quadros do teste: rampa 0,35
-            // código, escuro sobe 0,64σ (máximo puro: 2,33σ). Piso 0,0005: quadro de vídeo quase sem ruído medido
-            trailThreshold = max(0.0005, 2.3 * Developer.measuredNoise(shifted.cropped(to: bounds)))
-        }
         // Rastros: o máximo de cada ponto (no fim: o maior entre a média e máximo − limite). A luz que passou fica inteira
         // (menos o limite, que é do tamanho do ruído); onde nada passou fica a média, sem o preto subir
         if style == .trails {
@@ -190,9 +180,9 @@ final class LongExposure {
             ])
             // Rastros: o maior entre a média (preto no lugar onde nada passou) e o máximo menos o quanto o ruído sozinho subiria
             if style == .trails, let trail {
-                let t = CGFloat(trailThreshold)
+                let t = trailLimit(trail: trail, mean: mean)
                 let lowered = trail.applyingFilter("CIColorMatrix", parameters: [
-                    "inputBiasVector": CIVector(x: -t, y: -t, z: -t, w: 0),
+                    "inputBiasVector": CIVector(x: CGFloat(-t.x), y: CGFloat(-t.y), z: CGFloat(-t.z), w: 0),
                 ])
                 result = lowered.applyingFilter("CIMaximumCompositing", parameters: [kCIInputBackgroundImageKey: mean])
                     .cropped(to: mean.extent)
@@ -226,6 +216,47 @@ final class LongExposure {
         let done = finished
         finished = nil
         done?(result, count)
+    }
+
+    /// Rastros: quanto tirar do máximo, em cada cor. O máximo de N quadros de puro ruído sobe ~√(2 ln N)·σ acima da média (60
+    /// quadros ~2,3σ, 240 quadros ~2,8σ) e o limite antigo (2,3 × o ruído de 1 px do 1º quadro) não crescia com N; no vídeo do
+    /// aparelho o ruído vem borrado e o de 1 px fica bem abaixo do σ no tempo, e o céu saía cinza e granulado. Agora medido no
+    /// próprio resultado: a mediana de (máximo − média) numa grade de pontos (a luz que passou é minoria: não mexe na mediana),
+    /// × 1,2. Estudo em Python com o escuro do laboratório (preto 12, σ 2 códigos): o preto subia 0,64σ (60 quadros), 1,18σ
+    /// (240) e 1,55–2,06σ com o ruído borrado 1 px, com 4–7× o grão da média; assim 0,10–0,16σ e 2–2,4× o grão (com 1,1×:
+    /// 0,14–0,23σ e 2,5–3,5×). Luz 3×3 andando 4 px por quadro: o rastro fica com 0,997 dela. Piso 0,0005: o máximo fica em
+    /// meia precisão (meio degrau dela perto do branco)
+    private func trailLimit(trail: CIImage, mean: CIImage) -> SIMD3<Float> {
+        let lowest = SIMD3<Float>(repeating: 0.0005)
+        let size = extent.size
+        // Um ponto a cada `step` pixels (até ~256 × 144 pontos); vizinho mais próximo: cada ponto é um pixel de verdade, sem média
+        let step = max(1, Int(max(size.width / 256, size.height / 144).rounded(.up)))
+        let gw = Int(size.width) / step, gh = Int(size.height) / step
+        guard gw >= 4, gh >= 4 else { return lowest }
+        let k = 1 / CGFloat(step)
+        func samples(_ image: CIImage) -> [Float] {
+            var px = [Float](repeating: 0, count: gw * gh * 4)
+            let grid = image.samplingNearest().transformed(by: CGAffineTransform(scaleX: k, y: k))
+            renderContext.render(grid, toBitmap: &px, rowBytes: gw * 16, bounds: CGRect(x: 0, y: 0, width: gw, height: gh),
+                                 format: .RGBAf, colorSpace: nil)
+            return px
+        }
+        let top = samples(trail), average = samples(mean)
+        var t = lowest
+        for c in 0..<3 {
+            var d: [Float] = []
+            d.reserveCapacity(gw * gh)
+            for i in 0..<(gw * gh) {
+                let v = top[i * 4 + c] - average[i * 4 + c]
+                if v.isFinite { d.append(v) }
+            }
+            guard !d.isEmpty else { continue }
+            d.sort()
+            t[c] = max(lowest[c], 1.2 * d[d.count / 2])
+        }
+        dlog(String(format: "Exposição longa (rastros): limite %.5f / %.5f / %.5f (mediana do máximo − média × 1,2, %d quadros)",
+                    t.x, t.y, t.z, count))
+        return t
     }
 
     private func makeBuffers() -> Bool {

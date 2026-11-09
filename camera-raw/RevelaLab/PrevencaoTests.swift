@@ -51,6 +51,12 @@ final class PrevencaoTests: XCTestCase {
         [kCGImagePropertyExifDictionary as String: [kCGImagePropertyExifISOSpeedRatings as String: [value]]]
     }
 
+    /// EXIF com ISO e tempo de exposição (o FOCO EMPILHADO só iguala o brilho quando a luz do EXIF muda entre as fotos)
+    private func exposureProps(iso: Int, seconds: Double) -> [String: Any] {
+        [kCGImagePropertyExifDictionary as String: [kCGImagePropertyExifISOSpeedRatings as String: [iso],
+                                                    kCGImagePropertyExifExposureTime as String: seconds]]
+    }
+
     private func image(_ output: Developer.Output?) -> CIImage? {
         guard let heic = output?.heic else { return nil }
         return CIImage(data: heic)
@@ -436,6 +442,93 @@ final class PrevencaoTests: XCTestCase {
                 savePNG(out, "longa/rastros_escuro_revelada")
             }
         }
+
+        // Rastros no escuro com mais quadros e com o ruído do vídeo de verdade: o máximo de N quadros de ruído sobe ~√(2 ln N)·σ
+        // (240 quadros = 8 s: ~2,8σ) e o vídeo do aparelho vem com o ruído borrado (o de 1 px fica bem abaixo do σ no tempo). O
+        // limite antigo (2,3 × o ruído de 1 px do 1º quadro) deixava o preto subir 1,18σ com 240 e 1,55σ com o borrado (Python)
+        // Ruído sorteado por quadro (semente pelo número do quadro), σ 2 códigos nos dois casos
+        func darkCodes(_ i: Int, blurred: Bool) -> [UInt8] {
+            var s: UInt64 = 0x10_6A_2000 &+ UInt64(i + 1) &* 0xD1B54A32D192ED03
+            func next() -> Double {
+                s &+= 0x9E3779B97F4A7C15
+                var z = s
+                z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+                z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+                z ^= z >> 31
+                return Double(z >> 11) / Double(UInt64(1) << 53)
+            }
+            var g = (0..<(w * h)).map { _ in (-2 * log(max(next(), 1e-12))).squareRoot() * cos(2 * Double.pi * next()) }
+            if blurred {
+                // Borrão gaussiano de 1 px (separável, raio 3, borda repetida) e o desvio de volta a 1
+                let kernel = (-3...3).map { exp(-Double($0 * $0) / 2) }
+                let total = kernel.reduce(0, +)
+                var tmp = g
+                for y in 0..<h {
+                    for x in 0..<w {
+                        var v = 0.0
+                        for (j, k) in kernel.enumerated() { v += k * g[y * w + min(w - 1, max(0, x + j - 3))] }
+                        tmp[y * w + x] = v / total
+                    }
+                }
+                for y in 0..<h {
+                    for x in 0..<w {
+                        var v = 0.0
+                        for (j, k) in kernel.enumerated() { v += k * tmp[min(h - 1, max(0, y + j - 3)) * w + x] }
+                        g[y * w + x] = v / total
+                    }
+                }
+                let mean = g.reduce(0, +) / Double(g.count)
+                let sd = max(1e-9, (g.reduce(0) { $0 + ($1 - mean) * ($1 - mean) } / Double(g.count)).squareRoot())
+                g = g.map { ($0 - mean) / sd }
+            }
+            return g.map { UInt8(min(255, max(0, Int((12 + 2 * $0).rounded())))) }
+        }
+        func darkLift(_ label: String, count: Int, blurred: Bool) {
+            let first = darkCodes(0, blurred: blurred).map { Double($0) / 255 }
+            let m0 = first.reduce(0, +) / Double(first.count)
+            let s0 = (first.reduce(0) { $0 + ($1 - m0) * ($1 - m0) } / Double(first.count)).squareRoot()
+            let run = accumulate(.trails, count) { darkCodes($0, blurred: blurred) }
+            guard let img = run.image else {
+                dlog("❌ LONGA rastros escuro \(label): sem saída")
+                return
+            }
+            let px = readLinear(img)
+            var sum = 0.0
+            for k in 0..<(w * h) { sum += enc(Double(px[k * 4 + 1])) }
+            let mean = sum / Double(w * h)
+            dlog(String(format: "LONGA rastros escuro %@ (%d de %d quadros): preto sobe %.2f σ (média %.4f → %.4f, σ de 1 quadro %.4f)",
+                        label, run.frames, count, (mean - m0) / max(s0, 1e-9), m0, mean, s0))
+        }
+        darkLift("240", count: 240, blurred: false)
+        darkLift("borrado", count: darkCount, blurred: true)
+
+        // Rastro de verdade: uma luz de 3×3 (código 220) andando 4 px por quadro por cima do escuro com ruído. O rastro tem que
+        // ficar com a luz (≥ 0,9 dela): sem isso um resultado igual à média passava em todas as metas dos rastros. Linhas 30–32
+        // do quadro; medida nas linhas 31 e 32, que são as mesmas com a 1ª linha do bitmap em cima ou embaixo (h = 64)
+        let lightCount = darkCount
+        let lightRun = accumulate(.trails, lightCount) { i -> [UInt8] in
+            var codes = darkCodes(1000 + i, blurred: false)
+            let x0 = 8 + 4 * i
+            for y in 30...32 { for x in x0..<(x0 + 3) where x < w { codes[y * w + x] = 220 } }
+            return codes
+        }
+        if let img = lightRun.image {
+            let px = readLinear(img)
+            let want = lin(220.0 / 255)
+            var ratios: [Double] = []
+            for i in 2..<(lightCount - 2) {
+                let x0 = 8 + 4 * i
+                guard x0 + 2 < w else { continue }
+                var sum = 0.0
+                for y in 31...32 { for x in x0..<(x0 + 3) { sum += Double(px[(y * w + x) * 4 + 1]) } }
+                ratios.append(sum / 6 / want)
+            }
+            ratios.sort()
+            let typical = ratios.isEmpty ? 0 : ratios[ratios.count / 2]
+            dlog(String(format: "LONGA rastros luz andando (%d de %d quadros): rastro %.3f da luz", lightRun.frames, lightCount, typical))
+        } else {
+            dlog("❌ LONGA rastros luz andando: sem saída")
+        }
     }
 
     // MARK: - 3. PANORAMA
@@ -812,6 +905,120 @@ final class PrevencaoTests: XCTestCase {
              "perto do polo \(poleText) · \(Diagnostics.ms(since: t0))")
     }
 
+    /// ESTRELAS com chão de textura até a 2ª linha de pedaços do alinhamento (prédios/mato: ~metade da foto, com ruído como o
+    /// céu): o consenso de giro tinha 8 pedaços do chão parado contra 8 do céu e o empate ia para o chão (sobra menor): o céu não
+    /// era alinhado (rastro) e o caminho dos quentes nem rodava. O céu gira e deriva como no P04 (5 px nos cantos, 4 px de lado);
+    /// 3 quentes no céu. O placar quer o mesmo do P04: pico das estrelas ≥ 80% do céu parado e quentes ≤ 10%
+    func testP04cEstrelasChaoAlto() {
+        let w = 1024, h = 768, n = 16
+        let e = CGRect(x: 0, y: 0, width: w, height: h)
+        let cx = Double(w) / 2, cy = Double(h) / 2
+        let totalAngle = 5.0 / (cx * cx + cy * cy).squareRoot()
+        let drift = 4.0
+        // Linha do bitmap de cada y do Core Image (como no P04b)
+        let firstRowIsTop: Bool = {
+            let data: [Float] = [1, 1, 1, 1, 0, 0, 0, 1]
+            let probe = CIImage(bitmapData: data.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: 16,
+                                size: CGSize(width: 1, height: 2), format: .RGBAf, colorSpace: nil)
+            var px = [Float](repeating: -1, count: 4)
+            Developer.context.render(probe, toBitmap: &px, rowBytes: 16, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                                     format: .RGBAf, colorSpace: nil)
+            return px[0] < 0.5
+        }()
+        func row(_ y: Int) -> Int { firstRowIsTop ? h - 1 - y : y }
+        // Chão (y do Core Image, de baixo): até 384 px, com telhados até 392 (os pedaços da 2ª linha vão até 372, os da 3ª começam
+        // em 396). Textura em blocos de 12 px (0,004–0,016) e um degradê; o ruído é o mesmo do céu
+        func groundTop(_ x: Int) -> Int { 384 + ((x / 96) % 3 == 1 ? 8 : 0) }
+        func groundValue(_ x: Int, _ y: Int) -> Float {
+            var z = UInt64(x / 12) &* 0x9E3779B97F4A7C15 ^ UInt64(y / 12) &* 0xBF58476D1CE4E5B9
+            z = (z ^ (z >> 31)) &* 0x94D049BB133111EB
+            z ^= z >> 29
+            return 0.004 + 0.012 * Float(z >> 40) / Float(1 << 24) + 0.002 * Float(y) / 384
+        }
+        let hot: [(x: Int, y: Int)] = [(212, 530), (640, 480), (871, 610)]
+        var state: UInt64 = 0xA57E_0003
+        func uniform() -> Double {
+            state &+= 0x9E3779B97F4A7C15
+            var z = state
+            z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+            z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+            z ^= z >> 31
+            return Double(z >> 11) / Double(UInt64(1) << 53)
+        }
+        // Estrelas só no céu (acima de 420: com o giro e a deriva não descem até o chão)
+        var stars: [(x: Double, y: Double, amp: Double)] = []
+        while stars.count < 140 {
+            let x = 24 + uniform() * Double(w - 48), y = 420 + uniform() * Double(h - 444)
+            if hot.contains(where: { abs(x - Double($0.x)) < 14 && abs(y - Double($0.y)) < 14 }) { continue }
+            stars.append((x: x, y: y, amp: 0.06 + 0.3 * uniform() * uniform()))
+        }
+        var hotImage = CIImage.empty()
+        for p in hot {
+            let dot = CIImage(color: CIColor(red: 0.5, green: 0.5, blue: 0.5, colorSpace: Developer.linearP3)!)
+                .cropped(to: CGRect(x: p.x, y: p.y, width: 1, height: 1))
+            hotImage = dot.composited(over: hotImage)
+        }
+        let props = isoProps(3200)
+        func frame(_ i: Int, moving: Bool) -> CIImage {
+            var px = [Float](repeating: 1, count: w * h * 4)
+            var seed = UInt64(i + 1) << 40 | 0x5749
+            for y in 0..<h {
+                let sky = Float(0.007 + 0.003 * Double(y) / Double(h))
+                let base = row(y) * w
+                for x in 0..<w {
+                    let o = (base + x) * 4
+                    let value = y < groundTop(x) ? groundValue(x, y) : sky
+                    for c in 0..<3 {
+                        seed &+= 0x9E3779B97F4A7C15
+                        var z = seed
+                        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+                        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+                        z ^= z >> 31
+                        px[o + c] = value + (Float(z >> 40) / Float(1 << 24) - 0.5) * 0.006
+                    }
+                }
+            }
+            let t = moving ? Double(i) / Double(n - 1) : 0
+            let a = totalAngle * t, ca = cos(a), sa = sin(a)
+            for s in stars {
+                let rx = s.x - cx, ry = s.y - cy
+                let x = cx + ca * rx - sa * ry + drift * t, y = cy + sa * rx + ca * ry
+                let xa = max(0, Int(x) - 5), xb = min(w - 1, Int(x) + 5)
+                let ya = max(0, Int(y) - 5), yb = min(h - 1, Int(y) + 5)
+                guard xa <= xb, ya <= yb else { continue }
+                for yy in ya...yb where yy >= groundTop(Int(x)) {
+                    for xx in xa...xb {
+                        let ddx = Double(xx) + 0.5 - x, ddy = Double(yy) + 0.5 - y
+                        let g = Float(s.amp * exp(-(ddx * ddx + ddy * ddy) / (2 * 1.2 * 1.2)))
+                        let o = (row(yy) * w + xx) * 4
+                        px[o] += g
+                        px[o + 1] += g * 0.97
+                        px[o + 2] += g * 0.92
+                    }
+                }
+            }
+            var img = CIImage(bitmapData: px.withUnsafeBufferPointer { Data(buffer: $0) }, bytesPerRow: w * 16,
+                              size: CGSize(width: w, height: h), format: .RGBAf, colorSpace: nil)
+            img = Developer.add(img, hotImage).cropped(to: e)
+            return Developer.materialize(img, extent: e).settingProperties(props)
+        }
+        let o = options()
+        func run(_ frames: [CIImage]) -> CIImage? {
+            let captured = feed(frames)
+            defer { Developer.decodeOverride = nil }
+            return image(Developer.stack(captured, kind: .average, removeOutliers: true, robust: false, starPoints: 0, options: o))
+        }
+        let t0 = CFAbsoluteTimeGetCurrent()
+        let still = (0..<n).map { frame($0, moving: false) }
+        if let single = image(Developer.finish(still[0], options: o)) { savePNG(single, "estrelas/chao_uma_foto") }
+        if let out = run(still) { savePNG(out, "estrelas/chao_parado") } else { dlog("❌ ESTRELAS CHÃO parado: sem saída") }
+        let moving = (0..<n).map { frame($0, moving: true) }
+        if let out = run(moving) { savePNG(out, "estrelas/chao_girando") } else { dlog("❌ ESTRELAS CHÃO girando: sem saída") }
+        let hotText = hot.map { "\($0.x),\(h - 1 - $0.y)" }.joined(separator: " ")
+        // O chão no PNG começa na linha h − 392 (telhado mais alto)
+        dlog("ESTRELAS CHÃO: pixels quentes \(hotText) · chão da linha \(h - 392) · \(stars.count) estrelas · \(Diagnostics.ms(since: t0))")
+    }
+
     // MARK: - 5. MÉDIA
 
     /// MÉDIA (média simples, sem anti-fantasma): 8 fotos com deslocamentos de fração de pixel (sensor com soma 2×2,
@@ -854,16 +1061,18 @@ final class PrevencaoTests: XCTestCase {
 
     /// FOCO EMPILHADO: duas fotos, cada uma nítida numa metade (a outra metade borrada, σ 3 px). O resultado tem que
     /// ficar nítido nas duas metades (≥ 0,85 da cena nítida), sem halo na divisa; e com a 2ª foto +0,3 EV mais clara
-    /// (o FOCO não trava a exposição) a divisa não pode virar um degrau visível.
+    /// (exposição que andou: o EXIF dela diz 1/100 × 2^0,3) a divisa não pode virar um degrau visível. As outras fotos com o
+    /// mesmo EXIF (exposição travada: o brilho não é mexido)
     func testP06Foco() {
         guard let url = firstRaw(), let sharp = scene(url, width: 1024, height: 768) else { return }
         let e = sharp.extent
-        let props = isoProps(100)
+        let props = exposureProps(iso: 100, seconds: 0.01)
         let blurred = Developer.materialize(sharp.clampedToExtent().applyingGaussianBlur(sigma: 3).cropped(to: e), extent: e)
         let leftHalf = CGRect(x: 0, y: 0, width: e.width / 2, height: e.height)
         let a = Developer.materialize(sharp.cropped(to: leftHalf).composited(over: blurred).cropped(to: e), extent: e).settingProperties(props)
         let b = Developer.materialize(blurred.cropped(to: leftHalf).composited(over: sharp).cropped(to: e), extent: e).settingProperties(props)
-        let brighter = Developer.materialize(Developer.scaled(b, by: Float(pow(2.0, 0.3))).cropped(to: e), extent: e).settingProperties(props)
+        let brighter = Developer.materialize(Developer.scaled(b, by: Float(pow(2.0, 0.3))).cropped(to: e), extent: e)
+            .settingProperties(exposureProps(iso: 100, seconds: 0.01 * pow(2.0, 0.3)))
         let o = options()
         // Réguas pela mesma revelação do FOCO (multiFrameEnhanced de 1 foto com a pré-visualização da 1ª foto + finish)
         if let ideal = asMerged(sharp, frames: 1, preview: a, props: props, options: o) { savePNG(ideal, "foco/nitida") }
@@ -893,11 +1102,86 @@ final class PrevencaoTests: XCTestCase {
         dlog("FOCO: divisa no meio (x = 50%), 2ª foto +0,3 EV na junta_exposicao; quatro: terços em x = 33% e 67%")
     }
 
+    /// Os 4 cantos de uma foto (448 px, a 24 px da beirada) num mosaico 2×2, como estão na foto (em cima à esquerda no mosaico =
+    /// canto de cima à esquerda): a foto inteira de 12 MP em PNG seria ~20 MB por arquivo no ramo do laboratório
+    private func saveCorners(_ img: CIImage, _ name: String) {
+        let ie = img.extent.integral
+        let side: CGFloat = 448, inset: CGFloat = 24
+        guard ie.width >= 2 * (side + inset), ie.height >= 2 * (side + inset) else {
+            dlog("❌ \(name): foto pequena demais para os cantos")
+            return
+        }
+        var mosaic = CIImage.empty()
+        for (fx, fy) in [(0, 0), (1, 0), (0, 1), (1, 1)] as [(CGFloat, CGFloat)] {
+            let x = fx == 0 ? ie.minX + inset : ie.maxX - inset - side
+            let y = fy == 0 ? ie.minY + inset : ie.maxY - inset - side
+            let piece = img.cropped(to: CGRect(x: x, y: y, width: side, height: side))
+                .transformed(by: CGAffineTransform(translationX: fx * side - x, y: fy * side - y))
+            mosaic = piece.composited(over: mosaic)
+        }
+        savePNG(mosaic.cropped(to: CGRect(x: 0, y: 0, width: 2 * side, height: 2 * side)), name)
+    }
+
+    /// FOCO EMPILHADO com a respiração do foco: 5 fotos do perto ao longe, cada uma nítida numa faixa vertical (as outras faixas
+    /// com borrão de 1,5 px por faixa de distância) e com a escala andando −0,8%, −0,4%, 0, +0,4%, +0,8% em volta do centro (a 1×
+    /// respira ~0,5% de uma ponta à outra da varredura; o macro da ultra-angular ~1%). Cena de 12 MP em pé (3024×4032, o RAW sem
+    /// reduzir): os pedaços de fora do alinhamento ficam a ~1450 px do centro e com 0,8% andam 9–15 px, além da busca (±8 px);
+    /// sobravam só os de dentro e a foto ficava só com deslocamento (Python: erro nos cantos 2,2× o da cena borrada). A referência
+    /// do app é a foto do meio (escala 0): as réguas são a cena nítida e a borrada (σ 3) nessa escala, pela mesma revelação, com a
+    /// pré-visualização dela. O placar mede os cantos (as faixas de fora são nítidas só nas fotos de ±0,8%): nitidez ≥ 0,85 da
+    /// cena nítida e erro ≤ 0,5 do da borrada (encaixe errado = borda dupla)
+    func testP06cFocoRespiracao() {
+        guard let url = firstRaw(), let sharp = scene(url, width: 3024, height: 4032, rawScale: 1) else { return }
+        let e = sharp.extent
+        let props = exposureProps(iso: 100, seconds: 0.01)
+        let scales: [CGFloat] = [-0.008, -0.004, 0, 0.004, 0.008]
+        let count = scales.count
+        let o = options()
+        let t0 = CFAbsoluteTimeGetCurrent()
+        // As fotos e as réguas num bloco: os borrões (96 MB cada) saem da memória antes da junção
+        let frames: [CIImage] = autoreleasepool {
+            var blurred: [CIImage] = [sharp]
+            for k in 1..<count {
+                blurred.append(Developer.materialize(sharp.clampedToExtent().applyingGaussianBlur(sigma: 1.5 * Double(k)).cropped(to: e),
+                                                     extent: e))
+            }
+            let cuts = (0...count).map { (e.width * CGFloat($0) / CGFloat(count)).rounded() }
+            let center = CGPoint(x: e.midX, y: e.midY)
+            let made = scales.enumerated().map { (k, s) -> CIImage in
+                var zones = CIImage.empty()
+                for j in 0..<count {
+                    let strip = CGRect(x: cuts[j], y: e.minY, width: cuts[j + 1] - cuts[j], height: e.height)
+                    zones = blurred[abs(j - k)].cropped(to: strip).composited(over: zones)
+                }
+                zones = zones.cropped(to: e)
+                // p → c + (1 + s)(p − c): a foto com a cena ampliada (1 + s) em volta do centro
+                let zoom = CGAffineTransform(a: 1 + s, b: 0, c: 0, d: 1 + s, tx: -s * center.x, ty: -s * center.y)
+                let placed = s == 0 ? zones : (Developer.warpCubic(zones, transform: zoom, residuals: [],
+                                                                   grid: CIVector(x: 0, y: 0, z: 1, w: 1), extent: e)
+                                               ?? zones.clampedToExtent().transformed(by: zoom)).cropped(to: e)
+                return Developer.materialize(placed, extent: e).settingProperties(props)
+            }
+            let mid = made[count / 2]
+            if let ideal = asMerged(sharp, frames: 1, preview: mid, props: props, options: o) { saveCorners(ideal, "foco/respiracao_nitida") }
+            if let soft = asMerged(blurred[2], frames: 1, preview: mid, props: props, options: o) { saveCorners(soft, "foco/respiracao_borrada") }
+            return made
+        }
+        let captured = feed(frames)
+        let t1 = CFAbsoluteTimeGetCurrent()
+        // Como o modo FOCO EMPILHADO chama (as fotos na ordem em que foram tiradas)
+        let out = image(Developer.stack(captured, kind: .focus, removeOutliers: false, robust: false, starPoints: 0, options: o))
+        Developer.decodeOverride = nil
+        if let out { saveCorners(out, "foco/respiracao_junta") } else { dlog("❌ FOCO respiração: sem saída") }
+        dlog("FOCO respiração: 5 fotos de \(Int(e.width))×\(Int(e.height)), escala −0,8 a +0,8% · junção em \(Diagnostics.ms(since: t1)) · " +
+             "tudo em \(Diagnostics.ms(since: t0))")
+    }
+
     // MARK: - 7. FOTO 3× igual à FOTO
 
     /// A mesma cena sem ruído pela FOTO de uma foto (develop: tons locais, cor pela luz, nitidez) e pela FOTO 3×
     /// (fuse de 4 fotos idênticas): brilho médio, meio (p50), saturação e contraste local têm que bater. Pega a FOTO 3×
-    /// pulando a finalização da FOTO (a foto juntada saía com outra cara).
+    /// pulando a finalização da FOTO (a foto juntada saía com outra cara). O placar também quer as bordas finas da FOTO 3× ≥ 0,90
+    /// das da FOTO (a limpeza do photoFinish em cima da redução da Apple deixava textura de cera)
     func testP07FotoConsistencia() {
         for url in raws() {
             let name = url.deletingPathExtension().lastPathComponent
@@ -984,7 +1268,8 @@ final class PrevencaoTests: XCTestCase {
     }
 
     private func ghostRun(_ mode: GhostMode, frames: [CIImage], options o: DevelopOptions) -> CIImage? {
-        let captured = feed(frames)
+        // Como o app abre: a FOTO 3× sem `merge`, com a redução da Apple (NOITE e SUPER ZOOM abrem com `merge`, crus)
+        let captured = feed(frames, appleNR: mode == .foto3x)
         defer { Developer.decodeOverride = nil }
         switch mode {
         case .noite: return image(Developer.stack(captured, kind: .average, robust: true, starPoints: 0, options: o))
@@ -1139,7 +1424,8 @@ final class PrevencaoTests: XCTestCase {
                 let noisy = Developer.add(shifted(lit, dx: d.0, dy: d.1), sensorNoise(e, seed: 1500 + i, amplitude: 0.035)).cropped(to: e)
                 return Developer.materialize(clipped(noisy), extent: e).settingProperties(isoProps(800))
             }
-            let captured = feed(frames)
+            // Aberto como o app abre: a foto única e os quadros da FOTO 3× sem `merge`, com a redução da Apple imitada
+            let captured = feed(frames, appleNR: true)
             dlog("ESTOURADO foto3x: início")
             let single = image(Developer.develop(captured[0], options: o))
             let fused = image(Developer.fuse(captured, options: o))
