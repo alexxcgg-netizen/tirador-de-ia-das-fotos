@@ -1402,8 +1402,10 @@ extension Developer {
     /// `softening`: recebe o quanto o encaixe Catmull-Rom amolece a média, de 0 (todas em pixel inteiro, como no tripé) a ~1 (todas
     /// em meio pixel): média de [fx(1 − fx) + fy(1 − fy)] ÷ 0,5 das frações do deslocamento de cada foto que entrou (a referência
     /// conta 0)
+    /// `exactWhenStill`: foto que já está no lugar (deslocamento e escala ~0) passa sem reamostrar (o encaixe bicúbico
+    /// amolece um pouco mesmo parado; no FOCO EMPILHADO isso tirava nitidez justamente da faixa que aquela foto traz)
     static func fineWarps(_ frames: [CapturedFrame], reference: CIImage,
-                          softening: ((Float) -> Void)? = nil) -> [((CIImage) -> CIImage)?] {
+                          softening: ((Float) -> Void)? = nil, exactWhenStill: Bool = false) -> [((CIImage) -> CIImage)?] {
         let e = reference.extent
         let centers = tileCenters(in: e)
         let alignments = alignTransforms(frames: frames, refIndex: 0, reference: reference, centers: centers)
@@ -1418,6 +1420,12 @@ extension Developer {
         }
         return alignments.map { alignment -> ((CIImage) -> CIImage)? in
             guard let alignment else { return nil }
+            if exactWhenStill {
+                let t = alignment.transform
+                let still = abs(t.tx) < 0.05 && abs(t.ty) < 0.05 && abs(t.a - 1) < 2e-4 && abs(t.d - 1) < 2e-4
+                    && abs(t.b) < 2e-4 && abs(t.c) < 2e-4 && alignment.residuals.allSatisfy { hypot($0.x, $0.y) < 0.05 }
+                if still { return { $0.cropped(to: e) } }
+            }
             return { image in
                 if let cubic = warpCubic(image, transform: alignment.transform, residuals: alignment.residuals, grid: grid, extent: e) {
                     return cubic

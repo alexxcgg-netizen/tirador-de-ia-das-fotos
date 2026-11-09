@@ -272,7 +272,7 @@ final class PrevencaoTests: XCTestCase {
     /// LONGA com quadros de vídeo de 8 bits (BGRA, como a câmera entrega) direto no acumulador do app:
     /// - seda, 240 quadros (8 s a 30 fps) de uma rampa clara com pontilhado no tempo: a média tem que sair igual à
     ///   média exata (meia precisão somando 240 quadros arredonda cada soma e faz degraus no céu);
-    /// - rastros numa rampa clara: o máximo exato, sem degraus a mais que os da entrada;
+    /// - rastros numa rampa clara parada: a cena (entre a média e o máximo do pontilhado), sem degraus a mais que os da entrada;
     /// - quadros escuros só com ruído (preto 12, σ 2 códigos): os rastros não podem levantar o preto mais que ~1σ
     ///   (o máximo de 60 quadros de ruído sobe ~2,3σ: preto vira cinza); a seda não levanta nada.
     func testP02Longa() {
@@ -383,10 +383,16 @@ final class PrevencaoTests: XCTestCase {
         let trails = accumulate(.trails, trailCount, rampCodes)
         if let img = trails.image {
             let got = row(readLinear(img))
+            // Rampa PARADA com pontilhado no tempo (±½ código): nada passou, então o certo é a própria cena. Vale qualquer
+            // valor entre a média (a cena) e o máximo do pontilhado; o erro é o quanto sai desse intervalo. Antes a régua era
+            // só o máximo, e ela brigava com a meta do preto (rastros no escuro: o máximo do ruído também não pode subir):
+            // tirar o ruído do máximo era cobrado aqui como erro de 1 código
             var worst = 0.0
             for x in 0..<w {
-                let exact = Double((0..<trailCount).map { lines[$0][x] }.max() ?? 0) / 255
-                worst = max(worst, abs(enc(got[x]) - exact) * 255)
+                let top = Double((0..<trailCount).map { lines[$0][x] }.max() ?? 0) / 255
+                let scene = enc((0..<trailCount).reduce(0.0) { $0 + lin(Double(lines[$1][x]) / 255) } / Double(trailCount))
+                let v = enc(got[x])
+                worst = max(worst, max(0, v - top, scene - v) * 255)
             }
             dlog(String(format: "LONGA rastros rampa (%d de %d quadros): erro máximo %.2f códigos", trails.frames, trailCount, worst))
         } else {

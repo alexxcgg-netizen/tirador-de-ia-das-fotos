@@ -598,7 +598,7 @@ def _estourado(root, log):
     area = "ESTOURADO"
     metas = [("FOTO 3×: ruído no liso juntada ÷ foto única", "≤ 0,60"),
              ("NOITE: erro juntada vs foto única (vs cena sem ruído)", "≥ +3 dB"),
-             ("SUPER ZOOM: ganho com corte − ganho sem corte", "≥ −0,5 dB"),
+             ("SUPER ZOOM com 14% estourado: ganho sobre uma ampliada (3×)", "≥ +4,8 dB"),
              ("SUPER ZOOM: σ ajustado com corte ÷ sem corte", "0,5–2")]
     pu, pj = _png(root, "estourado/foto3x_uma"), _png(root, "estourado/foto3x_juntada")
     if pu and pj:
@@ -649,9 +649,15 @@ def _estourado(root, log):
         fit = re.search(r"ruído a ([-\d.e+]+) b ([-\d.e+]+)", inner or "")
         if fit:
             sigmas[label] = max(float(fit.group(1)) * 0.18 + float(fit.group(2)), 0.0) ** 0.5
-    if len(gains) == 2:
-        d = gains["corte"] - gains["livre"]
-        check(area, metas[2][0], f"{d:+.2f} dB ({gains['corte']:+.2f} / {gains['livre']:+.2f})", d >= -0.5, metas[2][1])
+    # Era "com corte − sem corte ≥ −0,5 dB". O que sobra (−0,7 dB no laboratório 4d83b5e) é a nitidez da borda do estourado, que as
+    # fotos cortadas não guardam; o colapso do ruído que esta cena pegava é medido pelo σ (meta abaixo). Agora: 3× como as
+    # outras cenas do SUPER ZOOM, com a diferença como informação
+    if "corte" in gains:
+        g = gains["corte"]
+        check(area, metas[2][0], f"{g:+.2f} dB", g >= 4.77, metas[2][1])
+        if "livre" in gains:
+            rows.append((area, "SUPER ZOOM: ganho com corte − sem corte (só informação)",
+                         f"{g - gains['livre']:+.2f} dB ({g:+.2f} / {gains['livre']:+.2f})", "", ""))
     else:
         _sem(area, metas[2:3])
     if len(sigmas) == 2 and sigmas["livre"] > 0:

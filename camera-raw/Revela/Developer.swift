@@ -1265,6 +1265,14 @@ enum Developer {
             var report: ((Float) -> Void)?
             if !robust { report = { softening = $0 } }
             warps = fineWarps(frames, reference: reference, softening: report)
+        } else if kind == .focus {
+            // FOCO EMPILHADO pelo nosso encaixe (semelhança: pega a "respiração" do foco, que muda a escala), não pela
+            // homografia do Vision: com as fotos borradas em lugares diferentes ela errava 3–4 px nos cantos de fotos que
+            // estavam no lugar (laboratório P06: nitidez 0,81/0,79 da cena nítida). Foto parada passa sem reamostrar; a que não
+            // encaixou entra como está (no foco cada foto traz a sua faixa nítida, não dá para tirar)
+            warps = fineWarps(frames, reference: reference, exactWhenStill: true).map { warp -> ((CIImage) -> CIImage)? in
+                warp ?? { image in image }
+            }
         } else {
             for frame in frames.dropFirst() {
                 guard let small = image(from: frame, scale: alignScale) else { warps.append({ $0 }); continue }
