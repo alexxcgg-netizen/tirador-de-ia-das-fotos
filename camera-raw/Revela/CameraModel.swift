@@ -1268,8 +1268,9 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         lensAfterShot = nil
         // No meio de uma rajada ou gravação a câmera não troca (trocar ali fechava o app no CONGELAR)
         // Na DUPLA as câmeras são as da sessão dupla: reabrir a principal disputava o sensor com ela
+        // CINEMÁTICO fechando o arquivo: reabrir a sessão agora cortava o fim do vídeo
         guard newLens != lens, !bursting, !actionRecording, stackProgress == nil, longRemaining == nil,
-              panoramaProgress == nil, !isRecordingVideo, captureMode != .dual else { return }
+              panoramaProgress == nil, !isRecordingVideo, !recordingFinishing, captureMode != .dual else { return }
         // Foto ainda saindo da câmera: reabrir a sessão agora perdia a foto (ProRAW de 48 MP leva 1–2 s). A troca fica
         // para quando ela chegar
         if capturesInFlight > 0 {
@@ -2080,6 +2081,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         holding = false
         if bursting { stopBurst() }
         if actionRecording { stopAction() }
+        // DUPLA grava enquanto o dedo segura: gesto cancelado (alerta do sistema por cima) não pode deixar gravando
+        if captureMode == .dual, isRecordingVideo { stopRecording() }
     }
 
     private func startBurst() {
@@ -2173,51 +2176,53 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     }
                     return
                 }
-                DispatchQueue.main.async { self.show("Escolhendo as fotos mais nítidas…") }
-                self.processingQueue.async {
-                    // As notas já vieram da gravação: só os escolhidos são abertos do vídeo
-                    let chosen = ActionRecorder.choose(scores, frameCount: times.count, count: 8)
-                    let frames = ActionRecorder.frames(in: url, at: chosen.map { times[$0] })
-                    var thumb: UIImage?
-                    var saved = 0
-                    var denied = false
-                    let group = DispatchGroup()
-                    for frame in frames {
-                        let image = Self.upright(CIImage(cgImage: frame), degrees: upright.degrees, unmirror: upright.mirrored)
-                            .settingProperties(properties)
-                        guard let output = Developer.developVideoImage(image, options: options) else { continue }
-                        thumb = output.thumbnail
-                        group.enter()
-                        Library.save(dng: nil, developed: output.heic, tryPair: false) { error in
-                            if error == nil { saved += 1 } else { denied = true }
-                            group.leave()
+                // 1º o vídeo (a galeria copia o arquivo), já aqui e não na fila da revelação: com o app no fundo (ligação,
+                // tela de início) a revelação espera ele voltar (GPU), e antes o vídeo só era salvo depois das 8 fotos.
+                // Se o iOS fechasse o app suspenso, vídeo e fotos se perdiam
+                Library.saveVideo(url) { saveError in
+                    // Sem a galeria o vídeo não some: fica em Arquivos → Revela → Vídeos (e as fotos saem dele mesmo assim)
+                    let kept: URL? = saveError == nil ? nil : Self.keepInDocuments(url)
+                    let source = kept ?? url
+                    DispatchQueue.main.async { self.show("Escolhendo as fotos mais nítidas…") }
+                    self.processingQueue.async {
+                        // Abrir o HEVC e revelar precisam do app na frente (no fundo o decodificador pode falhar e as fotos sumiriam)
+                        ForegroundGate.shared.wait()
+                        // As notas já vieram da gravação: só os escolhidos são abertos do vídeo
+                        let chosen = ActionRecorder.choose(scores, frameCount: times.count, count: 8)
+                        let frames = ActionRecorder.frames(in: source, at: chosen.map { times[$0] })
+                        var thumb: UIImage?
+                        var saved = 0
+                        var denied = false
+                        let group = DispatchGroup()
+                        for frame in frames {
+                            let image = Self.upright(CIImage(cgImage: frame), degrees: upright.degrees, unmirror: upright.mirrored)
+                                .settingProperties(properties)
+                            guard let output = Developer.developVideoImage(image, options: options) else { continue }
+                            thumb = output.thumbnail
+                            group.enter()
+                            Library.save(dng: nil, developed: output.heic, tryPair: false) { error in
+                                if error == nil { saved += 1 } else { denied = true }
+                                group.leave()
+                            }
+                            // Uma por vez: as respostas da galeria chegam em outra fila
+                            group.wait()
                         }
-                        // Uma por vez: as respostas da galeria chegam em outra fila
-                        group.wait()
-                    }
-                    var videoError: Error?
-                    group.enter()
-                    Library.saveVideo(url) { error in
-                        videoError = error
-                        group.leave()
-                    }
-                    group.wait()
-                    // Sem a galeria o vídeo não some: fica em Arquivos → Revela → Vídeos
-                    let failure = videoError, savedCount = saved, anyDenied = denied, preview = thumb
-                    let kept: URL? = failure == nil ? nil : Self.keepInDocuments(url)
-                    if failure == nil { try? FileManager.default.removeItem(at: url) }
-                    dlog("✅ AÇÃO: \(savedCount) de \(frames.count) fotos\(failure == nil ? " + vídeo" : "") salvos. Total: \(Diagnostics.ms(since: t0))")
-                    DispatchQueue.main.async {
-                        self.processing -= 1
-                        if let preview { self.thumbnail = preview }
-                        if let videoError = failure {
-                            let what: String = anyDenied ? "As fotos e o vídeo não foram para a galeria" : "O vídeo não foi para a galeria"
-                            let whereKept: String = kept != nil ? " O vídeo ficou em Arquivos → No meu iPhone → Revela → Vídeos." : ""
-                            self.message = "\(what) (\(videoError.localizedDescription)).\(whereKept)"
-                        } else {
-                            self.show("\(savedCount) fotos nítidas + vídeo em câmera lenta salvos")
+                        let failure = saveError, savedCount = saved, anyDenied = denied, preview = thumb
+                        // O temporário só sai no fim: as fotos foram tiradas dele
+                        if failure == nil { try? FileManager.default.removeItem(at: url) }
+                        dlog("✅ AÇÃO: \(savedCount) de \(frames.count) fotos\(failure == nil ? " + vídeo" : "") salvos. Total: \(Diagnostics.ms(since: t0))")
+                        DispatchQueue.main.async {
+                            self.processing -= 1
+                            if let preview { self.thumbnail = preview }
+                            if let videoError = failure {
+                                let what: String = anyDenied ? "As fotos e o vídeo não foram para a galeria" : "O vídeo não foi para a galeria"
+                                let whereKept: String = kept != nil ? " O vídeo ficou em Arquivos → No meu iPhone → Revela → Vídeos." : ""
+                                self.message = "\(what) (\(videoError.localizedDescription)).\(whereKept)"
+                            } else {
+                                self.show("\(savedCount) fotos nítidas + vídeo em câmera lenta salvos")
+                            }
+                            task.end()
                         }
-                        task.end()
                     }
                 }
             }
@@ -2420,11 +2425,13 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         sessionQueue.async { self.waitSensorZoomSettled(action) }
     }
 
-    /// Fila da sessão.
+    /// Fila da sessão. Espera parada na própria fila (no máximo 0,35 s), não com asyncAfter: uma troca de lente ou de modo
+    /// pedida durante a espera passava na frente do disparo, e o RÁPIDO/CONGELAR (fora do capturesInFlight) saía da
+    /// lente errada ou com a sessão sendo reconfigurada. Assim ela roda depois. O zoom do sensor só muda nesta fila
     private func waitSensorZoomSettled(_ action: @escaping () -> Void) {
         let wait = sensorZoomChangedAt + 0.35 - CACurrentMediaTime()
-        guard wait > 0 else { return action() }
-        sessionQueue.asyncAfter(deadline: .now() + wait) { self.waitSensorZoomSettled(action) }
+        if wait > 0 { Thread.sleep(forTimeInterval: min(wait, 0.35)) }
+        action()
     }
 
     /// A câmera pode voltar com o zoom do sensor em 1 (3D, DOC, serviços de mídia reiniciados) enquanto o app acha que é
@@ -3636,7 +3643,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         holding = false
         if isRecordingVideo {
             dlog("Gravação fechada: \(why)")
-            stopRecording()
+            stopRecording(drain: false)
         }
         if actionRecording { stopAction() }
         // Panorama no meio: fecha com o que já girou (as travas voltam e a guarda de "ocupado" solta)
@@ -3647,7 +3654,7 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     private func recordingFailed(_ reason: String) {
         dlog("❌ Vídeo: \(reason)")
         recordingProblem = reason
-        if isRecordingVideo { stopRecording() } else { message = reason }
+        if isRecordingVideo { stopRecording(drain: false) } else { message = reason }
     }
 
     /// Ponto do visor (0…1) -> ponto do quadro, antes do zoom digital. No VÍDEO/DUPLA o quadro aparece encaixado (faixas
@@ -3773,29 +3780,27 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
         return Int((Double(frame.timescale) / Double(frame.value)).rounded())
     }
 
-    func stopRecording() {
+    /// `drain` false: interrupção ou falha. Fecha o arquivo já, sem esperar os quadros atrasados da estabilização (eles
+    /// não vêm mais, e a espera levava o fim para depois do app ir para o fundo, sem codificador)
+    func stopRecording(drain: Bool = true) {
         guard isRecordingVideo else { return }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        let recorded = recordingStarted.map { Date().timeIntervalSince($0) } ?? 0
         isRecordingVideo = false
         recordingStarted = nil
         if recordingCinematic {
             recordingCinematic = false
-            // Até o arquivo fechar (fileOutput didFinish) conta como ocupado; se o aviso nunca vier, solta em 10 s
+            // Até o arquivo fechar (fileOutput didFinish) conta como ocupado. Se o aviso nunca vier, solta num prazo que
+            // cresce com a gravação (um 4K longo leva mais para fechar; 10 s fixos soltavam antes da hora)
             recordingFinishing = true
-            let url = cinematicURL
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                guard self.recordingFinishing, self.cinematicURL == url else { return }
-                dlog("⚠️ Cinema: o arquivo não avisou que fechou em 10 s")
-                self.cinematicURL = nil
-                self.cinematicFinished()
-            }
+            releaseCinematicIfSilent(url: cinematicURL, after: max(10, recorded * 0.2), retries: 3)
             sessionQueue.async { self.movieOutput.stopRecording() }
             return
         }
         processing += 1
         // O app pode estar indo para o fundo (ligação): tempo extra para fechar o arquivo e salvar
         let task = BackgroundTask("Revela: salvar vídeo")
-        recorder.stop(id: recordingID) { url, _, partial in
+        recorder.stop(id: recordingID, drain: drain) { url, _, partial in
             guard let url else {
                 DispatchQueue.main.async {
                     self.processing -= 1
@@ -3808,6 +3813,28 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
             self.saveVideoFile(url, partial: partial, savedText: "Vídeo salvo na galeria") {
                 self.processing -= 1
                 task.end()
+            }
+        }
+    }
+
+    /// CINEMÁTICO: solta o "fechando" se o aviso do arquivo não veio no prazo. Se a câmera ainda diz que está gravando
+    /// (arquivo fechando), espera mais 10 s, no máximo `retries` vezes. Main
+    private func releaseCinematicIfSilent(url: URL?, after delay: Double, retries: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            guard self.recordingFinishing, self.cinematicURL == url else { return }
+            self.sessionQueue.async {
+                let stillWriting = self.movieOutput.isRecording
+                DispatchQueue.main.async {
+                    guard self.recordingFinishing, self.cinematicURL == url else { return }
+                    if stillWriting, retries > 0 {
+                        dlog("Cinema: o arquivo ainda está fechando; esperando mais")
+                        self.releaseCinematicIfSilent(url: url, after: 10, retries: retries - 1)
+                        return
+                    }
+                    dlog("⚠️ Cinema: o arquivo não avisou que fechou; o botão volta")
+                    self.cinematicURL = nil
+                    self.cinematicFinished()
+                }
             }
         }
     }

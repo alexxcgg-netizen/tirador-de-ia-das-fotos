@@ -20,6 +20,8 @@ final class ActionRecorder {
     // Nota de nitidez de cada quadro, dada na hora numa versão pequena. Antes cada quadro era aberto de novo do HEVC
     // depois de gravar (busca exata num vídeo de GOP longo): minutos para 5 s segurando
     private let scoreQueue = DispatchQueue(label: "revela.action.score", qos: .utility)
+    /// A nota em andamento: o fim da gravação espera por ela só um instante (ver stop)
+    private let scoreGroup = DispatchGroup()
     private let scoreLock = NSLock()
     private var scoring = false
     private var generation = 0
@@ -99,6 +101,9 @@ final class ActionRecorder {
 
     /// Uma nota por vez: se a anterior ainda está sendo calculada, este quadro fica sem nota (não segura buffers da câmera).
     private func score(_ pixelBuffer: CVPixelBuffer, index: Int) {
+        // App no fundo (ligação, tela de início): a nota usa a GPU, que espera o app voltar (Developer.gpu), e o fim da
+        // gravação ficava preso atrás dela. Um quadro sem nota não faz mal: a escolha usa os que têm
+        guard !ForegroundGate.shared.isBackground else { return }
         scoreLock.lock()
         let busy = scoring
         if !busy { scoring = true }
@@ -106,12 +111,15 @@ final class ActionRecorder {
         scoreLock.unlock()
         guard !busy else { return }
         let image = CIImage(cvPixelBuffer: pixelBuffer)
+        scoreGroup.enter()
         scoreQueue.async {
-            let value = Developer.sharpnessScore(image)
+            // Foi para o fundo enquanto esperava a vez: sem nota (não para no portão da GPU)
+            let value: Float? = ForegroundGate.shared.isBackground ? nil : Developer.sharpnessScore(image)
             self.scoreLock.lock()
-            if token == self.generation { self.scores.append((index: index, score: value)) }
+            if let value, token == self.generation { self.scores.append((index: index, score: value)) }
             self.scoring = false
             self.scoreLock.unlock()
+            self.scoreGroup.leave()
         }
     }
 
@@ -121,6 +129,7 @@ final class ActionRecorder {
     }
 
     /// Termina o arquivo e devolve o endereço, o instante de cada quadro (contado do início do vídeo) e as notas de nitidez.
+    /// `completion` roda numa fila qualquer, sem esperar o app voltar para a frente.
     func stop(completion: @escaping (URL?, [CMTime], [Score]) -> Void) {
         isRecording = false
         guard let writer, let input, let startTime else {
@@ -129,11 +138,18 @@ final class ActionRecorder {
         }
         let times = frameTimes.map { $0 - startTime }
         let url = self.url
+        scoreLock.lock()
+        let token = generation, scoredSoFar = scores
+        scoreLock.unlock()
         let deliver: (Bool) -> Void = { closed in
-            // Na fila das notas: a última que estava sendo calculada termina antes
-            self.scoreQueue.async {
+            // A nota que estava sendo calculada costuma terminar em milissegundos: espera no máximo 0,5 s. Antes o fim
+            // ia para a fila das notas, e se essa nota tinha parado no portão da GPU (app no fundo) nada era salvo até o
+            // app voltar; se o iOS fechasse o app suspenso, vídeo e fotos se perdiam
+            DispatchQueue.global(qos: .userInitiated).async {
+                _ = self.scoreGroup.wait(timeout: .now() + 0.5)
                 self.scoreLock.lock()
-                let scores = self.scores
+                // Uma gravação nova já começou (zerou as notas): ficam as notas que havia no toque de parar
+                let scores = token == self.generation ? self.scores : scoredSoFar
                 self.scoreLock.unlock()
                 // Não fechou ou falhou no meio: com os fragmentos de 0,5 s o arquivo abre até o último pedaço salvo
                 // (os quadros de depois dele simplesmente não abrem). Antes apagava tudo

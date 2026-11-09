@@ -8,6 +8,13 @@ final class VideoRecorder {
     /// Depois do toque de parar, quanto ainda se espera pelos quadros atrasados: a estabilização cinematográfica
     /// entrega o vídeo até ~1 s depois do som, e o fim do vídeo sumia com o som continuando
     static let drainSeconds = 1.5
+    /// Depois do toque de parar, sem quadro nenhum por este tempo a câmera parou (interrupção, troca de modo): fecha já,
+    /// em vez de esperar o resto do `drainSeconds` (o fim pelo relógio caía com o app no fundo, sem codificador)
+    static let idleSeconds = 0.2
+    /// Quadros seguidos de outro tamanho até desistir: a câmera mudou de formato de vez e o arquivo ficava parado sem aviso
+    static let maxMismatchRun = 15
+    /// Som guardado enquanto o arquivo não nasce (~21 ms cada: ~6 s), para o começo do vídeo não sair mudo
+    private static let maxPendingAudio = 300
 
     private let queue = DispatchQueue(label: "revela.recorder", qos: .userInitiated)
     // Na fila do gravador
@@ -27,7 +34,13 @@ final class VideoRecorder {
     /// Tamanho do quadro anterior enquanto o arquivo não existe: ele nasce quando dois quadros seguidos concordam
     private var candidateSize: CGSize?
     private var mismatched = 0
+    /// Quadros de outro tamanho seguidos (zera a cada quadro bom)
+    private var mismatchRun = 0
     private var lastVideoTime: CMTime?
+    /// Instante em que a gravação foi armada (relógio dos quadros): quadro e som de antes ficam de fora
+    private var armedAt = CMTime.invalid
+    /// Som que chegou antes do arquivo nascer (ou com o codificador sem fôlego), em ordem
+    private var pendingAudio: [CMSampleBuffer] = []
     /// Quem pediu o fim, esperando os últimos quadros.
     private var stopCompletion: ((URL?, Int, Bool) -> Void)?
     // Com trava: lidos na fila da câmera a cada quadro
@@ -41,6 +54,8 @@ final class VideoRecorder {
     /// segurando um buffer da câmera, e quando a revelação não acompanhava a câmera ficava sem buffers
     private var pending = 0
     private var dropped = 0
+    /// Quadros que chegaram da câmera (só conta): depois do toque de parar, diz se ainda vem algum
+    private var arrivals = 0
     private let colorSpace = CGColorSpace(name: CGColorSpace.itur_709) ?? CGColorSpaceCreateDeviceRGB()
 
     /// O arquivo falhou no meio (disco cheio, codificador): chamado uma vez por gravação, na fila principal, com o motivo.
@@ -58,6 +73,9 @@ final class VideoRecorder {
     /// trocando de formato (FOTO → VÍDEO 4K, 4K ↔ 1080p, lente) e o arquivo saía do tamanho errado, cortado ou com lixo.
     /// `transform` gira o vídeo na reprodução (iPhone deitado durante a gravação).
     func start(id: Int, fps: Int, transform: CGAffineTransform) {
+        // No relógio dos quadros e do som da câmera (o do sistema, como no stop). Com a estabilização forte os quadros
+        // chegam ~1 s atrasados: sem este corte o arquivo começava ~1 s antes do toque, e esse segundo saía mudo
+        let armedAt = CMClockGetTime(CMClockGetHostTimeClock())
         queue.async {
             self.lock.lock()
             let stale = id <= self.stoppedID
@@ -77,7 +95,10 @@ final class VideoRecorder {
             self.writerSize = nil
             self.candidateSize = nil
             self.mismatched = 0
+            self.mismatchRun = 0
             self.lastVideoTime = nil
+            self.armedAt = armedAt
+            self.pendingAudio = []
             self.lock.lock()
             self.recording = true
             self.stopTime = .invalid
@@ -153,6 +174,7 @@ final class VideoRecorder {
             lock.unlock()
             return
         }
+        arrivals &+= 1
         guard pending < 2 else {
             dropped += 1
             lock.unlock()
@@ -179,6 +201,20 @@ final class VideoRecorder {
             if stopCompletion != nil { finish() }
             return
         }
+        if armedAt.isValid, CMTimeCompare(time, armedAt) < 0 {
+            // Quadro de antes do toque. Passados 3 s e ainda só quadros "de antes", eles vêm em outro relógio: para de
+            // cortar (melhor um começo adiantado que vídeo nenhum)
+            guard (CMClockGetTime(CMClockGetHostTimeClock()) - armedAt).seconds > 3 else { return }
+            dlog("⚠️ Vídeo: os quadros vêm em outro relógio; o começo não é cortado")
+            armedAt = .invalid
+        }
+        // App no fundo: o iOS não deixa usar a GPU e o quadro desenhado saía preto ou com lixo. Fica de fora
+        if ForegroundGate.shared.isBackground {
+            lock.lock()
+            dropped += 1
+            lock.unlock()
+            return
+        }
         let extent = image.extent
         guard !extent.isInfinite, !extent.isEmpty else { return }
         let size = CGSize(width: extent.width.rounded(), height: extent.height.rounded())
@@ -196,6 +232,9 @@ final class VideoRecorder {
             }
             writer.startSession(atSourceTime: time)
             started = true
+            // O som que chegou enquanto o primeiro quadro não vinha entra agora (antes era descartado: começo mudo)
+            pendingAudio.removeAll { CMTimeCompare(CMSampleBufferGetPresentationTimeStamp($0), time) < 0 }
+            flushAudio()
         }
         guard let writer, let input = videoInput, let adaptor else { return }
         guard size == writerSize else {
@@ -205,8 +244,16 @@ final class VideoRecorder {
                 dlog("⚠️ Vídeo: quadro \(Int(size.width))×\(Int(size.height)) num arquivo \(w)×\(h): descartado")
             }
             mismatched += 1
+            mismatchRun += 1
+            // A câmera mudou de formato de vez: antes o arquivo ficava parado, sem aviso, até o toque de parar. Fecha com o
+            // que já foi gravado (já parando: só fecha, sem aviso)
+            if mismatchRun >= Self.maxMismatchRun {
+                dlog("❌ Vídeo: \(mismatchRun) quadros seguidos de outro tamanho")
+                if stopCompletion != nil { finish() } else { reportFailure("A câmera mudou o formato do vídeo no meio e a gravação parou.") }
+            }
             return
         }
+        mismatchRun = 0
         guard writer.status == .writing else {
             dlog("❌ Vídeo: o arquivo parou (\(writer.error?.localizedDescription ?? "?"))")
             reportFailure(Self.failureText(writer.error))
@@ -236,21 +283,39 @@ final class VideoRecorder {
     func appendAudio(_ sampleBuffer: CMSampleBuffer) {
         guard isRecording else { return }
         queue.async {
-            guard self.isRecording, self.started, let writer = self.writer, writer.status == .writing,
-                  let input = self.audioInput, input.isReadyForMoreMediaData else { return }
+            guard self.isRecording, self.activeID != nil else { return }
+            let time = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
             self.lock.lock()
             let stopAt = self.stopTime
             self.lock.unlock()
-            // Som de depois do toque de parar fica de fora (o vídeo atrasado ainda está chegando)
-            if stopAt.isValid, CMTimeCompare(CMSampleBufferGetPresentationTimeStamp(sampleBuffer), stopAt) > 0 { return }
-            input.append(sampleBuffer)
+            // Som de depois do toque de parar fica de fora (o vídeo atrasado ainda está chegando); o de antes de armar também
+            if stopAt.isValid, CMTimeCompare(time, stopAt) > 0 { return }
+            if self.armedAt.isValid, CMTimeCompare(time, self.armedAt) < 0 { return }
+            if self.started, self.writer?.status != .writing || self.audioInput == nil { return }
+            // Em ordem: o arquivo ainda não nasceu (o vídeo estabilizado chega ~1 s depois do som) ou o codificador está
+            // sem fôlego. Passando do limite sai o mais velho (antes o som desse tempo era todo descartado)
+            self.pendingAudio.append(sampleBuffer)
+            if self.pendingAudio.count > Self.maxPendingAudio {
+                self.pendingAudio.removeFirst(self.pendingAudio.count - Self.maxPendingAudio)
+            }
+            self.flushAudio()
+        }
+    }
+
+    /// Na fila do gravador: o som guardado entra em ordem enquanto o codificador aceitar (o resto espera a próxima vez).
+    private func flushAudio() {
+        guard started, let writer, writer.status == .writing, let input = audioInput else { return }
+        while let first = pendingAudio.first, input.isReadyForMoreMediaData {
+            pendingAudio.removeFirst()
+            guard input.append(first) else { break }
         }
     }
 
     /// Fecha o arquivo da gravação `id`. Os quadros de antes do toque que ainda estão chegando entram (por até
     /// `drainSeconds`); o som de depois do toque não. `partial`: a gravação falhou no meio e o arquivo vai até o
     /// último fragmento salvo. Pode chegar antes do `start` da mesma gravação: o começo é ignorado quando chegar.
-    func stop(id: Int, completion: @escaping (_ url: URL?, _ frames: Int, _ partial: Bool) -> Void) {
+    /// `drain` false (interrupção, falha): fecha já, sem esperar os atrasados. Sem quadro nenhum por `idleSeconds` também.
+    func stop(id: Int, drain: Bool = true, completion: @escaping (_ url: URL?, _ frames: Int, _ partial: Bool) -> Void) {
         // Os quadros e o som da câmera vêm no relógio do sistema (o da sessão de captura)
         let now = CMClockGetTime(CMClockGetHostTimeClock())
         lock.lock()
@@ -265,10 +330,32 @@ final class VideoRecorder {
                 return
             }
             self.stopCompletion = completion
-            // Sem arquivo, ou com o arquivo já parado por erro: fecha já. Senão espera os quadros atrasados
-            guard self.started, self.isRecording, self.writer?.status == .writing else { return self.finish() }
-            self.queue.asyncAfter(deadline: .now() + Self.drainSeconds) {
-                if self.activeID == id, self.stopCompletion != nil { self.finish() }
+            // Interrupção, falha, app no fundo ou arquivo já parado por erro: fecha já. Senão espera os quadros
+            // atrasados (também sem arquivo ainda: num toque curto os quadros do começo ainda estão chegando)
+            let writing = self.writer.map { $0.status == .writing } ?? true
+            guard drain, self.isRecording, writing, !ForegroundGate.shared.isBackground else { return self.finish() }
+            self.waitForLateFrames(id: id, seen: self.arrivalCount, until: .now() + Self.drainSeconds)
+        }
+    }
+
+    private var arrivalCount: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return arrivals
+    }
+
+    /// Na fila do gravador: espera os quadros atrasados enquanto eles continuam chegando, até `deadline`.
+    private func waitForLateFrames(id: Int, seen: Int, until deadline: DispatchTime) {
+        queue.asyncAfter(deadline: .now() + Self.idleSeconds) {
+            guard self.activeID == id, self.stopCompletion != nil else { return }
+            let count = self.arrivalCount
+            if count == seen {
+                dlog("Vídeo: nenhum quadro em \(Self.idleSeconds) s depois do fim (a câmera parou): fechando já")
+                self.finish()
+            } else if DispatchTime.now() >= deadline || ForegroundGate.shared.isBackground {
+                self.finish()
+            } else {
+                self.waitForLateFrames(id: id, seen: count, until: deadline)
             }
         }
     }
@@ -278,6 +365,9 @@ final class VideoRecorder {
         let writer = self.writer, url = self.url, frames = self.frames, started = self.started
         let videoInput = self.videoInput, audioInput = self.audioInput, last = lastVideoTime, fps = self.fps
         let mismatched = self.mismatched
+        // O som que ainda esperava o codificador entra antes de fechar
+        flushAudio()
+        pendingAudio = []
         let completion = stopCompletion
         stopCompletion = nil
         activeID = nil

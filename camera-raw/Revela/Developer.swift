@@ -2303,6 +2303,14 @@ final class ForegroundGate {
         condition.unlock()
     }
 
+    /// Leitura sem esperar: quem não pode ficar parado no portão (nota da AÇÃO, quadros do VÍDEO) pula o trabalho de
+    /// GPU com o app no fundo, em vez de segurar a gravação até o app voltar
+    var isBackground: Bool {
+        condition.lock()
+        defer { condition.unlock() }
+        return background
+    }
+
     /// Espera o app voltar para a frente (no máximo o tempo que o iOS deixar: depois ele suspende o app aqui mesmo).
     func wait() {
         guard !Thread.isMainThread else { return }
