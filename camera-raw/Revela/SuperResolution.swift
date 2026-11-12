@@ -1470,7 +1470,8 @@ extension Developer {
                 if still { return { $0.cropped(to: e) } }
             }
             return { image in
-                if let cubic = warpCubic(image, transform: alignment.transform, residuals: alignment.residuals, grid: grid, extent: e) {
+                if let cubic = warpCubic(image, transform: alignment.transform, residuals: alignment.residuals, grid: grid, extent: e,
+                                          sharp: exactWhenStill) {
                     return cubic
                 }
                 // Borda repetida: o quadro deslocado não deixa faixa vazia (escura ou colorida) na beirada

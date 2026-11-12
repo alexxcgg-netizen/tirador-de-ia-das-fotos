@@ -693,11 +693,13 @@ enum Developer {
     static let srSubKernel = kernel("revelaSub")
     static let despeckleKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaDespeckle", fromMetalLibraryData: $0) }
     static let warpCubicKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaWarpCubic", fromMetalLibraryData: $0) }
+    static let warpSharpKernel: CIKernel? = library.flatMap { try? CIKernel(functionName: "revelaWarpSharp", fromMetalLibraryData: $0) }
 
     /// Encaixe bicúbico numa passada: `transform` leva a foto para a referência; `residuals` (9, grade 3×3 em `grid`)
     /// é o que sobra em cada região. nil se o kernel não carregou (aí fica o jeito antigo)
-    static func warpCubic(_ image: CIImage, transform: CGAffineTransform, residuals: [CGPoint], grid: CIVector, extent: CGRect) -> CIImage? {
-        guard let warpCubicKernel else { return nil }
+    static func warpCubic(_ image: CIImage, transform: CGAffineTransform, residuals: [CGPoint], grid: CIVector, extent: CGRect,
+                          sharp: Bool = false) -> CIImage? {
+        guard let warpCubicKernel = sharp ? (warpSharpKernel ?? Developer.warpCubicKernel) : Developer.warpCubicKernel else { return nil }
         let inv = transform.inverted()
         let r = residuals.count == 9 ? residuals : [CGPoint](repeating: .zero, count: 9)
         let reach = (r.map { max(abs($0.x), abs($0.y)) }.max() ?? 0) + 3

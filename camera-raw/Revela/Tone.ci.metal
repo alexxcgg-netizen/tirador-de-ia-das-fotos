@@ -316,6 +316,35 @@ namespace coreimage {
         }
         return float4(acc.rgb, 1.0f);
     }
+    // Catmull-Rom (B = 0, C = ½): sem o amolecimento do Mitchell. Só no FOCO EMPILHADO (luz boa, pouco ruído): com a escala
+    // da respiração do foco toda foto é reamostrada, e o Mitchell tirava ~¼ da nitidez dos cantos (P06c 0,76)
+    inline float catmullRom(float x) {
+        x = fabs(x);
+        return x < 1.0f ? (1.5f * x - 2.5f) * x * x + 1.0f : (x < 2.0f ? ((-0.5f * x + 2.5f) * x - 4.0f) * x + 2.0f : 0.0f);
+    }
+    float4 revelaWarpSharp(sampler src, float3 inv0, float3 inv1, float4 a, float4 b, float4 c, float4 d, float2 e,
+                           float4 grid, destination dest) {
+        float2 o[9] = { a.xy, a.zw, b.xy, b.zw, c.xy, c.zw, d.xy, d.zw, e };
+        float2 p = dest.coord();
+        float u = clamp((p.x - grid.x) / grid.z, 0.0f, 2.0f);
+        float v = clamp((p.y - grid.y) / grid.w, 0.0f, 2.0f);
+        int i0 = min(int(u), 1), j0 = min(int(v), 1);
+        float fu = u - float(i0), fv = v - float(j0);
+        float2 residual = mix(mix(o[j0 * 3 + i0], o[j0 * 3 + i0 + 1], fu), mix(o[(j0 + 1) * 3 + i0], o[(j0 + 1) * 3 + i0 + 1], fu), fv);
+        float2 r = p - residual;
+        float2 q = float2(dot(inv0, float3(r, 1.0f)), dot(inv1, float3(r, 1.0f)));
+        float2 base = floor(q - 0.5f);
+        float2 f = q - 0.5f - base;
+        float4 acc = float4(0.0f);
+        for (int j = -1; j <= 2; j++) {
+            float wy = catmullRom(float(j) - f.y);
+            for (int i = -1; i <= 2; i++) {
+                float w = catmullRom(float(i) - f.x) * wy;
+                acc += src.sample(src.transform(base + float2(float(i), float(j)) + 0.5f)) * w;
+            }
+        }
+        return float4(acc.rgb, 1.0f);
+    }
 
     // Super resolução: o ponto da foto que cai no pixel grande p — pelo alinhamento geral (inversa em inv0/inv1) e pelo
     // que sobrou em cada uma das 9 regiões (grade 3×3 com centros em x0 + i·dx, y0 + j·dy), m = (fator, origem x, origem y, σ)
