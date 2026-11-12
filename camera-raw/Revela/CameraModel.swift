@@ -89,6 +89,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     case flash = "FLASH"
     case focusStack = "FOCO EMPILHADO"
     case average = "MÉDIA"
+    case texture = "TEXTURA"
 
     var id: String { rawValue }
 
@@ -105,6 +106,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .cinematic: return "film"
         case .dual: return "rectangle.on.rectangle"
         case .scan: return "cube.transparent"
+        case .texture: return "square.grid.3x3"
         case .document: return "doc.viewfinder"
         case .hdr: return "circle.lefthalf.filled"
         case .longExposure: return "timer"
@@ -122,7 +124,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     var frameCount: Int {
         switch self {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .video, .cinematic, .dual, .scan,
-             .document, .panorama: return 1
+             .document, .panorama, .texture: return 1
         case .superRes: return 8
         // 24: com todas as nítidas juntadas, o detalhe sobe com o número de fotos (laboratório: 16 +4,7 dB, 24 +5,1)
         case .superZoom: return 24
@@ -138,7 +140,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
     var stackKind: Developer.StackKind? {
         switch self {
         case .photo, .fast, .action, .freeze, .portrait, .hdr, .flash, .longExposure, .superRes, .superZoom, .video, .cinematic,
-             .dual, .scan, .document, .panorama: return nil
+             .dual, .scan, .document, .panorama, .texture: return nil
         case .focusStack: return .focus
         case .night, .stars, .average: return .average
         case .moon: return nil
@@ -156,6 +158,7 @@ enum CaptureMode: String, CaseIterable, Identifiable {
         case .cinematic: return "Vídeo com o fundo desfocado, como o Modo Cinema do iPhone. O foco segue as pessoas; dá para mudar depois no app Fotos."
         case .dual: return "Câmera de trás e da frente juntas. Toque: foto. Segure: vídeo enquanto segura."
         case .scan: return "Scanner 3D com LiDAR."
+        case .texture: return "Fotografe a superfície de frente, com luz uniforme (dia nublado ou sombra). Sai um pacote PBR repetível sem emenda para Blender e Unreal: cor, normal (OpenGL e DirectX), altura, AO e aspereza."
         case .document: return "Documentos de várias páginas, sem marca d'água, num PDF só."
         case .panorama: return "Toque e gire o iPhone devagar para a direita, sem subir nem descer. Toque de novo para terminar."
         case .hdr: return "3 fotos RAW (escura, normal, clara) juntadas: céu com cor e sombra com detalhe. Segure firme."
@@ -451,6 +454,8 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
     /// VÍDEO: resolução e quadros por segundo que a câmera aceitou de fato (ex.: "4K\n30 fps").
     @Published private(set) var videoFormatLabel = "1080p\n30 fps"
     @Published var isRecordingVideo = false
+    /// O último pacote do modo TEXTURA (.zip com albedo, normais, altura, AO e aspereza), para mandar ao PC
+    @Published var texturePackage: URL?
     /// CINEMÁTICO: do toque de parar até o arquivo fechar. Conta como ocupado: trocar de modo ou descansar a câmera
     /// nesse meio tirava o AVCaptureMovieFileOutput da sessão com o arquivo ainda aberto.
     @Published private(set) var recordingFinishing = false
@@ -4352,6 +4357,14 @@ final class CameraModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSam
                     output = Developer.superResolution(frames, options: options, keep: 8, moon: true)
                 } else if mode == .photo, frames.count > 1 {
                     output = Developer.fuse(frames, options: options)
+                } else if mode == .texture, let first = frames.first {
+                    // TEXTURA: pacote PBR (pasta + .zip para mandar ao PC); a galeria recebe o albedo
+                    let pack = Developer.texturePack(first, options: options)
+                    output = pack?.output
+                    if let folder = pack?.folder {
+                        let zip = SceneScanner.zip(folder)
+                        DispatchQueue.main.async { self.texturePackage = zip ?? folder }
+                    }
                 } else if let kind = mode.stackKind {
                     output = Developer.stack(frames, kind: kind, removeOutliers: mode == .stars, robust: mode == .night,
                                              starPoints: mode == .night ? self.nightStarPoints : 0, options: options)

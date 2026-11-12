@@ -136,6 +136,7 @@ extension CaptureMode {
         case .portrait: return "2×, fundo desfocado (LiDAR)"
         case .cinematic: return "Vídeo com fundo desfocado"
         case .document: return "Várias páginas num PDF só"
+        case .texture: return "Textura PBR repetível (Blender/Unreal)"
         case .panorama: return "Gire devagar para a direita"
         case .hdr: return "3 fotos: céu e sombra com detalhe"
         case .longExposure: return "Água lisa ou rastros de luz"

@@ -616,14 +616,14 @@ enum Developer {
         .cacheIntermediates: false,
     ])
 
-    private static let library: Data? = {
+    static let library: Data? = {
         // No app vem no pacote principal; no laboratório de testes, no pacote dos testes
         guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib")
                 ?? Bundle(for: BundleToken.self).url(forResource: "default", withExtension: "metallib") else { return nil }
         return try? Data(contentsOf: url)
     }()
 
-    private static func kernel(_ name: String) -> CIColorKernel? {
+    static func kernel(_ name: String) -> CIColorKernel? {
         library.flatMap { try? CIColorKernel(functionName: name, fromMetalLibraryData: $0) }
     }
 
@@ -644,7 +644,7 @@ enum Developer {
     private static let kneeKernel = kernel("revelaKnee")
     static let robustColorKernel = kernel("revelaRobustColor")
     static let robustWeightKernel = kernel("revelaRobustWeight")
-    private static let logLumaKernel = kernel("revelaLogLuma")
+    static let logLumaKernel = kernel("revelaLogLuma")
     private static let skinMixKernel = kernel("revelaSkinMix")
     private static let chromaKernel = kernel("revelaChroma")
     private static let peakKernel = kernel("revelaPeak")

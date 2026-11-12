@@ -427,7 +427,7 @@ struct ContentView: View {
     /// O modo atual tem controles próprios (que ficam por cima da parte de baixo do visor)?
     private var hasModeControls: Bool {
         let mode = camera.captureMode
-        let withControls: [CaptureMode] = [.freeze, .portrait, .night, .longExposure, .video, .cinematic]
+        let withControls: [CaptureMode] = [.freeze, .portrait, .night, .longExposure, .video, .cinematic, .texture]
         if withControls.contains(mode) { return true }
         if camera.lens == .macro && mode == .photo { return true }
         return CameraModel.dayStarModes.contains(mode) && camera.lens != .macro
@@ -454,6 +454,7 @@ struct ContentView: View {
                 if camera.captureMode == .longExposure { longControls }
                 if camera.captureMode == .video { videoControls }
                 if camera.captureMode == .cinematic { cinematicControls }
+                if camera.captureMode == .texture { textureControls }
             }
             .padding(.horizontal, 8)
             .padding(.top, 14)
@@ -618,6 +619,35 @@ struct ContentView: View {
     }
 
     /// Exposição longa: duração e estilo.
+    /// TEXTURA: lado das texturas (2K, 4K ou o máximo da foto) e o pacote da última para mandar ao PC
+    @AppStorage("textureSide") private var textureSide = 4096
+    private var textureControls: some View {
+        HStack(spacing: 6) {
+            ForEach([2048, 4096, 0], id: \.self) { value in
+                Button(value == 0 ? "MÁX" : "\(value / 1024)K") {
+                    textureSide = value
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 9).frame(height: 36)
+                .foregroundStyle(textureSide == value ? Color.black : Color.white)
+                .background(Capsule().fill(textureSide == value ? accent : panelFill))
+                .buttonStyle(.plain)
+                .selectedTrait(textureSide == value)
+            }
+            if let package = camera.texturePackage {
+                ShareLink(item: package) {
+                    Label("Texturas", systemImage: "square.and.arrow.up")
+                        .font(.system(size: 12, weight: .bold))
+                        .padding(.horizontal, 9).frame(height: 36)
+                        .foregroundStyle(.white)
+                        .background(Capsule().fill(panelFill))
+                }
+                .accessibilityLabel("Mandar o pacote de texturas")
+            }
+        }
+    }
+
     private var longControls: some View {
         HStack(spacing: 6) {
             ForEach(CameraModel.longSeconds, id: \.self) { sec in
@@ -1579,6 +1609,7 @@ struct ContentView: View {
         case .dual: return "DUPLA\nFOTO · VÍDEO"
         case .scan: return "3D\nLIDAR"
         case .document: return "PDF\nDOC"
+        case .texture: return Developer.textureSide == 0 ? "PBR\nMÁX" : "PBR\n\(Developer.textureSide / 1024)K"
         case .panorama: return camera.panoramaProgress.map { "\(Int($0 * 180))°\nPANO" } ?? "PANO\n180°"
         case .longExposure: return "\(Int(camera.longSecondsChoice)) s\n\(camera.longStyle.rawValue.uppercased())"
         case .superRes: return "8× 48MP\n100MP"

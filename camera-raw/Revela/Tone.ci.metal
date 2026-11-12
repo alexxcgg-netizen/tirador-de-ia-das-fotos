@@ -227,6 +227,65 @@ namespace coreimage {
     }
 
     // Tons locais: log da luminância (para borrar e achar a "luz de fundo" de cada região)
+    // TEXTURA: repetível. A saída é o tamanho menos a faixa: no fim de cada eixo a borda final é misturada com a
+    // inicial (peso cosseno), com a variância preservada em volta da média (a mistura simples lavava o contraste na
+    // faixa). geo = (largura, altura, faixa x, faixa y) da entrada, com origem em 0
+    float4 revelaTileBlend(sampler src, float4 geo, float3 mean, destination dest) {
+        float2 p = dest.coord() - 0.5f;
+        float W = geo.x, H = geo.y, ox = geo.z, oy = geo.w;
+        float xa, xb, wx, ya, yb, wy;
+        if (p.x < W - 2.0f * ox) { xa = p.x + ox; xb = xa; wx = 0.0f; }
+        else { float k = p.x - (W - 2.0f * ox); xa = W - ox + k; xb = k; wx = 0.5f - 0.5f * cos(3.14159265f * (k + 0.5f) / ox); }
+        if (p.y < H - 2.0f * oy) { ya = p.y + oy; yb = ya; wy = 0.0f; }
+        else { float k = p.y - (H - 2.0f * oy); ya = H - oy + k; yb = k; wy = 0.5f - 0.5f * cos(3.14159265f * (k + 0.5f) / oy); }
+        float3 a00 = src.sample(src.transform(float2(xa, ya) + 0.5f)).rgb - mean;
+        float3 a10 = src.sample(src.transform(float2(xb, ya) + 0.5f)).rgb - mean;
+        float3 a01 = src.sample(src.transform(float2(xa, yb) + 0.5f)).rgb - mean;
+        float3 a11 = src.sample(src.transform(float2(xb, yb) + 0.5f)).rgb - mean;
+        float bx = 1.0f - wx, by = 1.0f - wy;
+        float3 v = a00 * bx * by + a10 * wx * by + a01 * bx * wy + a11 * wx * wy;
+        float norm = sqrt(bx * bx + wx * wx) * sqrt(by * by + wy * wy);
+        return float4(max(mean + v / norm, float3(0.0f)), 1.0f);
+    }
+
+    // TEXTURA: altura pelo brilho em três escalas (grão fino, folha/pedra, forma), sem a escala grande (que é luz)
+    float4 revelaTextureHeight(sample_t a0, sample_t a1, sample_t b0, sample_t b1, sample_t c0, sample_t c1) {
+        float h = 0.25f * (a0.r - a1.r) + 0.35f * (b0.r - b1.r) + 0.4f * (c0.r - c1.r);
+        return float4(h, h, h, 1.0f);
+    }
+
+    // TEXTURA: leva a altura para 0…1
+    float4 revelaTextureRange(sample_t s, float lo, float hi) {
+        float h = clamp((s.r - lo) / max(hi - lo, 1e-6f), 0.0f, 1.0f);
+        return float4(h, h, h, 1.0f);
+    }
+
+    // TEXTURA: normal pelo relevo (Sobel na altura já repetida nas bordas). flipY = 1 dá o DirectX (Unreal); 0 o OpenGL (Blender)
+    float4 revelaNormalFromHeight(sampler h, float strength, float flipY, destination dest) {
+        float2 p = dest.coord();
+        float tl = h.sample(h.transform(p + float2(-1.0f, 1.0f))).r, t = h.sample(h.transform(p + float2(0.0f, 1.0f))).r;
+        float tr = h.sample(h.transform(p + float2(1.0f, 1.0f))).r, l = h.sample(h.transform(p + float2(-1.0f, 0.0f))).r;
+        float r = h.sample(h.transform(p + float2(1.0f, 0.0f))).r, bl = h.sample(h.transform(p + float2(-1.0f, -1.0f))).r;
+        float b = h.sample(h.transform(p + float2(0.0f, -1.0f))).r, br = h.sample(h.transform(p + float2(1.0f, -1.0f))).r;
+        float dx = ((tr + 2.0f * r + br) - (tl + 2.0f * l + bl)) / 8.0f;
+        float dy = ((tl + 2.0f * t + tr) - (bl + 2.0f * b + br)) / 8.0f;
+        float3 n = normalize(float3(-dx * strength, -dy * strength, 1.0f));
+        float3 c = n * 0.5f + 0.5f;
+        if (flipY > 0.5f) c.y = 1.0f - c.y;
+        return float4(c, 1.0f);
+    }
+
+    // TEXTURA: oclusão (onde a altura fica abaixo da vizinhança) e aspereza (escuro = mais áspero)
+    float4 revelaTextureAO(sample_t blurred, sample_t h) {
+        float ao = 1.0f - 0.6f * clamp((blurred.r - h.r) * 2.0f, 0.0f, 1.0f);
+        return float4(ao, ao, ao, 1.0f);
+    }
+    float4 revelaTextureRough(sample_t albedo, float top) {
+        float y = dot(max(albedo.rgb, float3(0.0f)), revela::kLuma);
+        float r = clamp(0.55f + 0.35f * (1.0f - y / max(top, 1e-5f)), 0.3f, 0.95f);
+        return float4(r, r, r, 1.0f);
+    }
+
     float4 revelaLogLuma(sample_t s) {
         float l = log2(max(dot(max(s.rgb, float3(0.0f)), revela::kLuma), 1e-5f));
         return float4(l, l, l, 1.0f);
