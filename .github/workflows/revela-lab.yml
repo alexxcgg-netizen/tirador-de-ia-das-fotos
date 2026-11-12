@@ -5,6 +5,11 @@ name: Revela (laboratório)
 # Só quando chamado (cada rodada gasta uns 8 min de Mac, que contam 10× na cota do GitHub)
 on:
   workflow_dispatch:
+    inputs:
+      testes:
+        description: "Só estes testes (ex.: PrevencaoTests/testP06cFocoRespiracao,LabTests/test6SuperResolution); vazio = todos"
+        required: false
+        default: ""
 
 concurrency:
   group: revela-lab
@@ -58,8 +63,12 @@ jobs:
           ")
           echo "Simulador: $UDID"
           set +e
+          # Economia: rodar só os testes pedidos (cada rodada completa leva ~100 min de Mac, que contam 10× na cota)
+          ONLY=""
+          IFS=',' read -ra LIST <<< "${{ inputs.testes }}"
+          for t in "${LIST[@]}"; do t=$(echo "$t" | xargs); [ -n "$t" ] && ONLY="$ONLY -only-testing:RevelaLab/$t"; done
           TEST_RUNNER_LAB_IN="$RUNNER_TEMP/lab/in" TEST_RUNNER_LAB_OUT="$RUNNER_TEMP/lab/out" \
-          xcodebuild test -project Revela.xcodeproj -scheme RevelaLab -destination "id=$UDID" \
+          xcodebuild test -project Revela.xcodeproj -scheme RevelaLab -destination "id=$UDID" $ONLY \
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO > test.log 2>&1
           status=$?
           set -e

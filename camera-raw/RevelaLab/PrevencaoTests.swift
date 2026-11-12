@@ -1156,8 +1156,10 @@ final class PrevencaoTests: XCTestCase {
                 zones = zones.cropped(to: e)
                 // p → c + (1 + s)(p − c): a foto com a cena ampliada (1 + s) em volta do centro
                 let zoom = CGAffineTransform(a: 1 + s, b: 0, c: 0, d: 1 + s, tx: -s * center.x, ty: -s * center.y)
+                // Escala gerada com o encaixe nítido (Catmull-Rom): o Mitchell amolecia a foto já no teste, antes do app
+                // (perda que nenhum encaixe desfaz; cantos 0,83 com o app já em Catmull-Rom)
                 let placed = s == 0 ? zones : (Developer.warpCubic(zones, transform: zoom, residuals: [],
-                                                                   grid: CIVector(x: 0, y: 0, z: 1, w: 1), extent: e)
+                                                                   grid: CIVector(x: 0, y: 0, z: 1, w: 1), extent: e, sharp: true)
                                                ?? zones.clampedToExtent().transformed(by: zoom)).cropped(to: e)
                 return Developer.materialize(placed, extent: e).settingProperties(props)
             }
