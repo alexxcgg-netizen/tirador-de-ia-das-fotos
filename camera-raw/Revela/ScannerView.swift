@@ -172,10 +172,6 @@ struct ObjectCaptureFlow: View {
     @State private var modelURL: URL?
     @State private var packageZip: URL?
     @State private var imagesFolder: URL?
-    /// Qualidade do pacote para o PC: .reduced é leve; .medium é o que o iPhone faz de melhor (.full e .raw só no Mac,
-    /// e a API não os aceita no iOS)
-    @AppStorage("objectDetail") private var detailChoice = "medium"
-    private var detail: PhotogrammetrySession.Request.Detail { detailChoice == "reduced" ? .reduced : .medium }
 
     var body: some View {
         ZStack {
@@ -212,19 +208,12 @@ struct ObjectCaptureFlow: View {
                         }
                         .buttonStyle(.bordered)
                         .padding(.horizontal, 16)
-                        Text("Dentro: modelo .obj com as texturas (cor, normal, roughness, AO) e as fotos. Tamanho em metros.")
+                        Text("Dentro: modelo .obj leve com as texturas e as fotos originais (para refazer em qualidade máxima no PC).")
                             .font(.caption).foregroundStyle(.white.opacity(0.8))
                             .multilineTextAlignment(.center).padding(.horizontal, 24)
                     }
                 } else if let session {
-                    if !isCapturing {
-                        Picker("Qualidade", selection: $detailChoice) {
-                            Text("Leve").tag("reduced")
-                            Text("Melhor").tag("medium")
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.horizontal, 16)
-                    }
+
                     actionButton(session)
                 }
             }
@@ -301,14 +290,15 @@ struct ObjectCaptureFlow: View {
             var configuration = PhotogrammetrySession.Configuration()
             configuration.checkpointDirectory = base.appendingPathComponent("checkpoint", isDirectory: true)
             let photogrammetry = try PhotogrammetrySession(input: images, configuration: configuration)
-            // O USDZ sempre sai leve (ver no iPhone); a qualidade escolhida vai no pacote para o Blender e a Unreal (OBJ + texturas)
+            // No iOS a API só aceita .reduced (.medium, .full e .raw são do Mac; o compilador recusa .medium). O pacote leva
+            // as fotos para refazer em qualidade máxima no PC (RealityCapture, Meshroom, Metashape...)
             var objFailed = false
             let package = base.appendingPathComponent("modelo-blender-unreal", isDirectory: true)
             try? FileManager.default.removeItem(at: package)
             try FileManager.default.createDirectory(at: package, withIntermediateDirectories: true)
             try photogrammetry.process(requests: [
                 .modelFile(url: output, detail: .reduced),
-                .modelFile(url: package.appendingPathComponent("modelo.obj"), detail: detail),
+                .modelFile(url: package.appendingPathComponent("modelo.obj"), detail: .reduced),
             ])
             for try await message in photogrammetry.outputs {
                 switch message {
@@ -330,7 +320,7 @@ struct ObjectCaptureFlow: View {
                     try? FileManager.default.copyItem(at: images, to: photos)
                     packageZip = objFailed ? nil : SceneScanner.zip(package)
                     stateText = packageZip == nil ? "Modelo pronto" : "Modelo pronto (USDZ e pacote para PC)"
-                    dlog("Objeto: modelo 3D pronto (\(detailChoice))")
+                    dlog("Objeto: modelo 3D pronto")
                 default:
                     break
                 }
