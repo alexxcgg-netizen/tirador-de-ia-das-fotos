@@ -443,7 +443,7 @@ final class SceneScanner: NSObject, ObservableObject, ARSessionDelegate {
     }
 
     /// Compacta a pasta num .zip (o iOS faz isso sozinho ao "preparar para envio").
-    private static func zip(_ folder: URL) -> URL? {
+    static func zip(_ folder: URL) -> URL? {
         var output: URL?
         var error: NSError?
         NSFileCoordinator().coordinate(readingItemAt: folder, options: .forUploading, error: &error) { zipped in

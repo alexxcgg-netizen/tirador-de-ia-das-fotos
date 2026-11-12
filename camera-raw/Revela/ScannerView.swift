@@ -170,7 +170,12 @@ struct ObjectCaptureFlow: View {
     @State private var progress: Double?
     @State private var errorText: String?
     @State private var modelURL: URL?
+    @State private var packageZip: URL?
     @State private var imagesFolder: URL?
+    /// Qualidade do pacote para o PC: .reduced é leve; .medium é o que o iPhone faz de melhor (.full e .raw só no Mac,
+    /// e a API não os aceita no iOS)
+    @AppStorage("objectDetail") private var detailChoice = "medium"
+    private var detail: PhotogrammetrySession.Request.Detail { detailChoice == "reduced" ? .reduced : .medium }
 
     var body: some View {
         ZStack {
@@ -195,12 +200,31 @@ struct ObjectCaptureFlow: View {
                         }
                         .buttonStyle(.borderedProminent)
                         ShareLink(item: modelURL) {
-                            Label("Compartilhar", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity, minHeight: 44)
+                            Label("USDZ", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity, minHeight: 44)
                         }
                         .buttonStyle(.bordered)
                     }
                     .padding(.horizontal, 16)
+                    if let packageZip {
+                        ShareLink(item: packageZip) {
+                            Label("Pacote para Blender e Unreal (.zip)", systemImage: "shippingbox")
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                        }
+                        .buttonStyle(.bordered)
+                        .padding(.horizontal, 16)
+                        Text("Dentro: modelo .obj com as texturas (cor, normal, roughness, AO) e as fotos. Tamanho em metros.")
+                            .font(.caption).foregroundStyle(.white.opacity(0.8))
+                            .multilineTextAlignment(.center).padding(.horizontal, 24)
+                    }
                 } else if let session {
+                    if !isCapturing {
+                        Picker("Qualidade", selection: $detailChoice) {
+                            Text("Leve").tag("reduced")
+                            Text("Melhor").tag("medium")
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(.horizontal, 16)
+                    }
                     actionButton(session)
                 }
             }
@@ -277,18 +301,36 @@ struct ObjectCaptureFlow: View {
             var configuration = PhotogrammetrySession.Configuration()
             configuration.checkpointDirectory = base.appendingPathComponent("checkpoint", isDirectory: true)
             let photogrammetry = try PhotogrammetrySession(input: images, configuration: configuration)
-            try photogrammetry.process(requests: [.modelFile(url: output, detail: .reduced)])
+            // O USDZ sempre sai leve (ver no iPhone); a qualidade escolhida vai no pacote para o Blender e a Unreal (OBJ + texturas)
+            var objFailed = false
+            let package = base.appendingPathComponent("modelo-blender-unreal", isDirectory: true)
+            try? FileManager.default.removeItem(at: package)
+            try FileManager.default.createDirectory(at: package, withIntermediateDirectories: true)
+            try photogrammetry.process(requests: [
+                .modelFile(url: output, detail: .reduced),
+                .modelFile(url: package.appendingPathComponent("modelo.obj"), detail: detail),
+            ])
             for try await message in photogrammetry.outputs {
                 switch message {
                 case .requestProgress(_, let fraction):
                     progress = fraction
-                case .requestError(_, let error):
-                    throw error
+                case .requestError(let request, let error):
+                    // O OBJ do pacote falhar não pode derrubar o USDZ (que é o que vale no iPhone)
+                    if String(describing: request).contains(".obj") {
+                        objFailed = true
+                        dlog("Objeto: o OBJ do pacote falhou: \(error.localizedDescription)")
+                    } else {
+                        throw error
+                    }
                 case .processingComplete:
                     progress = nil
                     modelURL = output
-                    stateText = "Modelo pronto"
-                    dlog("Objeto: modelo 3D pronto")
+                    // As fotos junto do modelo (para refazer no PC), e tudo numa pasta compactada
+                    let photos = package.appendingPathComponent("fotos", isDirectory: true)
+                    try? FileManager.default.copyItem(at: images, to: photos)
+                    packageZip = objFailed ? nil : SceneScanner.zip(package)
+                    stateText = packageZip == nil ? "Modelo pronto" : "Modelo pronto (USDZ e pacote para PC)"
+                    dlog("Objeto: modelo 3D pronto (\(detailChoice))")
                 default:
                     break
                 }
