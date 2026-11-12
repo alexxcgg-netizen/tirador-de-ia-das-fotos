@@ -1,0 +1,4 @@
+TEXTURA: 1024×1024 px a partir de 1600 px, pacote em textura-1794459946 · 6156 ms
+TEXTURA sem: pacote em 6165 ms
+TEXTURA: 1024×1024 px a partir de 1600 px, pacote em textura-1794459951 · 8168 ms
+TEXTURA com: pacote em 8173 ms
