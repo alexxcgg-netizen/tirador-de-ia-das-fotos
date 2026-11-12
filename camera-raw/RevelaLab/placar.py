@@ -735,10 +735,59 @@ def _estourado(root, log):
         _sem(area, metas[3:4])
 
 
+def _read_png(path):
+    """PNG 8/16 bits sem paleta e sem entrelaçamento → float 0..1 (o Pillow corta 16 bits RGBA para 8)."""
+    import struct, zlib
+    data = open(path, "rb").read()
+    pos, idat, ihdr = 8, b"", None
+    while pos < len(data):
+        n, typ = struct.unpack(">I4s", data[pos:pos + 8])
+        body = data[pos + 8:pos + 8 + n]
+        if typ == b"IHDR":
+            ihdr = struct.unpack(">IIBBBBB", body)
+        elif typ == b"IDAT":
+            idat += body
+        pos += 12 + n
+    w, h, depth, ctype, _, _, inter = ihdr
+    ch = {0: 1, 2: 3, 4: 2, 6: 4}[ctype]
+    bpp = ch * depth // 8
+    stride = w * bpp
+    raw = np.frombuffer(zlib.decompress(idat), np.uint8).reshape(h, stride + 1)
+    out = np.zeros((h, stride), np.int32)
+    prev = np.zeros(stride, np.int32)
+    for y in range(h):
+        f, line = raw[y, 0], raw[y, 1:].astype(np.int32)
+        if f == 0:
+            cur = line
+        elif f == 2:
+            cur = (line + prev) & 255
+        else:
+            cur = np.zeros(stride, np.int32)
+            for x in range(stride):
+                a = cur[x - bpp] if x >= bpp else 0
+                b = prev[x]
+                if f == 1:
+                    p = a
+                elif f == 3:
+                    p = (a + b) >> 1
+                else:
+                    c = prev[x - bpp] if x >= bpp else 0
+                    pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                    p = a if pa <= pb and pa <= pc else (b if pb <= pc else c)
+                cur[x] = (line[x] + p) & 255
+        out[y] = cur
+        prev = cur
+    if depth == 16:
+        v = (out[:, 0::2] << 8 | out[:, 1::2]).astype(np.float64) / 65535.0
+    else:
+        v = out.astype(np.float64) / 255.0
+    return v.reshape(h, w, ch)
+
+
 def _textura(root, log):
     """P12: pacote PBR do modo TEXTURA, com e sem um degradê de luz de ~5,7× (4× de lado a lado + canto escuro)."""
     area = "TEXTURA"
-    metas = [("degradê de luz que sobra (albedo com ÷ sem, máx/mín em grande escala)", "≤ 1,20"),
+    metas = [("degradê de luz que sobra (albedo com ÷ sem, p98/p2 em grande escala)", "≤ 1,20"),
              ("emenda da textura repetida ÷ miolo (pior eixo)", "≤ 1,30"),
              ("normal OpenGL e DirectX: verde invertido, relevo plausível", "sim"),
              ("tamanho pedido (1024 px)", "1024×1024")]
@@ -746,11 +795,7 @@ def _textura(root, log):
     f = {k: os.path.join(d, f"{k}.png") for k in ("sem_albedo", "com_albedo", "com_normal_gl", "com_normal_dx")}
     if not all(os.path.exists(v) for v in f.values()):
         return _sem(area, metas)
-    import imageio.v3 as iio
-
-    def rd(path):
-        a = iio.imread(path)
-        return a[..., :3].astype(np.float64) / (65535.0 if a.dtype == np.uint16 else 255.0)
+    rd = lambda path: _read_png(path)[..., :3]
     sem, com, gl, dx = rd(f["sem_albedo"]), rd(f["com_albedo"]), rd(f["com_normal_gl"]), rd(f["com_normal_dx"])
     lum = lambda x: x @ np.array([0.2126, 0.7152, 0.0722])
     # albedo em sRGB: volta para linear antes de dividir
@@ -758,11 +803,16 @@ def _textura(root, log):
     big = lambda x: np.asarray(Image.fromarray((np.clip(x, 0, None) / max(x.max(), 1e-9) * 65535).astype(np.uint16)).resize((32, 32), Image.BOX), np.float64)
     ratio = big(lum(lin(com))) / np.maximum(big(lum(lin(sem))), 1e-9)
     c = ratio[4:-4, 4:-4]
-    left = float(c.max() / max(c.min(), 1e-9))
+    # p2/p98: um reflexo estourado num bloco de 32 px não é degradê que sobrou
+    left = float(np.percentile(c, 98) / max(np.percentile(c, 2), 1e-9))
     check(area, metas[0][0], f"{left:.2f} (entrada ~5,7)", left <= 1.20, metas[0][1])
-    y = lum(com) ** 1.0
-    step_x, step_y = np.abs(np.diff(y, axis=1)).mean(), np.abs(np.diff(y, axis=0)).mean()
-    seam = max(np.abs(y[:, 0] - y[:, -1]).mean() / step_x, np.abs(y[0, :] - y[-1, :]).mean() / step_y)
+    # emenda = salto entre a última e a primeira linha ÷ saltos das 7 linhas vizinhas de cada lado
+    # (comparar com a média da foto toda era injusto: borda de capim contra miolo de céu liso)
+    y, b = lum(com), 8
+    def seam_of(z):
+        st = np.abs(np.diff(np.concatenate([z[-b:], z[:b]], 0), axis=0))
+        return st[b - 1].mean() / max(np.delete(st, b - 1, 0).mean(), 1e-9)
+    seam = max(seam_of(y), seam_of(y.T))
     check(area, metas[1][0], f"{seam:.2f}", seam <= 1.30, metas[1][1])
     flip = float(np.abs(gl[..., 1] + dx[..., 1] - 1).mean())
     blue = float(gl[..., 2].mean())
