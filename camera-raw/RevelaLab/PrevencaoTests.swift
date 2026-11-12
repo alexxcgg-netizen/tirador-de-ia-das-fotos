@@ -1400,6 +1400,50 @@ final class PrevencaoTests: XCTestCase {
     /// mesma cena sem o corte (o ruído continua no branco). Placar: ruído no liso da FOTO 3× ≤ 0,6 do da foto única; NOITE
     /// ≥ +3 dB sobre a foto única (contra a cena sem ruído); SUPER ZOOM com o ganho de sem corte − 0,5 dB e o σ ajustado
     /// dentro de 2× do sem corte
+    /// TEXTURA: a mesma cena com e sem um degradê de luz forte (4× de um lado ao outro + canto escuro) pelo pacote PBR do
+    /// app (lado 1024 para ser rápido). O placar mede: o degradê some (albedo com ÷ sem degradê, em grande escala), a
+    /// emenda da textura repetida some (borda ÷ miolo), os dois normais são o mesmo com o verde invertido e o tamanho.
+    func testP12Textura() {
+        guard let url = firstRaw(), let truth = scene(url, width: 1600, height: 1600) else { return }
+        let e = truth.extent
+        // Degradê: 0,4 → 1,6 na horizontal × um canto 30% mais escuro (luz de janela de um lado)
+        guard let ramp = CIFilter(name: "CILinearGradient", parameters: [
+            "inputPoint0": CIVector(x: 0, y: 0), "inputPoint1": CIVector(x: e.width, y: 0),
+            "inputColor0": CIColor(red: 0.4, green: 0.4, blue: 0.4), "inputColor1": CIColor(red: 1.6, green: 1.6, blue: 1.6),
+        ])?.outputImage?.cropped(to: e),
+              let corner = CIFilter(name: "CIRadialGradient", parameters: [
+            "inputCenter": CIVector(x: 0, y: e.height), "inputRadius0": 0, "inputRadius1": e.width * 0.9,
+            "inputColor0": CIColor(red: 0.7, green: 0.7, blue: 0.7), "inputColor1": CIColor(red: 1, green: 1, blue: 1),
+        ])?.outputImage?.cropped(to: e) else { return }
+        let light = corner.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: ramp]).cropped(to: e)
+        let lit = Developer.materialize(truth.applyingFilter("CIMultiplyCompositing", parameters: [kCIInputBackgroundImageKey: light])
+            .cropped(to: e), extent: e).settingProperties(isoProps(100))
+        let plain = truth.settingProperties(isoProps(100))
+        let saved = UserDefaults.standard.object(forKey: "textureSide")
+        UserDefaults.standard.set(1024, forKey: "textureSide")
+        defer {
+            if let saved { UserDefaults.standard.set(saved, forKey: "textureSide") } else { UserDefaults.standard.removeObject(forKey: "textureSide") }
+        }
+        let target = outDir.appendingPathComponent("textura", isDirectory: true)
+        try? FileManager.default.createDirectory(at: target, withIntermediateDirectories: true)
+        for (label, img) in [("sem", plain), ("com", lit)] {
+            let captured = feed([img])
+            defer { Developer.decodeOverride = nil }
+            let t0 = CFAbsoluteTimeGetCurrent()
+            guard let pack = Developer.texturePack(captured[0], options: options()) else {
+                dlog("❌ TEXTURA \(label): sem saída")
+                continue
+            }
+            for name in ["albedo", "normal_gl", "normal_dx", "altura"] {
+                let from = pack.folder.appendingPathComponent("textura_\(name).png")
+                let to = target.appendingPathComponent("\(label)_\(name).png")
+                try? FileManager.default.removeItem(at: to)
+                try? FileManager.default.copyItem(at: from, to: to)
+            }
+            dlog("TEXTURA \(label): pacote em \(Diagnostics.ms(since: t0))")
+        }
+    }
+
     func testP11Estourado() {
         guard let url = firstRaw(), let base = scene(url, width: 1024, height: 768) else { return }
         let e = base.extent

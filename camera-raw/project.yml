@@ -60,6 +60,7 @@ targets:
       - Revela/LongExposure.swift
       - Revela/Panorama.swift
       - Revela/CaptureGeometry.swift
+      - Revela/Texture.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.alexxcgg.revela.lab

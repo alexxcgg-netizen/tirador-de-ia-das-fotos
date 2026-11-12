@@ -735,10 +735,48 @@ def _estourado(root, log):
         _sem(area, metas[3:4])
 
 
+def _textura(root, log):
+    """P12: pacote PBR do modo TEXTURA, com e sem um degradê de luz de ~5,7× (4× de lado a lado + canto escuro)."""
+    area = "TEXTURA"
+    metas = [("degradê de luz que sobra (albedo com ÷ sem, máx/mín em grande escala)", "≤ 1,20"),
+             ("emenda da textura repetida ÷ miolo (pior eixo)", "≤ 1,30"),
+             ("normal OpenGL e DirectX: verde invertido, relevo plausível", "sim"),
+             ("tamanho pedido (1024 px)", "1024×1024")]
+    d = os.path.join(root, "textura")
+    f = {k: os.path.join(d, f"{k}.png") for k in ("sem_albedo", "com_albedo", "com_normal_gl", "com_normal_dx")}
+    if not all(os.path.exists(v) for v in f.values()):
+        return _sem(area, metas)
+    import imageio.v3 as iio
+
+    def rd(path):
+        a = iio.imread(path)
+        return a[..., :3].astype(np.float64) / (65535.0 if a.dtype == np.uint16 else 255.0)
+    sem, com, gl, dx = rd(f["sem_albedo"]), rd(f["com_albedo"]), rd(f["com_normal_gl"]), rd(f["com_normal_dx"])
+    lum = lambda x: x @ np.array([0.2126, 0.7152, 0.0722])
+    # albedo em sRGB: volta para linear antes de dividir
+    lin = lambda v: np.where(v <= 0.04045, v / 12.92, ((v + 0.055) / 1.055) ** 2.4)
+    big = lambda x: np.asarray(Image.fromarray((np.clip(x, 0, None) / max(x.max(), 1e-9) * 65535).astype(np.uint16)).resize((32, 32), Image.BOX), np.float64)
+    ratio = big(lum(lin(com))) / np.maximum(big(lum(lin(sem))), 1e-9)
+    c = ratio[4:-4, 4:-4]
+    left = float(c.max() / max(c.min(), 1e-9))
+    check(area, metas[0][0], f"{left:.2f} (entrada ~5,7)", left <= 1.20, metas[0][1])
+    y = lum(com) ** 1.0
+    step_x, step_y = np.abs(np.diff(y, axis=1)).mean(), np.abs(np.diff(y, axis=0)).mean()
+    seam = max(np.abs(y[:, 0] - y[:, -1]).mean() / step_x, np.abs(y[0, :] - y[-1, :]).mean() / step_y)
+    check(area, metas[1][0], f"{seam:.2f}", seam <= 1.30, metas[1][1])
+    flip = float(np.abs(gl[..., 1] + dx[..., 1] - 1).mean())
+    blue = float(gl[..., 2].mean())
+    same_rb = float(np.abs(gl[..., 0] - dx[..., 0]).mean())
+    ok = flip <= 0.01 and same_rb <= 0.01 and blue >= 0.7
+    check(area, metas[2][0], f"verde {flip:.3f} · azul médio {blue:.2f}", ok, metas[2][1])
+    h, w = com.shape[:2]
+    check(area, metas[3][0], f"{w}×{h}", w == 1024 and h == 1024, metas[3][1])
+
+
 def prevencao(root):
     log = _log_text(root)
     for fn in (_geometria, _longa, _panorama, _estrelas, _estrelas_chao, _estrelas_polo, _media, _foco, _foco_respiracao,
-               _foto_consistencia, _noite_ruim, _fantasmas, _lua, _estourado):
+               _foto_consistencia, _noite_ruim, _fantasmas, _lua, _estourado, _textura):
         try:
             fn(root, log)
         except Exception as e:  # um teste com saída estranha não derruba o placar: vira FALTA com o erro
