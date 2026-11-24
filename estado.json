@@ -9,7 +9,7 @@
     "grao" : 1,
     "intensidade" : 1,
     "lente" : "1×",
-    "look" : "Ektar 100",
+    "look" : "Portra 400",
     "looksExtras" : [
       "Kodachrome",
       "Tri-X 400"
@@ -41,15 +41,16 @@
       "LUA",
       "FLASH",
       "FOCO EMPILHADO",
-      "MÉDIA"
+      "MÉDIA",
+      "TEXTURA"
     ],
     "protegerPele" : true,
     "tresLooks" : false,
     "visor60" : false
   },
   "aparelho" : "iPhone18,2",
-  "atualizadoEm" : "2026-11-06T07:03:50Z",
-  "instalacaoValeAte" : "13 Nov 2026 at 3:49",
+  "atualizadoEm" : "2026-11-24T22:04:25Z",
+  "instalacaoValeAte" : "1 de dez. de 2026, 19:03",
   "ios" : "27.0",
-  "versao" : "0.28 (1)"
+  "versao" : "0.31 (1)"
 }
